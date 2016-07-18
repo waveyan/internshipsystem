@@ -121,6 +121,7 @@ class InternshipInfor(db.Model):
     opinion = db.Column(db.String(250))
     start = db.Column(db.Date)
     end = db.Column(db.Date)
+    internStatus = db.Column(db.Integer, index=True)
     time = db.Column(db.DATETIME, default=datetime.utcnow())
     teaId = db.Column(db.String(8))
     status = db.Column(db.Integer, default=0)

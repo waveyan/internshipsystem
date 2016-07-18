@@ -66,20 +66,29 @@ def index():
     return render_template('index.html', Permission=Permission)
 
 
-# 学生实习信息
-@main.route('/stuinter', methods=['GET', 'POST'])
+# 学生实习列表
+@main.route('/internshipList')
 @login_required
-def stuinter():
+def internshipList():
     internshipInfor = InternshipInfor.query.filter_by(stuId=current_user.stuId).first()
     if internshipInfor is None:
         flash('您还没完成实习信息的填写，请完善相关实习信息！')
         return redirect(url_for('.adcominfor'))
     else:
-        student = Student.query.filter_by(stuId=current_user.stuId).first()
-        internship = InternshipInfor.query.filter_by(stuId=current_user.stuId).first()
-        comInfor = ComInfor.query.filter_by(comId=internship.comId).first()
-        dirctTea = DirctTea.query.filter_by(stuId=current_user.stuId).all()
-        return render_template('stuIntedetail.html', Permission=Permission, comInfor=comInfor,
+        comInfor = db.session.execute('select DISTINCT * from InternshipInfor i,ComInfor c where i.comId=c.comId')
+        print(comInfor)
+        return render_template('internshipList.html', comInfor=comInfor,Permission=Permission)
+
+
+# 学生实习信息
+@main.route('/stuinter/<int:id>', methods=['GET'])
+@login_required
+def stuinter(id):
+    student = Student.query.filter_by(stuId=current_user.stuId).first()
+    internship = InternshipInfor.query.filter_by(Id=id).first()
+    comInfor = ComInfor.query.filter_by(comId=internship.comId).first()
+    dirctTea = DirctTea.query.filter_by(stuId=current_user.stuId).all()
+    return render_template('stuIntedetail.html', Permission=Permission, comInfor=comInfor,
                                dirctTea=dirctTea, internship=internship, student=student)
 
 
@@ -194,12 +203,8 @@ def cominfor():
 def intecompany():
     form = searchform()
     page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query(ComInfor.comId, ComInfor.comAddress, ComInfor.comContact, ComInfor.comName,
-                                ComInfor.comUrl, func.count('*').label('sum')).join(InternshipInfor,
-                                                                                  ComInfor.comId == InternshipInfor.comId).group_by(
-        ComInfor.comId, ComInfor.comAddress, ComInfor.comContact, ComInfor.comName, ComInfor.comUrl).paginate(page,
-                                                                                                              per_page=8,
-                                                                                                              error_out=False)
+    pagination = ComInfor.query.join(InternshipInfor).group_by(
+        InternshipInfor.comId).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
     return render_template('intecompany.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor)
