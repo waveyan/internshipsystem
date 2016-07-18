@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}个人实习信息{% endblock %}
+{% block head %}{{ super() }}{% endblock %}<!--先执行父模板-->
+{% block page_content %}
+    <table align="center" border="2" class="table-bordered">
+        <caption>
+            <h1>学生实习信息
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                            data-toggle="dropdown">编辑<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        {% if current_user.can(Permission.STU_INFOR_EXPORT) %}
+                            <li><a href="#">审核通过</a></li>
+                        {% endif %}
+                        <li><a href="#">导出到Excel</a></li>
+                        <li><a href="#">修改</a></li>
+                        <li><a href="#">删除</a></li>
+                    </ul>
+                </div>
+            </h1>
+        </caption>
+        <tr>
+            <td colspan="6" height="50">一、学生信息</td>
+        </tr>
+        <tr>
+            <th width="200">学号</th>
+            <td width="400" height="50" colspan="3">
+                {{ current_user.stuId }}
+            </td>
+            <th width="200">姓名</th>
+            <td width="400" height="50" colspan="3">{{ student.stuName }}</td>
+        </tr>
+        <tr>
+            <th width="200">性别</th>
+            <td width="400" height="50" colspan="3">
+                {{ student.sex }}
+            </td>
+            <th width="200">专业班级</th>
+            <td width="400" height="50" colspan="3">{{ student.major }}{{ student.classes }}</td>
+        </tr>
+        <tr>
+            <td width="200" colspan="6" height="50">二、实习企业信息</td>
+        </tr>
+        <tr>
+            <th>企业名称</th>
+            <td height="50" width="400" colspan="5">{{ comInfor.comName }}</td>
+        </tr>
+        <tr>
+            <th>企业地址</th>
+            <td height="50" width="400" colspan="5">{{ comInfor.comAdress }}</td>
+        </tr>
+        <tr>
+            <th>企业简介</th>
+            <td height="200" width="400" colspan="5">{{ comInfor.comBrief }}</td>
+        </tr>
+        <tr>
+            <td width="200" colspan="6" height="50">三、实习岗位信息</td>
+        </tr>
+        <tr>
+            <th>实习地点</th>
+            <td width="400" height="50" colspan="5">{{ internship.adress }}</td>
+        </tr>
+        <tr>
+            <th>实习期间</th>
+            <td width="400" height="50" colspan="5">{{ internship.start }}至{{ internship.end }}
+            </td>
+        </tr>
+        <tr>
+            <th>工作任务</th>
+            <td width="400" height="200" colspan="5">{{ internship.task }}</td>
+        </tr>
+        <tr>
+            <td width="200" colspan="6" height="50">四、实习指导老师</td>
+        </tr>
+        <table align="center" border="2" class="table-bordered">
+            <tr>
+                <th height="50" colspan="6">企业老师</th>
+            </tr>
+            <tr>
+                <td height="50" width="300">姓名</td>
+                <td height="50" width="300">职务/职称</td>
+                <td height="50" width="300">电话</td>
+                <td height="50" width="300">E-mail</td>
+            </tr>
+            {% for tea in dirctTea %}
+                {% if tea.cteaName %}
+                    <tr>
+                        <td height="50">{{ tea.cteaName }}</td>
+                        <td height="50">{{ tea.cteaDuty }}</td>
+                        <td height="50">{{ tea.cteaPhone }}</td>
+                        <td height="50" colspan="2">{{ tea.cteaEmail }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <table align="center" border="2" class="table-bordered">
+            <tr>
+                <th height="50" colspan="6">校内老师</th>
+            </tr>
+            <tr>
+                <td height="50" width="240">教工号</td>
+                <td height="50" width="240">姓名</td>
+                <td height="50" width="240">职务/职称</td>
+                <td height="50" width="240">电话</td>
+                <td height="50" width="240">E-mail</td>
+            </tr>
+            {% for tea in dirctTea %}
+                {% if tea.teaName %}
+                    <tr>
+                        <td height="50">{{ tea.teaId }}</td>
+                        <td height="50">{{ tea.teaName }}</td>
+                        <td height="50">{{ tea.teaDuty }}</td>
+                        <td height="50">{{ tea.teaPhone }}</td>
+                        <td height="50" colspan="2">{{ dirctTea[0].teaEmail }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            <tr>
+                <td width="200" colspan="6" height="50">五、审核意见</td>
+            </tr>
+            <tr>
+                <th width="200">专业意见</th>
+                <td height="200" colspan="5">
+                    {% if internship.opinion %}
+                        {{ internship.opinion }}
+                    {% else %}
+                        暂无
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </table>
+{% endblock %}

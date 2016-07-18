@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block title %}企业信息{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/JS/jquery-2.1.4.min.js"></script>
+    <script>
+        function loadXMLDoc(path) {
+            var xmlhttp;
+            if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+                xmlhttp = new XMLHttpRequest();
+            }
+            else {// code for IE6, IE5
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    document.getElementById("t").innerHTML = xmlhttp.responseText;
+                }
+            }
+            xmlhttp.open("GET", path, true);
+            xmlhttp.send();
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#rearch").click(function () {
+                $(".rearchSubmit").click();
+            });
+        });
+    </script>
+{% endblock %}<!--先执行父模板-->
+发
+{% block page_content %}
+    <h1>企业信息
+        {% if current_user.can(Permission.COM_INFOR_EDIT) %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                        data-toggle="dropdown">编辑<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="{{ url_for('main.adcominfor') }}">添加企业信息</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">导入企业Excel表</a></li>
+                    <li class="divider"></li>
+                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                        <li><a onclick="loadXMLDoc('/choose')">批量审核</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+        <div style="float:right;width:350px"><!--长度-->
+            <form role="form" method="POST" action="/search">
+                <div class="row head">
+                    <div class="col-lg-10"><!--位置-->
+                        <div class="input-group ">
+                            {{ form.key(type="text",class="form-control",placeholder="请先输入企业名称或所在城市",required='') }}
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" id="rearch"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                        </div>
+                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </h1>
+    {% include '_notchoose.html' %}
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination,'.company') }}
+        </div>
+    {% endif %}
+{% endblock %}
