@@ -6,7 +6,7 @@ grade varchar(8) NOT NULL PRIMARY KEY comment "年级"
 
 -- 专业表（Major）
 create table Major (
-grade varchar(8) NOT NULL PRIMARY KEY comment "年级",
+grade varchar(8) NOT NULL comment "年级",
 major varchar(15) NOT NULL comment "专业",
 PRIMARY KEY (grade,major),
 KEY gradeFK(grade),
@@ -87,7 +87,7 @@ address VARCHAR (200) NOT NULL comment'实习地点',
 start date NOT NULL comment "实习开始时间",
 end date NOT NULL comment "实习结束时间",
 time DATE NOT NULL comment'录入时间',
-internStatus INT NOT NULL comment'实习状态',
+internStatus INT NOT NULL comment'实习状态(0实习中，1,实习结束)',
 teaId varchar(8) NULL comment "审核教师工号",
 opinion VARCHAR (250) NULL comment'审核意见',
 status int DEFAULT 0  NULL comment "审核状态（0表示待审核，2表示被退回修改，3表示审核通过）",
@@ -112,10 +112,12 @@ cteaName varchar(10)  NULL comment "企业指导老师姓名",
 cteaDuty varchar(20)  NULL comment "企业指导老师职务",
 cteaPhone varchar(15)  NULL comment "企业指导老师电话",
 cteaEmail varchar(20)  NULL comment "企业指导老师Email",
+comId INT (20) NOT NULL ,
 stuId varchar(12) NOT NULL comment "对应Student表的stuId",
-KEY dircTeaFK(stuId),
-KEY dirTeaFk(teaId),
-CONSTRAINT DircTeaFK FOREIGN KEY (stuId)REFERENCES Student(stuId),
+KEY dircTeaFK1(stuId),
+KEY dirTeaFk2(comId),
+CONSTRAINT dircTeaFK1 FOREIGN KEY (stuId)REFERENCES Student(stuId),
+CONSTRAINT dirctTeaFK2 FOREIGN KEY (comId)REFERENCES ComInfor(comId)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -136,20 +138,24 @@ CONSTRAINT sumFK FOREIGN KEY (stuId)REFERENCES Student(stuId)
 
 -- 实习日志表（Journal）
 create table Journal (
-JourId int(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+Id INT (20)NOT  NULL PRIMARY KEY AUTO_INCREMENT,
 stuId varchar(20) not null comment "学号,对应Student表",
+comId INT (20) NOT NULL ,
 weekNo int NOT NULL comment "实习周数",
-workTime date NOT NULL comment "实习时期",
-mon varchar(250) NOT NULL comment "周一实习内容",
-tue varchar(250) NOT NULL comment "周二实习内容",
-wed varchar(250) NOT NULL comment "周三实习内容",
-thur varchar(250) NOT NULL comment "周四实习内容",
-fri varchar(250) NOT NULL comment "周五实习内容",
+workStart date NOT NULL comment "开始时间",
+workEnd DATE NOT NULL comment'结束时间',
+mon varchar(500) NOT NULL comment "周一实习内容",
+tue varchar(500) NOT NULL comment "周二实习内容",
+wed varchar(500) NOT NULL comment "周三实习内容",
+thu varchar(500) NOT NULL comment "周四实习内容",
+fri varchar(500) NOT NULL comment "周五实习内容",
 status int DEFAULT 0 NULL comment "审核状态（0表示待审核，2表示被退回修改，3表示审核通过）",
 teaId varchar(8) NULL comment "审核教师工号",
 time datetime NULL comment "审核时间",
-KEY jourFK(stuId),
-CONSTRAINT jourFK FOREIGN KEY (stuId)REFERENCES Student(stuId)
+KEY jourFK1(stuId),
+KEY jourFK2(comId),
+CONSTRAINT jourFK1 FOREIGN KEY (stuId)REFERENCES Student(stuId),
+CONSTRAINT jourFK2 FOREIGN KEY (comId)REFERENCES ComInfor(comId)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -166,3 +172,4 @@ insert into Teacher (teaId, teaName, roleId, password) values
 
 insert into Student (stuId, stuName, institutes, major, grade,sex, classes, password)
 values ('201441402213','严伟力','计算机学院','计算机科学与技术','2014级','男','2班','123456');
+

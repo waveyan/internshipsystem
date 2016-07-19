@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block title %}企业信息{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}<!--先执行父模板-->
+{% block page_content %}
+    <h1>请选择您的实习企业
+        <div style="float:right;width:350px"><!--长度-->
+            <form role="form" method="POST" action="/search">
+                <div class="row head">
+                    <div class="col-lg-10"><!--位置-->
+                        <div class="input-group ">
+                            {{ form.key(type="text",class="form-control",placeholder="请先输入企业名称或所在城市",required='') }}
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" id="rearch"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                        </div>
+                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </h1>
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th>企业名称</th>
+            <th>所在城市</th>
+            <th>网址</th>
+            <th>联系电话</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for com in comInfor %}
+            {% if com.status==3 %}
+                <tr>
+                    <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
+                    <td>{{ com.comAddress }}</td>
+                    <td><a href="http://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
+                    <td>{{ com.comPhone }}</td>
+                    <td><a href="{{ url_for('.addInternship',comId=com.comId) }}" class="btn btn-info btn-xs">
+                        <span class="glyphicon glyphicon-plus"></span> 选择</a></td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination,'.selectCom') }}
+        </div>
+    {% endif %}
+{% endblock %}

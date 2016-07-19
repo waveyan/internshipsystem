@@ -1,6 +1,7 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField, TextAreaField, DateTimeField
 from wtforms.validators import Required, URL, Email
+from flask.ext.pagedown.fields import PageDownField
 
 
 class searchform(Form):
@@ -41,3 +42,14 @@ class dirctTeaForm(Form):
     cteaDuty = StringField('职称')
     cteaPhone = StringField('联系电话')
     cteaEmail = StringField('邮箱')
+
+
+class journalForm(Form):
+    workStart = StringField('开始日期', validators=[Required()])
+    weekNo = StringField('周数', validators=[Required()])
+    mon = TextAreaField('周一', validators=[Required()])
+    tue = TextAreaField('周二', validators=[Required()])
+    wed = TextAreaField('周三', validators=[Required()])
+    thu = TextAreaField('周四', validators=[Required()])
+    fri = TextAreaField('周五', validators=[Required()])
+    submit=SubmitField('提交')

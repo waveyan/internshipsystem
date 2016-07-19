@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}我的实习信息{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block page_content %}
+    {% if comInfor %}
+        <table class="table" id="t">
+            <thead>
+            <h1>我的实习日志</h1>
+            <tr>
+                <th>日志名称</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>实习状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for com in comInfor %}
+                <tr>
+                    <td><a href="{{ url_for('.addjournal',comId=com.comId) }}">我在{{ com.comName }}的日子</a></td>
+                    <td>{{ com.start }}</td>
+                    <td>{{ com.end }}</td>
+                    {% if com.internStatus==0 %}
+                        <td>实习中</td>
+                    {% else %}
+                        <td>实习结束</td>
+                    {% endif %}
+                    <td><a href="#">修改</a><a href="#">|删除</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h1>{{ current_user.stuName }}，请先填写您的实习信息。</h1>
+    {% endif %}
+{% endblock %}

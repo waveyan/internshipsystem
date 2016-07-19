@@ -142,7 +142,23 @@ class DirctTea(db.Model):
     cteaDuty = db.Column(db.String(20))
     cteaPhone = db.Column(db.String(15))
     cteaEmail = db.Column(db.String(20))
+    comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
+
+
+class Journal(db.Model):
+    __tablename__ = 'Journal'
+    Id = db.Column(db.Integer, primary_key=True)
+    stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
+    comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
+    weekNo = db.Column(db.Integer, default=1)
+    workStart = db.Column(db.DATE)
+    workEnd = db.Column(db.DATE)
+    mon = db.Column(db.String(500))
+    tue = db.Column(db.String(500))
+    wed = db.Column(db.String(500))
+    thu = db.Column(db.String(500))
+    fri = db.Column(db.String(500))
 
 
 class Permission:
