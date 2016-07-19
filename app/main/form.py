@@ -1,8 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField, TextAreaField, DateTimeField
 from wtforms.validators import Required, URL, Email
-from flask.ext.pagedown.fields import PageDownField
-
 
 class searchform(Form):
     key = StringField(validators=[Required(message='请先输入搜索内容')])
