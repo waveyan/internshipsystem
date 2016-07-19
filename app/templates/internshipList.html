@@ -4,45 +4,49 @@
 {% block title %}我的实习信息{% endblock %}
 {% block head %}{{ super() }}{% endblock %}
 {% block page_content %}
-    <table class="table" id="t">
-        <thead>
-        <h1>我的实习信息
-            <a href="{{url_for('.adcominfor')}}" class="btn btn-info btn-xs">
-                <span class="glyphicon glyphicon-plus"></span> 添加
-            </a>
-        </h1>
-        <tr>
-            <th>企业名称</th>
-            <th>联系电话</th>
-            <th>开始时间</th>
-            <th>结束时间</th>
-            <th>审核状态</th>
-            <th>实习状态</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for com in comInfor %}
+    {% if comInfor %}
+        <table class="table" id="t">
+            <thead>
+            <h1>我的实习信息
+                <a href="{{ url_for('.adcominfor') }}" class="btn btn-info btn-xs">
+                    <span class="glyphicon glyphicon-plus"></span> 添加
+                </a>
+            </h1>
             <tr>
-                <td><a href="{{ url_for('.stuinter',id=com.Id) }}">{{ com.comName }}</a></td>
-                <td>{{ com.comPhone }}</td>
-                <td>{{ com.start }}</td>
-                <td>{{ com.end }}</td>
-                {% if com.status==0 %}
-                    <td>未审核</td>
-                {% elif com.status==1 %}
-                    <td>被退回</td>
-                {% else %}
-                    <td>已审核</td>
-                {% endif %}
-                {% if com.status==0 %}
-                    <td>实习中</td>
-                    <td><a href="#">修改</a><a href="#">|删除</a></td>
-                {% else %}
-                    <td>实习结束</td>
-                {% endif %}
+                <th>企业名称</th>
+                <th>联系电话</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>审核状态</th>
+                <th>实习状态</th>
+                <th>操作</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for com in comInfor %}
+                <tr>
+                    <td><a href="{{ url_for('.stuinter',id=com.Id) }}">{{ com.comName }}</a></td>
+                    <td>{{ com.comPhone }}</td>
+                    <td>{{ com.start }}</td>
+                    <td>{{ com.end }}</td>
+                    {% if com.status==0 %}
+                        <td>未审核</td>
+                    {% elif com.status==1 %}
+                        <td>被退回</td>
+                    {% else %}
+                        <td>已审核</td>
+                    {% endif %}
+                    {% if com.status==0 %}
+                        <td>实习中</td>
+                        <td><a href="#">修改</a><a href="#">|删除</a></td>
+                    {% else %}
+                        <td>实习结束</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h1>{{ current_user.stuName }}，请先填写您的实习信息。</h1>
+    {% endif %}
 {% endblock %}
