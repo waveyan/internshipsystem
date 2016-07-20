@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, session
 from .form import searchform, comform, internshipForm, dirctTeaForm, journalForm
 from . import main
 from ..models import Permission, InternshipInfor, ComInfor, DirctTea, Student, Journal
@@ -26,11 +26,6 @@ def search():
 def students():
     form = searchform()
     return render_template('students.html', form=form, Permission=Permission)
-
-
-@main.route('/studetail', methods=['GET', 'POST'])
-def studetail():
-    return render_template('studetail.html', Permission=Permission)
 
 
 @main.route('/stuinfor', methods=['GET', 'POST'])
@@ -221,12 +216,17 @@ def cominfor():
 @login_required
 def intecompany():
     form = searchform()
+    count = {}
     page = request.args.get('page', 1, type=int)
     pagination = ComInfor.query.join(InternshipInfor).group_by(
         InternshipInfor.comId).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
+    for com in comInfor:
+        pers = db.session.execute('select count(*) as count from InternshipInfor where comId=%s' % com.comId)
+        for p in pers:
+            count[com.comId] = p.count
     return render_template('intecompany.html', form=form, Permission=Permission, pagination=pagination,
-                           comInfor=comInfor)
+                           comInfor=comInfor, count=count)
 
 
 # 实习日志列表
@@ -278,6 +278,34 @@ def myjournal(comId):
         flash('您还没有在此企业的实习日志，马上填写您的实习日志吧！')
         print(comId)
         return redirect(url_for('.addjournal', comId=comId))
+
+
+# 管理员\普通教师\审核教师
+# 学生列表
+@main.route('/studengList/<int:comId>', methods=['GET'])
+@login_required
+def studentList(comId):
+    form = searchform()
+    page = request.args.get('page', 1, type=int)
+    pagination = Student.query.join(InternshipInfor).filter_by(comId=comId).paginate(page, per_page=8, error_out=False)
+    student = pagination.items
+    for stu in student:
+        intern = InternshipInfor.query.filter_by(comId=comId, stuId=stu.stuId).first()
+        session[stu.stuId] = intern.internStatus
+    return render_template('studentList.html', form=form, pagination=pagination, student=student, Permission=Permission,
+                           comId=comId)
+
+
+# 学生的所有信息
+@main.route('/studetail/<int:stuId>/<int:comId>', methods=['GET'])
+@login_required
+def studetail(stuId, comId):
+    student = Student.query.filter_by(stuId=stuId).first()
+    comInfor = ComInfor.query.filter_by(comId=comId).first()
+    internship = InternshipInfor.query.filter_by(stuId=stuId, comId=comId).first()
+    dirctTea = DirctTea.query.filter_by(stuId=stuId, comId=comId).all()
+    return render_template('stuIntedetail.html', Permission=Permission, student=student, comInfor=comInfor,
+                           internship=internship, stuId=stuId, comId=comId, dirctTea=dirctTea)
 
 
 # 查询最大的企业Id

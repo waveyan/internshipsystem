@@ -86,7 +86,7 @@ class ComInfor(db.Model):
     comFax = db.Column(db.String(20))
     comDate = db.Column(db.DATETIME, default=datetime.utcnow)
     status = db.Column(db.Integer, default=0)
-    student = db.relationship('InternshipInfor', backref='cominfor', lazy='dynamic')
+    internshipinfor = db.relationship('InternshipInfor', backref='cominfor', lazy='dynamic')
 
     # 创建大量虚拟信息
     @staticmethod
