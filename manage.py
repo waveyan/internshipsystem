@@ -2,7 +2,7 @@
 import os
 from app import create_app, db
 from app.models import Teacher, Role, Student, ComInfor, Journal, InternshipInfor
-from flask.ext.script import Manager, Shell
+from flask.ext.script import Manager, Shell, Server
 from flask.ext.migrate import Migrate, MigrateCommand
 
 app = create_app('default')
@@ -25,6 +25,12 @@ def test():
     import unittest
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+# Turn on debugger by default and reloader
+manager.add_command("runserver", Server(
+    # use_debugger = True,
+    # use_reloader = True,
+    host = '0.0.0.0') )
 
 
 if __name__ == '__main__':
