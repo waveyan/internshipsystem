@@ -13,7 +13,7 @@
         }
     </style>
 {% endblock %}<!--先执行父模板-->
-发
+
 {% block page_content %}
     <h1>实习企业信息
         <div style="float:right;width:350px"><!--长度-->
@@ -89,28 +89,34 @@
     <table class="table" id="t">
         <thead>
         <tr>
-            <th>企业名称</th>
-            <th>所在城市</th>
-            <th>企业网址</th>
-            <th>联系电话</th>
-            <th>累计实习人次</th>
+            <th>姓名</th>
+            <th>学号</th>
+            <th>年级</th>
+            <th>专业班级</th>
+            <th>实习状态</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody>
-        {% for com in comInfor %}
+        {% for stu in student %}
             <tr>
-                <td><a href="{{ url_for('.studentList',comId=com.comId) }}">{{ com.comName }}</a></td>
-                <td>{{ com.comAddress }}</td>
-                <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
-                <td>{{ com.comPhone }}</td>
-                <td>{{ count[com.comId] }}</td>
+                <td><a href="{{ url_for('.studetail',stuId=stu.stuId,comId=comId) }}">{{ stu.stuName }}</a></td>
+                <td>{{ stu.stuId }}</td>
+                <td>{{ stu.grade }}</td>
+                <td>{{ stu.major }}{{ stu.classes }}</td>
+                {% if session[stu.stuId] %}
+                    <td>实习结束</td>
+                {% else %}
+                    <td>实习中</td>
+                {% endif %}
+                <td><a>审核</a>|<a>删除</a></td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
     {% if pagination %}
         <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.intecompany') }}
+            {{ macros.pagination_widget(pagination,'.studentList',comId=comId) }}
         </div>
     {% endif %}
 {% endblock %}
