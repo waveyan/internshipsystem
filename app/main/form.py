@@ -44,10 +44,10 @@ class dirctTeaForm(Form):
 
 class journalForm(Form):
     workStart = StringField('开始日期', validators=[Required()])
-    weekNo = StringField('周数', validators=[Required()])
-    mon = TextAreaField('周一', validators=[Required()])
-    tue = TextAreaField('周二', validators=[Required()])
-    wed = TextAreaField('周三', validators=[Required()])
-    thu = TextAreaField('周四', validators=[Required()])
-    fri = TextAreaField('周五', validators=[Required()])
+    weekNo = StringField('周数', validators=[Required(message='此项不能为空')])
+    mon = TextAreaField('周一', validators=[Required(message='此项不能为空')])
+    tue = TextAreaField('周二', validators=[Required(message='此项不能为空')])
+    wed = TextAreaField('周三', validators=[Required(message='此项不能为空')])
+    thu = TextAreaField('周四', validators=[Required(message='此项不能为空')])
+    fri = TextAreaField('周五', validators=[Required(message='此项不能为空')])
     submit=SubmitField('提交')

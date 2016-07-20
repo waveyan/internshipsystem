@@ -20,7 +20,7 @@
 
             {% for com in comInfor %}
                 <tr>
-                    <td><a href="{{ url_for('.addjournal',comId=com.comId) }}">我在{{ com.comName }}的日子</a></td>
+                    <td><a href="{{ url_for('.myjournal',comId=com.comId) }}">我在{{ com.comName }}的日子</a></td>
                     <td>{{ com.start }}</td>
                     <td>{{ com.end }}</td>
                     {% if com.internStatus==0 %}

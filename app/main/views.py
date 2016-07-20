@@ -234,8 +234,8 @@ def intecompany():
 @login_required
 def myjournalList():
     comInfor = db.session.execute(
-        'select start,end,i.comId comId,comName from InternshipInfor i,ComInfor c where i.comId=c.comId'
-        ' order BY i.internStatus  ')
+        'select DISTINCT start,end,i.comId comId,comName from InternshipInfor i,ComInfor c,Journal j where i.comId=c.comId and i.stuId=%s'
+        ' and j.stuId=i.stuId order BY i.internStatus  ' % current_user.stuId)
     return render_template('myJournalList.html', comInfor=comInfor, Permission=Permission)
 
 
@@ -254,11 +254,30 @@ def addjournal(comId):
         try:
             db.session.commit()
             flash('提交成功！')
+            return redirect(url_for('.myjournal', comId=comId))
         except Exception as e:
             db.session.rollback()
             print('日志提交失败：', e)
             flash('提交失败！')
     return render_template('addjournal.html', Permission=Permission, form=form)
+
+
+# 个人日志详情
+@main.route('/myjournal/<int:comId>', methods=['GET'])
+@login_required
+def myjournal(comId):
+    print(comId)
+    j = Journal.query.filter_by(stuId=current_user.stuId, comId=comId).count()
+    if j > 0:
+        student = Student.query.filter_by(stuId=current_user.stuId).first()
+        com = ComInfor.query.filter_by(comId=comId).first()
+        journal = db.session.execute('select * from Journal where stuId=%s and comId=%s' % (current_user.stuId, comId))
+        return render_template('myjournal.html', Permission=Permission, journal=journal, student=student, com=com)
+    else:
+
+        flash('您还没有在此企业的实习日志，马上填写您的实习日志吧！')
+        print(comId)
+        return redirect(url_for('.addjournal', comId=comId))
 
 
 # 查询最大的企业Id
