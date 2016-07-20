@@ -84,7 +84,7 @@ class ComInfor(db.Model):
     comPhone = db.Column(db.String(20))
     comEmail = db.Column(db.String(20))
     comFax = db.Column(db.String(20))
-    comDate = db.Column(db.DATETIME, default=datetime.utcnow)
+    comDate = db.Column(db.DATETIME, default=datetime.now)
     status = db.Column(db.Integer, default=0)
     student = db.relationship('InternshipInfor', backref='cominfor', lazy='dynamic')
 
