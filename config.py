@@ -18,7 +18,7 @@ class Config:
     @staticmethod
     def init_app(app):
         os.environ.setdefault('DEV_DATABASE_URL', 'mysql+pymysql://intern:intern@172.28.89.13/InternshipSystem')
-        os.environ.setdefault('local_ip', '172.27.33.19')
+        # os.environ.setdefault('local_ip', '172.27.33.19')
 
 
 class DevelopmentConfig(Config):
