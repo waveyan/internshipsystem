@@ -99,11 +99,15 @@
         <tbody>
         {% for com in comInfor %}
             <tr>
-                <td><a href="{{ url_for('.studentList',comId=com.comId) }}">{{ com.comName }}</a></td>
+                <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
                 <td>{{ com.comAddress }}</td>
                 <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
                 <td>{{ com.comPhone }}</td>
-                <td>{{ count[com.comId] }}</td>
+                {% if current_user.roleId==0 %}
+                    <td>{{ com.students }}</td>
+                {% else %}
+                    <td><a href="{{ url_for('.studentList',comId=com.comId) }}">{{ com.students }}</a></td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>

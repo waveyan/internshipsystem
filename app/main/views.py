@@ -72,7 +72,7 @@ def internshipList():
         return redirect(url_for('.adcominfor'))
     else:
         comInfor = db.session.execute('select DISTINCT * from InternshipInfor i,ComInfor c where i.comId=c.comId'
-                                      ' order BY i.internStatus  ')
+                                      ' and i.stuId=%s order BY i.internStatus  ' % current_user.stuId)
         return render_template('internshipList.html', comInfor=comInfor, Permission=Permission)
 
 
@@ -159,6 +159,14 @@ def addInternship(comId):
                     break
             db.session.add(internship)
             db.session.commit()
+            # 更新累计实习人数
+            cominfor = ComInfor.query.filter_by(comId=comId).first()
+            if cominfor.students:
+                cominfor.students = int(cominfor.students) + 1
+            else:
+                cominfor.students = 1
+            db.session.add(cominfor)
+            db.session.commit()
             flash('提交实习信息成功！')
             return redirect(url_for('.internshipList'))
     except Exception as e:
@@ -181,25 +189,14 @@ def stuinter(id):
                            dirctTea=dirctTea, internship=internship, student=student)
 
 
-# 企业列表
-@main.route('/company', methods=['GET', 'POST'])
-@login_required
-def company():
-    form = searchform()
-    page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query.filter_by(status=3).paginate(page, per_page=8, error_out=False)
-    comInfor = pagination.items
-    return render_template('company.html', form=form, Permission=Permission, comInfor=comInfor, pagination=pagination)
-
-
 # 审核时的企业列表
-@main.route('/notchoose', methods=['GET', 'POST'])
-def notchoose():
-    page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query.filter_by(status=3).paginate(page, per_page=8, error_out=False)
-    comInfor = pagination.items
-    return render_template('_notchoose.html',
-                           Permission=Permission, comInfor=comInfor, pagination=pagination)
+# @main.route('/notchoose', methods=['GET', 'POST'])
+# def notchoose():
+#     page = request.args.get('page', 1, type=int)
+#     pagination = ComInfor.query.filter_by(status=3).paginate(page, per_page=8, error_out=False)
+#     comInfor = pagination.items
+#     return render_template('_notchoose.html',
+#                            Permission=Permission, comInfor=comInfor, pagination=pagination)
 
 
 # 企业详细信息
@@ -216,17 +213,23 @@ def cominfor():
 @login_required
 def intecompany():
     form = searchform()
-    count = {}
     page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query.join(InternshipInfor).group_by(
-        InternshipInfor.comId).paginate(page, per_page=8, error_out=False)
+    pagination = ComInfor.query.filter_by(status=3).order_by(ComInfor.students.desc()).paginate(page, per_page=8,
+                                                                                                error_out=False)
     comInfor = pagination.items
-    for com in comInfor:
-        pers = db.session.execute('select count(*) as count from InternshipInfor where comId=%s' % com.comId)
-        for p in pers:
-            count[com.comId] = p.count
     return render_template('intecompany.html', form=form, Permission=Permission, pagination=pagination,
-                           comInfor=comInfor, count=count)
+                           comInfor=comInfor)
+
+
+# # 企业列表
+# @main.route('/company', methods=['GET', 'POST'])
+# @login_required
+# def company():
+#     form = searchform()
+#     page = request.args.get('page', 1, type=int)
+#     pagination = ComInfor.query.filter_by(status=3).paginate(page, per_page=8, error_out=False)
+#     comInfor = pagination.items
+#     return render_template('company.html', form=form, Permission=Permission, comInfor=comInfor, pagination=pagination)
 
 
 # 实习日志列表
@@ -234,8 +237,8 @@ def intecompany():
 @login_required
 def myjournalList():
     comInfor = db.session.execute(
-        'select DISTINCT start,end,i.comId comId,comName from InternshipInfor i,ComInfor c,Journal j where i.comId=c.comId and i.stuId=%s'
-        ' and j.stuId=i.stuId order BY i.internStatus  ' % current_user.stuId)
+        'select DISTINCT start,end,i.comId comId,comName from InternshipInfor i,ComInfor c where i.comId=c.comId and i.stuId=%s'
+        ' order BY i.internStatus  ' % current_user.stuId)
     return render_template('myJournalList.html', comInfor=comInfor, Permission=Permission)
 
 

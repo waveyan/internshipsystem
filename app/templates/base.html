@@ -26,9 +26,9 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     {% if current_user.is_authenticated %}
-                        {% if current_user.can(Permission.COM_INFOR_SEARCH) %}
-                            <li><a href="{{ url_for('main.company') }}">企业信息</a></li>
-                        {% endif %}
+{#                        {% if current_user.can(Permission.COM_INFOR_SEARCH) %}#}
+{#                            <li><a href="{{ url_for('main.company') }}">企业信息</a></li>#}
+{#                        {% endif %}#}
                         {% if current_user.can(Permission.INTERNSHIP_LIST) %}
                             <li><a href="{{ url_for('main.intecompany') }}">企业实习情况</a></li>
                         {% endif %}

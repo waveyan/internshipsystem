@@ -76,6 +76,7 @@ comStaff INT(10) NOT NULL comment "员工人数",
 comPhone varchar(20) NOT NULL comment "联系电话",
 comEmail varchar(20) comment "公司邮箱",
 comFax varchar(20) NOT NULL comment "公司传真",
+students INT (20) NOT  NULL commint'累计实习人数',
 Status int DEFAULT 0 NULL comment "审核状态（0表示待审核，2表示被退回修改，3表示审核通过）"
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
