@@ -1,0 +1,84 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}学生实习工作日志{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block body %}
+    <table align="center" border="2" class="table-bordered">
+        <caption>
+            <h1>学生实习工作总结(待审核)
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                            data-toggle="dropdown">编辑<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                       <li><a href="#">审核通过</a></li>
+                        <li><a href="#">导出到Word</a></li>
+                        <li><a href="#">修改</a></li>
+                        <li><a href="#">删除</a></li>
+                    </ul>
+                </div>
+            </h1>
+        </caption>
+        <tr>
+            <th height="50" width="100">专业班级</th>
+            <td height="50" width="450">1234567894</td>
+            <th height="50" width="100">实训科目</th>
+            <td height="50" width="450">5464565</td>
+        </tr>
+        <tr>
+            <th height="50">姓名</th>
+            <td height="50">小龙</td>
+            <th height="50">学号</th>
+            <td height="50">5464565</td>
+        </tr>
+        <tr>
+            <th height="50">实习企业</th>
+            <td height="50">小龙</td>
+            <th height="50">实习地点</th>
+            <td height="50">5464565</td>
+        </tr>
+        <tr>
+            <th height="50">实习时间</th>
+            <td height="50" align="center" colspan="3">年月日</td>
+        </tr>
+    </table>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                一实习目的
+            </h3>
+        </div>
+        <div class="panel-body">
+            面板内容
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                一、实习目的
+            </h3>
+        </div>
+        <div class="panel-body">
+            面板内容
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                二、实习内容和过程
+            </h3>
+        </div>
+        <div class="panel-body">
+            面板内容
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                三、实习总结和体会
+            </h3>
+        </div>
+        <div class="panel-body">
+            面板内容
+        </div>
+    </div>
+{% endblock %}

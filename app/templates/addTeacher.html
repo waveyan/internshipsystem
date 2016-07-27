@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}添加企业信息{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block page_content %}
+    <div class="page-header">
+        <h1>欢迎您，请填写教师信息</h1>
+    </div>
+    {{ wtf.quick_form(form) }}
+    <br><br><br>
+{% endblock %}
