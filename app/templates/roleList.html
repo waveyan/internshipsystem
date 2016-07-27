@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}系统角色{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}<!--先执行父模板-->
+
+{% block page_content %}
+    <h1>系统角色<a href="{{ url_for('.addRole') }}" class="btn btn-info btn-xs">
+        <span class="glyphicon glyphicon-plus"></span>添加</a>
+    </h1>
+    <p></p>
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th>角色号</th>
+            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+            <th>角色名称</th>
+            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+            <th>角色描述</th>
+            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+            <th>权限位</th>
+            <th>&nbsp;&nbsp;&nbsp;操作</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for r in role %}
+            <tr>
+                <td>{{ r.roleId }}</td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>{{ r.roleName }}</td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>{{ r.roleDescribe }}</td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td>{{ r.permission }}</td>
+                <td><a>修改</a>|<a>删除</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

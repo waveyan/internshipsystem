@@ -2,28 +2,13 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
 
-{% block title %}企业信息{% endblock %}
+{% block title %}实习学生{% endblock %}
 {% block head %}
     {{ super() }}
     <script src="/static/JS/jquery-2.1.4.min.js"></script>
-    <script>
-        function loadXMLDoc(path) {
-            var xmlhttp;
-            if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-                xmlhttp = new XMLHttpRequest();
-            }
-            else {// code for IE6, IE5
-                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            xmlhttp.onreadystatechange = function () {
-                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    document.getElementById("t").innerHTML = xmlhttp.responseText;
-                }
-            }
-            xmlhttp.open("GET", path, true);
-            xmlhttp.send();
-        }
-    </script>
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
     <script type="text/javascript">
         $(document).ready(function () {
             $("#rearch").click(function () {
@@ -32,30 +17,30 @@
         });
     </script>
 {% endblock %}<!--先执行父模板-->
+
 {% block page_content %}
-    <h1>企业信息
+    <h1>学生用户
         {% if current_user.can(Permission.COM_INFOR_EDIT) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('main.adcominfor') }}">添加企业信息</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">导入企业Excel表</a></li>
-                    <li class="divider"></li>
                     {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                        <li><a onclick="loadXMLDoc('/choose')">批量审核</a></li>
+                        <li><a href="{{ url_for('.addStudent') }}">添加</a></li>
+                        <li><a href="#">批量添加</a></li>
+                        <li><a href="#">批量设置角色</a></li>
+                        <li><a href="#">批量删除</a></li>
+                        </ul>
+                        </div>
                     {% endif %}
-                </ul>
-            </div>
         {% endif %}
         <div style="float:right;width:350px"><!--长度-->
             <form role="form" method="POST" action="/search">
                 <div class="row head">
                     <div class="col-lg-10"><!--位置-->
                         <div class="input-group ">
-                            {{ form.key(type="text",class="form-control",placeholder="请先输入企业名称或所在城市",required='') }}
+                            {{ form.key(type="text",class="form-control",placeholder="请先输入关键字",required='') }}
                         <span class="input-group-btn">
                             <button class="btn btn-info" type="button" id="rearch"><span
                                     class="glyphicon glyphicon-search"></span></button>
@@ -67,10 +52,38 @@
             </form>
         </div>
     </h1>
-    {% include '_notchoose.html' %}
+    <p></p>
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th>姓名</th>
+            <th>学号</th>
+            <th>性别</th>
+            <th>年级</th>
+            <th>专业班级</th>
+            <th>系统角色</th>
+            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for stu in student %}
+            <tr>
+                <td>{{ stu.stuName }}</td>
+                <td>{{ stu.stuId }}</td>
+                <td>{{ stu.sex }}</td>
+                <td>{{ stu.grade }}</td>
+                <td>{{ stu.major }}{{ stu.classes }}</td>
+                <td>{{ session[stu.stuId] }}</td>
+                <td><a>修改</a>|<a>设置角色</a>|<a>删除</a></td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
     {% if pagination %}
         <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.company') }}
+            {{ macros.pagination_widget(pagination,'.stuList',comId=comId) }}
         </div>
     {% endif %}
 {% endblock %}

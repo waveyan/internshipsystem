@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}我的实习信息{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block page_content %}
+    <table class="table" id="t">
+        <thead>
+        <h1>{{ stuName }}
+            {% if journal %}
+                的实习日志
+            {% else %}
+                的实习企业
+            {% endif %}
+            <a href="{{ url_for('.addcominfor') }}" class="btn btn-info btn-xs">
+                <span class="glyphicon glyphicon-plus"></span> 添加
+            </a>
+        </h1>
+        <tr>
+            {% if journal %}
+                <th>日志名称</th>
+            {% else %}
+                <th>企业名称</th>
+                <th>联系电话</th>
+            {% endif %}
+
+
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>审核状态</th>
+            <th>实习状态</th>
+            {% if current_user.can(Permission.STU_INFOR_EDIT) %}
+                <th>操作</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for com in comInfor %}
+            <tr>
+                {% if journal %}
+                    <td><a href="{{ url_for('.stuJour',stuId=stuId,comId=com.comId) }}">{{ stuName }}在{{ com.comName }}的日子</a>
+                    </td>
+                {% else %}
+                    <td><a href="{{ url_for('.studetail',stuId=stuId,comId=com.comId) }}">{{ com.comName }}</a></td>
+                    <td>{{ com.comPhone }}</td>
+                {% endif %}
+
+                <td>{{ com.start }}</td>
+                <td>{{ com.end }}</td>
+                {% if com.internCheck==0 %}
+                    <td>未审核</td>
+                {% elif com.internCheck==1 %}
+                    <td>被退回</td>
+                {% else %}
+                    <td>已审核</td>
+                {% endif %}
+                {% if com.internStatus==0 %}
+                    <td>实习中</td>
+                {% else %}
+                    <td>实习结束</td>
+                {% endif %}
+                {% if current_user.can(Permission.STU_INFOR_EDIT) %}
+                    <td>
+                        <a href="#">修改</a>|
+                        {% if current_user.can(Permission.STU_INFOR_CHECK) and com.internCheck==0 %}
+                            <a href="#">审核</a>|
+                        {% endif %}
+                        <a href="#">|删除</a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

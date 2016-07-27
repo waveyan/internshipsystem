@@ -2,20 +2,24 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
 
-{% block title %}实习企业信息{% endblock %}
+{% block title %}实习学生{% endblock %}
 {% block head %}
     {{ super() }}
     <script src="/static/JS/jquery-2.1.4.min.js"></script>
-    <style>
-        li {
-            float: left;
-            list-style: none;
-        }
-    </style>
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#rearch").click(function () {
+                $(".rearchSubmit").click();
+            });
+        });
+    </script>
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
-    <h1>实习企业信息
+    <h1>{{ comName }}<h4>公司实习状况
         <div style="float:right;width:350px"><!--长度-->
             <form role="form" method="POST" action="/search">
                 <div class="row head">
@@ -33,58 +37,6 @@
             </form>
         </div>
     </h1>
-    &nbsp;
-    <li class="dropdown">过滤条件：
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">公司名称<span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="#">按拼音升序排列</a></li>
-            <li class="divider"></li>
-            <li><a href="#">按拼音降序序排列</a></li>
-        </ul>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    </li>
-    <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">地区<span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="#">按拼音升序排列</a></li>
-            <li class="divider"></li>
-            <li><a href="#">按拼音降序序排列</a></li>
-        </ul>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    </li>
-    <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">人数<span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="#">按人数升序排列</a></li>
-            <li class="divider"></li>
-            <li><a href="#">按人数降序序排列</a></li>
-        </ul>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    </li>
-    <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">专业<span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="#">计算机科学与技术</a></li>
-            <li class="divider"></li>
-            <li><a href="#">软件工程</a></li>
-            <li class="divider"></li>
-            <li><a href="#">网络工程</a></li>
-        </ul>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    </li>
-    <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">年级<span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="#">2013级</a></li>
-            <li class="divider"></li>
-            <li><a href="#">2012级</a></li>
-        </ul>
-    </li>
     <p></p>
     <table class="table" id="t">
         <thead>
@@ -104,13 +56,16 @@
                 <td>{{ stu.stuId }}</td>
                 <td>{{ stu.grade }}</td>
                 <td>{{ stu.major }}{{ stu.classes }}</td>
+                <!--
+                <td>1</td>
+                -->
                 {% if session[stu.stuId] %}
                     <td>实习结束</td>
                 {% else %}
                     <td>实习中</td>
                 {% endif %}
                 <td><a>审核</a>|<a>删除</a></td>
-            </tr>
+                </tr>
         {% endfor %}
         </tbody>
     </table>

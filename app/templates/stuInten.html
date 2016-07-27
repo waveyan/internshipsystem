@@ -6,7 +6,7 @@
 {% block page_content %}
     <table align="center" border="2" class="table-bordered">
         <caption>
-            <h1>学生实习信息
+            <h1>我的实习信息
                 <div class="btn-group">
                     <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                             data-toggle="dropdown">编辑<span class="caret"></span>
@@ -114,7 +114,7 @@
                         <td height="50">{{ tea.teaName }}</td>
                         <td height="50">{{ tea.teaDuty }}</td>
                         <td height="50">{{ tea.teaPhone }}</td>
-                        <td height="50" colspan="2">{{ dirctTea[0].teaEmail }}</td>
+                        <td height="50" colspan="2">{{ tea.teaEmail }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}

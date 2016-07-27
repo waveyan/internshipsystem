@@ -36,16 +36,14 @@
         </thead>
         <tbody>
         {% for com in comInfor %}
-            {% if com.status==3 %}
-                <tr>
-                    <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
-                    <td>{{ com.comAddress }}</td>
-                    <td><a href="http://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
-                    <td>{{ com.comPhone }}</td>
-                    <td><a href="{{ url_for('.addInternship',comId=com.comId) }}" class="btn btn-info btn-xs">
-                        <span class="glyphicon glyphicon-plus"></span> 选择</a></td>
-                </tr>
-            {% endif %}
+            <tr>
+                <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
+                <td>{{ com.comAddress }}</td>
+                <td><a href="http://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
+                <td>{{ com.comPhone }}</td>
+                <td><a href="{{ url_for('.addInternship',comId=com.comId) }}" class="btn btn-info btn-xs">
+                    <span class="glyphicon glyphicon-plus"></span>选择</a></td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>

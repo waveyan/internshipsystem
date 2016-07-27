@@ -8,7 +8,7 @@
         <table class="table" id="t">
             <thead>
             <h1>我的实习信息
-                <a href="{{ url_for('.adcominfor') }}" class="btn btn-info btn-xs">
+                <a href="{{ url_for('.addcominfor') }}" class="btn btn-info btn-xs">
                     <span class="glyphicon glyphicon-plus"></span> 添加
                 </a>
             </h1>
@@ -29,9 +29,9 @@
                     <td>{{ com.comPhone }}</td>
                     <td>{{ com.start }}</td>
                     <td>{{ com.end }}</td>
-                    {% if com.status==0 %}
+                    {% if com.comCheck==0 %}
                         <td>未审核</td>
-                    {% elif com.status==1 %}
+                    {% elif com.comCheck==1 %}
                         <td>被退回</td>
                     {% else %}
                         <td>已审核</td>

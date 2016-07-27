@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block title %}实习学生{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/JS/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#rearch").click(function () {
+                $(".rearchSubmit").click();
+            });
+        });
+    </script>
+{% endblock %}<!--先执行父模板-->
+
+{% block page_content %}
+    <h1>
+        {% if journal %}
+            学生实习日志
+        {% else %}
+            学生实习信息
+        {% endif %}
+        {% if current_user.can(Permission.STU_INFOR_EDIT) %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                        data-toggle="dropdown">编辑<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    {% if current_user.can(Permission.STU_INFOR_CHECK) %}
+                        <li><a href="#" onclick="loadXMLDoc('/allcheck')">批量审核</a></li>
+                        <li><a href="#">批量删除</a></li>
+                        </ul>
+                        </div>
+                    {% endif %}
+
+        {% endif %}
+        <div style="float:right;width:350px"><!--长度-->
+            <form role="form" method="POST" action="/search">
+                <div class="row head">
+                    <div class="col-lg-10"><!--位置-->
+                        <div class="input-group ">
+                            {{ form.key(type="text",class="form-control",placeholder="请先输入企业名称或所在城市",required='') }}
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" id="rearch"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                        </div>
+                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </h1>
+    <p></p>
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th>姓名</th>
+            <th>学号</th>
+            <th>年级</th>
+            <th>专业班级</th>
+            {% if journal %}
+                <th>日志数</th>
+            {% else %}
+                <th>实习状态</th>
+            {% endif %}
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for stu in student %}
+            <tr>
+                {% if journal %}
+                    <td><a href="{{ url_for('.comJourList',id=stu.stuId) }}"> {{ stu.stuName }}</a></td>
+                {% else %}
+                    <td><a href="{{ url_for('.stuInternList',id=stu.stuId) }}"> {{ stu.stuName }}</a></td>
+                {% endif %}
+                <td>{{ stu.stuId }}</td>
+                <td>{{ stu.grade }}</td>
+                <td>{{ stu.major }}{{ stu.classes }}</td>
+                {% if session[stu.stuId] %}
+                    <td>&nbsp;&nbsp;实习中&nbsp;&nbsp;</td> 
+                {% else %}
+                    <td>&nbsp;&nbsp;实习结束&nbsp;&nbsp;</td> 
+                {% endif %}
+                <!-- 
+                <td>&nbsp;&nbsp;{{ session[stu.stuId] }}&nbsp;&nbsp;</td> 
+                -->
+                <td><a>审核</a>|<a>删除</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination,'.stuList') }}
+        </div>
+    {% endif %}
+{% endblock %}

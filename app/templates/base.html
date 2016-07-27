@@ -1,5 +1,4 @@
 {% extends "bootstrap/base.html" %}
-
 {% block title %}Flasky{% endblock %}
 
 {% block head %}
@@ -7,8 +6,58 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link href="/static/CSS/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/JS/bootstrap.min.js" rel="stylesheet">
     <script src="/static/JS/jquery-2.1.4.min.js"></script>
     <script src="/static/JS/jquery.min.js"></script>
+    <style type="text/css">
+        .dropdown-submenu {
+            position: relative;
+        }
+
+        .dropdown-submenu > .dropdown-menu {
+            top: 0;
+            left: 100%;
+            margin-top: -6px;
+            margin-left: -1px;
+            -webkit-border-radius: 0 6px 6px 6px;
+            -moz-border-radius: 0 6px 6px;
+            border-radius: 0 6px 6px 6px;
+        }
+
+        .dropdown-submenu:hover > .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-submenu > a:after {
+            display: block;
+            content: " ";
+            float: right;
+            width: 0;
+            height: 0;
+            border-color: transparent;
+            border-style: solid;
+            border-width: 5px 0 5px 5px;
+            border-left-color: #ccc;
+            margin-top: 5px;
+            margin-right: -10px;
+        }
+
+        .dropdown-submenu:hover > a:after {
+            border-left-color: #fff;
+        }
+
+        .dropdown-submenu.pull-left {
+            float: none;
+        }
+
+        .dropdown-submenu.pull-left > .dropdown-menu {
+            left: -100%;
+            margin-left: 10px;
+            -webkit-border-radius: 6px 0 6px 6px;
+            -moz-border-radius: 6px 0 6px 6px;
+            border-radius: 6px 0 6px 6px;
+        }
+    </style>
 {% endblock %}
 
 {% block navbar %}
@@ -26,11 +75,8 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     {% if current_user.is_authenticated %}
-{#                        {% if current_user.can(Permission.COM_INFOR_SEARCH) %}#}
-{#                            <li><a href="{{ url_for('main.company') }}">企业信息</a></li>#}
-{#                        {% endif %}#}
                         {% if current_user.can(Permission.INTERNSHIP_LIST) %}
-                            <li><a href="{{ url_for('main.intecompany') }}">企业实习情况</a></li>
+                            <li><a href="{{ url_for('main.interncompany') }}">企业实习情况</a></li>
                         {% endif %}
                         <li><a href="{{ url_for('main.statistics') }}">统计</a></li>
                         {% if current_user.roleId==0 %}
@@ -41,7 +87,8 @@
 
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ url_for('main.internshipList') }}">实习信息<span class="badge">0</span></a>
+                                    <li><a href="{{ url_for('main.myInternList') }}">实习信息<span
+                                            class="badge">0</span></a>
                                     </li>
                                     <li class="divider"></li>
                                     <li><a href="{{ url_for('main.myjournalList') }}">实习工作日志<span class="badge">0</span></a>
@@ -59,9 +106,9 @@
                                         学生信息 <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="#">实习信息</a></li>
+                                        <li><a href="{{ url_for('main.stuList') }}">实习信息</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="#">实习工作日志</a></li>
+                                        <li><a href="{{ url_for('main.stuJourList' ) }}">实习工作日志</a></li>
                                         <li class="divider"></li>
                                         <li><a href="#">实习工作总结</a></li>
                                         <li class="divider"></li>
@@ -77,11 +124,18 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     {% if current_user.can(Permission.STU_INFOR_IMPORT)or current_user.can(permission.TEA_INFOR_IMPORT) %}
-                                        <li><a href="#">用户管理</a></li>
+                                        <li class="dropdown-submenu">
+                                            <a tabindex="-1" href="#">用户管理</a>
+                                            <ul class="dropdown-menu">
+                                                <li><a tabindex="-1" href="{{ url_for('.stuUserList') }}">学生用户</a></li>
+                                                <li class="divider"></li>
+                                                <li><a tabindex="-1" href="{{ url_for('.teaUserList') }}">教师用户</a></li>
+                                            </ul>
+                                        </li>
                                     {% endif %}
                                     {% if current_user.can(Permission.PERMIS_MANAGE) %}
                                         <li class="divider"></li>
-                                        <li><a href="#">权限管理</a></li>
+                                        <li><a href="{{ url_for('.roleList') }}">权限管理</a></li>
                                     {% endif %}
                                 </ul>
                             </li>

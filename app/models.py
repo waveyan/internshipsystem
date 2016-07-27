@@ -15,6 +15,7 @@ class Role(db.Model):
     roleName = db.Column(db.String(5), unique=True)
     permission = db.Column(db.String(8), unique=True)
     # backref='role'可代替Teacher的roleId
+    roleDescribe = db.Column(db.String(200))
     teacher = db.relationship('Teacher', backref='role', lazy='dynamic')
     student = db.relationship('Student', backref='role', lazy='dynamic')
 
@@ -26,7 +27,8 @@ class Teacher(db.Model, UserMixin):
     __tablename__ = 'Teacher'
     teaId = db.Column(db.String(10), primary_key=True)
     teaName = db.Column(db.String(4), index=True)
-    roleId = db.Column(db.Integer, db.ForeignKey('Role.roleId'))
+    teaSex = db.Column(db.String(2))
+    roleId = db.Column(db.Integer, db.ForeignKey('Role.roleId'), default=1)
     password = db.Column(db.String(10))
 
     def get_id(self):
@@ -51,10 +53,10 @@ class Student(db.Model, UserMixin):
     grade = db.Column(db.String(10))
     sex = db.Column(db.String(2))
     classes = db.Column(db.String(10))
-    inforStatus = db.Column(db.Integer)
-    jourStatus = db.Column(db.Integer)
-    sumStatus = db.Column(db.Integer)
-    roleId = db.Column(db.Integer, db.ForeignKey('Role.roleId'))
+    inforCheck = db.Column(db.Integer, default=0)
+    jourCheck = db.Column(db.Integer)
+    sumCheck = db.Column(db.Integer)
+    roleId = db.Column(db.Integer, db.ForeignKey('Role.roleId'), default=0)
     password = db.Column(db.String(10))
 
     def get_id(self):
@@ -86,7 +88,7 @@ class ComInfor(db.Model):
     comFax = db.Column(db.String(20))
     comDate = db.Column(db.DATETIME, default=datetime.now)
     students = db.Column(db.Integer, default=0)
-    status = db.Column(db.Integer, default=0)
+    comCheck = db.Column(db.Integer, default=0)
     internshipinfor = db.relationship('InternshipInfor', backref='cominfor', lazy='dynamic')
 
     # 创建大量虚拟信息
@@ -124,9 +126,9 @@ class InternshipInfor(db.Model):
     end = db.Column(db.Date)
     internStatus = db.Column(db.Integer, index=True)
     time = db.Column(db.DATETIME, default=datetime.now())
-    teaId = db.Column(db.String(8))
-    status = db.Column(db.Integer, default=0)
-    statusTime = db.Column(db.DATETIME)
+    icheckTeaId = db.Column(db.String(8))
+    internCheck = db.Column(db.Integer, default=0)
+    icheckTime = db.Column(db.DATETIME)
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
 
@@ -160,6 +162,9 @@ class Journal(db.Model):
     wed = db.Column(db.String(500))
     thu = db.Column(db.String(500))
     fri = db.Column(db.String(500))
+    jcheckTeaId = db.Column(db.String(8))
+    jourCheck = db.Column(db.Integer, default=0)
+    jcheckTime = db.Column(db.DATETIME)
 
 
 class Permission:
@@ -202,11 +207,11 @@ class Permission:
     # 学生实习总结审核
     STU_SUM_CHECK = 0X0010000
 
-    # 学生实习成绩查看
+    # 学生实习成果查看
     STU_SCO_SEARCH = 0X0020000
-    # 学生实习成绩编辑
+    # 学生实习成果编辑
     STU_SCO_EDIT = 0X0040000
-    # 学生实习成绩导出
+    # 学生实习成果导出
     STU_SCO_EXPORT = 0X0080000
 
     # 管理
@@ -217,5 +222,3 @@ class Permission:
     TEA_INFOR_IMPORT = 0X0400000
     # 权限管理
     PERMIS_MANAGE = 0X0800000
-    # # 下拉框管理,改为自动生成
-    # LIST_MANAGE = 0X1000000
