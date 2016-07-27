@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request, session
 from .form import searchform, comform, internshipForm, dirctTeaForm, journalForm, stuForm, teaForm, permissionForm
 from . import main
-from ..models import Permission, InternshipInfor, ComInfor, DirctTea, Student, Journal, Role, Teacher
+from ..models import Permission, InternshipInfor, ComInfor, DirctTea, Student, Journal, Role, Teacher, not_student_login
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func
@@ -309,18 +309,18 @@ def studetail():
 # 学生实习信息中学生列表
 # 学生信息 -- 实习学生列表
 @main.route('/stuList', methods=['GET', 'POST'])
-@login_required
+@not_student_login
 def stuList():
+    '''
+    if current_user.roleId == 0:
+        return render_template('404.html',Permission=Permission),404
+    '''
     # 与学生日志中的学生列表共用一个模板，journal作判断
     journal = False
     form = searchform()
     page = request.args.get('page', 1, type=int)
     pagination = Student.query.join(InternshipInfor).order_by(Student.grade).paginate(page, per_page=8,error_out=False)
     student = pagination.items
-    # 记录学生实习信息条数
-    for stu in student:
-        n = InternshipInfor.query.filter_by(stuId=stu.stuId).count()
-        session[stu.stuId] = n
     # 实习状态
     for stu in student:
         internStatus = InternshipInfor.query.filter_by(stuId=stu.stuId, internStatus=0).count()
@@ -330,12 +330,11 @@ def stuList():
 
 # 批量审核企业信息
 @main.route('/allcomCheck', methods=['GET', 'POST'])
-@login_required
+@not_student_login
 def allcomCheck():
     form = searchform()
     page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query.filter_by(comCheck=0).order_by(ComInfor.comDate).paginate(page, per_page=8,
-                                                                                          error_out=False)
+    pagination = ComInfor.query.filter_by(comCheck=0).order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
     return render_template('allcomCheck.html', form=form, Permission=Permission, comInfor=comInfor,
                            pagination=pagination)
@@ -356,7 +355,7 @@ def allcomDelete():
 
 # 学生的实习企业列表,id为stuId
 @main.route('/stuInternList', methods=['GET', 'POST'])
-@login_required
+@not_student_login
 def stuInternList():
     id = request.args.get('id')
     # 与学生的企业日志列表共用一个模板，journal作判断
@@ -420,10 +419,8 @@ def stuJour():
 def stuUserList():
     form = searchform()
     page = request.args.get('page', 1, type=int)
-    pagination = Student.query.order_by(Student.grade.desc()).paginate(page, per_page=8, error_out=False)
+    pagination = Student.query.order_by(Student.grade).paginate(page, per_page=8, error_out=False)
     student = pagination.items
-    for stu in student:
-        session[stu.stuId] = stu.role.roleName
     return render_template('stuUserList.html', pagination=pagination, form=form, Permission=Permission,
                            student=student)
 

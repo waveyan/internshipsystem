@@ -76,7 +76,13 @@
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                 <td>{{ tea.teaId }}</td>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>{{ session[tea.teaId] }}</td>
+                {% if session[tea.teaId]=="admin" %}
+                    <td>管理员</td>
+                {% elif session[tea.teaId]=="teacher" %}
+                    <td>普通老师</td>
+                {% elif session[tea.teaId]=="checkTeacher" %}
+                    <td>审核老师</td>    
+                {% endif %}
                 <td><a>修改</a>|<a>设置角色</a>|<a>删除</a></td>
             </tr>
         {% endfor %}

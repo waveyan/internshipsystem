@@ -3,6 +3,24 @@ from flask.ext.login import UserMixin
 from . import login_manager
 from datetime import datetime
 
+# 装饰器not_student_login 所需要的模块
+from functools import wraps
+from flask import _request_ctx_stack, abort, current_app, flash, redirect, request, session, url_for, has_request_context, render_template
+from flask.ext.login import current_user
+
+# 此装饰器用于学生没有权限访问的页面
+def not_student_login(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if current_app.login_manager._login_disabled:
+            return func(*args, **kwargs)
+        elif not current_user.is_authenticated:
+            return current_app.login_manager.unauthorized()
+        elif current_user.roleId == 0:
+            return render_template('404.html', Permission=Permission), 404
+        return func(*args, **kwargs)
+    return decorated_view
+
 
 @login_manager.user_loader
 def load_user(Id):
@@ -72,6 +90,34 @@ class Student(db.Model, UserMixin):
         return '<Student %r>' % self.stuName
 
 
+    # 创建大量虚拟信息
+    @staticmethod
+    def generate_fake(count=100):
+        from sqlalchemy.exc import IntegrityError
+        from random import seed, randint, choice
+        import forgery_py
+
+        seed()
+        for i in range(count):
+            student = Student(
+                stuId = randint(201300000000,201600000000),
+                stuName = forgery_py.internet.user_name(True),
+                institutes = '计算机学院',
+                major = choice(['计算机科学与技术', '网络工程', '软件工程', '信息科学与技术']),
+                grade = choice([2013, 2014, 2015, 2016]),
+                classes = randint(1,10),
+                sex = choice(['男','女']),
+                password = '123'
+                )
+            db.session.add(student)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
+
+
+
 class ComInfor(db.Model):
     __tablename__ = 'ComInfor'
     comId = db.Column(db.Integer, primary_key=True)
@@ -95,7 +141,7 @@ class ComInfor(db.Model):
     @staticmethod
     def generate_fake(count=100):
         from sqlalchemy.exc import IntegrityError
-        from random import seed, randint
+        from random import seed, randint, choice
         import forgery_py
 
         seed()
@@ -107,8 +153,7 @@ class ComInfor(db.Model):
                                 comStaff=randint(100, 10000),
                                 comContact=forgery_py.name.full_name(), comPhone=forgery_py.address.phone(),
                                 comEmail=forgery_py.internet.email_address(user=None),
-                                comFax=forgery_py.address.phone(),
-                                status=randint(0, 3))
+                                comFax=forgery_py.address.phone())
             db.session.add(comInfor)
             try:
                 db.session.commit()
