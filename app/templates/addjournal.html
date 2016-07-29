@@ -2,7 +2,22 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+    #('#workStart').datepicker({
+        weekStart: 1,
+        autoclose: true,
+        daysOfWeekHighlighted: "0,6",
+        format: "yyyy-mm-dd",
+        language: "zh-CN"
+    });
+    </script>
+{% endblock %}
+
 {% block title %}记录我的生活{% endblock %}
+
 
 {% block page_content %}
     <div class="page-header">
@@ -13,8 +28,4 @@
     </div>
     </br>
     </br>
-{% endblock %}
-
-{% block scripts %}
-    {{ super() }}
 {% endblock %}

@@ -3,6 +3,25 @@ from wtforms import StringField, SubmitField, TextAreaField, DateTimeField, Sele
 from wtforms.validators import Required, URL, Email
 
 
+# datepicker failed
+'''
+from wtforms import widgets
+class ExampleForm(Form):
+    dt = DateField('DatePicker', format='%Y-%m-%d')
+    submit = SubmitField('提交')
+
+
+class DatePickerWidget(widgets.TextInput):
+    """
+        Date picker widget.
+
+        You must include bootstrap-datepicker.js and form.js for styling to work.
+    """
+    def __call__(self, field, **kwargs):
+        kwargs['data-role'] = u'datepicker'
+        return super(DatePickerWidget, self).__call__(field, **kwargs)
+'''
+
 class searchform(Form):
     key = StringField(validators=[Required(message='请先输入搜索内容')])
     submit = SubmitField('搜索')
@@ -44,24 +63,29 @@ class dirctTeaForm(Form):
 
 
 class journalForm(Form):
-    # workStart = DateField('开始日期', validators=[Required(message='此项不能为空')])
-    workStart = DateField('开始日期', format="%Y-%m-%d")
+    workStart = DateField('开始日期', format="%Y-%m-%d", validators=[Required(message='此项不能为空')])
     weekNo = StringField('周数', validators=[Required(message='此项不能为空')])
     mon = TextAreaField('周一', validators=[Required(message='此项不能为空')])
     tue = TextAreaField('周二', validators=[Required(message='此项不能为空')])
     wed = TextAreaField('周三', validators=[Required(message='此项不能为空')])
     thu = TextAreaField('周四', validators=[Required(message='此项不能为空')])
     fri = TextAreaField('周五', validators=[Required(message='此项不能为空')])
+    sat = TextAreaField('周六', validators=[Required(message='此项不能为空')])
+    sun = TextAreaField('周日', validators=[Required(message='此项不能为空')])
     submit = SubmitField('提交')
 
 
 class stuForm(Form):
     stuId = StringField('学号', validators=[Required(message='此项不能为空')])
     stuName = StringField('姓名', validators=[Required(message='此项不能为空')])
-    sex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='女')
-    institutes = StringField('学院', validators=[Required(message='此项不能为空')])
-    grade = StringField('年级', validators=[Required(message='此项不能为空')])
-    major = StringField('专业', validators=[Required(message='此项不能为空')])
+    sex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='男')
+    institutes = StringField('学院', default='计算机学院', validators=[Required(message='此项不能为空')])
+    grade = StringField('年级',  validators=[Required(message='此项不能为空')])
+    major = SelectField('专业', choices=[('计算机科学与技术','计算机科学与技术'), 
+        ('网络工程','网络工程'), 
+        ('软件工程','软件工程'), 
+        ('信息科学与技术','信息科学与技术')],
+         default='计算机科学与技术',validators=[Required(message='此项不能为空')])
     classes = StringField('班级', validators=[Required(message='此项不能为空')])
     submit = SubmitField('提交')
 
@@ -69,7 +93,7 @@ class stuForm(Form):
 class teaForm(Form):
     teaId = StringField('教工号', validators=[Required(message='此项不能为空')])
     teaName = StringField('姓名', validators=[Required(message='此项不能为空')])
-    teaSex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='女')
+    teaSex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='男')
     submit = SubmitField('提交')
 
 

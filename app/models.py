@@ -5,7 +5,7 @@ from datetime import datetime
 
 # 装饰器not_student_login 所需要的模块
 from functools import wraps
-from flask import _request_ctx_stack, abort, current_app, flash, redirect, request, session, url_for, has_request_context, render_template
+from flask import _request_ctx_stack, abort, current_app, flash, redirect, request, session, url_for, has_request_context
 from flask.ext.login import current_user
 
 # 此装饰器用于学生没有权限访问的页面
@@ -17,7 +17,7 @@ def not_student_login(func):
         elif not current_user.is_authenticated:
             return current_app.login_manager.unauthorized()
         elif current_user.roleId == 0:
-            return render_template('404.html', Permission=Permission), 404
+            return redirect('/')
         return func(*args, **kwargs)
     return decorated_view
 

@@ -25,7 +25,7 @@
             <th width="200">学号</th>
             <td width="400" height="50">{{ student.stuId }}</td>
             <th width="200">专业班级</th>
-            <td width="400" height="50">{{ student.stuId }}{{ student.classes }}</td>
+            <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
         </tr>
         <tr>
             <th width="200">姓名</th>
@@ -70,6 +70,16 @@
                 <th></th>
                 <td height="50">五</td>
                 <td>{{ jour.fri }}</td>
+            </tr>
+            <tr>
+                <th></th>
+                <td height="50">六</td>
+                <td>{{ jour.sat }}</td>
+            </tr>
+            <tr>
+                <th></th>
+                <td height="50">日</td>
+                <td>{{ jour.sun }}</td>
             </tr>
         {% endfor %}
     </table>
