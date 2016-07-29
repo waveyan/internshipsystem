@@ -268,7 +268,7 @@ def interncompany():
         pagination = ComInfor.query.order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
 
     else:
-        pagination = ComInfor.query.filter_by(comCheck=3).order_by(ComInfor.students.desc()).paginate(page, per_page=8)
+        pagination = ComInfor.query.filter_by(comCheck=2).order_by(ComInfor.students.desc()).paginate(page, per_page=8)
     comInfor = pagination.items
     return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination, comInfor=comInfor)
 
@@ -392,7 +392,7 @@ def allcomCheck():
         return redirect('.interncompany')
     form = searchform()
     page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query.filter_by(comCheck=0).order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
+    pagination = ComInfor.query.filter(ComInfor.comCheck<2).order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
     return render_template('allcomCheck.html', form=form, Permission=Permission, comInfor=comInfor,
                            pagination=pagination)

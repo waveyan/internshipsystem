@@ -4,10 +4,12 @@
 {% block title %}实习企业信息{% endblock %}
 {% block head %}
     {{ super() }}
+    <!-- should be delete
     <script src="/static/JS/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
     <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+    -->
     <script type="text/javascript">
         $(document).ready(function () {
             $("#rearch").click(function () {
@@ -15,6 +17,16 @@
             });
         });
     </script>
+    <script type="text/javascript">
+        $('#all').click(function(event) {   
+    if(this.checked) {
+        // Iterate each checkbox
+        $(':checkbox').each(function() {
+            this.checked = true;                        
+        });
+    }
+    </script>
+});
 {% endblock %}
 {% block page_content %}
     <h1>实习企业信息
@@ -75,6 +87,8 @@
                         <td>{{ com.comAddress }}</td>
                         <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
                         <td>{{ com.comPhone }}</td>
+                        
+                        <!-- 若将整个页面设置为仅审核老师以上才能访问,此判断就可以省去 -->
                         {% if current_user.roleId==0 %}
                             <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}</td>
                         {% else %}
@@ -90,12 +104,14 @@
                                 <td>已审核</td>
                             {% endif %}
                         {% endif %}
+
                     </tr>
                 {% endfor %}
             </div>
             </tbody>
         </table>
         <div>
+            <input type="checkbox" id="all">
             <button type="button" class="btn btn-success">审核</button>
             <button type="button" class="btn btn-primary" id="back">取消</button>
         </div>
