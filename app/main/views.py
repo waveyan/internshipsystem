@@ -141,9 +141,10 @@ def addcominfor():
     return render_template('addcominfor.html', form=form, Permission=Permission)  # 填写学生实习信息
 
 
-@main.route('/addInternship/<int:comId>', methods=['GET', 'POST'])
+@main.route('/addInternship', methods=['GET', 'POST'])
 @login_required
-def addInternship(comId):
+def addInternship():
+    comId = request.args.get('comId')
     iform = internshipForm()
     form = dirctTeaForm()
     dirctTea = DirctTea()
@@ -188,6 +189,7 @@ def addInternship(comId):
                     dirctTea.cteaName = cteaValue
                     dirctTea.cteaPhone = request.form.get('cteaEmail%s' % j)
                     dirctTea.stuId = current_user.stuId
+                    
                     db.session.add(dirctTea)
                 else:
                     break
@@ -370,6 +372,7 @@ def studetail():
 # 学生信息 -- 实习学生列表
 @main.route('/stuList', methods=['GET', 'POST'])
 @not_student_login
+
 def stuList():
     # 与学生日志中的学生列表共用一个模板，journal作判断
     journal = False
@@ -394,18 +397,32 @@ def allcomCheck():
     page = request.args.get('page', 1, type=int)
     pagination = ComInfor.query.filter(ComInfor.comCheck<2).order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
+    # 确定企业审核通过
+    if request.method == "POST":
+        comId = request.form.getlist('approve[]')
+        for x in comId:
+            db.session.execute("update ComInfor set comCheck=2 where comId = %s" % x)
     return render_template('allcomCheck.html', form=form, Permission=Permission, comInfor=comInfor,
                            pagination=pagination)
+
 
 
 # 批量删除企业信息
 @main.route('/allcomDelete', methods=['GET', 'POST'])
 @not_student_login
 def allcomDelete():
+    if not current_user.can(Permission.COM_INFOR_CHECK):
+        return redirect('.interncompany')
     form = searchform()
     page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query.order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
+    # 只有无人实习的企业,或者实习信息被清空的企业,才能被删除
+    pagination = ComInfor.query.filter_by(students=0).order_by(ComInfor.comDate.desc()).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
+    # 确定企业删除
+    if request.method == "POST":
+        comId = request.form.getlist('approve[]')
+        for x in comId:
+            db.session.execute("delete from ComInfor where comId = %s" % x)
     return render_template('allcomDelete.html', form=form, Permission=Permission, comInfor=comInfor,  pagination=pagination)
 
 
@@ -477,8 +494,7 @@ def stuUserList():
     page = request.args.get('page', 1, type=int)
     pagination = Student.query.order_by(Student.grade).paginate(page, per_page=8, error_out=False)
     student = pagination.items
-    return render_template('stuUserList.html', pagination=pagination, form=form, Permission=Permission,
-                           student=student)
+    return render_template('stuUserList.html', pagination=pagination, form=form, Permission=Permission, student=student)
 
 
 # 添加学生用户

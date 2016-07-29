@@ -4,29 +4,31 @@
 {% block title %}实习企业信息{% endblock %}
 {% block head %}
     {{ super() }}
-    <!-- should be delete
+    <!-- should be delete -->
     <script src="/static/JS/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
     <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
-    -->
+
+    <!-- 全选企业  -->
     <script type="text/javascript">
-        $(document).ready(function () {
-            $("#rearch").click(function () {
-                $(".rearchSubmit").click();
-            });
-        });
-    </script>
-    <script type="text/javascript">
-        $('#all').click(function(event) {   
-    if(this.checked) {
-        // Iterate each checkbox
-        $(':checkbox').each(function() {
-            this.checked = true;                        
-        });
-    }
-    </script>
-});
+        function select_all(){    
+            var checkboxes = document.getElementsByName('approve[]');
+            var button = document.getElementById('toggle');
+    
+            if(button.value == '全选'){
+                for (var i in checkboxes){
+                    checkboxes[i].checked = 'FALSE';
+                }
+                button.value = '全不选'
+            }else{
+                for (var i in checkboxes){
+                    checkboxes[i].checked = '';
+                }
+                button.value = '全选';
+            }
+        }
+    </script>    
 {% endblock %}
 {% block page_content %}
     <h1>实习企业信息
@@ -38,7 +40,6 @@
                 <ul class="dropdown-menu" role="menu">
                     {% if current_user.can(Permission.COM_INFOR_CHECK) %}
                         <li><a href="{{ url_for('.addcominfor') }}">添加</a></li>
-                        <li><a href="#">批量添加</a></li>
                         <li><a href="#">批量审核</a></li>
                         <li><a href="{{ url_for('.allcomDelete') }}">批量删除</a></li>
                         </ul>
@@ -66,7 +67,7 @@
         <table class="table">
             <thead>
             <tr>
-                <th><input type="checkbox" id="all"></th>
+                <th></th>
                 <th>企业名称</th>
                 <th>所在城市</th>
                 <th>企业网址</th>
@@ -79,10 +80,11 @@
             </thead>
             <tbody>
             <div id="div">
+                <form method="post">
                 {% for com in comInfor %}
 
                     <tr>
-                        <th><input type="checkbox"></th>
+                        <th><input type="checkbox" name='approve[]' value={{ com.comId }} ></th>
                         <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
                         <td>{{ com.comAddress }}</td>
                         <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
@@ -111,9 +113,12 @@
             </tbody>
         </table>
         <div>
-            <input type="checkbox" id="all">
-            <button type="button" class="btn btn-success">审核</button>
+            <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()" />
+            <button type="submit" class="btn btn-success">审核通过</button>
+            <!--
             <button type="button" class="btn btn-primary" id="back">取消</button>
+            -->
+            </form>
         </div>
         {% if pagination %}
             <div class="pagination">
