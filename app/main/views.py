@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request, session
-from .form import searchform, comform, internshipForm, dirctTeaForm, journalForm, stuForm, teaForm, permissionForm
+from .form import searchform, comform, internshipForm, journalForm, stuForm, teaForm, permissionForm, schdirteaForm, comdirteaForm
 from . import main
-from ..models import Permission, InternshipInfor, ComInfor, DirctTea, Student, Journal, Role, Teacher, not_student_login
+from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, not_student_login
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func
@@ -82,8 +82,9 @@ def myInternList():
         return redirect(url_for('.addcominfor'))
     else:
         comInfor = db.session.execute(
-            'select DISTINCT * from InternshipInfor i,ComInfor c where i.comId=c.comId'
-            ' and i.stuId=%s order BY i.internStatus  ' % current_user.stuId)
+            'select *, ComInfor.comName companyName, ComInfor.comId companyId from ComInfor,InternshipInfor \
+            where ComInfor.comId = InternshipInfor.comId and InternshipInfor.stuId=%s \
+            order by InternshipInfor.internStatus' % current_user.stuId)
         return render_template('myInternList.html', comInfor=comInfor, Permission=Permission)
 
 
@@ -138,15 +139,15 @@ def addcominfor():
             print('实习企业信息：', e)
             flash('实习企业信息提交失败，请重试！')
             return redirect(url_for('.addcominfor'))
-    return render_template('addcominfor.html', form=form, Permission=Permission)  # 填写学生实习信息
-
+    return render_template('addcominfor.html', form=form, Permission=Permission)
+    
 
 @main.route('/addInternship', methods=['GET', 'POST'])
 @login_required
 def addInternship():
     comId = request.args.get('comId')
     iform = internshipForm()
-    form = dirctTeaForm()
+    form = directTeaForm()
     dirctTea = DirctTea()
     i = 0
     j = 0
@@ -189,7 +190,7 @@ def addInternship():
                     dirctTea.cteaName = cteaValue
                     dirctTea.cteaPhone = request.form.get('cteaEmail%s' % j)
                     dirctTea.stuId = current_user.stuId
-                    
+
                     db.session.add(dirctTea)
                 else:
                     break
@@ -240,15 +241,17 @@ def addInternship():
 
 
 # 学生个人实习信息,id为企业id
-@main.route('/stuinter/<int:id>', methods=['GET'])
+@main.route('/stuIntern', methods=['GET'])
 @login_required
-def stuinter(id):
+def stuIntern():
+    comId = request.args.get('comId')
     student = Student.query.filter_by(stuId=current_user.stuId).first()
-    internship = InternshipInfor.query.filter_by(Id=id).first()
-    comInfor = ComInfor.query.filter_by(comId=internship.comId).first()
-    dirctTea = DirctTea.query.filter_by(stuId=current_user.stuId, comId=internship.comId).all()
-    return render_template('stuInten.html', Permission=Permission, comInfor=comInfor,
-                           dirctTea=dirctTea, internship=internship, student=student)
+    internship = InternshipInfor.query.filter_by(comId = comId, stuId=current_user.stuId).first()
+    comInfor = ComInfor.query.filter_by(comId=comId).first()
+    schdirtea = SchDirTea.query.filter_by(stuId=current_user.stuId).all()
+    comdirtea = ComDirTea.query.filter_by(stuId=current_user.stuId, comId=internship.comId).all()
+    return render_template('stuIntern.html', Permission=Permission, comInfor=comInfor,
+                           schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student)
 
 
 # 企业详细信息
@@ -353,6 +356,8 @@ def studentList(comId):
 
 
 
+# 跟 .stuintern() 一样
+'''
 # 实习企业中学生的实习信息
 @main.route('/studetail', methods=['GET'])
 @login_required
@@ -362,9 +367,11 @@ def studetail():
     student = Student.query.filter_by(stuId=current_user.stuId).first()
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     internship = InternshipInfor.query.filter_by(stuId=stuId, comId=comId).first()
-    dirctTea = DirctTea.query.filter_by(stuId=stuId, comId=comId).all()
-    return render_template('stuInten.html', Permission=Permission, student=student, comInfor=comInfor,
-                           internship=internship, stuId=stuId, comId=comId, dirctTea=dirctTea)
+    schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
+    comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
+    # dirctTea = DirctTea.query.filter_by(stuId=stuId, comId=comId).all()
+    return render_template('stuIntern.html', Permission=Permission, student=student, comInfor=comInfor, internship=internship, stuId=stuId, comId=comId, schdirtea=schdirtea, comdirtea=comdirtea)
+'''
 
 
 # 管理员\普通教师\审核教师

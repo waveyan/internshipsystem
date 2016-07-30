@@ -178,6 +178,7 @@ class InternshipInfor(db.Model):
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
 
 
+# can be delete
 class DirctTea(db.Model):
     __tablename__ = 'DirctTea'
     Id = db.Column(db.Integer, primary_key=True)
@@ -190,6 +191,27 @@ class DirctTea(db.Model):
     cteaDuty = db.Column(db.String(20))
     cteaPhone = db.Column(db.String(15))
     cteaEmail = db.Column(db.String(20))
+    comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
+    stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
+
+
+class SchDirTea(db.Model):
+    __tablename__ = 'SchDirTea'
+    Id = db.Column(db.Integer, primary_key=True)
+    teaId = db.Column(db.String(10))
+    teaName = db.Column(db.String(10))
+    teaDuty = db.Column(db.String(20))
+    teaPhone = db.Column(db.String(15))
+    teaEmail = db.Column(db.String(20))
+    stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
+
+class ComDirTea(db.Model):
+    __tablename__ = 'ComDirTea'
+    Id = db.Column(db.Integer, primary_key=True)
+    teaName = db.Column(db.String(10))
+    teaDuty = db.Column(db.String(20))
+    teaPhone = db.Column(db.String(15))
+    teaEmail = db.Column(db.String(20))
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
 

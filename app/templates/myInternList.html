@@ -25,7 +25,7 @@
             <tbody>
             {% for com in comInfor %}
                 <tr>
-                    <td><a href="{{ url_for('.stuinter',id=com.Id) }}">{{ com.comName }}</a></td>
+                    <td><a href="{{ url_for('.stuIntern',comId=com.companyId) }}">{{ com.companyName }}</a></td>
                     <td>{{ com.comPhone }}</td>
                     <td>{{ com.start }}</td>
                     <td>{{ com.end }}</td>

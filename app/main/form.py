@@ -50,7 +50,7 @@ class internshipForm(Form):
     submit = SubmitField('提交')
 
 
-class dirctTeaForm(Form):
+class directTeaForm(Form):
     teaId = StringField('教师工号')
     teaName = StringField('姓名')
     teaDuty = StringField('职称')
@@ -60,6 +60,20 @@ class dirctTeaForm(Form):
     cteaDuty = StringField('职称')
     cteaPhone = StringField('联系电话')
     cteaEmail = StringField('邮箱')
+
+
+class schdirteaForm(Form):
+    teaId = StringField('校内教师工号')
+    teaName = StringField('姓名')
+    teaDuty = StringField('职称')
+    teaPhone = StringField('联系电话')
+    teaEmail = StringField('邮箱')
+
+class comdirteaForm(Form):
+    teaName = StringField('企业教师姓名')
+    teaDuty = StringField('职称')
+    teaPhone = StringField('联系电话')
+    teaEmail = StringField('邮箱')
 
 
 class journalForm(Form):
