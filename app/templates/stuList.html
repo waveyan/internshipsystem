@@ -25,13 +25,13 @@
         {% else %}
             学生实习信息
         {% endif %}
-        {% if current_user.can(Permission.STU_INFOR_EDIT) %}
+        {% if current_user.can(Permission.STU_INTERN_EDIT) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.STU_INFOR_CHECK) %}
+                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
                         <li><a href="#" onclick="loadXMLDoc('/allcheck')">批量审核</a></li>
                         <li><a href="#">批量删除</a></li>
                         </ul>
@@ -64,21 +64,19 @@
             <th>学号</th>
             <th>年级</th>
             <th>专业班级</th>
-            {% if journal %}
-                <th>日志数</th>
-            {% else %}
-                <th>实习状态</th>
-            {% endif %}
+            <th>实习状态</th>
+            <!--
             <th>操作</th>
+            -->
         </tr>
         </thead>
         <tbody>
         {% for stu in student %}
             <tr>
                 {% if journal %}
-                    <td><a href="{{ url_for('.comJourList',id=stu.stuId) }}"> {{ stu.stuName }}</a></td>
+                    <td><a href="{{ url_for('.xJournalList',stuId=stu.stuId) }}"> {{ stu.stuName }}</a></td>
                 {% else %}
-                    <td><a href="{{ url_for('.stuInternList',id=stu.stuId) }}"> {{ stu.stuName }}</a></td>
+                    <td><a href="{{ url_for('.stuInternList',stuId=stu.stuId) }}"> {{ stu.stuName }}</a></td>
                 {% endif %}
                 <td>{{ stu.stuId }}</td>
                 <td>{{ stu.grade }}</td>
@@ -89,9 +87,8 @@
                     <td>&nbsp;&nbsp;实习结束&nbsp;&nbsp;</td> 
                 {% endif %}
                 <!-- 
-                <td>&nbsp;&nbsp;{{ session[stu.stuId] }}&nbsp;&nbsp;</td> 
-                -->
                 <td><a>审核</a>|<a>删除</a></td>
+                -->
             </tr>
         {% endfor %}
         </tbody>

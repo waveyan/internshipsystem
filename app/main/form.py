@@ -22,14 +22,14 @@ class DatePickerWidget(widgets.TextInput):
         return super(DatePickerWidget, self).__call__(field, **kwargs)
 '''
 
-class searchform(Form):
+class searchForm(Form):
     key = StringField(validators=[Required(message='请先输入搜索内容')])
     submit = SubmitField('搜索')
 
 
-class comform(Form):
+class comForm(Form):
     comName = StringField('公司名称', validators=[Required(message='此项不能为空')])
-    comAdress = StringField('公司地址', validators=[Required(message='此项不能为空')])
+    comAddress = StringField('公司地址', validators=[Required(message='此项不能为空')])
     comUrl = StringField('公司网址', validators=[Required(message='此项不能为空'), URL(message='请输入正确的URL')])
     comBrief = TextAreaField('公司简介')
     comProject = TextAreaField('营业项目', validators=[Required(message='此项不能为空')])
@@ -44,12 +44,13 @@ class comform(Form):
 
 class internshipForm(Form):
     task = TextAreaField('实习任务', validators=[Required(message='此项不能为空')])
-    adress = StringField('实习地址', validators=[Required(message='此项不能为空')])
+    address = StringField('实习地址', validators=[Required(message='此项不能为空')])
     start = DateTimeField('开始时间', format='%Y-%m-%d', validators=[Required()])
     end = DateTimeField('结束时间', format='%Y-%m-%d', validators=[Required(message='请按 年-月-日 的格式输入正确的日期')])
     submit = SubmitField('提交')
 
-
+'''
+# delete
 class directTeaForm(Form):
     teaId = StringField('教师工号')
     teaName = StringField('姓名')
@@ -60,20 +61,23 @@ class directTeaForm(Form):
     cteaDuty = StringField('职称')
     cteaPhone = StringField('联系电话')
     cteaEmail = StringField('邮箱')
+'''
 
 
 class schdirteaForm(Form):
-    teaId = StringField('校内教师工号')
-    teaName = StringField('姓名')
-    teaDuty = StringField('职称')
-    teaPhone = StringField('联系电话')
-    teaEmail = StringField('邮箱')
+    steaId = StringField('校内教师工号')
+    steaName = StringField('姓名')
+    steaDuty = StringField('职称')
+    steaPhone = StringField('联系电话')
+    steaEmail = StringField('邮箱')
+    submit = SubmitField('提交')
 
 class comdirteaForm(Form):
-    teaName = StringField('企业教师姓名')
-    teaDuty = StringField('职称')
-    teaPhone = StringField('联系电话')
-    teaEmail = StringField('邮箱')
+    cteaName = StringField('企业教师姓名')
+    cteaDuty = StringField('职称')
+    cteaPhone = StringField('联系电话')
+    cteaEmail = StringField('邮箱')
+    submit = SubmitField('提交')
 
 
 class journalForm(Form):
@@ -117,11 +121,11 @@ class permissionForm(Form):
     COM_INFOR_EDIT = BooleanField('企业信息编辑', default=False, description='0X0000002')
     COM_INFOR_CHECK = BooleanField('企业信息审核', default=False, description='0X0000004')
     INTERNSHIP_LIST = BooleanField('实习企业信息列表', default=False, description='0X0000008')
-    STU_INFOR_LIST = BooleanField('学生实习信息列表', default=False, description='0X0000010')
-    STU_INFOR_SEARCH = BooleanField('学生实习信息查看', default=False, description='0X0000020')
-    STU_INFOR_EDIT = BooleanField('学生实习信息编辑', default=False, description='0X0000040')
-    STU_INFOR_CHECK = BooleanField('学生实习信息审核', default=False, description='0X0000080')
-    STU_INFOR_EXPORT = BooleanField('学生实习信息导出', default=False, description='0X0000100')
+    STU_INTERN_LIST = BooleanField('学生实习信息列表', default=False, description='0X0000010')
+    STU_INTERN_SEARCH = BooleanField('学生实习信息查看', default=False, description='0X0000020')
+    STU_INTERN_EDIT = BooleanField('学生实习信息编辑', default=False, description='0X0000040')
+    STU_INTERN_CHECK = BooleanField('学生实习信息审核', default=False, description='0X0000080')
+    STU_INTERN_EXPORT = BooleanField('学生实习信息导出', default=False, description='0X0000100')
     STU_JOUR_SEARCH = BooleanField('学生实习日志查询', default=False, description='0X0000200')
     STU_JOUR_EDIT = BooleanField('学生实习日志编辑', default=False, description='0X0000400')
     STU_JOUR_CHECK = BooleanField('学生实习日志审核', default=False, description='0X0000800')
@@ -134,7 +138,7 @@ class permissionForm(Form):
     STU_SCO_EDIT = BooleanField('学生实习成果编辑', default=False, description='0X0040000')
     STU_SCO_EXPORT = BooleanField('学生实习成果导出', default=False, description='0X0080000')
     ADMIN = BooleanField('管理', default=False, description='0x0100000')
-    STU_INFOR_IMPORT = BooleanField('学生信息导入', default=False, description='0X0200000')
+    STU_INTERN_IMPORT = BooleanField('学生信息导入', default=False, description='0X0200000')
     TEA_INFOR_IMPORT = BooleanField('老师信息导入', default=False, description='0X0400000')
     PERMIS_MANAGE = BooleanField('权限管理', default=False, description='0X0800000')
     submit = SubmitField('提交')

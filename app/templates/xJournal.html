@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+    {{ super() }}
+    <!-- 确认删除窗口 -->
+    <script type="text/javascript">
+        function ComfirmDelete() {
+            $('#deleteToggle').modal();
+        }
+    </script>
+{% endblock %}<!--先执行父模板-->
+
+{% block title %}实习日志{% endblock %}
+
+{% block page_content %}
+      <!-- 删除确认窗口 -->
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                <h4 class="modal-title" style="color:red;" id="deleteModalLabel">日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
+            </div>
+            <div class="modal-footer">
+                <!-- 用form来获取数据 -->
+                <form action="/comfirmDeleteJournal_Intern" method="POST">
+                <input type="hidden" name="internId" value="{{ journal[0].internId }}">
+                <input type="hidden" name="from_url" value="/xJournal">
+                <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="submit" class="btn btn-primary" >删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="page-`er">
+    {% if current_user.roleId==0 %}
+        <h1>我的实习日志
+    {% else %}
+        <h1>{{ student.stuName }}的实习日志
+    {% endif %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                        data-toggle="dropdown">编辑<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">修改</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">导入企业Excel表</a></li>
+                    <li class="divider"></li>
+                    <li><a onClick="ComfirmDelete()">删除</a></li>
+                </ul>
+            </div>
+            <!--
+                <div style="text-align:right">
+                <span class="btn btn-danger">待审核...</span>
+                 </div>
+            -->
+        </h1>
+
+        <!-- 日志审核 -->
+
+        {% if internship.jourCheck == 0 %}
+        <span class="btn btn-danger">待审核...</span><br><br>
+        <a href="{{ url_for('.journal_comfirm', internId=journal[0].internId, stuId=student.stuId) }}"><button class="btn btn-success">点击这里,审核通过</button></a>
+        {% else %}
+        <div style="text-align:right"><span class="btn btn-info" >已审核</span></div>
+        {% endif %}
+        <br><br>
+    
+    </div>
+    <table align="center" border="2" class="table-bordered">
+        <tr>
+            <th width="200">学号</th>
+            <td width="400" height="50">{{ student.stuId }}</td>
+            <th width="200">专业班级</th>
+            <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
+        </tr>
+        <tr>
+            <th width="200">姓名</th>
+            <td width="400" height="50">{{ student.stuName }}</td>
+            <th width="200">实习单位</th>
+            <td width="400" height="50">{{ comInfor.comName }}</td>
+        </tr>
+    </table>
+    <table align="center" border="2" class="table-bordered">
+        <tr>
+            <th height="50" colspan="2">时间</th>
+            <th height="50" align="center" colspan="3">实习内容</th>
+        </tr>
+
+        {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'七'} %}
+        {% for jour in journal %}
+            {% set cur = jour.workStart.isoweekday() %}
+            {% set cur_end = jour.workEnd.isoweekday() %}
+            <tr>
+                <th width="200" height="50">第{{ jour.weekNo }}周</th>
+                <th width="100" height="50">星期</th>
+                <th width="900" height="50">工作内容</th>
+            </tr>
+            
+            {% if cur==1 and cur_end==7 %}
+                <tr>
+                    <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
+                    <td height="50">一</td>
+                    <td height="50">{{ jour.mon }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td height="50">二</td>
+                    <td height="50">{{ jour.tue }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td height="50">三</td>
+                    <td>{{ jour.wed }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td height="50">四</td>
+                    <td>{{ jour.thu }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td height="50">五</td>
+                    <td>{{ jour.fri }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td height="50">六</td>
+                    <td>{{ jour.sat }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td height="50">日</td>
+                    <td>{{ jour.sun }}</td>
+                </tr>
+            {% else %}
+                {% set weekday2var = {1:jour.mon, 2:jour.tue, 3:jour.wed, 4:jour.thu, 5:jour.fri, 6:jour.sat, 7:jour.sun} %}
+                <tr>
+                    <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
+                    <td height="50">{{ weekday2ch[cur] }}</td>
+                    <td height="50">{{ weekday2var[cur] }}</td>
+                </tr>
+                {% set cur_last = (jour.workEnd.isoweekday() - jour.workStart.isoweekday()) %}
+                {% for x in range(cur_last) %}
+                    <tr>
+                        <th></th>
+                        <td height="50">{{ weekday2ch[cur+x+1] }}</td>
+                        <td height="50">{{ weekday2var[cur+x+1] }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </table>
+    </br>
+    </br></br>
+{% endblock %}
+

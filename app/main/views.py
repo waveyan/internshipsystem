@@ -1,10 +1,10 @@
 from flask import render_template, url_for, flash, redirect, request, session
-from .form import searchform, comform, internshipForm, journalForm, stuForm, teaForm, permissionForm, schdirteaForm, comdirteaForm
+from .form import searchForm, comForm, internshipForm, journalForm, stuForm, teaForm, permissionForm, schdirteaForm, comdirteaForm
 from . import main
 from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, not_student_login
 from flask.ext.login import current_user, login_required
 from .. import db
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from datetime import datetime, timedelta
 
 
@@ -23,7 +23,7 @@ def hello_world():
 
 @main.route('/search', methods=['GET', 'POST'])
 def search():
-    form = searchform()
+    form = searchForm()
     if form.validate_on_submit():
         print('assa')
     print(form.key.data)
@@ -32,7 +32,7 @@ def search():
 
 @main.route('/students', methods=['GET', 'POST'])
 def students():
-    form = searchform()
+    form = searchForm()
     return render_template('students.html', form=form, Permission=Permission)
 
 
@@ -73,26 +73,64 @@ def index():
 
 
 # 个人实习企业列表
-@main.route('/myInternList')
+@main.route('/stuInternList',methods=['GET','POST'])
 @login_required
-def myInternList():
-    internshipInfor = InternshipInfor.query.filter_by(stuId=current_user.stuId).first()
-    if internshipInfor is None:
+def stuInternList():
+    if current_user.roleId == 0:
+        stuId = current_user.stuId
+    else:
+        stuId = request.args.get('stuId')
+    student = Student.query.filter_by(stuId=stuId).first()
+    internship = InternshipInfor.query.filter_by(stuId=stuId).all()
+    if internship is None and current_user.roleId ==0:
         flash('您还没完成实习信息的填写，请完善相关实习信息！')
         return redirect(url_for('.addcominfor'))
     else:
-        comInfor = db.session.execute(
-            'select *, ComInfor.comName companyName, ComInfor.comId companyId from ComInfor,InternshipInfor \
+        comList = db.session.execute(
+            'select *, ComInfor.comName companyName, ComInfor.comId companyId, InternshipInfor.Id internId from ComInfor,InternshipInfor \
             where ComInfor.comId = InternshipInfor.comId and InternshipInfor.stuId=%s \
-            order by InternshipInfor.internStatus' % current_user.stuId)
-        return render_template('myInternList.html', comInfor=comInfor, Permission=Permission)
+            order by InternshipInfor.internStatus' % stuId)
+        return render_template('stuInternList.html', comList=comList, Permission=Permission, internship=internship, student=student)
+
+
+
+
+
+'''
+# 学生的实习企业列表,id为stuId
+@main.route('/stuInternList', methods=['GET', 'POST'])
+@not_student_login
+def stuInternList():
+    id = request.args.get('id')
+    # 与学生的企业日志列表共用一个模板，journal作判断
+    journal = False
+    stu = Student.query.filter_by(stuId=id).first()
+    comInfor = db.session.execute(
+        'select DISTINCT comName,comPhone,c.comId,start,end,internCheck, internStatus from InternshipInfor i,ComInfor c \
+        where i.comId=c.comId and i.stuId=%s order BY i.internCheck, internStatus' % id)
+    return render_template('stuInternList.html', stuName=stu.stuName, stuId=stu.stuId, Permission=Permission,comInfor=comInfor, journal=journal)
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # 选择实习企业
 @main.route('/selectCom', methods=['GET', 'POST'])
 @login_required
 def selectCom():
-    form = searchform()
+    form = searchForm()
     page = request.args.get('page', 1, type=int)
     pagination = ComInfor.query.filter_by(comCheck=2).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
@@ -103,7 +141,7 @@ def selectCom():
 @main.route('/addcominfor', methods=['GET', 'POST'])
 @login_required
 def addcominfor():
-    form = comform()
+    form = comForm()
     if form.validate_on_submit():
         max_comId = getMaxComId()
         if max_comId is None:
@@ -114,14 +152,14 @@ def addcominfor():
             # 如果有企业信息审核权限的用户添加企业信息自动通过审核
             if current_user.can(Permission.COM_INFOR_CHECK):
                 comInfor = ComInfor(comName=form.comName.data, comBrief=form.comBrief.data,
-                                    comAddress=form.comAdress.data,
+                                    comAddress=form.comAddress.data,
                                     comUrl=form.comUrl.data, comMon=form.comMon.data, comContact=form.comContact.data,
                                     comProject=form.comProject.data, comStaff=form.comStaff.data,
                                     comPhone=form.comPhone.data,
                                     comEmail=form.comEmail.data, comFax=form.comFax.data, comCheck=2)
             else:
                 comInfor = ComInfor(comName=form.comName.data, comBrief=form.comBrief.data,
-                                    comAddress=form.comAdress.data,
+                                    comAddress=form.comAddress.data,
                                     comUrl=form.comUrl.data, comMon=form.comMon.data, comContact=form.comContact.data,
                                     comProject=form.comProject.data, comStaff=form.comStaff.data,
                                     comPhone=form.comPhone.data,
@@ -140,31 +178,48 @@ def addcominfor():
             flash('实习企业信息提交失败，请重试！')
             return redirect(url_for('.addcominfor'))
     return render_template('addcominfor.html', form=form, Permission=Permission)
-    
 
+
+# 添加实习信息
+# 只能学生本人添加
 @main.route('/addInternship', methods=['GET', 'POST'])
 @login_required
 def addInternship():
     comId = request.args.get('comId')
     iform = internshipForm()
-    form = directTeaForm()
-    dirctTea = DirctTea()
+    # form = directTeaForm()
+    schdirteaform = schdirteaForm()
+    comdirteaform = comdirteaForm()
+    # dirctTea = DirctTea()
     i = 0
     j = 0
     try:
         if request.method == 'POST':
             start = datetime.strptime(request.form.get('start'), '%Y-%m-%d').date()
+            print (start)
             end = datetime.strptime(request.form.get('end'), '%Y-%m-%d').date()
+            print (end)
             now = datetime.now().date()
-            if end > now:
-                internStatus = 0
+            print (now)
+            if start < now :
+                if end <= now :
+                    internStatus = 1 # 实习结束
+                    print ('this is 1')
+                if end > now :
+                    internStatus = 0 #实习中
+                    print ('this is 2')
+            elif start > now :
+                internStatus = 2 #待实习
+                print ('this is 3')
             else:
-                internStatus = 1
+                internStatus = 1 # start=now, 实习中
+                print ('this is 4')
             internship = InternshipInfor(
                 task=request.form.get('task'), 
                 start=start,
                 end=end,
-                address=request.form.get('adress'),
+                time = datetime.now().date(),
+                address=request.form.get('address'),
                 comId=comId, 
                 stuId=current_user.stuId, 
                 internStatus=internStatus
@@ -173,9 +228,13 @@ def addInternship():
                 i = i + 1
                 j = j + 1
                 teaValue = request.form.get('teaId%s' % i)
+                print (teaValue)
                 cteaValue = request.form.get('cteaName%s' % j)
+                print (cteaValue)
                 # if teaValue or cteaValue:
                 if teaValue:
+                    print (teaValue)
+                    '''
                     dirctTea = DirctTea(
                         comId=comId, 
                         teaId=teaValue, 
@@ -184,39 +243,91 @@ def addInternship():
                         teaPhone=request.form.get('teaPhone%s' % i),
                         teaEmail=request.form.get('teaEmail%s' % i), 
                         stuId=current_user.stuId)
+                    '''
+                    schdirtea = SchDirTea(
+                        teaId=teaValue, 
+                        stuId=current_user.stuId,
+                        teaName=request.form.get('teaName%s' % i),
+                        teaDuty=request.form.get('teaDuty%s' % i),
+                        teaPhone=request.form.get('teaPhone%s' % i),
+                        teaEmail=request.form.get('teaEmail%s' % i)
+                        )
+                    db.session.add(schdirtea)
                 elif cteaValue:
+                    print (cteaValue)
+                    comdirtea = ComDirTea(
+                        stuId = current_user.stuId,
+                        teaName = cteaValue,
+                        comId = comId,
+                        teaDuty = request.form.get('cteaDuty%s' % j),
+                        teaEmail = request.form.get('cteaEmail%s' % j),
+                        teaPhone = request.form.get('cteaPhone%s' % j)
+                        )
+                    db.session.add(comdirtea)
+                    '''
                     dirctTea.cteaDuty = request.form.get('cteaDuty%s' % j)
                     dirctTea.cteaEmail = request.form.get('cteaEmail%s' % j)
                     dirctTea.cteaName = cteaValue
-                    dirctTea.cteaPhone = request.form.get('cteaEmail%s' % j)
+                    dirctTea.cteaPhone = request.form.get('cteaPhone%s' % j)
                     dirctTea.stuId = current_user.stuId
 
                     db.session.add(dirctTea)
+                    '''
                 else:
                     break
 
 
+            # commit internship之后,internId才会更新
+            db.session.add(internship)
+            db.session.commit()
+
             # 初始化实习日志
+            internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
             weeks = (end - start).days//7
-            for weekNo in range(weeks):
+            if weeks > 1:
+                # 第一周. 因第一天未必是周一,所以需特别处理
                 journal = Journal(
                     stuId = current_user.stuId,
                     comId = comId,
-                    weekNo = weekNo+1,
+                    weekNo = 1,
                     workStart = start,
-                    workEnd = start + timedelta(days=6)
+                    workEnd = start + timedelta(days=(7 - start.isoweekday())),
+                    internId = internId
                     )
                 db.session.add(journal)
-                start = start + timedelta(days=7)
-            # 如果还有几天凑不成一周
-            weeks_float = (end - start).days/7
-            if weeks_float > weeks:
+                start = start + timedelta(days=(7 - start.isoweekday() + 1))
+                # 第二周至第 n|(n-1) 周
+                for weekNo in range(weeks-1):
+                    journal = Journal(
+                        stuId = current_user.stuId,
+                        comId = comId,
+                        weekNo = weekNo+2,
+                        workStart = start,
+                        workEnd = start + timedelta(days=6),
+                        internId = internId
+                        )
+                    db.session.add(journal)
+                    start = start + timedelta(days=7)
+                # 如果还有几天凑不成一周
+                if end >= start:
+                    journal = Journal(
+                        stuId = current_user.stuId,
+                        comId = comId,
+                        weekNo = weeks + 1,
+                        workStart = start,
+                        workEnd = end,
+                        internId = internId
+                        )
+                    db.session.add(journal)
+            else:
+                # 如果实习时间不满一周
                 journal = Journal(
                     stuId = current_user.stuId,
                     comId = comId,
-                    weekNo = weeks + 1,
+                    weekNo = 1,
                     workStart = start,
-                    workEnd = end
+                    workEnd = end,
+                    internId = internId
                     )
                 db.session.add(journal)
 
@@ -228,30 +339,181 @@ def addInternship():
             else:
                 cominfor.students = 1
             db.session.add(cominfor)
-            db.session.add(internship)
             db.session.commit()
             flash('提交实习信息成功！')
-            return redirect(url_for('.internshipList'))
+            return redirect(url_for('.stuInternList'))
     except Exception as e:
         print("实习信息：", e)
         db.session.rollback
         flash('提交实习信息失败，请重试！')
-        return redirect(url_for('.myInternList', comId=comId))
-    return render_template('addinternship.html', iform=iform, form=form, Permission=Permission)
+        return redirect(url_for('.addcominfor'))
+    return render_template('addinternship.html', iform=iform, schdirteaform=schdirteaform, comdirteaform=comdirteaform, Permission=Permission)
 
 
-# 学生个人实习信息,id为企业id
-@main.route('/stuIntern', methods=['GET'])
+# 学生个人实习信息
+@main.route('/stuIntern', methods=['GET','POST'])
 @login_required
 def stuIntern():
+    if current_user.roleId == 0:
+        stuId = current_user.stuId
+    else:
+        stuId = request.args.get('stuId')
     comId = request.args.get('comId')
-    student = Student.query.filter_by(stuId=current_user.stuId).first()
-    internship = InternshipInfor.query.filter_by(comId = comId, stuId=current_user.stuId).first()
+    internId = request.args.get('internId')
+    student = Student.query.filter_by(stuId=stuId).first()
+    internship = InternshipInfor.query.filter_by(Id=internId).first()
     comInfor = ComInfor.query.filter_by(comId=comId).first()
-    schdirtea = SchDirTea.query.filter_by(stuId=current_user.stuId).all()
-    comdirtea = ComDirTea.query.filter_by(stuId=current_user.stuId, comId=internship.comId).all()
+    schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
+    comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
     return render_template('stuIntern.html', Permission=Permission, comInfor=comInfor,
                            schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student)
+
+
+# 审核通过实习信息
+@main.route('/stuIntern_comfirm', methods=["POST","GET"])
+@not_student_login
+def stuIntern_comfirm():
+    if current_user.can(Permission.STU_INTERN_CHECK):
+        internId = request.args.get('internId')
+        internCheck = request.args.get('internCheck')
+        stuId = request.args.get('stuId')
+        db.session.execute('update InternshipInfor set internCheck=%s where Id=%s' % (internCheck,internId))
+    return redirect(url_for('.stuInternList',stuId=stuId))
+
+
+
+# 修改实习信息
+@main.route('/editStuIntern', methods=['GET','POST'])
+@login_required
+def editStuIntern():
+    if current_user.roleId==0:
+        stuId = current_user.stuId
+    elif not current_user.can(Permission.STU_INTERN_EDIT):
+        return direct('/')
+    stuId = request.args.get('stuId')
+    comId = request.args.get('comId')
+    internId = request.args.get('internId')
+    student = Student.query.filter_by(stuId=stuId).first()
+    internship = InternshipInfor.query.filter_by(Id=internId).first()
+    comInfor = ComInfor.query.filter_by(comId=comId).first()
+    schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
+    comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
+    # 各种Form
+    stuform = stuForm()
+    comform = comForm()
+    internform = internshipForm()
+    schdirteaform = schdirteaForm()
+    comdirteaform = comdirteaForm()
+    return render_template('editStuIntern.html', Permission=Permission, comInfor=comInfor, schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student, stuform=stuform, comform=comform, internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform)
+
+'''
+# 待修改
+# 个人信息--学生信息 修改校内指导老师
+@main.route('/editStuIntern_schdirtea', methods=["POST"])
+@login_required
+def editStuIntern_schdirtea():
+    teaId = request.form.get('steaId')
+    teaName = request.form.get('steaName')
+    teaDuty = request.form.get('steaDuty')
+    teaPhone = request.form.get('steaPhone')
+    teaEmail = request.form.get('steaEmail') 
+    if teaName == None:
+        return redirect(url_for('.myInternList'))
+    db.session.execute('update SchDirTea set \
+        teaId = "%s", \
+        teaName = "%s", \
+        teaDuty = "%s", \
+        teaPhone = "%s",\
+        teaEmail = "%s" \
+        where stuId=%s'
+        % (teaId, teaName, teaDuty, teaPhone, teaEmail, current_user.stuId))
+    return redirect(url_for('.myInternList'))
+'''
+
+
+# 修改实习信息 个人实习信息--实习岗位信息
+@main.route('/editStuIntern_intern', methods=["POST"])
+@login_required
+def editStuIntern_intern():
+    task = request.form.get('task')
+    address = request.form.get('address')
+    start = request.form.get('start')
+    end = request.form.get('end')
+    time = datetime.now().date()
+    internCheck = 0
+    stuId = current_user.stuId
+    comId = request.form.get("comId")
+    if task is None or address is None or start is None or end is None or time is None or comId is None or stuId is None:
+        return redirect(url_for('.editStuIntern', start=start, comId=comId))
+    db.session.execute(' \
+        update InternshipInfor set \
+        task = "%s", \
+        address = "%s", \
+        start = "%s", \
+        end = "%s", \
+        time = "%s", \
+        internCheck = %s \
+        where stuId=%s and comId=%s and start="%s"'
+        % (task, address, start, end, time, internCheck, stuId, comId, start)
+        )
+    return redirect(url_for('.stuIntern', comId=comId, start=start))
+
+
+# 修改实习信息 个人实习信息--企业指导老师
+@main.route('/editStuIntern_comdirtea', methods=["POST"])
+@login_required
+def editStuIntern_comdirtea():
+    Id = request.form.get("Id")
+    comId = request.form.get('comId')
+    start = request.form.get('start')
+    teaName = request.form.get('cteaName')
+    teaDuty = request.form.get('cteaDuty')
+    teaPhone = request.form.get('cteaPhone')
+    teaEmail = request.form.get('cteaEmail')
+    if teaName is None or comId is None:
+        return redirect(url_for('.editStuIntern', start=start, comId=comId))
+    db.session.execute(' \
+        update ComDirTea set \
+        teaName = "%s", \
+        teaDuty = "%s", \
+        teaPhone ="%s", \
+        teaEmail = "%s" \
+        where Id=%s'
+        % (teaName, teaDuty, teaPhone, teaEmail, Id)
+        )
+    # return redirect(url_for('.stuIntern',comId=comId, start=start))
+    return redirect(url_for('.editStuIntern',comId=comId, start=start))
+
+
+# 修改实习信息 删除整个实习页面
+@main.route('/comfirmDeleteJournal_Intern', methods=['POST'])
+@login_required
+def comfirmDeletreJournal_Intern():
+    if current_user.roleId == 0:
+        stuId = current_user.stuId
+    else:
+        stuId = request.form.get('stuId')
+    internId = request.form.get('internId')
+    from_url = request.form.get('from_url')
+    try:
+        # 先删除日志1
+        db.session.execute('delete from Journal where internId=%s and stuId=%s'% (internId, stuId))
+        # 后删除实习信息
+        db.session.execute('delete from InternshipInfor where Id=%s and stuId=%s'% (internId, stuId))
+        flash('删除日志和实习信息成功')
+        if from_url == "/stuIntern":
+            return redirect(url_for('.stuInternList',stuId=stuId))
+        if from_url == "/xJournal":
+            return redirect(url_for('.xJournalList',stuId=stuId))
+    except Exception as e:
+        print ('删除日志和实习信息失败:',e)
+        db.session.rollback
+        flash('提交实习信息失败，请重试！')
+        if from_url == "/stuIntern":
+            return redirect(url_for('.stuInternList',s2tuId=stuId))
+        if from_url == "/xJournal":
+            return redirect(url_for('.xJournalList',stuId=stuId))
+    return redirect('/')
 
 
 # 企业详细信息
@@ -267,7 +529,7 @@ def cominfor():
 @main.route('/interncompany', methods=['GET', 'POST'])
 @login_required
 def interncompany():
-    form = searchform()
+    form = searchForm()
     page = request.args.get('page', 1, type=int)
     if current_user.can(Permission.COM_INFOR_CHECK):
         pagination = ComInfor.query.order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
@@ -277,7 +539,7 @@ def interncompany():
     comInfor = pagination.items
     return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination, comInfor=comInfor)
 
-
+'''
 # 实习日志列表
 @main.route('/myJournalList', methods=['GET'])
 @login_required
@@ -286,6 +548,7 @@ def myJournalList():
         'select DISTINCT start,end,i.comId comId,comName from InternshipInfor i,ComInfor c \
         where i.comId=c.comId and i.stuId=%s order BY i.internStatus  ' % current_user.stuId)
     return render_template('myJournalList.html', comInfor=comInfor, Permission=Permission)
+'''
 
 
 # 填写实习日志
@@ -335,7 +598,7 @@ def myjournal(comId):
         return render_template('myjournal.html', Permission=Permission, journal=journal, student=student, com=com)
     else:
         # 返回实习日志列表
-        return redirect(url_for('.myJournalList'))
+        return redirect(url_for('.xJournalList'))
 
 
 # 管理员\普通教师\审核教师
@@ -343,7 +606,7 @@ def myjournal(comId):
 @main.route('/comInternList/<int:comId>', methods=['GET', 'POST'])
 @login_required
 def studentList(comId):
-    form = searchform()
+    form = searchForm()
     page = request.args.get('page', 1, type=int)
     comName = ComInfor.query.filter(ComInfor.comId==comId).with_entities(ComInfor.comName).first()[0]
     # filter过滤当前特定企业ID
@@ -379,11 +642,10 @@ def studetail():
 # 学生信息 -- 实习学生列表
 @main.route('/stuList', methods=['GET', 'POST'])
 @not_student_login
-
 def stuList():
     # 与学生日志中的学生列表共用一个模板，journal作判断
     journal = False
-    form = searchform()
+    form = searchForm()
     page = request.args.get('page', 1, type=int)
     pagination = Student.query.join(InternshipInfor).order_by(Student.grade).paginate(page, per_page=8,error_out=False)
     student = pagination.items
@@ -400,7 +662,7 @@ def stuList():
 def allcomCheck():
     if not current_user.can(Permission.COM_INFOR_CHECK):
         return redirect('.interncompany')
-    form = searchform()
+    form = searchForm()
     page = request.args.get('page', 1, type=int)
     pagination = ComInfor.query.filter(ComInfor.comCheck<2).order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
@@ -420,7 +682,7 @@ def allcomCheck():
 def allcomDelete():
     if not current_user.can(Permission.COM_INFOR_CHECK):
         return redirect('.interncompany')
-    form = searchform()
+    form = searchForm()
     page = request.args.get('page', 1, type=int)
     # 只有无人实习的企业,或者实习信息被清空的企业,才能被删除
     pagination = ComInfor.query.filter_by(students=0).order_by(ComInfor.comDate.desc()).paginate(page, per_page=8, error_out=False)
@@ -433,6 +695,8 @@ def allcomDelete():
     return render_template('allcomDelete.html', form=form, Permission=Permission, comInfor=comInfor,  pagination=pagination)
 
 
+# delete
+''' 
 # 学生的实习企业列表,id为stuId
 @main.route('/stuInternList', methods=['GET', 'POST'])
 @not_student_login
@@ -443,41 +707,75 @@ def stuInternList():
     stu = Student.query.filter_by(stuId=id).first()
     comInfor = db.session.execute(
         'select DISTINCT comName,comPhone,c.comId,start,end,internCheck, internStatus from InternshipInfor i,ComInfor c \
-        where i.comId=c.comId and i.stuId=%s order BY i.internCheck, internstatus' % id)
+        where i.comId=c.comId and i.stuId=%s order BY i.internCheck, internStatus' % id)
     return render_template('stuInternList.html', stuName=stu.stuName, stuId=stu.stuId, Permission=Permission,comInfor=comInfor, journal=journal)
+'''
 
 
-# 学生日志中学生信息列表
-@main.route('/stuJourList', methods=['GET', 'POST'])
+# 学生日志 -- 包含所有实习学生的列表
+@main.route('/stuJournalList', methods=['GET', 'POST'])
 @not_student_login
-def stuJourList():
+def stuJournalList():
     # 与学生实习信息中的学生列表共用一个模板，journal作判断
     journal = True
-    form = searchform()
+    form = searchForm()
     page = request.args.get('page', 1, type=int)
-    pagination = Student.query.join(Journal).order_by(Student.grade).paginate(page, per_page=8,error_out=False)
+    pagination = Student.query.join(InternshipInfor).order_by(Student.grade).paginate(page, per_page=8,error_out=False)
     student = pagination.items
-    # 记录学生日志数
+    # 实习状态
     for stu in student:
-        n = Journal.query.filter_by(stuId=stu.stuId).count()
-        session[stu.stuId] = n
+        session[stu.stuId] = InternshipInfor.query.filter_by(stuId=stu.stuId, internStatus=0).count()
     return render_template('stuList.html', form=form, pagination=pagination, student=student, Permission=Permission,journal=journal)
 
 
-# 学生的企业日志列表,id为stuId
-@main.route('/comJourList', methods=['GET', 'POST'])
+# 学生日志 -- 选定学生 -- 该学生的日志列表
+@main.route('/xJournalList', methods=['GET', 'POST'])
+@login_required
+def xJournalList():
+    if current_user.roleId == 0:
+        stuId = current_user.stuId
+    else:
+        stuId = request.args.get('stuId')
+    student = Student.query.filter_by(stuId=stuId).first()
+    internlist = db.session.execute('select * from InternshipInfor,ComInfor \
+        where InternshipInfor.comId=ComInfor.comId and stuId=%s order by internStatus'% stuId)
+    return render_template('xJournalList.html',internlist=internlist, student=student, Permission=Permission)
+
+
+# 学生日志 -- 特定学生的日志详情
+@main.route('/xJournal', methods=['GET','POST'])
+@login_required
+def xJournal():
+    if current_user.roleId == 0:
+        stuId = current_user.stuId
+    else:
+        stuId = request.args.get('stuId')
+    internId = request.args.get('internId')
+    internship = InternshipInfor.query.filter_by(Id=internId).first()
+    student = Student.query.filter_by(stuId=stuId).first()
+    journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
+    comInfor = db.session.execute('select * from ComInfor where comId in( \
+        select comId from InternshipInfor where Id=%s)'% internId).first()
+    return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal, student=student, comInfor=comInfor)
+
+
+@main.route('/journal_comfirm', methods=['POST','GET'])
 @not_student_login
-def comJourList():
-    id = request.args.get('id')
-    # 与学生的实习企业列表共用一个模板，journal作判断
-    journal = True
-    stu = Student.query.filter_by(stuId=id).first()
-    comInfor = db.session.execute(
-        'select DISTINCT comName, comPhone, c.comId, start, end, internCheck, internStatus from Journal j , InternshipInfor i,ComInfor c \
-        where c.comId=j.comId and i.stuId=j.stuId and i.comId=c.comId and j.stuId=%s' % id)
-    return render_template('stuInternList.html', stuName=stu.stuName, stuId=stu.stuId, Permission=Permission, comInfor=comInfor, journal=journal)
+def journal_comfirm():
+    stuId = request.args.get('stuId')
+    internId = request.args.get('internId')
+    student = Student.query.filter_by(stuId=stuId).first()
+    internlist = db.session.execute('select * from InternshipInfor,ComInfor \
+        where InternshipInfor.comId=ComInfor.comId and stuId=%s order by internStatus'% stuId)
+    if current_user.can(Permission.STU_JOUR_CHECK):
+        db.session.execute('update InternshipInfor set jourCheck=1 where Id=%s'% internId)
+        return render_template('xJournalList.html',internlist=internlist, student=student, Permission=Permission)
+    else:
+        # 非法操作,返回主页
+        return redirect('/')
 
 
+'''
 # 学生日志详情
 @main.route('/stuJour', methods=['GET'])
 @not_student_login
@@ -488,6 +786,7 @@ def stuJour():
     com = ComInfor.query.filter_by(comId=comId).first()
     journal = db.session.execute('select * from Journal where stuId=%s and comId=%s' % (stuId, comId))
     return render_template('myjournal.html', Permission=Permission, journal=journal, student=student, com=com)
+'''
 
 
 # 学生用户列表
@@ -497,7 +796,7 @@ def stuUserList():
     # 非管理员,不能进入
     if not current_user.roleId==3:
         return redirect('/')
-    form = searchform()
+    form = searchForm()
     page = request.args.get('page', 1, type=int)
     pagination = Student.query.order_by(Student.grade).paginate(page, per_page=8, error_out=False)
     student = pagination.items
@@ -542,7 +841,7 @@ def teaUserList():
     # 非管理员,不能进入
     if not current_user.roleId==3:
         return redirect('/')
-    form = searchform()
+    form = searchForm()
     page = request.args.get('page', 1, type=int)
     pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
     teacher = pagination.items
@@ -612,20 +911,20 @@ def addRole():
         if form.INTERNSHIP_LIST.data:
             a = eval(form.INTERNSHIP_LIST.description) | a
             p.append('实习企业信息列表\r\n')
-        if form.STU_INFOR_LIST.data:
-            a = eval(form.STU_INFOR_LIST.description) | a
+        if form.STU_INTERN_LIST.data:
+            a = eval(form.STU_INTERN_LIST.description) | a
             p.append('学生实习信息列表\r\n')
-        if form.STU_INFOR_SEARCH.data:
-            a = eval(form.STU_INFOR_SEARCH.description) | a
+        if form.STU_INTERN_SEARCH.data:
+            a = eval(form.STU_INTERN_SEARCH.description) | a
             p.append('学生实习信息查看\r\n')
-        if form.STU_INFOR_EDIT.data:
-            a = eval(form.STU_INFOR_EDIT.description) | a
+        if form.STU_INTERN_EDIT.data:
+            a = eval(form.STU_INTERN_EDIT.description) | a
             p.append('学生实习信息编辑\r\n')
-        if form.STU_INFOR_CHECK.data:
-            a = eval(form.STU_INFOR_CHECK.description) | a
+        if form.STU_INTERN_CHECK.data:
+            a = eval(form.STU_INTERN_CHECK.description) | a
             p.append('学生实习信息审核\r\n')
-        if form.STU_INFOR_EXPORT.data:
-            a = eval(form.STU_INFOR_EXPORT.description) | a
+        if form.STU_INTERN_EXPORT.data:
+            a = eval(form.STU_INTERN_EXPORT.description) | a
             p.append('学生实习信息导出\r\n')
         if form.STU_JOUR_SEARCH.data:
             a = eval(form.STU_JOUR_SEARCH.description) | a
@@ -663,8 +962,8 @@ def addRole():
         if form.ADMIN.data:
             a = eval(form.ADMIN.description) | a
             p.append('管理\r\n')
-        if form.STU_INFOR_IMPORT.data:
-            a = eval(form.STU_INFOR_IMPORT.description) | a
+        if form.STU_INTERN_IMPORT.data:
+            a = eval(form.STU_INTERN_IMPORT.description) | a
             p.append('学生信息导入\r\n')
         if form.TEA_INFOR_IMPORT.data:
             a = eval(form.TEA_INFOR_IMPORT.description) | a

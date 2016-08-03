@@ -4,6 +4,7 @@
 {% block title %}添加学生实习信息{% endblock %}
 {% block head %}
     {{ super() }}
+    <!-- 选择多个教师 -->
     <script xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
         $(document).ready(function () {
             var i = 1;
@@ -78,33 +79,35 @@
     </div>
     <div class="panel">
         <div class="panel-body">
+        <!-- delete
             <div class="teaForm" style="display: None">
-                {{ form.hidden_tag() }}
-                {{ form.teaId.label }} {{ form.teaId(class="form-control",required='',placeholder="",
+                {{ schdirteaform.hidden_tag() }}
+                {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="",
             pattern="[0-9]{6}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
-                {{ form.teaName.label }} {{ form.teaName(class="form-control",required='',placeholder="",
+                {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="",
             pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
-                {{ form.teaDuty.label }} {{ form.teaDuty(class="form-control",required='',placeholder="",
+                {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="",
             oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                {{ form.teaPhone.label }} {{ form.teaPhone(class="form-control",required='',placeholder="") }}
-                {{ form.teaEmail.label }} {{ form.teaEmail(class="form-control",required='',placeholder="") }}
+                {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",required='',placeholder="") }}
+                {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control",required='',placeholder="") }}
                 </br></br>
             </div>
             <div class=" cteaForm" style="display: None">
-                {{ form.hidden_tag() }}
-                {{ form.cteaName.label }} {{ form.cteaName(class="form-control",required='',placeholder="",
+                {{ comdirteaform.hidden_tag() }}
+                {{ comdirteaform.cteaName.label }} {{ comdirteaform.cteaName(class="form-control",required='',placeholder="",
             pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                {{ form.cteaDuty.label }} {{ form.cteaDuty(class="form-control",required='',placeholder="",
+                {{ comdirteaform.cteaDuty.label }} {{ comdirteaform.cteaDuty(class="form-control",required='',placeholder="",
             oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                {{ form.cteaPhone.label }} {{ form.cteaPhone(class="form-control",required='',placeholder="") }}
-                {{ form.cteaEmail.label }} {{ form.cteaEmail(class="form-control",placeholder="") }}
+                {{ comdirteaform.cteaPhone.label }} {{ comdirteaform.cteaPhone(class="form-control",required='',placeholder="") }}
+                {{ comdirteaform.cteaEmail.label }} {{ comdirteaform.cteaEmail(class="form-control",placeholder="") }}
                 </br></br>
             </div>
+            -->
             <form method="POST" role="form" id="S1">
                 <h3>实习岗位信息</h3>
                 <div>
                     {{ iform.hidden_tag() }}
-                    {{ iform.adress.label }}{{ iform.adress(class="form-control",placeholder="",
+                    {{ iform.address.label }}{{ iform.address(class="form-control",placeholder="",
         oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                     </br>
                     {{ iform.task.label }}{{ iform.task(class="form-control",required='',placeholder="请输入实习任务",
@@ -118,15 +121,12 @@
                 </div>
                 <h3>校内指导老师信息</h3>
                 <div class="teaForm">
-                    {{ form.hidden_tag() }}
-                    {{ form.teaId.label }} {{ form.teaId(class="form-control",required='',placeholder="",
-            pattern="[0-9]{6}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
-                    {{ form.teaName.label }} {{ form.teaName(class="form-control",required='',placeholder="",
-            pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
-                    {{ form.teaDuty.label }} {{ form.teaDuty(class="form-control",required='',placeholder="",
-            oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                    {{ form.teaPhone.label }} {{ form.teaPhone(class="form-control",required='',placeholder="") }}
-                    {{ form.teaEmail.label }} {{ form.teaEmail(class="form-control",required='',placeholder="") }}
+                    {{ schdirteaform.hidden_tag() }}
+                    {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="", pattern="[0-9]{6}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
+                    {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="", pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
+                    {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                    {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",required='',placeholder="") }}
+                    {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control",required='',placeholder="") }}
                     </br></br>
                 </div>
                 <input type="button" id="addTea" class="btn" value="添加老师">
@@ -134,19 +134,22 @@
                 </br></br>
                 <h3>企业指导老师信息</h3>
                 <div class=" cteaForm">
-                    {{ form.hidden_tag() }}
-                    {{ form.cteaName.label }} {{ form.cteaName(class="form-control",required='',placeholder="",
-            oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                    {{ form.cteaDuty.label }} {{ form.cteaDuty(class="form-control",required='',placeholder="",
-            oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                    {{ form.cteaPhone.label }} {{ form.cteaPhone(class="form-control",required='',placeholder="") }}
-                    {{ form.cteaEmail.label }} {{ form.cteaEmail(class="form-control",cols=50,rows=5,placeholder="") }}
+                    {{ comdirteaform.hidden_tag() }}
+                    {{ comdirteaform.cteaName.label }} {{ comdirteaform.cteaName(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                    {{ comdirteaform.cteaDuty.label }} {{ comdirteaform.cteaDuty(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                    {{ comdirteaform.cteaPhone.label }} {{ comdirteaform.cteaPhone(class="form-control",required='',placeholder="") }}
+                    {{ comdirteaform.cteaEmail.label }} {{ comdirteaform.cteaEmail(class="form-control",cols=50,rows=5,placeholder="") }}
                     </br></br>
                 </div>
                 <input type="button" id="addcTea" class="btn" value="添加老师">
                 <input type="button" id="delcTea" class="btn" value="删除老师" style="display: none">
                 </br></br></br></br>
+                <!--
+                <button type="submit" />
+                -->
+            
                 {{ iform.submit(class="btn btn-success",type="submit",id='finish') }}
+
             </form>
             <br><br>
 {% endblock %}

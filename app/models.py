@@ -176,6 +176,7 @@ class InternshipInfor(db.Model):
     icheckTime = db.Column(db.DATETIME)
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
+    jourCheck = db.Column(db.Integer)
 
 
 # can be delete
@@ -234,6 +235,7 @@ class Journal(db.Model):
     jcheckTeaId = db.Column(db.String(8))
     jourCheck = db.Column(db.Integer, default=0)
     jcheckTime = db.Column(db.DATETIME)
+    internId = db.Column(db.Integer)
 
 
 class Permission:
@@ -247,16 +249,16 @@ class Permission:
     # 实习企业信息列表
     INTERNSHIP_LIST = 0X0000008
     # 学生实习信息列表
-    STU_INFOR_LIST = 0X0000010
+    STU_INTERN_LIST = 0X0000010
 
     # 学生实习信息查看
-    STU_INFOR_SEARCH = 0X0000020
+    STU_INTERN_SEARCH = 0X0000020
     # 学生实习信息编辑
-    STU_INFOR_EDIT = 0X0000040
+    STU_INTERN_EDIT = 0X0000040
     # 学生实习信息审核
-    STU_INFOR_CHECK = 0X0000080
+    STU_INTERN_CHECK = 0X0000080
     # 学生实习信息导出
-    STU_INFOR_EXPORT = 0X0000100
+    STU_INTERN_EXPORT = 0X0000100
 
     # 学生实习日志查询
     STU_JOUR_SEARCH = 0X0000200
@@ -286,7 +288,7 @@ class Permission:
     # 管理
     ADMIN = 0X0100000
     # 学生信息导入
-    STU_INFOR_IMPORT = 0X0200000
+    STU_INTERN_IMPORT = 0X0200000
     # 老师信息导入
     TEA_INFOR_IMPORT = 0X0400000
     # 权限管理

@@ -2,8 +2,38 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}个人实习信息{% endblock %}
-{% block head %}{{ super() }}{% endblock %}<!--先执行父模板-->
+{% block head %}
+    {{ super() }}
+    <!-- 确认删除窗口 -->
+    <script type="text/javascript">
+        function ComfirmDelete() {
+            $('#deleteToggle').modal();
+        }
+    </script>
+{% endblock %}<!--先执行父模板-->
 {% block page_content %}
+    
+    <!-- 删除确认窗口 -->
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                <h4 class="modal-title" style="color:red;" id="deleteModalLabel">删除操作将无法撤回,是否仍要删除</h4>
+            </div>
+            <div class="modal-footer">
+                <!-- 用form来获取数据 -->
+                <form action="/comfirmDeleteJournal_Intern" method="POST">
+                <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                <input type="hidden" name="internId" value="{{ internship.Id }}">
+                <input type="hidden" name="from_url" value="/stuIntern">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="submit" class="btn btn-primary" >删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+
     <table align="center" border="2" class="table-bordered">
         <caption>
             <h1>我的实习信息
@@ -12,12 +42,10 @@
                             data-toggle="dropdown">编辑<span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        {% if current_user.can(Permission.STU_INFOR_EXPORT) %}
-                            <li><a href="#">审核通过</a></li>
-                        {% endif %}
                         <li><a href="#">导出到Excel</a></li>
-                        <li><a href="#">修改</a></li>
-                        <li><a href="#">删除</a></li>
+                        <li><a href="{{ url_for('main.editStuIntern',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">
+                        修改</a></li>
+                        <li><a onClick="ComfirmDelete()">删除</a></li>
                     </ul>
                 </div>
             </h1>
@@ -86,7 +114,7 @@
                 <td height="50" width="300">E-mail</td>
             </tr>
             {% for tea in comdirtea %}
-                {% if tea.cteaName %}
+                {% if tea.teaName %}
                     <tr>
                         <td height="50">{{ tea.teaName }}</td>
                         <td height="50">{{ tea.teaDuty }}</td>
@@ -114,7 +142,7 @@
                         <td height="50">{{ tea.teaName }}</td>
                         <td height="50">{{ tea.teaDuty }}</td>
                         <td height="50">{{ tea.teaPhone }}</td>
-                        <td height="50" colspan="2">{{ tea.eaEmail }}</td>
+                        <td height="50" colspan="2">{{ tea.teaEmail }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}
@@ -133,4 +161,12 @@
             </tr>
         </table>
     </table>
+    <br>
+    <!-- 若没通过审核,则显示审核选项 -->
+    {% if internship.internCheck==0 %}
+    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+    <a href="{{ url_for('.stuIntern_comfirm', internId=internship.Id, stuId=student.stuId, internCheck=2) }}"><button class="btn btn-success">审核通过</button></a>
+    <a href="{{ url_for('.stuIntern_comfirm', internId=internship.Id, stuId=student.stuId, internCheck=1) }}"><button class="btn btn-primary">退回修改</button></a>
+    {% endif %}
+    {% endif %}
 {% endblock %}

@@ -23,17 +23,17 @@
             </tr>
             </thead>
             <tbody>
-            {% for com in comInfor %}
+            {% for com in comList %}
                 <tr>
-                    <td><a href="{{ url_for('.stuIntern',comId=com.companyId) }}">{{ com.companyName }}</a></td>
+                    <td><a href="{{ url_for('.stuIntern',comId=com.companyId, start=com.start) }}">{{ com.companyName }}</a></td>
                     <td>{{ com.comPhone }}</td>
                     <td>{{ com.start }}</td>
                     <td>{{ com.end }}</td>
-                    {% if com.comCheck==0 %}
+                    {% if com.internCheck==0 %}
                         <td>未审核</td>
                         <td>待审核</td>
                         <td><a href="#">修改</a><a href="#">|删除</a></td>
-                    {% elif com.comCheck==1 %}
+                    {% elif com.internCheck==1 %}
                         <td>被退回</td>
                         <td>待审核</td>
                         <td><a href="#">修改</a><a href="#">|删除</a></td>
