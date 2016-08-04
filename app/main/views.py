@@ -95,7 +95,6 @@ def stuInternList():
 
 
 
-
 '''
 # 学生的实习企业列表,id为stuId
 @main.route('/stuInternList', methods=['GET', 'POST'])
@@ -110,18 +109,6 @@ def stuInternList():
         where i.comId=c.comId and i.stuId=%s order BY i.internCheck, internStatus' % id)
     return render_template('stuInternList.html', stuName=stu.stuName, stuId=stu.stuId, Permission=Permission,comInfor=comInfor, journal=journal)
 '''
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -283,7 +270,7 @@ def addInternship():
 
             # 初始化实习日志
             internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
-            weeks = (end - start).days//7
+            weeks = end.isocalendar()[1] - start.isocalendar()[1] + 1
             if weeks > 1:
                 # 第一周. 因第一天未必是周一,所以需特别处理
                 journal = Journal(
@@ -297,7 +284,7 @@ def addInternship():
                 db.session.add(journal)
                 start = start + timedelta(days=(7 - start.isoweekday() + 1))
                 # 第二周至第 n|(n-1) 周
-                for weekNo in range(weeks-1):
+                for weekNo in range(weeks-2):
                     journal = Journal(
                         stuId = current_user.stuId,
                         comId = comId,
@@ -313,7 +300,7 @@ def addInternship():
                     journal = Journal(
                         stuId = current_user.stuId,
                         comId = comId,
-                        weekNo = weeks + 1,
+                        weekNo = weeks,
                         workStart = start,
                         workEnd = end,
                         internId = internId
@@ -378,6 +365,7 @@ def stuIntern_comfirm():
         internCheck = request.args.get('internCheck')
         stuId = request.args.get('stuId')
         db.session.execute('update InternshipInfor set internCheck=%s where Id=%s' % (internCheck,internId))
+        flash("实习申请审核成功")
     return redirect(url_for('.stuInternList',stuId=stuId))
 
 
@@ -432,19 +420,24 @@ def editStuIntern_schdirtea():
 
 
 # 修改实习信息 个人实习信息--实习岗位信息
-@main.route('/editStuIntern_intern', methods=["POST"])
+@main.route('/editStuIntern_intern', methods=["POST","GET"])
 @login_required
 def editStuIntern_intern():
+    if current_user.roleId == 0:
+        stuId = current_user.stuId
+    else:
+        stuId = request.form.get('stuId')
     task = request.form.get('task')
     address = request.form.get('address')
     start = request.form.get('start')
     end = request.form.get('end')
     time = datetime.now().date()
     internCheck = 0
-    stuId = current_user.stuId
     comId = request.form.get("comId")
-    if task is None or address is None or start is None or end is None or time is None or comId is None or stuId is None:
-        return redirect(url_for('.editStuIntern', start=start, comId=comId))
+    internId = request.form.get("internId")
+    if task is None or address is None or start is None or end is None or time is None or comId is None or stuId is None or internId is None:
+        flash("修改实习信息失败,请重试")
+        return redirect(url_for('.stuIntern', comId=comId, internId=internId, stuId=stuId))
     db.session.execute(' \
         update InternshipInfor set \
         task = "%s", \
@@ -453,16 +446,74 @@ def editStuIntern_intern():
         end = "%s", \
         time = "%s", \
         internCheck = %s \
-        where stuId=%s and comId=%s and start="%s"'
-        % (task, address, start, end, time, internCheck, stuId, comId, start)
+        where Id=%s'
+        % (task, address, start, end, time, internCheck, internId)
         )
-    return redirect(url_for('.stuIntern', comId=comId, start=start))
+
+    # 实习信息修改,日志跟随变动
+    # 先删除原来的日志
+    db.session.execute("delete from Journal where internId=%s"% internId)
+    # 初始化实习日志
+    weeks = end.isocalendar()[1] - start.isocalendar()[1] + 1
+    if weeks > 1:
+        # 第一周. 因第一天未必是周一,所以需特别处理
+        journal = Journal(
+            stuId = current_user.stuId,
+            comId = comId,
+            weekNo = 1,
+            workStart = start,
+            workEnd = start + timedelta(days=(7 - start.isoweekday())),
+            internId = internId
+            )
+        db.session.add(journal)
+        start = start + timedelta(days=(7 - start.isoweekday() + 1))
+        # 第二周至第 n|(n-1) 周
+        for weekNo in range(weeks-2):
+            journal = Journal(
+                stuId = current_user.stuId,
+                comId = comId,
+                weekNo = weekNo+2,
+                workStart = start,
+                workEnd = start + timedelta(days=6),
+                internId = internId
+                )
+            db.session.add(journal)
+            start = start + timedelta(days=7)
+        # 如果还有几天凑不成一周
+        if end >= start:
+            journal = Journal(
+                stuId = current_user.stuId,
+                comId = comId,
+                weekNo = weeks,
+                workStart = start,
+                workEnd = end,
+                internId = internId
+                )
+            db.session.add(journal)
+    else:
+        # 如果实习时间不满一周
+        journal = Journal(
+            stuId = current_user.stuId,
+            comId = comId,
+            weekNo = 1,
+            workStart = start,
+            workEnd = end,
+            internId = internId
+            )
+        db.session.add(journal)
+
+    flash("实习信息修改成功")
+    return redirect(url_for('.stuIntern', comId=comId, internId=internId, stuId=stuId))
 
 
 # 修改实习信息 个人实习信息--企业指导老师
 @main.route('/editStuIntern_comdirtea', methods=["POST"])
 @login_required
 def editStuIntern_comdirtea():
+    if current_user.roleId == 0:
+        stuId = current_user.stuId
+    else:
+        stuId = request.form.get('stuId')
     Id = request.form.get("Id")
     comId = request.form.get('comId')
     start = request.form.get('start')
@@ -470,8 +521,12 @@ def editStuIntern_comdirtea():
     teaDuty = request.form.get('cteaDuty')
     teaPhone = request.form.get('cteaPhone')
     teaEmail = request.form.get('cteaEmail')
-    if teaName is None or comId is None:
-        return redirect(url_for('.editStuIntern', start=start, comId=comId))
+    internId = request.form.get("internId")
+    print (internId)
+    print (stuId)
+    if teaName is None or comId is None or internId is None or stuId is None:
+        flash("修改实习信息失败,请重试")
+        return redirect(url_for('.stuIntern', comId=comId, internId=internId, stuId=stuId))
     db.session.execute(' \
         update ComDirTea set \
         teaName = "%s", \
@@ -481,8 +536,8 @@ def editStuIntern_comdirtea():
         where Id=%s'
         % (teaName, teaDuty, teaPhone, teaEmail, Id)
         )
-    # return redirect(url_for('.stuIntern',comId=comId, start=start))
-    return redirect(url_for('.editStuIntern',comId=comId, start=start))
+    flash("实习信息修改成功")
+    return redirect(url_for('.stuIntern', comId=comId, internId=internId, stuId=stuId))
 
 
 # 修改实习信息 删除整个实习页面
@@ -533,23 +588,10 @@ def interncompany():
     page = request.args.get('page', 1, type=int)
     if current_user.can(Permission.COM_INFOR_CHECK):
         pagination = ComInfor.query.order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
-
     else:
         pagination = ComInfor.query.filter_by(comCheck=2).order_by(ComInfor.students.desc()).paginate(page, per_page=8)
     comInfor = pagination.items
     return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination, comInfor=comInfor)
-
-'''
-# 实习日志列表
-@main.route('/myJournalList', methods=['GET'])
-@login_required
-def myJournalList():
-    comInfor = db.session.execute(
-        'select DISTINCT start,end,i.comId comId,comName from InternshipInfor i,ComInfor c \
-        where i.comId=c.comId and i.stuId=%s order BY i.internStatus  ' % current_user.stuId)
-    return render_template('myJournalList.html', comInfor=comInfor, Permission=Permission)
-'''
-
 
 # 填写实习日志
 @main.route('/addjournal/<int:comId>', methods=['GET', 'POST'])
@@ -582,23 +624,6 @@ def addjournal(comId):
             print('日志提交失败：', e)
             flash('提交失败！')
     return render_template('addjournal.html', Permission=Permission, form=form)
-
-
-# 个人日志详情
-@main.route('/myjournal/<int:comId>', methods=['GET'])
-@login_required
-def myjournal(comId):
-    # j = Journal.query.filter_by(stuId=current_user.stuId, comId=comId).count()
-    # 检查学生是否在该公司实习
-    isIntern = InternshipInfor.query.filter_by(stuId=current_user.stuId, comId=comId).count()
-    if isIntern > 0:
-        student = Student.query.filter_by(stuId=current_user.stuId).first()
-        com = ComInfor.query.filter_by(comId=comId).first()
-        journal = db.session.execute('select * from Journal where stuId=%s and comId=%s' % (current_user.stuId, comId))
-        return render_template('myjournal.html', Permission=Permission, journal=journal, student=student, com=com)
-    else:
-        # 返回实习日志列表
-        return redirect(url_for('.xJournalList'))
 
 
 # 管理员\普通教师\审核教师
@@ -753,25 +778,35 @@ def xJournal():
     internId = request.args.get('internId')
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     student = Student.query.filter_by(stuId=stuId).first()
-    journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
+    page = request.args.get('page', 1, type=int)
+    pagination = Journal.query.filter_by(internId=internId).paginate(page, per_page=1, error_out=False)
+    journal = pagination.items
+    # journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
     comInfor = db.session.execute('select * from ComInfor where comId in( \
         select comId from InternshipInfor where Id=%s)'% internId).first()
-    return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal, student=student, comInfor=comInfor)
+    # 未被审核的日志数
+    needCheck = Journal.query.filter_by(internId=internId, jourCheck=0).count()
+    if internship.internCheck == 2:
+        return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal, student=student, comInfor=comInfor, pagination=pagination, needCheck=needCheck, page=page)
+    else:
+        flash("实习申请需审核后,才能查看日志")
+        return redirect(url_for('.xJournalList', stuId=stuId))
+
 
 
 @main.route('/journal_comfirm', methods=['POST','GET'])
 @not_student_login
 def journal_comfirm():
+    # 参数都是为了跳转 /xJournal 做准备
     stuId = request.args.get('stuId')
-    internId = request.args.get('internId')
-    student = Student.query.filter_by(stuId=stuId).first()
-    internlist = db.session.execute('select * from InternshipInfor,ComInfor \
-        where InternshipInfor.comId=ComInfor.comId and stuId=%s order by internStatus'% stuId)
+    jourId = request.args.get('jourId')
     if current_user.can(Permission.STU_JOUR_CHECK):
-        db.session.execute('update InternshipInfor set jourCheck=1 where Id=%s'% internId)
-        return render_template('xJournalList.html',internlist=internlist, student=student, Permission=Permission)
+        db.session.execute('update Journal set jourCheck=1 where Id=%s'% jourId)
+        flash("日志审核通过")
+        return redirect(url_for('.xJournalList',stuId=stuId))
     else:
         # 非法操作,返回主页
+        flash('你没有审核日志的权限')
         return redirect('/')
 
 

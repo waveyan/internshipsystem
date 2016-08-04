@@ -236,6 +236,7 @@ class Journal(db.Model):
     jourCheck = db.Column(db.Integer, default=0)
     jcheckTime = db.Column(db.DATETIME)
     internId = db.Column(db.Integer)
+    opinion = db.Column(db.String(500),default='')
 
 
 class Permission:

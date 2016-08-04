@@ -43,8 +43,10 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="#">导出到Excel</a></li>
+                        {% if internship.internCheck != 2 or current_user.roleId==3 %}
                         <li><a href="{{ url_for('main.editStuIntern',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">
                         修改</a></li>
+                        {% endif %}
                         <li><a onClick="ComfirmDelete()">删除</a></li>
                     </ul>
                 </div>

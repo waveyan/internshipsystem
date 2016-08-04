@@ -119,6 +119,8 @@
             <th>实习地点</th>
             <td width="400" height="50" colspan="5">
             <input type="hidden" name="comId" value="{{ comInfor.comId }}">
+            <input type="hidden" name="internId" value="{{ internship.Id }}">
+            <input type="hidden" name="stuId" value="{{ student.stuId }}">
             {{ internform.address(class="form-control",required='', value=internship.address) }}</td></td>
         </tr>
         <tr>
@@ -157,6 +159,8 @@
                         {{ comdirteaform.hidden_tag() }}
                         <input type="hidden" name="comId" value="{{ comInfor.comId }}">
                         <input type="hidden" name="start" value="{{ internship.start }}">
+                        <input type="hidden" name="internId" value="{{ internship.Id }}">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
                         <input type="hidden" name="Id" value="{{ tea.Id }}">
                         <td height="50">{{ comdirteaform.cteaName(required='', value=tea.teaName) }}</td>
                         <td height="50">{{ comdirteaform.cteaDuty(required='', value=tea.teaDuty) }}</td>

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
 
 {% block head %}
     {{ super() }}
@@ -24,7 +25,7 @@
             <div class="modal-footer">
                 <!-- 用form来获取数据 -->
                 <form action="/comfirmDeleteJournal_Intern" method="POST">
-                <input type="hidden" name="internId" value="{{ journal[0].internId }}">
+                <input type="hidden" name="internId" value="{{ internship.Id }}">
                 <input type="hidden" name="from_url" value="/xJournal">
                 <input type="hidden" name="stuId" value="{{ student.stuId }}">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
@@ -53,20 +54,13 @@
                     <li><a onClick="ComfirmDelete()">删除</a></li>
                 </ul>
             </div>
-            <!--
-                <div style="text-align:right">
-                <span class="btn btn-danger">待审核...</span>
-                 </div>
-            -->
         </h1>
 
-        <!-- 日志审核 -->
-
-        {% if internship.jourCheck == 0 %}
-        <span class="btn btn-danger">待审核...</span><br><br>
-        <a href="{{ url_for('.journal_comfirm', internId=journal[0].internId, stuId=student.stuId) }}"><button class="btn btn-success">点击这里,审核通过</button></a>
+        <!-- 总体日志审核 -->
+        {% if needCheck == 0 %}
+        <div><span class="label label-info" >已审核</span></div>
         {% else %}
-        <div style="text-align:right"><span class="btn btn-info" >已审核</span></div>
+        <span class="label label-warning">待审核...</span>
         {% endif %}
         <br><br>
     
@@ -84,78 +78,93 @@
             <th width="200">实习单位</th>
             <td width="400" height="50">{{ comInfor.comName }}</td>
         </tr>
-    </table>
-    <table align="center" border="2" class="table-bordered">
         <tr>
-            <th height="50" colspan="2">时间</th>
-            <th height="50" align="center" colspan="3">实习内容</th>
+            <th width="200">实习期间</th>
+            <td height="50">{{ internship.start }} 至 {{ internship.end }} </td>
         </tr>
+    </table>
+    <br>
+    <table align="center" border="2" class="table-bordered">
 
         {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'七'} %}
         {% for jour in journal %}
-            {% set cur = jour.workStart.isoweekday() %}
-            {% set cur_end = jour.workEnd.isoweekday() %}
-            <tr>
-                <th width="200" height="50">第{{ jour.weekNo }}周</th>
-                <th width="100" height="50">星期</th>
-                <th width="900" height="50">工作内容</th>
-            </tr>
-            
-            {% if cur==1 and cur_end==7 %}
+                {% set cur = jour.workStart.isoweekday() %}
+                {% set cur_end = jour.workEnd.isoweekday() %}
                 <tr>
-                    <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
-                    <td height="50">一</td>
-                    <td height="50">{{ jour.mon }}</td>
+                    <th width="200" height="50">第{{ jour.weekNo }}周
+                    {% if jour.jourCheck == 0 %}
+                    <span class="label label-warning">待审核...</span>
+                    {% else %}
+                    <span class="label label-info" >已审核</span>
+                    {% endif %}
+                    </th>
+                    <th width="100" height="50">星期</th>
+                    <th width="900" height="50">工作内容</th>
                 </tr>
-                <tr>
-                    <th></th>
-                    <td height="50">二</td>
-                    <td height="50">{{ jour.tue }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td height="50">三</td>
-                    <td>{{ jour.wed }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td height="50">四</td>
-                    <td>{{ jour.thu }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td height="50">五</td>
-                    <td>{{ jour.fri }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td height="50">六</td>
-                    <td>{{ jour.sat }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td height="50">日</td>
-                    <td>{{ jour.sun }}</td>
-                </tr>
-            {% else %}
-                {% set weekday2var = {1:jour.mon, 2:jour.tue, 3:jour.wed, 4:jour.thu, 5:jour.fri, 6:jour.sat, 7:jour.sun} %}
-                <tr>
-                    <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
-                    <td height="50">{{ weekday2ch[cur] }}</td>
-                    <td height="50">{{ weekday2var[cur] }}</td>
-                </tr>
-                {% set cur_last = (jour.workEnd.isoweekday() - jour.workStart.isoweekday()) %}
-                {% for x in range(cur_last) %}
+                
+                {% if cur==1 and cur_end==7 %}
+                    <tr>
+                        <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
+                        <td height="50">一</td>
+                        <td height="50">{{ jour.mon }}</td>
+                    </tr>
                     <tr>
                         <th></th>
-                        <td height="50">{{ weekday2ch[cur+x+1] }}</td>
-                        <td height="50">{{ weekday2var[cur+x+1] }}</td>
+                        <td height="50">二</td>
+                        <td height="50">{{ jour.tue }}</td>
                     </tr>
-                {% endfor %}
-            {% endif %}
+                    <tr>
+                        <th></th>
+                        <td height="50">三</td>
+                        <td>{{ jour.wed }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">四</td>
+                        <td>{{ jour.thu }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">五</td>
+                        <td>{{ jour.fri }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">六</td>
+                        <td>{{ jour.sat }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">日</td>
+                        <td>{{ jour.sun }}</td>
+                    </tr>
+                {% else %}
+                {% set weekday2var = {1:jour.mon, 2:jour.tue, 3:jour.wed, 4:jour.thu, 5:jour.fri, 6:jour.   sat, 7:jour.sun} %}
+                    <tr>
+                        <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
+                        <td height="50">{{ weekday2ch[cur] }}</td>
+                        <td height="50">{{ weekday2var[cur] }}</td>
+                    </tr>
+                    {% set cur_last = (jour.workEnd.isoweekday() - jour.workStart.isoweekday()) %}
+                    {% for x in range(cur_last) %}
+                        <tr>
+                            <th></th>
+                            <td height="50">{{ weekday2ch[cur+x+1] }}</td>
+                            <td height="50">{{ weekday2var[cur+x+1] }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                <!-- 审核通过 -->  
+                {% if jour.jourCheck == 0 and current_user.can(Permission.STU_JOUR_CHECK) %}
+                    <br><br><a href="{{ url_for('.journal_comfirm', jourId=jour.Id, stuId=student.stuId) }}"><button class="btn btn-success">点击这里,通过审核</button></a><br><br>
+                {% endif %}
         {% endfor %}
     </table>
-    </br>
-    </br></br>
+         
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, '.xJournal',stuId=student.stuId, internId=internship.Id) }}
+        </div>
+    {% endif %}
 {% endblock %}
 

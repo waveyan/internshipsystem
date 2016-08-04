@@ -24,7 +24,7 @@
         <tbody>
         {% for intern in internlist %}
             <tr>
-                <td><a href="{{ url_for('.xJournal', internId=intern.Id, stuId=student.stuId) }}">我在{{ intern.comName}}的日子</a></td>
+                <td><a href="{{ url_for('.xJournal', internId=intern.Id, stuId=student.stuId) }}">我在{{ intern.comName}}的日子</a>
                 <td>{{ intern.start }}</td>
                 <td>{{ intern.end }}</td>
                 {% if intern.internStatus==0 %}
