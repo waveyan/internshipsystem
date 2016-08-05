@@ -8,6 +8,7 @@ from functools import wraps
 from flask import _request_ctx_stack, abort, current_app, flash, redirect, request, session, url_for, has_request_context
 from flask.ext.login import current_user
 
+
 # 此装饰器用于学生没有权限访问的页面
 def not_student_login(func):
     @wraps(func)
