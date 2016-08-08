@@ -1,7 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="959c95cc-e0c4-4e72-b949-0877b6d41b3b" name="默认的" comment="" />
+    <list default="true" id="959c95cc-e0c4-4e72-b949-0877b6d41b3b" name="默认的" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/internshipsystem-1.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/templates/editComInfor.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/templates/searchResult.html" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/app/templates/students.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/app/templates/stuinfor.html" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../StudentContest/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../../StudentContest/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../StudentContest/app/auth/views.py" afterPath="$PROJECT_DIR$/../../StudentContest/app/auth/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../StudentContest/app/main/views.py" afterPath="$PROJECT_DIR$/../../StudentContest/app/main/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../StudentContest/app/models.py" afterPath="$PROJECT_DIR$/../../StudentContest/app/models.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../StudentContest/log/StudentContest.log" afterPath="$PROJECT_DIR$/../../StudentContest/log/StudentContest.log" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/main/form.py" afterPath="$PROJECT_DIR$/app/main/form.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/main/views.py" afterPath="$PROJECT_DIR$/app/main/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models.py" afterPath="$PROJECT_DIR$/app/models.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/allcomCheck.html" afterPath="$PROJECT_DIR$/app/templates/allcomCheck.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/allcomDelete.html" afterPath="$PROJECT_DIR$/app/templates/allcomDelete.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/base.html" afterPath="$PROJECT_DIR$/app/templates/base.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/cominfor.html" afterPath="$PROJECT_DIR$/app/templates/cominfor.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/interncompany.html" afterPath="$PROJECT_DIR$/app/templates/interncompany.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/stuIntern.html" afterPath="$PROJECT_DIR$/app/templates/stuIntern.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/stuList.html" afterPath="$PROJECT_DIR$/app/templates/stuList.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/studentList.html" afterPath="$PROJECT_DIR$/app/templates/studentList.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/xJournal.html" afterPath="$PROJECT_DIR$/app/templates/xJournal.html" />
+    </list>
     <ignored path="Halo.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -15,6 +42,7 @@
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/Halo$manage__1_.coverage" NAME="manage (1) Coverage Results" MODIFIED="1468992527778" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="/" />
+    <SUITE FILE_PATH="coverage/internshipsystem-1$internshipsystem_1.coverage" NAME="internshipsystem-1 Coverage Results" MODIFIED="1470663404877" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Halo$manage.coverage" NAME="manage Coverage Results" MODIFIED="1469028842685" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="CreatePatchCommitExecutor">
@@ -32,7 +60,168 @@
     <favorites_list name="Halo" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="interncompany.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/templates/interncompany.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="57" column="38" selection-start-line="57" selection-start-column="38" selection-end-line="57" selection-end-column="38" />
+              <folding>
+                <marker date="1470664313255" expanded="false" signature="7273:7294" ph="..." />
+                <marker date="1470664313255" expanded="false" signature="9281:9302" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="form.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/main/form.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="288">
+              <caret line="22" column="3" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/main/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="278">
+              <caret line="790" column="56" selection-start-line="790" selection-start-column="56" selection-end-line="790" selection-end-column="56" />
+              <folding>
+                <element signature="e#0#77#0" expanded="true" />
+                <element signature="e#1953#2840#0" expanded="false" />
+                <element signature="e#2843#3495#1" expanded="false" />
+                <element signature="e#3595#3914#0" expanded="false" />
+                <element signature="e#4018#6011#0" expanded="false" />
+                <element signature="e#6130#12645#0" expanded="false" />
+                <element signature="e#12747#13465#0" expanded="false" />
+                <element signature="e#13586#13975#0" expanded="false" />
+                <element signature="e#14083#15215#0" expanded="false" />
+                <element signature="e#15218#15970#1" expanded="false" />
+                <element signature="e#16107#18820#0" expanded="false" />
+                <element signature="e#18956#20022#0" expanded="false" />
+                <element signature="e#20161#21202#0" expanded="false" />
+                <element signature="e#21320#21476#0" expanded="false" />
+                <element signature="e#21584#29824#0" expanded="false" />
+                <element signature="e#22075#22084#0" expanded="false" />
+                <element signature="e#31432#32411#0" expanded="false" />
+                <element signature="e#32555#33303#0" expanded="false" />
+                <element signature="e#33440#34049#0" expanded="false" />
+                <element signature="e#34177#34882#0" expanded="false" />
+                <element signature="e#34991#35810#0" expanded="false" />
+                <element signature="e#37752#38599#0" expanded="false" />
+                <element signature="e#38724#39814#0" expanded="false" />
+                <element signature="e#39826#40479#1" expanded="false" />
+                <element signature="e#40605#41179#0" expanded="false" />
+                <element signature="e#41303#41762#0" expanded="false" />
+                <element signature="e#41871#43074#0" expanded="false" />
+                <element signature="e#43180#43590#0" expanded="false" />
+                <element signature="e#43593#44089#1" expanded="false" />
+                <element signature="e#44193#44594#0" expanded="false" />
+                <element signature="e#44696#45572#0" expanded="false" />
+                <element signature="e#45676#46177#0" expanded="false" />
+                <element signature="e#46279#46928#0" expanded="false" />
+                <element signature="e#47026#47209#0" expanded="false" />
+                <element signature="e#47247#47345#0" expanded="false" />
+                <element signature="e#47481#51379#0" expanded="false" />
+                <element signature="e#51418#51515#0" expanded="false" />
+                <element signature="e#51616#59694#0" expanded="false" />
+                <marker date="1470664223399" expanded="true" signature="2403:2666" ph="select *, Co... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="13808:13859" ph="update Inter... " />
+                <marker date="1470664223399" expanded="true" signature="16807:16998" ph="update Inter... " />
+                <marker date="1470664223399" expanded="true" signature="17169:17204" ph="delete from " />
+                <marker date="1470664223399" expanded="true" signature="19672:19816" ph="update ComDi... " />
+                <marker date="1470664223399" expanded="true" signature="20419:20467" ph="delete from " />
+                <marker date="1470664223399" expanded="true" signature="20538:20588" ph="delete from " />
+                <marker date="1470664223399" expanded="true" signature="24155:24195" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="24403:24460" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="25527:25567" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="25737:25794" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="26861:26901" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="27071:27128" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="28195:28235" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="28405:28462" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="28803:28843" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="29310:29367" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="29462:29496" ph="select DISTI... Student" />
+                <marker date="1470664223399" expanded="true" signature="29535:29569" ph="select DISTI... Student" />
+                <marker date="1470664223399" expanded="false" signature="29943:30720" ph="..." />
+                <marker date="1470664223399" expanded="true" signature="36422:36467" ph="update ComIn... " />
+                <marker date="1470664223399" expanded="false" signature="36738:37641" ph="..." />
+                <marker date="1470664223399" expanded="true" signature="37269:37289" ph="delete from " />
+                <marker date="1470664223399" expanded="true" signature="37269:37295" ph="delete from " />
+                <marker date="1470664223399" expanded="true" signature="37269:37302" ph="delete from " />
+                <marker date="1470664223399" expanded="true" signature="37269:37304" ph="delete from " />
+                <marker date="1470664223399" expanded="true" signature="37269:37314" ph="delete from " />
+                <marker date="1470664223399" expanded="true" signature="38394:38429" ph="delete from " />
+                <marker date="1470664223399" expanded="true" signature="40129:40323" ph="select DISTI... " />
+                <marker date="1470664223399" expanded="true" signature="41515:41641" ph="select * fro... InternshipInfor" />
+                <marker date="1470664223399" expanded="true" signature="42457:42552" ph="select * fro... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="42506:42549" ph="select comId... InternshipInfor" />
+                <marker date="1470664223399" expanded="true" signature="43363:43403" ph="update Journ... " />
+                <marker date="1470664223399" expanded="true" signature="43906:43953" ph="select * fro... Journal" />
+                <marker date="1470664223399" expanded="true" signature="53769:53809" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="53974:54031" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="55341:55381" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="55506:55563" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="56873:56913" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="57038:57095" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="58396:58436" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="58561:58618" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="58844:58884" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="59086:59143" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="59310:59368" ph="select DISTI... ComInfor" />
+                <marker date="1470664223399" expanded="true" signature="59485:59543" ph="select DISTI... ComInfor" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="searchResult.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/searchResult.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="450">
+              <caret line="28" column="38" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="allcomCheck.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/allcomCheck.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="414">
+              <caret line="86" column="26" selection-start-line="86" selection-start-column="26" selection-end-line="86" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="allcomDelete.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/allcomDelete.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="303">
+              <caret line="78" column="56" selection-start-line="78" selection-start-column="56" selection-end-line="78" selection-end-column="56" />
+              <folding>
+                <element signature="e#2747#2778#0#HTML" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -42,24 +231,40 @@
         <option value="&lt;29d116d9-09f8-4bd3-8f2a-f796b717dc03&gt;/home/bloom/InternshipSystem/manage.py" />
         <option value="$PROJECT_DIR$/manage.py" />
         <option value="$PROJECT_DIR$/config.py" />
+        <option value="$PROJECT_DIR$/app/templates/studentList.html" />
+        <option value="$PROJECT_DIR$/app/templates/stuList.html" />
         <option value="$PROJECT_DIR$/app/models.py" />
+        <option value="$PROJECT_DIR$/app/templates/xJournal.html" />
+        <option value="$PROJECT_DIR$/app/templates/com_filter.html" />
+        <option value="$PROJECT_DIR$/app/templates/com_filter_asc.html" />
+        <option value="$PROJECT_DIR$/app/templates/com_filter_desc.html" />
+        <option value="$PROJECT_DIR$/app/templates/base.html" />
+        <option value="$PROJECT_DIR$/app/templates/stuIntern.html" />
+        <option value="$PROJECT_DIR$/app/templates/editCom.html" />
+        <option value="$PROJECT_DIR$/app/templates/cominfor.html" />
+        <option value="$PROJECT_DIR$/app/templates/editComInfor.html" />
         <option value="$PROJECT_DIR$/app/main/form.py" />
+        <option value="$PROJECT_DIR$/app/templates/allcomCheck.html" />
+        <option value="$PROJECT_DIR$/app/templates/allcomDelete.html" />
         <option value="$PROJECT_DIR$/app/main/views.py" />
+        <option value="$PROJECT_DIR$/app/templates/searchResult.html" />
+        <option value="$PROJECT_DIR$/app/templates/interncompany.html" />
       </list>
     </option>
   </component>
-  <component name="JsBuildToolGruntFileManager" detection-done="true" />
-  <component name="JsBuildToolPackageJson" detection-done="true" />
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="61" />
-    <option name="y" value="-8" />
-    <option name="width" value="1867" />
-    <option name="height" value="1096" />
+    <option name="x" value="65" />
+    <option name="y" value="24" />
+    <option name="width" value="1301" />
+    <option name="height" value="744" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
     <OptionsSetting value="true" id="Checkout" />
@@ -72,8 +277,8 @@
     <OptionsSetting value="true" id="更新" />
     <OptionsSetting value="true" id="状态" />
     <OptionsSetting value="true" id="编辑" />
-    <ConfirmationsSetting value="0" id="添加" />
-    <ConfirmationsSetting value="0" id="移除" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -90,18 +295,60 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Halo" />
+              <option name="myItemId" value="internshipsystem-1" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internshipsystem-1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internshipsystem-1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internshipsystem-1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internshipsystem-1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internshipsystem-1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internshipsystem-1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="templates" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -113,6 +360,8 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../StudentContest" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -122,43 +371,12 @@
       </console-settings>
     </option>
   </component>
-  <component name="RunManager" selected="Python.manage">
-    <configuration default="false" name="manage" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="Halo" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manage.py" />
-      <option name="PARAMETERS" value="runserver" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="manage (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="ssh://bloom@192.168.1.170:22/home/bloom/InternshipSystem/py3venv/bin/python3" />
-      <option name="WORKING_DIRECTORY" value="/" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="Halo" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="&lt;29d116d9-09f8-4bd3-8f2a-f796b717dc03&gt;/home/bloom/InternshipSystem/manage.py" />
-      <option name="PARAMETERS" value="runserver" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.internshipsystem-1">
     <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -182,34 +400,6 @@
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
       <method />
     </configuration>
-    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="Halo" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="ADDITIONAL_ARGS" value="" />
-      <method />
-    </configuration>
-    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="Halo" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="ADDITIONAL_ARGS" value="" />
-      <method />
-    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -228,7 +418,21 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <module name="internshipsystem-1" />
+      <method />
+    </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
       <node-options />
       <gulpfile />
       <tasks />
@@ -239,6 +443,7 @@
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
       <command value="run-script" />
       <scripts />
+      <node-interpreter value="project" />
       <envs />
       <method />
     </configuration>
@@ -352,18 +557,31 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <list size="2">
-      <item index="0" class="java.lang.String" itemvalue="Python.manage" />
-      <item index="1" class="java.lang.String" itemvalue="Python.manage (1)" />
+    <configuration default="false" name="internshipsystem-1" type="PythonConfigurationType" factoryName="Python" singleton="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="$PROJECT_DIR$/py3venv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="internshipsystem-1" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manage.py" />
+      <option name="PARAMETERS" value="runserver" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Python.internshipsystem-1" />
     </list>
-    <recent_temporary>
-      <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="Python.manage" />
-        <item index="1" class="java.lang.String" itemvalue="Python.manage (1)" />
-      </list>
-    </recent_temporary>
   </component>
-  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -372,39 +590,68 @@
       <changelist id="959c95cc-e0c4-4e72-b949-0877b6d41b3b" name="默认的" comment="" />
       <created>1468910417063</created>
       <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
       <updated>1468910417063</updated>
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="61" y="-8" width="1867" height="1096" extended-state="7" />
-    <editor active="false" />
+    <frame x="65" y="24" width="1301" height="744" extended-state="6" />
+    <editor active="true" />
     <layout>
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15378486" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21992032" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="调试" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32987553" sideWeight="0.5019369" order="14" side_tool="true" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32953367" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32987553" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32987553" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="运行" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32987553" sideWeight="0.4980631" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15384616" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10570005" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="版本控制" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32987553" sideWeight="0.5019369" order="15" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32982844" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32987553" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4814815" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="数据库" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32982844" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32987553" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="版本控制" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="数据库" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32982844" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="调试" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32953367" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="运行" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32987553" sideWeight="0.4980631" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3287037" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="找到" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329849" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+    </layout>
+    <layout-to-restore>
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32987553" sideWeight="0.5019369" order="14" side_tool="true" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15378486" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="版本控制" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32982844" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="数据库" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32982844" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="调试" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32953367" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32987553" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4814815" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32987553" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="运行" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32987553" sideWeight="0.4980631" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21992032" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3287037" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="找到" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329849" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-    </layout>
+    </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -418,7 +665,734 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="10" />
+    </breakpoint-manager>
     <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/app/templates/interncompany.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3384">
+          <caret line="188" column="32" selection-start-line="188" selection-start-column="32" selection-end-line="188" selection-end-column="32" />
+          <folding>
+            <marker date="1470664313255" expanded="false" signature="7273:7294" ph="..." />
+            <marker date="1470664313255" expanded="false" signature="9281:9302" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/studentList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="27" column="93" selection-start-line="27" selection-start-column="93" selection-end-line="27" selection-end-column="93" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/stuList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1134">
+          <caret line="63" column="23" selection-start-line="63" selection-start-column="23" selection-end-line="63" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/main/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#77#0" expanded="true" />
+            <element signature="e#1953#2840#0" expanded="false" />
+            <element signature="e#2843#3495#1" expanded="false" />
+            <element signature="e#3595#3914#0" expanded="false" />
+            <element signature="e#4018#6011#0" expanded="false" />
+            <element signature="e#6130#12645#0" expanded="false" />
+            <element signature="e#12747#13465#0" expanded="false" />
+            <element signature="e#13586#13975#0" expanded="false" />
+            <element signature="e#14083#15215#0" expanded="false" />
+            <element signature="e#15218#15970#1" expanded="false" />
+            <element signature="e#16107#18820#0" expanded="false" />
+            <element signature="e#18956#20022#0" expanded="false" />
+            <element signature="e#20161#21202#0" expanded="false" />
+            <element signature="e#21320#21476#0" expanded="false" />
+            <element signature="e#21584#29824#0" expanded="false" />
+            <element signature="e#22075#22084#0" expanded="false" />
+            <element signature="e#31432#32411#0" expanded="false" />
+            <element signature="e#32555#33303#0" expanded="false" />
+            <element signature="e#33440#34049#0" expanded="false" />
+            <element signature="e#34177#34882#0" expanded="false" />
+            <element signature="e#34991#35810#0" expanded="false" />
+            <element signature="e#37752#38599#0" expanded="false" />
+            <element signature="e#38724#39814#0" expanded="false" />
+            <element signature="e#39826#40479#1" expanded="false" />
+            <element signature="e#40605#41179#0" expanded="false" />
+            <element signature="e#41303#41762#0" expanded="false" />
+            <element signature="e#41871#43074#0" expanded="false" />
+            <element signature="e#43180#43590#0" expanded="false" />
+            <element signature="e#43593#44089#1" expanded="false" />
+            <element signature="e#44193#44594#0" expanded="false" />
+            <element signature="e#44696#45572#0" expanded="false" />
+            <element signature="e#45676#46177#0" expanded="false" />
+            <element signature="e#46279#46928#0" expanded="false" />
+            <element signature="e#47026#47209#0" expanded="false" />
+            <element signature="e#47247#47345#0" expanded="false" />
+            <element signature="e#47481#51379#0" expanded="false" />
+            <element signature="e#51418#51515#0" expanded="false" />
+            <element signature="e#51616#59694#0" expanded="false" />
+            <marker date="1470664223399" expanded="true" signature="2403:2666" ph="select *, Co... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="13808:13859" ph="update Inter... " />
+            <marker date="1470664223399" expanded="true" signature="16807:16998" ph="update Inter... " />
+            <marker date="1470664223399" expanded="true" signature="17169:17204" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="19672:19816" ph="update ComDi... " />
+            <marker date="1470664223399" expanded="true" signature="20419:20467" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="20538:20588" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="24155:24195" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="24403:24460" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="25527:25567" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="25737:25794" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="26861:26901" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="27071:27128" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28195:28235" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28405:28462" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28803:28843" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="29310:29367" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="29462:29496" ph="select DISTI... Student" />
+            <marker date="1470664223399" expanded="true" signature="29535:29569" ph="select DISTI... Student" />
+            <marker date="1470664223399" expanded="false" signature="29943:30720" ph="..." />
+            <marker date="1470664223399" expanded="true" signature="36422:36467" ph="update ComIn... " />
+            <marker date="1470664223399" expanded="false" signature="36738:37641" ph="..." />
+            <marker date="1470664223399" expanded="true" signature="37269:37289" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37295" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37302" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37304" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37314" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="38394:38429" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="40129:40323" ph="select DISTI... " />
+            <marker date="1470664223399" expanded="true" signature="41515:41641" ph="select * fro... InternshipInfor" />
+            <marker date="1470664223399" expanded="true" signature="42457:42552" ph="select * fro... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="42506:42549" ph="select comId... InternshipInfor" />
+            <marker date="1470664223399" expanded="true" signature="43363:43403" ph="update Journ... " />
+            <marker date="1470664223399" expanded="true" signature="43906:43953" ph="select * fro... Journal" />
+            <marker date="1470664223399" expanded="true" signature="53769:53809" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="53974:54031" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="55341:55381" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="55506:55563" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="56873:56913" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="57038:57095" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58396:58436" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58561:58618" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58844:58884" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59086:59143" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59310:59368" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59485:59543" ph="select DISTI... ComInfor" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/stuIntern.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3222">
+          <caret line="179" column="46" selection-start-line="179" selection-start-column="46" selection-end-line="179" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/cominfor.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1098">
+          <caret line="61" column="28" selection-start-line="61" selection-start-column="28" selection-end-line="61" selection-end-column="28" />
+          <folding>
+            <element signature="e#3786#3804#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/stuInternList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/main/form.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2142">
+          <caret line="122" column="38" selection-start-line="122" selection-start-column="38" selection-end-line="122" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2736">
+          <caret line="155" column="65" selection-start-line="155" selection-start-column="65" selection-end-line="155" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1926">
+          <caret line="107" column="10" selection-start-line="107" selection-start-column="10" selection-end-line="107" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/interncompany.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1470664313255" expanded="false" signature="7273:7294" ph="..." />
+            <marker date="1470664313255" expanded="false" signature="9281:9302" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/studentList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="972">
+          <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/stuList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/main/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1530">
+          <caret line="92" column="40" selection-start-line="92" selection-start-column="40" selection-end-line="92" selection-end-column="40" />
+          <folding>
+            <element signature="e#0#77#0" expanded="true" />
+            <element signature="e#1953#2840#0" expanded="false" />
+            <element signature="e#2843#3495#1" expanded="false" />
+            <element signature="e#3595#3914#0" expanded="false" />
+            <element signature="e#4018#6011#0" expanded="false" />
+            <element signature="e#6130#12645#0" expanded="false" />
+            <element signature="e#12747#13465#0" expanded="false" />
+            <element signature="e#13586#13975#0" expanded="false" />
+            <element signature="e#14083#15215#0" expanded="false" />
+            <element signature="e#15218#15970#1" expanded="false" />
+            <element signature="e#16107#18820#0" expanded="false" />
+            <element signature="e#18956#20022#0" expanded="false" />
+            <element signature="e#20161#21202#0" expanded="false" />
+            <element signature="e#21320#21476#0" expanded="false" />
+            <element signature="e#21584#29824#0" expanded="false" />
+            <element signature="e#22075#22084#0" expanded="false" />
+            <element signature="e#31432#32411#0" expanded="false" />
+            <element signature="e#32555#33303#0" expanded="false" />
+            <element signature="e#33440#34049#0" expanded="false" />
+            <element signature="e#34177#34882#0" expanded="false" />
+            <element signature="e#34991#35810#0" expanded="false" />
+            <element signature="e#37752#38599#0" expanded="false" />
+            <element signature="e#38724#39814#0" expanded="false" />
+            <element signature="e#39826#40479#1" expanded="false" />
+            <element signature="e#40605#41179#0" expanded="false" />
+            <element signature="e#41303#41762#0" expanded="false" />
+            <element signature="e#41871#43074#0" expanded="false" />
+            <element signature="e#43180#43590#0" expanded="false" />
+            <element signature="e#43593#44089#1" expanded="false" />
+            <element signature="e#44193#44594#0" expanded="false" />
+            <element signature="e#44696#45572#0" expanded="false" />
+            <element signature="e#45676#46177#0" expanded="false" />
+            <element signature="e#46279#46928#0" expanded="false" />
+            <element signature="e#47026#47209#0" expanded="false" />
+            <element signature="e#47247#47345#0" expanded="false" />
+            <element signature="e#47481#51379#0" expanded="false" />
+            <element signature="e#51418#51515#0" expanded="false" />
+            <element signature="e#51616#59694#0" expanded="false" />
+            <marker date="1470664223399" expanded="true" signature="2403:2666" ph="select *, Co... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="13808:13859" ph="update Inter... " />
+            <marker date="1470664223399" expanded="true" signature="16807:16998" ph="update Inter... " />
+            <marker date="1470664223399" expanded="true" signature="17169:17204" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="19672:19816" ph="update ComDi... " />
+            <marker date="1470664223399" expanded="true" signature="20419:20467" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="20538:20588" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="24155:24195" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="24403:24460" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="25527:25567" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="25737:25794" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="26861:26901" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="27071:27128" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28195:28235" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28405:28462" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28803:28843" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="29310:29367" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="29462:29496" ph="select DISTI... Student" />
+            <marker date="1470664223399" expanded="true" signature="29535:29569" ph="select DISTI... Student" />
+            <marker date="1470664223399" expanded="false" signature="29943:30720" ph="..." />
+            <marker date="1470664223399" expanded="true" signature="36422:36467" ph="update ComIn... " />
+            <marker date="1470664223399" expanded="false" signature="36738:37641" ph="..." />
+            <marker date="1470664223399" expanded="true" signature="37269:37289" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37295" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37302" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37304" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37314" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="38394:38429" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="40129:40323" ph="select DISTI... " />
+            <marker date="1470664223399" expanded="true" signature="41515:41641" ph="select * fro... InternshipInfor" />
+            <marker date="1470664223399" expanded="true" signature="42457:42552" ph="select * fro... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="42506:42549" ph="select comId... InternshipInfor" />
+            <marker date="1470664223399" expanded="true" signature="43363:43403" ph="update Journ... " />
+            <marker date="1470664223399" expanded="true" signature="43906:43953" ph="select * fro... Journal" />
+            <marker date="1470664223399" expanded="true" signature="53769:53809" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="53974:54031" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="55341:55381" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="55506:55563" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="56873:56913" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="57038:57095" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58396:58436" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58561:58618" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58844:58884" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59086:59143" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59310:59368" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59485:59543" ph="select DISTI... ComInfor" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/stuInternList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/main/form.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2142">
+          <caret line="122" column="38" selection-start-line="122" selection-start-column="38" selection-end-line="122" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/interncompany.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2718">
+          <caret line="151" column="77" selection-start-line="151" selection-start-column="77" selection-end-line="151" selection-end-column="77" />
+          <folding>
+            <marker date="1470664313255" expanded="false" signature="7273:7294" ph="..." />
+            <marker date="1470664313255" expanded="false" signature="9281:9302" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/studentList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="972">
+          <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/stuList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/main/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#77#0" expanded="true" />
+            <element signature="e#1953#2840#0" expanded="false" />
+            <element signature="e#2843#3495#1" expanded="false" />
+            <element signature="e#3595#3914#0" expanded="false" />
+            <element signature="e#4018#6011#0" expanded="false" />
+            <element signature="e#6130#12645#0" expanded="false" />
+            <element signature="e#12747#13465#0" expanded="false" />
+            <element signature="e#13586#13975#0" expanded="false" />
+            <element signature="e#14083#15215#0" expanded="false" />
+            <element signature="e#15218#15970#1" expanded="false" />
+            <element signature="e#16107#18820#0" expanded="false" />
+            <element signature="e#18956#20022#0" expanded="false" />
+            <element signature="e#20161#21202#0" expanded="false" />
+            <element signature="e#21320#21476#0" expanded="false" />
+            <element signature="e#21584#29824#0" expanded="false" />
+            <element signature="e#22075#22084#0" expanded="false" />
+            <element signature="e#31432#32411#0" expanded="false" />
+            <element signature="e#32555#33303#0" expanded="false" />
+            <element signature="e#33440#34049#0" expanded="false" />
+            <element signature="e#34177#34882#0" expanded="false" />
+            <element signature="e#34991#35810#0" expanded="false" />
+            <element signature="e#37752#38599#0" expanded="false" />
+            <element signature="e#38724#39814#0" expanded="false" />
+            <element signature="e#39826#40479#1" expanded="false" />
+            <element signature="e#40605#41179#0" expanded="false" />
+            <element signature="e#41303#41762#0" expanded="false" />
+            <element signature="e#41871#43074#0" expanded="false" />
+            <element signature="e#43180#43590#0" expanded="false" />
+            <element signature="e#43593#44089#1" expanded="false" />
+            <element signature="e#44193#44594#0" expanded="false" />
+            <element signature="e#44696#45572#0" expanded="false" />
+            <element signature="e#45676#46177#0" expanded="false" />
+            <element signature="e#46279#46928#0" expanded="false" />
+            <element signature="e#47026#47209#0" expanded="false" />
+            <element signature="e#47247#47345#0" expanded="false" />
+            <element signature="e#47481#51379#0" expanded="false" />
+            <element signature="e#51418#51515#0" expanded="false" />
+            <element signature="e#51616#59694#0" expanded="false" />
+            <marker date="1470664223399" expanded="true" signature="2403:2666" ph="select *, Co... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="13808:13859" ph="update Inter... " />
+            <marker date="1470664223399" expanded="true" signature="16807:16998" ph="update Inter... " />
+            <marker date="1470664223399" expanded="true" signature="17169:17204" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="19672:19816" ph="update ComDi... " />
+            <marker date="1470664223399" expanded="true" signature="20419:20467" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="20538:20588" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="24155:24195" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="24403:24460" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="25527:25567" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="25737:25794" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="26861:26901" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="27071:27128" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28195:28235" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28405:28462" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28803:28843" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="29310:29367" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="29462:29496" ph="select DISTI... Student" />
+            <marker date="1470664223399" expanded="true" signature="29535:29569" ph="select DISTI... Student" />
+            <marker date="1470664223399" expanded="false" signature="29943:30720" ph="..." />
+            <marker date="1470664223399" expanded="true" signature="36422:36467" ph="update ComIn... " />
+            <marker date="1470664223399" expanded="false" signature="36738:37641" ph="..." />
+            <marker date="1470664223399" expanded="true" signature="37269:37289" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37295" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37302" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37304" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37314" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="38394:38429" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="40129:40323" ph="select DISTI... " />
+            <marker date="1470664223399" expanded="true" signature="41515:41641" ph="select * fro... InternshipInfor" />
+            <marker date="1470664223399" expanded="true" signature="42457:42552" ph="select * fro... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="42506:42549" ph="select comId... InternshipInfor" />
+            <marker date="1470664223399" expanded="true" signature="43363:43403" ph="update Journ... " />
+            <marker date="1470664223399" expanded="true" signature="43906:43953" ph="select * fro... Journal" />
+            <marker date="1470664223399" expanded="true" signature="53769:53809" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="53974:54031" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="55341:55381" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="55506:55563" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="56873:56913" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="57038:57095" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58396:58436" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58561:58618" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58844:58884" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59086:59143" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59310:59368" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59485:59543" ph="select DISTI... ComInfor" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1176">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/studentList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="27" column="93" selection-start-line="27" selection-start-column="93" selection-end-line="27" selection-end-column="93" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/stuList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1134">
+          <caret line="63" column="23" selection-start-line="63" selection-start-column="23" selection-end-line="63" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/stuinfor.html" />
+    <entry file="file://$PROJECT_DIR$/app/templates/students.html" />
+    <entry file="file://$PROJECT_DIR$/app/templates/stuInternList.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-593">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/py3venv/lib/python3.4/site-packages/flask/helpers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="98">
+          <caret line="341" column="4" selection-start-line="341" selection-start-column="4" selection-end-line="341" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/xJournal.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="51" column="38" selection-start-line="51" selection-start-column="38" selection-end-line="51" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/com_filter_asc.html" />
+    <entry file="file://$PROJECT_DIR$/app/templates/com_filter_desc.html" />
+    <entry file="file://$PROJECT_DIR$/app/templates/_macros.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/py3venv/lib/python3.4/site-packages/flask_sqlalchemy/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="395" column="8" selection-start-line="395" selection-start-column="8" selection-end-line="395" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1288">
+          <caret line="290" column="21" selection-start-line="290" selection-start-column="21" selection-end-line="290" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="93" column="64" selection-start-line="93" selection-start-column="64" selection-end-line="93" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/addinternship.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="96" column="97" selection-start-line="96" selection-start-column="77" selection-end-line="96" selection-end-column="97" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/stuIntern.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="31" column="53" selection-start-line="31" selection-start-column="53" selection-end-line="31" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/editStuIntern.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="397">
+          <caret line="214" column="17" selection-start-line="214" selection-start-column="17" selection-end-line="214" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/cominfor.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="24" column="70" selection-start-line="24" selection-start-column="70" selection-end-line="24" selection-end-column="70" />
+          <folding>
+            <element signature="e#3786#3804#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../StudentContest/app/templates/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-54">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../StudentContest/app/main/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-324">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1466755890141" expanded="true" signature="12846:12957" ph="select stude... StuAward" />
+            <marker date="1466755890141" expanded="true" signature="15165:15203" ph="select major... getAwardStudentMajor" />
+            <marker date="1466755890141" expanded="true" signature="16788:16831" ph="delete from " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/editComInfor.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="19" column="24" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../StudentContest/app/templates/searchResult.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1711">
+          <caret line="110" column="14" selection-start-line="110" selection-start-column="14" selection-end-line="110" selection-end-column="14" />
+          <folding>
+            <element signature="e#3405#3425#0#HTML" expanded="true" />
+            <element signature="e#3811#3847#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/allcomCheck.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="86" column="26" selection-start-line="86" selection-start-column="26" selection-end-line="86" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/allcomDelete.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="78" column="56" selection-start-line="78" selection-start-column="56" selection-end-line="78" selection-end-column="56" />
+          <folding>
+            <element signature="e#2747#2778#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/main/form.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="22" column="3" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/main/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="278">
+          <caret line="790" column="56" selection-start-line="790" selection-start-column="56" selection-end-line="790" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#77#0" expanded="true" />
+            <element signature="e#1953#2840#0" expanded="false" />
+            <element signature="e#2843#3495#1" expanded="false" />
+            <element signature="e#3595#3914#0" expanded="false" />
+            <element signature="e#4018#6011#0" expanded="false" />
+            <element signature="e#6130#12645#0" expanded="false" />
+            <element signature="e#12747#13465#0" expanded="false" />
+            <element signature="e#13586#13975#0" expanded="false" />
+            <element signature="e#14083#15215#0" expanded="false" />
+            <element signature="e#15218#15970#1" expanded="false" />
+            <element signature="e#16107#18820#0" expanded="false" />
+            <element signature="e#18956#20022#0" expanded="false" />
+            <element signature="e#20161#21202#0" expanded="false" />
+            <element signature="e#21320#21476#0" expanded="false" />
+            <element signature="e#21584#29824#0" expanded="false" />
+            <element signature="e#22075#22084#0" expanded="false" />
+            <element signature="e#31432#32411#0" expanded="false" />
+            <element signature="e#32555#33303#0" expanded="false" />
+            <element signature="e#33440#34049#0" expanded="false" />
+            <element signature="e#34177#34882#0" expanded="false" />
+            <element signature="e#34991#35810#0" expanded="false" />
+            <element signature="e#37752#38599#0" expanded="false" />
+            <element signature="e#38724#39814#0" expanded="false" />
+            <element signature="e#39826#40479#1" expanded="false" />
+            <element signature="e#40605#41179#0" expanded="false" />
+            <element signature="e#41303#41762#0" expanded="false" />
+            <element signature="e#41871#43074#0" expanded="false" />
+            <element signature="e#43180#43590#0" expanded="false" />
+            <element signature="e#43593#44089#1" expanded="false" />
+            <element signature="e#44193#44594#0" expanded="false" />
+            <element signature="e#44696#45572#0" expanded="false" />
+            <element signature="e#45676#46177#0" expanded="false" />
+            <element signature="e#46279#46928#0" expanded="false" />
+            <element signature="e#47026#47209#0" expanded="false" />
+            <element signature="e#47247#47345#0" expanded="false" />
+            <element signature="e#47481#51379#0" expanded="false" />
+            <element signature="e#51418#51515#0" expanded="false" />
+            <element signature="e#51616#59694#0" expanded="false" />
+            <marker date="1470664223399" expanded="true" signature="2403:2666" ph="select *, Co... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="13808:13859" ph="update Inter... " />
+            <marker date="1470664223399" expanded="true" signature="16807:16998" ph="update Inter... " />
+            <marker date="1470664223399" expanded="true" signature="17169:17204" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="19672:19816" ph="update ComDi... " />
+            <marker date="1470664223399" expanded="true" signature="20419:20467" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="20538:20588" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="24155:24195" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="24403:24460" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="25527:25567" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="25737:25794" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="26861:26901" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="27071:27128" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28195:28235" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28405:28462" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="28803:28843" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="29310:29367" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="29462:29496" ph="select DISTI... Student" />
+            <marker date="1470664223399" expanded="true" signature="29535:29569" ph="select DISTI... Student" />
+            <marker date="1470664223399" expanded="false" signature="29943:30720" ph="..." />
+            <marker date="1470664223399" expanded="true" signature="36422:36467" ph="update ComIn... " />
+            <marker date="1470664223399" expanded="false" signature="36738:37641" ph="..." />
+            <marker date="1470664223399" expanded="true" signature="37269:37289" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37295" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37302" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37304" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="37269:37314" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="38394:38429" ph="delete from " />
+            <marker date="1470664223399" expanded="true" signature="40129:40323" ph="select DISTI... " />
+            <marker date="1470664223399" expanded="true" signature="41515:41641" ph="select * fro... InternshipInfor" />
+            <marker date="1470664223399" expanded="true" signature="42457:42552" ph="select * fro... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="42506:42549" ph="select comId... InternshipInfor" />
+            <marker date="1470664223399" expanded="true" signature="43363:43403" ph="update Journ... " />
+            <marker date="1470664223399" expanded="true" signature="43906:43953" ph="select * fro... Journal" />
+            <marker date="1470664223399" expanded="true" signature="53769:53809" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="53974:54031" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="55341:55381" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="55506:55563" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="56873:56913" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="57038:57095" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58396:58436" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58561:58618" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="58844:58884" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59086:59143" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59310:59368" ph="select DISTI... ComInfor" />
+            <marker date="1470664223399" expanded="true" signature="59485:59543" ph="select DISTI... ComInfor" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/searchResult.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="28" column="38" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/interncompany.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="57" column="38" selection-start-line="57" selection-start-column="38" selection-end-line="57" selection-end-column="38" />
+          <folding>
+            <marker date="1470664313255" expanded="false" signature="7273:7294" ph="..." />
+            <marker date="1470664313255" expanded="false" signature="9281:9302" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>

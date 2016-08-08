@@ -16,6 +16,34 @@
             });
         });
     </script>
+    <!--筛选按钮-->
+    <script type="text/javascript">
+        window.onload = function () {
+            var obj = document.getElementById("sel");
+            obj.onclick = function () {
+                obj.className = (obj.className == "class1" ? "class2" : "class1");
+                obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
+            }
+        }
+    </script>
+    <!--更多-->
+    <style>
+        .first .second {
+            display: none;
+        }
+
+        .first:hover .second {
+            display: block;
+        }
+    </style>
+    <!-- 确认删除窗口 ,传递参数-->
+    <script type="text/javascript">
+        function ComfirmDelete(str) {
+            $('#deleteToggle').modal();
+            var obj = document.getElementById("comId");
+            obj.value = str
+        }
+    </script>
 {% endblock %}<!--先执行父模板-->
 {% block page_content %}
     <h1>实习企业信息
@@ -27,6 +55,7 @@
                 <ul class="dropdown-menu" role="menu">
                     {% if current_user.can(Permission.COM_INFOR_CHECK) %}
                         <li><a href="{{ url_for('.addcominfor') }}">添加</a></li>
+                        <li><a href="#">批量添加</a></li>
                         <li><a href="{{ url_for('.allcomCheck') }}">批量审核</a></li>
                         <li><a href="{{ url_for('.allcomDelete') }}">批量删除</a></li>
                         </ul>
@@ -34,11 +63,11 @@
                     {% endif %}
         {% endif %}
         <div style="float:right;width:350px"><!--长度-->
-            <form role="form" method="POST" action="/search">
+            <form role="form" method="POST" action="/interncompany">
                 <div class="row head">
                     <div class="col-lg-10"><!--位置-->
                         <div class="input-group ">
-                            {{ form.key(type="text",class="form-control",placeholder="请先输入企业名称或所在城市",required='') }}
+                            {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
                         <span class="input-group-btn">
                             <button class="btn btn-info" type="button" id="rearch"><span
                                     class="glyphicon glyphicon-search"></span></button>
@@ -50,11 +79,154 @@
             </form>
         </div>
     </h1>
+
+    <div>
+        <ol class="breadcrumb">
+            <li><a href="{{ url_for('.update_filter') }}">所有分类</a></li>
+            {% if session['city']!=None %}
+                <li><a href="{{ url_for('.update_filter',city='city') }}">{{ session['city'] }}</a></li>
+            {% endif %}
+            {% if session['name']=='asc' %}
+                <li><a href="{{ url_for('.update_filter',name='name') }}"> 企业名称按拼音首字母升序排列</a></li>
+            {% elif session['name']=='desc' %}
+                <li><a href="{{ url_for('.update_filter',name='name') }}"> 企业名称按拼音首字母降序排列</a></li>
+            {% endif %}
+            {% if session['students']=='asc' %}
+                <li><a href="{{ url_for('.update_filter',students='students') }}"> 累计实习人次按升序排列</a></li>
+            {% elif session['students']=='desc' %}
+                <li><a href="{{ url_for('.update_filter',students='students') }}"> 累计实习人次按降序排列</a></li>
+            {% endif %}
+            {% if session['status']=='2' %}
+                <li><a href="#"> 审核通过</a></li>
+            {% elif session['status']!='2' and session.get('status')!= None %}
+                <li><a href="#"> 审核不通过</a></li>
+            {% endif %}
+        </ol>
+        <input style="float:right;" type="button" class="class1" data-toggle="collapse"
+               data-target="#demo" id="sel" value="收起筛选"/>
+
+    </div>
+
+    <div id="demo" class="collapse in ">
+        <div class="panel panel-danger">
+            <div class="panel-body">
+
+
+                <table>
+                    <tr>
+                        <th width="100">城市:</th>
+                        {% for i in city.keys() %}
+                            {% if i<3 %}
+                                <td width="200"><a href="{{ url_for('.interncompany',city=city[i]) }}">{{ city[i] }}</a>
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        <td width="200">
+                            <div class="first">
+                                <a>更多</a>
+                                <div class="second">
+                                    {% for i in city.keys() %}
+                                        {% if i>2 %}
+                                            <li style="list-style-type:none;"><a
+                                                    href="{{ url_for('.interncompany',city=city[i]) }}">{{ city[i] }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        {#                        <th width="100">年级:</th>#}
+                        {#                        {% for i in grade.keys() %}#}
+                        {#                            {% if i<4 %}#}
+                        {#                                <td width="200"><a#}
+                        {#                                        href="{{ url_for('.interncompany',grade=grade[i]) }}">{{ grade[i] }}级</a></td>#}
+                        {#                            {% endif %}#}
+                        {#                        {% endfor %}#}
+                        {#                        <td>#}
+                        {#                            <div class="first">#}
+                        {#                                <a>更多</a>#}
+                        {#                                <div class="second">#}
+                        {#                                    {% for i in grade.keys() %}#}
+                        {#                                        {% if i>3 %}#}
+                        {#                                            <li style="list-style-type:none;"><a#}
+                        {#                                                    href="{{ url_for('.interncompany',grade=grade[i]) }}">{{ grade[i] }}</a>#}
+                        {#                                            </li>#}
+                        {#                                        {% endif %}#}
+                        {#                                    {% endfor %}#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+                        {#                        </td>#}
+                        {#                    </tr>#}
+                        {#                    <tr>#}
+                        {#                        <td>&nbsp;</td>#}
+                        {#                    </tr>#}
+                        {#                    <tr>#}
+                        {#                        <th width="100">专业:</th>#}
+                        {#                        {% for i in major.keys() %}#}
+                        {#                            {% if i<4 %}#}
+                        {#                                <td width="200"><a#}
+                        {#                                        href="{{ url_for('.interncompany',major=major[i]) }}">{{ major[i] }}</a></td>#}
+                        {#                            {% endif %}#}
+                        {#                        {% endfor %}#}
+                        {#                        <td>#}
+                        {#                            <div class="first">#}
+                        {#                                <a>更多</a>#}
+                        {#                                <div class="second">#}
+                        {#                                    {% for i in major.keys() %}#}
+                        {#                                        {% if i>3 %}#}
+                        {#                                            <li style="list-style-type:none;"><a#}
+                        {#                                                    href="{{ url_for('.interncompany',major=major[i]) }}">{{ major[i] }}</a>#}
+                        {#                                            </li>#}
+                        {#                                        {% endif %}#}
+                        {#                                    {% endfor %}#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+                        {#                        </td>#}
+                        {#                    </tr>#}
+                    <tr>
+                        <th width="200">企业名称：</th>
+                        <td width="400"><a href="{{ url_for('.interncompany',name='asc') }}">按拼音首字母升序排列</a></td>
+                        <td width="400"><a href="{{ url_for('.interncompany',name='desc') }}">按拼音首字母降序排列</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th width="200">累计实习人次：</th>
+                        <td width="400"><a href="{{ url_for('.interncompany',students='asc') }}">按人数升序排列</a></td>
+                        <td width="400"><a href="{{ url_for('.interncompany',students='desc') }}">按人数降序排列</a></td>
+                    </tr>
+
+                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <th width="200">审核状态：</th>
+                            <td width="400"><a href="{{ url_for('.interncompany',status=2) }}">审核通过</a></td>
+                            <td width="400"><a href="{{ url_for('.interncompany',status=0) }}">审核不通过</a></td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+        <p></p>
+    </div>
+
+
     <div>
         <table class="table">
             <thead>
             <tr>
-                <th>企业名称</th>
+                <th>企业名称
+                </th>
                 <th>所在城市</th>
                 <th>企业网址</th>
                 <th>联系电话</th>
@@ -86,7 +258,15 @@
                         {% else %}
                             <td>已审核</td>
                         {% endif %}
-                        <td><a>修改</a>|<a>审核</a>|<a>删除</a></td>
+                        {% if com.comCheck==2 %}
+                            <td><a onclick="ComfirmDelete({{ com.comId }})" href="#">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                &nbsp;&nbsp;删除</a>
+                            </td>
+                        {% else %}
+                            <td><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a>|<a
+                                    href="{{ url_for('main.cominfor',id=com.comId) }}">审核</a>|<a
+                                    onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></td>
+                        {% endif %}
                     {% endif %}
                 </tr>
             {% endfor %}
@@ -97,4 +277,32 @@
                 {{ macros.pagination_widget(pagination,'.interncompany') }}
             </div>
         {% endif %}
+
+        <!--确认弹窗-->
+        <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
+             aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close"
+                                data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            提示：
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否任要删除？</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="/com_delete" method="POST">
+                            <input type="hidden" id="comId" name="comId">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">删除</button>
+                        </form>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
 {% endblock %}

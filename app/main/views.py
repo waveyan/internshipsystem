@@ -1,13 +1,13 @@
 from flask import render_template, url_for, flash, redirect, request, session
-from .form import searchForm, comForm, internshipForm, journalForm, stuForm, teaForm, permissionForm, schdirteaForm, comdirteaForm
+from .form import searchForm, comForm, internshipForm, journalForm, stuForm, teaForm, permissionForm, schdirteaForm, \
+    comdirteaForm
 from . import main
-from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, not_student_login
+from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, \
+    not_student_login
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func, desc
 from datetime import datetime, timedelta
-
-
 
 # datepicker failed
 '''
@@ -20,14 +20,6 @@ def hello_world():
         return form.dt.data.strftime('%Y-%m-%d')
     return render_template('example.html')
 '''
-
-@main.route('/search', methods=['GET', 'POST'])
-def search():
-    form = searchForm()
-    if form.validate_on_submit():
-        print('assa')
-    print(form.key.data)
-    return render_template('index.html', form=form, Permission=Permission)
 
 
 @main.route('/students', methods=['GET', 'POST'])
@@ -73,7 +65,7 @@ def index():
 
 
 # 个人实习企业列表
-@main.route('/stuInternList',methods=['GET','POST'])
+@main.route('/stuInternList', methods=['GET', 'POST'])
 @login_required
 def stuInternList():
     if current_user.roleId == 0:
@@ -82,7 +74,7 @@ def stuInternList():
         stuId = request.args.get('stuId')
     student = Student.query.filter_by(stuId=stuId).first()
     internship = InternshipInfor.query.filter_by(stuId=stuId).all()
-    if internship is None and current_user.roleId ==0:
+    if internship is None and current_user.roleId == 0:
         flash('您还没完成实习信息的填写，请完善相关实习信息！')
         return redirect(url_for('.addcominfor'))
     else:
@@ -90,9 +82,8 @@ def stuInternList():
             'select *, ComInfor.comName companyName, ComInfor.comId companyId, InternshipInfor.Id internId from ComInfor,InternshipInfor \
             where ComInfor.comId = InternshipInfor.comId and InternshipInfor.stuId=%s \
             order by InternshipInfor.internStatus' % stuId)
-        return render_template('stuInternList.html', comList=comList, Permission=Permission, internship=internship, student=student)
-
-
+        return render_template('stuInternList.html', comList=comList, Permission=Permission, internship=internship,
+                               student=student)
 
 
 '''
@@ -109,8 +100,6 @@ def stuInternList():
         where i.comId=c.comId and i.stuId=%s order BY i.internCheck, internStatus' % id)
     return render_template('stuInternList.html', stuName=stu.stuName, stuId=stu.stuId, Permission=Permission,comInfor=comInfor, journal=journal)
 '''
-
-
 
 
 # 选择实习企业
@@ -183,44 +172,44 @@ def addInternship():
     try:
         if request.method == 'POST':
             start = datetime.strptime(request.form.get('start'), '%Y-%m-%d').date()
-            print (start)
+            print(start)
             end = datetime.strptime(request.form.get('end'), '%Y-%m-%d').date()
-            print (end)
+            print(end)
             now = datetime.now().date()
-            print (now)
-            if start < now :
-                if end <= now :
-                    internStatus = 1 # 实习结束
-                    print ('this is 1')
-                if end > now :
-                    internStatus = 0 #实习中
-                    print ('this is 2')
-            elif start > now :
-                internStatus = 2 #待实习
-                print ('this is 3')
+            print(now)
+            if start < now:
+                if end <= now:
+                    internStatus = 1  # 实习结束
+                    print('this is 1')
+                if end > now:
+                    internStatus = 0  # 实习中
+                    print('this is 2')
+            elif start > now:
+                internStatus = 2  # 待实习
+                print('this is 3')
             else:
-                internStatus = 1 # start=now, 实习中
-                print ('this is 4')
+                internStatus = 1  # start=now, 实习中
+                print('this is 4')
             internship = InternshipInfor(
-                task=request.form.get('task'), 
+                task=request.form.get('task'),
                 start=start,
                 end=end,
-                time = datetime.now().date(),
+                time=datetime.now().date(),
                 address=request.form.get('address'),
-                comId=comId, 
-                stuId=current_user.stuId, 
+                comId=comId,
+                stuId=current_user.stuId,
                 internStatus=internStatus
             )
             while True:
                 i = i + 1
                 j = j + 1
                 teaValue = request.form.get('teaId%s' % i)
-                print (teaValue)
+                print(teaValue)
                 cteaValue = request.form.get('cteaName%s' % j)
-                print (cteaValue)
+                print(cteaValue)
                 # if teaValue or cteaValue:
                 if teaValue:
-                    print (teaValue)
+                    print(teaValue)
                     '''
                     dirctTea = DirctTea(
                         comId=comId, 
@@ -232,24 +221,24 @@ def addInternship():
                         stuId=current_user.stuId)
                     '''
                     schdirtea = SchDirTea(
-                        teaId=teaValue, 
+                        teaId=teaValue,
                         stuId=current_user.stuId,
                         teaName=request.form.get('teaName%s' % i),
                         teaDuty=request.form.get('teaDuty%s' % i),
                         teaPhone=request.form.get('teaPhone%s' % i),
                         teaEmail=request.form.get('teaEmail%s' % i)
-                        )
+                    )
                     db.session.add(schdirtea)
                 elif cteaValue:
-                    print (cteaValue)
+                    print(cteaValue)
                     comdirtea = ComDirTea(
-                        stuId = current_user.stuId,
-                        teaName = cteaValue,
-                        comId = comId,
-                        teaDuty = request.form.get('cteaDuty%s' % j),
-                        teaEmail = request.form.get('cteaEmail%s' % j),
-                        teaPhone = request.form.get('cteaPhone%s' % j)
-                        )
+                        stuId=current_user.stuId,
+                        teaName=cteaValue,
+                        comId=comId,
+                        teaDuty=request.form.get('cteaDuty%s' % j),
+                        teaEmail=request.form.get('cteaEmail%s' % j),
+                        teaPhone=request.form.get('cteaPhone%s' % j)
+                    )
                     db.session.add(comdirtea)
                     '''
                     dirctTea.cteaDuty = request.form.get('cteaDuty%s' % j)
@@ -263,7 +252,6 @@ def addInternship():
                 else:
                     break
 
-
             # commit internship之后,internId才会更新
             db.session.add(internship)
             db.session.commit()
@@ -274,50 +262,49 @@ def addInternship():
             if weeks > 1:
                 # 第一周. 因第一天未必是周一,所以需特别处理
                 journal = Journal(
-                    stuId = current_user.stuId,
-                    comId = comId,
-                    weekNo = 1,
-                    workStart = start,
-                    workEnd = start + timedelta(days=(7 - start.isoweekday())),
-                    internId = internId
-                    )
+                    stuId=current_user.stuId,
+                    comId=comId,
+                    weekNo=1,
+                    workStart=start,
+                    workEnd=start + timedelta(days=(7 - start.isoweekday())),
+                    internId=internId
+                )
                 db.session.add(journal)
                 start = start + timedelta(days=(7 - start.isoweekday() + 1))
                 # 第二周至第 n|(n-1) 周
-                for weekNo in range(weeks-2):
+                for weekNo in range(weeks - 2):
                     journal = Journal(
-                        stuId = current_user.stuId,
-                        comId = comId,
-                        weekNo = weekNo+2,
-                        workStart = start,
-                        workEnd = start + timedelta(days=6),
-                        internId = internId
-                        )
+                        stuId=current_user.stuId,
+                        comId=comId,
+                        weekNo=weekNo + 2,
+                        workStart=start,
+                        workEnd=start + timedelta(days=6),
+                        internId=internId
+                    )
                     db.session.add(journal)
                     start = start + timedelta(days=7)
                 # 如果还有几天凑不成一周
                 if end >= start:
                     journal = Journal(
-                        stuId = current_user.stuId,
-                        comId = comId,
-                        weekNo = weeks,
-                        workStart = start,
-                        workEnd = end,
-                        internId = internId
-                        )
+                        stuId=current_user.stuId,
+                        comId=comId,
+                        weekNo=weeks,
+                        workStart=start,
+                        workEnd=end,
+                        internId=internId
+                    )
                     db.session.add(journal)
             else:
                 # 如果实习时间不满一周
                 journal = Journal(
-                    stuId = current_user.stuId,
-                    comId = comId,
-                    weekNo = 1,
-                    workStart = start,
-                    workEnd = end,
-                    internId = internId
-                    )
+                    stuId=current_user.stuId,
+                    comId=comId,
+                    weekNo=1,
+                    workStart=start,
+                    workEnd=end,
+                    internId=internId
+                )
                 db.session.add(journal)
-
 
             # 更新累计实习人数
             cominfor = ComInfor.query.filter_by(comId=comId).first()
@@ -334,11 +321,12 @@ def addInternship():
         db.session.rollback
         flash('提交实习信息失败，请重试！')
         return redirect(url_for('.addcominfor'))
-    return render_template('addinternship.html', iform=iform, schdirteaform=schdirteaform, comdirteaform=comdirteaform, Permission=Permission)
+    return render_template('addinternship.html', iform=iform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,
+                           Permission=Permission)
 
 
 # 学生个人实习信息
-@main.route('/stuIntern', methods=['GET','POST'])
+@main.route('/stuIntern', methods=['GET', 'POST'])
 @login_required
 def stuIntern():
     if current_user.roleId == 0:
@@ -357,27 +345,26 @@ def stuIntern():
 
 
 # 审核通过实习信息
-@main.route('/stuIntern_comfirm', methods=["POST","GET"])
+@main.route('/stuIntern_comfirm', methods=["POST", "GET"])
 @not_student_login
 def stuIntern_comfirm():
     if current_user.can(Permission.STU_INTERN_CHECK):
         internId = request.args.get('internId')
         internCheck = request.args.get('internCheck')
         stuId = request.args.get('stuId')
-        db.session.execute('update InternshipInfor set internCheck=%s where Id=%s' % (internCheck,internId))
+        db.session.execute('update InternshipInfor set internCheck=%s where Id=%s' % (internCheck, internId))
         flash("实习申请审核成功")
-    return redirect(url_for('.stuInternList',stuId=stuId))
-
+    return redirect(url_for('.stuInternList', stuId=stuId))
 
 
 # 修改实习信息
-@main.route('/editStuIntern', methods=['GET','POST'])
+@main.route('/editStuIntern', methods=['GET', 'POST'])
 @login_required
 def editStuIntern():
-    if current_user.roleId==0:
+    if current_user.roleId == 0:
         stuId = current_user.stuId
     elif not current_user.can(Permission.STU_INTERN_EDIT):
-        return direct('/')
+        return redirect('/')
     stuId = request.args.get('stuId')
     comId = request.args.get('comId')
     internId = request.args.get('internId')
@@ -392,7 +379,11 @@ def editStuIntern():
     internform = internshipForm()
     schdirteaform = schdirteaForm()
     comdirteaform = comdirteaForm()
-    return render_template('editStuIntern.html', Permission=Permission, comInfor=comInfor, schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student, stuform=stuform, comform=comform, internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform)
+    return render_template('editStuIntern.html', Permission=Permission, comInfor=comInfor, schdirtea=schdirtea,
+                           comdirtea=comdirtea, internship=internship, student=student, stuform=stuform,
+                           comform=comform, internform=internform, schdirteaform=schdirteaform,
+                           comdirteaform=comdirteaform)
+
 
 '''
 # 待修改
@@ -420,7 +411,7 @@ def editStuIntern_schdirtea():
 
 
 # 修改实习信息 个人实习信息--实习岗位信息
-@main.route('/editStuIntern_intern', methods=["POST","GET"])
+@main.route('/editStuIntern_intern', methods=["POST", "GET"])
 @login_required
 def editStuIntern_intern():
     if current_user.roleId == 0:
@@ -447,59 +438,59 @@ def editStuIntern_intern():
         time = "%s", \
         internCheck = %s \
         where Id=%s'
-        % (task, address, start, end, time, internCheck, internId)
-        )
+                       % (task, address, start, end, time, internCheck, internId)
+                       )
 
     # 实习信息修改,日志跟随变动
     # 先删除原来的日志
-    db.session.execute("delete from Journal where internId=%s"% internId)
+    db.session.execute("delete from Journal where internId=%s" % internId)
     # 初始化实习日志
     weeks = end.isocalendar()[1] - start.isocalendar()[1] + 1
     if weeks > 1:
         # 第一周. 因第一天未必是周一,所以需特别处理
         journal = Journal(
-            stuId = current_user.stuId,
-            comId = comId,
-            weekNo = 1,
-            workStart = start,
-            workEnd = start + timedelta(days=(7 - start.isoweekday())),
-            internId = internId
-            )
+            stuId=current_user.stuId,
+            comId=comId,
+            weekNo=1,
+            workStart=start,
+            workEnd=start + timedelta(days=(7 - start.isoweekday())),
+            internId=internId
+        )
         db.session.add(journal)
         start = start + timedelta(days=(7 - start.isoweekday() + 1))
         # 第二周至第 n|(n-1) 周
-        for weekNo in range(weeks-2):
+        for weekNo in range(weeks - 2):
             journal = Journal(
-                stuId = current_user.stuId,
-                comId = comId,
-                weekNo = weekNo+2,
-                workStart = start,
-                workEnd = start + timedelta(days=6),
-                internId = internId
-                )
+                stuId=current_user.stuId,
+                comId=comId,
+                weekNo=weekNo + 2,
+                workStart=start,
+                workEnd=start + timedelta(days=6),
+                internId=internId
+            )
             db.session.add(journal)
             start = start + timedelta(days=7)
         # 如果还有几天凑不成一周
         if end >= start:
             journal = Journal(
-                stuId = current_user.stuId,
-                comId = comId,
-                weekNo = weeks,
-                workStart = start,
-                workEnd = end,
-                internId = internId
-                )
+                stuId=current_user.stuId,
+                comId=comId,
+                weekNo=weeks,
+                workStart=start,
+                workEnd=end,
+                internId=internId
+            )
             db.session.add(journal)
     else:
         # 如果实习时间不满一周
         journal = Journal(
-            stuId = current_user.stuId,
-            comId = comId,
-            weekNo = 1,
-            workStart = start,
-            workEnd = end,
-            internId = internId
-            )
+            stuId=current_user.stuId,
+            comId=comId,
+            weekNo=1,
+            workStart=start,
+            workEnd=end,
+            internId=internId
+        )
         db.session.add(journal)
 
     flash("实习信息修改成功")
@@ -522,8 +513,8 @@ def editStuIntern_comdirtea():
     teaPhone = request.form.get('cteaPhone')
     teaEmail = request.form.get('cteaEmail')
     internId = request.form.get("internId")
-    print (internId)
-    print (stuId)
+    print(internId)
+    print(stuId)
     if teaName is None or comId is None or internId is None or stuId is None:
         flash("修改实习信息失败,请重试")
         return redirect(url_for('.stuIntern', comId=comId, internId=internId, stuId=stuId))
@@ -534,8 +525,8 @@ def editStuIntern_comdirtea():
         teaPhone ="%s", \
         teaEmail = "%s" \
         where Id=%s'
-        % (teaName, teaDuty, teaPhone, teaEmail, Id)
-        )
+                       % (teaName, teaDuty, teaPhone, teaEmail, Id)
+                       )
     flash("实习信息修改成功")
     return redirect(url_for('.stuIntern', comId=comId, internId=internId, stuId=stuId))
 
@@ -552,27 +543,27 @@ def comfirmDeletreJournal_Intern():
     from_url = request.form.get('from_url')
     try:
         # 先删除日志1
-        db.session.execute('delete from Journal where internId=%s and stuId=%s'% (internId, stuId))
+        db.session.execute('delete from Journal where internId=%s and stuId=%s' % (internId, stuId))
         # 后删除实习信息
-        db.session.execute('delete from InternshipInfor where Id=%s and stuId=%s'% (internId, stuId))
+        db.session.execute('delete from InternshipInfor where Id=%s and stuId=%s' % (internId, stuId))
         flash('删除日志和实习信息成功')
         if from_url == "/stuIntern":
-            return redirect(url_for('.stuInternList',stuId=stuId))
+            return redirect(url_for('.stuInternList', stuId=stuId))
         if from_url == "/xJournal":
-            return redirect(url_for('.xJournalList',stuId=stuId))
+            return redirect(url_for('.xJournalList', stuId=stuId))
     except Exception as e:
-        print ('删除日志和实习信息失败:',e)
+        print('删除日志和实习信息失败:', e)
         db.session.rollback
         flash('提交实习信息失败，请重试！')
         if from_url == "/stuIntern":
-            return redirect(url_for('.stuInternList',s2tuId=stuId))
+            return redirect(url_for('.stuInternList', s2tuId=stuId))
         if from_url == "/xJournal":
-            return redirect(url_for('.xJournalList',stuId=stuId))
+            return redirect(url_for('.xJournalList', stuId=stuId))
     return redirect('/')
 
 
-# 企业详细信息
-@main.route('/cominfor', methods=['GET'])
+# 企业详细信息,方法POST不可删除，在修改返回时有用
+@main.route('/cominfor', methods=['GET', 'POST'])
 @login_required
 def cominfor():
     id = request.args.get('id')
@@ -585,13 +576,220 @@ def cominfor():
 @login_required
 def interncompany():
     form = searchForm()
+    if request.method == 'POST':
+        return redirect(url_for('.search', key=form.key.data, me='intern'))
+    city = {}
     page = request.args.get('page', 1, type=int)
-    if current_user.can(Permission.COM_INFOR_CHECK):
-        pagination = ComInfor.query.order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
-    else:
-        pagination = ComInfor.query.filter_by(comCheck=2).order_by(ComInfor.students.desc()).paginate(page, per_page=8)
+    com = create_com_filter(city)
+    pagination = com.paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
-    return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination, comInfor=comInfor)
+    return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination,
+                           comInfor=comInfor, city=city)
+
+    # # 更新筛选项
+    # if request.args.get('city') is not None:
+    #     session['city'] = request.args.get('city')
+    #     print(session['city'])
+    #
+    # if request.args.get('name') is not None:
+    #     session['name'] = request.args.get('name')
+    #     print(session['name'])
+    #
+    # if request.args.get('students') is not None:
+    #     session['students'] = request.args.get('students')
+    #     print(session['students'])
+    #
+    # if request.args.get('status') is not None:
+    #     session['status'] = request.args.get('status')
+    #     print(session['status'])
+    #
+    # # 生成筛选项
+    # city = {}
+    # i = 0
+    # grade = {}
+    # j = 0
+    # major = {}
+    # k = 0
+
+    # # 组合查询 *_*
+    # try:
+    #     if session.get('city') is not None:
+    #         print('city:', session['city'])
+    #         com = ComInfor.query.filter_by(comAddress=session['city'])
+    #
+    #         if session.get('name') is not None:
+    #             if session['name'] == 'desc':
+    #                 com = com.order_by(ComInfor.comName.desc())
+    #                 print('name')
+    #             else:
+    #                 com = com.order_by(ComInfor.comName.asc())
+    #                 print('name')
+    #
+    #         if session.get('students') is not None:
+    #             if session['students'] == 'desc':
+    #                 com = com.order_by(ComInfor.students.desc())
+    #                 print('students')
+    #             else:
+    #                 com = com.order_by(ComInfor.students.asc())
+    #                 print('students')
+    #
+    #         if session.get('status') is not None:
+    #             if session['status'] == '2':
+    #                 com = com.filter_by(comCheck=2)
+    #                 print('status')
+    #             else:
+    #                 com = com.filter(ComInfor.comCheck != 2)
+    #                 print('status')
+    #
+    #         if current_user.can(Permission.COM_INFOR_CHECK):
+    #             pagination = com.paginate(page, per_page=8, error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+    #             print('pagination')
+    #         else:
+    #             pagination = com.filter_by(comCheck=2).paginate(page, per_page=8, error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+    #     elif session.get('name') is not None:
+    #         if session['name'] == 'desc':
+    #             com = ComInfor.query.order_by(ComInfor.comName.desc())
+    #         else:
+    #             com = ComInfor.query.order_by(ComInfor.comName.asc())
+    #         if session.get('students') is not None:
+    #             if session['students'] == 'desc':
+    #                 com = com.order_by(ComInfor.students.desc())
+    #             else:
+    #                 com = com.order_by(ComInfor.students.asc())
+    #         if session.get('status') is not None:
+    #             if session['status'] == '2':
+    #                 com = com.filter_by(comCheck=2)
+    #             else:
+    #                 com = com.filter(ComInfor.comCheck != 2)
+    #         if session.get('city') is not None:
+    #             com = com.filter_by(comAddress=session['city'])
+    #         if current_user.can(Permission.COM_INFOR_CHECK):
+    #             pagination = com.paginate(page, per_page=8, error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+    #         else:
+    #             pagination = com.filter_by(comCheck=2).paginate(page, per_page=8, error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+    #     elif session.get('students') is not None:
+    #         if session['students'] == 'desc':
+    #             com = ComInfor.query.order_by(ComInfor.students.desc())
+    #         else:
+    #             com = ComInfor.query.order_by(ComInfor.students.asc())
+    #         if session.get('name') is not None:
+    #             if session['name'] == 'desc':
+    #                 com = com.order_by(ComInfor.comName.desc())
+    #             else:
+    #                 com = com.order_by(ComInfor.comName.asc())
+    #         if session.get('status') is not None:
+    #             if session['status'] == '2':
+    #                 com = com.filter_by(comCheck=2)
+    #             else:
+    #                 com = com.filter(ComInfor.comCheck != 2)
+    #         if session.get('city') is not None:
+    #             com = com.filter_by(comAddress=session['city'])
+    #         if current_user.can(Permission.COM_INFOR_CHECK):
+    #             pagination = com.paginate(page, per_page=8, error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+    #         else:
+    #             pagination = com.filter_by(comCheck=2).paginate(page, per_page=8, error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+    #     elif session.get('status') is not None:
+    #         if session['status'] == '2':
+    #             com = ComInfor.query.filter_by(comCheck=2)
+    #         else:
+    #             com = ComInfor.query.filter(ComInfor.comCheck != 2)
+    #         if session.get('name') is not None:
+    #             if session['name'] == 'desc':
+    #                 com = com.order_by(ComInfor.comName.desc())
+    #             else:
+    #                 com = com.order_by(ComInfor.comName.asc())
+    #         if session.get('students') is not None:
+    #             if session['students'] == 'desc':
+    #                 com = com.order_by(ComInfor.students.desc())
+    #             else:
+    #                 com = com.order_by(ComInfor.students.asc())
+    #         if session.get('city') is not None:
+    #             com = com.filter_by(comAddress=session['city'])
+    #         if current_user.can(Permission.COM_INFOR_CHECK):
+    #             pagination = com.paginate(page, per_page=8, error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+    #         else:
+    #             pagination = com.filter_by(comCheck=2).paginate(page, per_page=8, error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+    #     else:
+    #         if current_user.can(Permission.COM_INFOR_CHECK):
+    #             pagination = ComInfor.query.order_by(ComInfor.comDate.desc()).paginate(page, per_page=8,
+    #                                                                                    error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+    #             print('hi')
+    #         else:
+    #             pagination = ComInfor.query.filter_by(comCheck=2).order_by(ComInfor.comDate.desc()).paginate(page,
+    #                                                                                                          per_page=8,
+    #                                                                                                          error_out=False)
+    #             citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+    # except Exception as e:
+    #     print('组合筛选：', e)
+    # grades = db.session.execute('select DISTINCT grade from Student ')
+    # majors = db.session.execute('select DISTINCT major from Student')
+    # comInfor = pagination.items
+    # for c in citys:
+    #     city[i] = c.comAddress
+    #     i = i + 1
+    # for g in grades:
+    #     grade[j] = g.grade
+    #     j = j + 1
+    # for m in majors:
+    #     major[k] = m.major
+    #     k = k + 1
+
+
+# 企业信息用户操作筛选项,对所选筛选项进行删除
+@main.route('/update_filter', methods=['GET', 'POST'])
+@login_required
+def update_filter():
+    city = request.args.get('city')
+    name = request.args.get('name')
+    students = request.args.get('students')
+    flag = request.args.get('flag')
+    if city is not None:
+        session['name'] = None
+        session['students'] = None
+        session['status'] = None
+    elif name is not None:
+        session['students'] = None
+        session['status'] = None
+    elif students is not None:
+        session['status'] = None
+    else:
+        session['city'] = None
+        session['name'] = None
+        session['students'] = None
+        session['status'] = None
+    if flag == '1':
+        return redirect(url_for('.allcomCheck'))
+    elif flag == '0':
+        return redirect(url_for('.allcomDelete'))
+    else:
+        return redirect(url_for('.interncompany'))
+
+
+# 搜索,只对企业名称存在的关键字作搜索
+@main.route('/search/<key>', methods=['GET', 'POST'])
+@login_required
+def search(key):
+    form = searchForm()
+    if current_user.can(Permission.COM_INFOR_CHECK):
+        if request.args.get('me') == 'intern':
+            cominfor = ComInfor.query.all()
+            comInfor = []
+            num = 0
+            for c in cominfor:
+                if c.comName.find(key) != -1:
+                    comInfor.append(c)
+                    num = num + 1
+    return render_template('searchResult.html', num=num, form=form, Permission=Permission, comInfor=comInfor, key=key)
+
 
 # 填写实习日志
 @main.route('/addjournal/<int:comId>', methods=['GET', 'POST'])
@@ -602,14 +800,14 @@ def addjournal(comId):
         # workend = datetime.strptime(form.workStart.data, '%Y-%m-%d').date()
         workend = form.workStart.data
         journal = Journal(
-            stuId=current_user.stuId, 
-            workStart=form.workStart.data.strftime('%Y-%m-%d'), 
+            stuId=current_user.stuId,
+            workStart=form.workStart.data.strftime('%Y-%m-%d'),
             weekNo=form.weekNo.data,
-            workEnd=workend, 
+            workEnd=workend,
             comId=comId,
-            mon=form.mon.data, 
-            tue=form.tue.data, 
-            wed=form.wed.data, 
+            mon=form.mon.data,
+            tue=form.tue.data,
+            wed=form.wed.data,
             thu=form.thu.data,
             fri=form.fri.data,
             sat=form.sat.data,
@@ -633,33 +831,16 @@ def addjournal(comId):
 def studentList(comId):
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    comName = ComInfor.query.filter(ComInfor.comId==comId).with_entities(ComInfor.comName).first()[0]
+    comName = ComInfor.query.filter(ComInfor.comId == comId).with_entities(ComInfor.comName).first()[0]
     # filter过滤当前特定企业ID
-    pagination = Student.query.join(InternshipInfor).filter(InternshipInfor.comId==comId).order_by(Student.grade).paginate(page, per_page=8, error_out=False)
+    pagination = Student.query.join(InternshipInfor).filter(InternshipInfor.comId == comId).order_by(
+        Student.grade).paginate(page, per_page=8, error_out=False)
     student = pagination.items
     for stu in student:
         internStatus = InternshipInfor.query.filter_by(comId=comId, stuId=stu.stuId, internStatus=0).count()
         session[stu.stuId] = internStatus
-    return render_template('studentList.html', form=form, pagination=pagination, student=student, Permission=Permission, comId=comId, comName=comName)
-
-
-
-# 跟 .stuintern() 一样
-'''
-# 实习企业中学生的实习信息
-@main.route('/studetail', methods=['GET'])
-@login_required
-def studetail():
-    stuId = request.args.get('stuId')
-    comId = request.args.get('comId')
-    student = Student.query.filter_by(stuId=current_user.stuId).first()
-    comInfor = ComInfor.query.filter_by(comId=comId).first()
-    internship = InternshipInfor.query.filter_by(stuId=stuId, comId=comId).first()
-    schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
-    comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
-    # dirctTea = DirctTea.query.filter_by(stuId=stuId, comId=comId).all()
-    return render_template('stuIntern.html', Permission=Permission, student=student, comInfor=comInfor, internship=internship, stuId=stuId, comId=comId, schdirtea=schdirtea, comdirtea=comdirtea)
-'''
+    return render_template('studentList.html', form=form, pagination=pagination, student=student, Permission=Permission,
+                           comId=comId, comName=comName)
 
 
 # 管理员\普通教师\审核教师
@@ -672,13 +853,61 @@ def stuList():
     journal = False
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    pagination = Student.query.join(InternshipInfor).order_by(Student.grade).paginate(page, per_page=8,error_out=False)
+    pagination = Student.query.join(InternshipInfor).order_by(Student.grade).paginate(page, per_page=8, error_out=False)
     student = pagination.items
     # 实习状态
     for stu in student:
         internStatus = InternshipInfor.query.filter_by(stuId=stu.stuId, internStatus=0).count()
         session[stu.stuId] = internStatus
-    return render_template('stuList.html', form=form, pagination=pagination, student=student, Permission=Permission,journal=journal)
+    return render_template('stuList.html', form=form, pagination=pagination, student=student, Permission=Permission,
+                           journal=journal)
+
+
+# 跟 .stuintern() 一样
+# 企业累计人数--实习学生列表--学生实习信息
+@main.route('/studetail', methods=['GET'])
+@login_required
+def studetail():
+    stuId = request.args.get('stuId')
+    comId = request.args.get('comId')
+    student = Student.query.filter_by(stuId=stuId).first()
+    comInfor = ComInfor.query.filter_by(comId=comId).first()
+    internship = InternshipInfor.query.filter_by(stuId=stuId, comId=comId).first()
+    schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
+    comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
+    # dirctTea = DirctTea.query.filter_by(stuId=stuId, comId=comId).all()
+    return render_template('stuIntern.html', Permission=Permission, student=student, comInfor=comInfor,
+                           internship=internship, stuId=stuId, comId=comId, schdirtea=schdirtea, comdirtea=comdirtea)
+
+
+# 单条审核企业信息
+@main.route('/com_comfirm', methods=['GET', 'POST'])
+@not_student_login
+def com_comfirm():
+    if not current_user.can(Permission.COM_INFOR_CHECK):
+        return redirect(url_for('.interncompany'))
+    else:
+        comId = request.args.get('comId')
+        check = request.args.get('check')
+        print(check)
+        com = ComInfor.query.filter_by(comId=comId).first()
+        if check == 'pass':
+            com.comCheck = 2
+            str = '审核成功，一条信息审核通过。'
+            print(str)
+        else:
+            com.comCheck = 1
+            str = '审核成功，一条信息审核未通过。'
+        try:
+            db.session.add(com)
+            db.session.commit()
+            flash(str)
+            return redirect(url_for(('.interncompany')))
+        except Exception as e:
+            print('企业信息单条审核：', e)
+            db.session.rollback()
+            flash('审核失败，请重试！')
+            return redirect(url_for(('.interncompany')))
 
 
 # 批量审核企业信息
@@ -689,7 +918,9 @@ def allcomCheck():
         return redirect('.interncompany')
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query.filter(ComInfor.comCheck<2).order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
+    city = {}
+    com = create_com_filter(city, flag=False)
+    pagination = com.order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
     # 确定企业审核通过
     if request.method == "POST":
@@ -697,8 +928,33 @@ def allcomCheck():
         for x in comId:
             db.session.execute("update ComInfor set comCheck=2 where comId = %s" % x)
     return render_template('allcomCheck.html', form=form, Permission=Permission, comInfor=comInfor,
-                           pagination=pagination)
+                           pagination=pagination, city=city)
 
+
+# 单条删除企业信息
+@main.route('/com_delete', methods=['GET', 'POST'])
+@not_student_login
+def com_delete():
+    if not current_user.can(Permission.COM_INFOR_CHECK):
+        return redirect(url_for('.interncompany'))
+    else:
+        if request.method == 'POST':
+            comId = str(request.form.get('comId'))
+            print(comId)
+            com = ComInfor.query.filter_by(comId=comId).first()
+            if com.students != 0:
+                flash('此企业信息存在学生的实习信息，不能删除，如要删除请先删除相关学生实习信息！')
+                return redirect(url_for('.interncompany'))
+            else:
+                try:
+                    db.session.execute("delete from ComInfor WHERE comId=%s" % comId)
+                    flash("删除成功！")
+                    return redirect(url_for(('.interncompany')))
+                except Exception as e:
+                    print('企业信息单条删除：', e)
+                    db.session.rollback()
+                    flash('删除失败，请重试！')
+                    return redirect(url_for(('.interncompany')))
 
 
 # 批量删除企业信息
@@ -710,14 +966,50 @@ def allcomDelete():
     form = searchForm()
     page = request.args.get('page', 1, type=int)
     # 只有无人实习的企业,或者实习信息被清空的企业,才能被删除
-    pagination = ComInfor.query.filter_by(students=0).order_by(ComInfor.comDate.desc()).paginate(page, per_page=8, error_out=False)
+    city = {}
+    com = create_com_filter(city)
+    pagination = com.filter_by(students=0).order_by(ComInfor.comDate.desc()).paginate(page, per_page=8,
+                                                                                      error_out=False)
     comInfor = pagination.items
     # 确定企业删除
     if request.method == "POST":
         comId = request.form.getlist('approve[]')
         for x in comId:
             db.session.execute("delete from ComInfor where comId = %s" % x)
-    return render_template('allcomDelete.html', form=form, Permission=Permission, comInfor=comInfor,  pagination=pagination)
+    return render_template('allcomDelete.html', form=form, Permission=Permission, comInfor=comInfor,
+                           pagination=pagination, city=city)
+
+
+# 修改实习信息，没有考虑学生修改自己的企业信息
+@main.route('/editcominfor', methods=['GET', 'POST'])
+@not_student_login
+def editcominfor():
+    comform = comForm()
+    id = request.args.get('comId')
+    com = ComInfor.query.filter_by(comId=id).first()
+    if request.method == 'POST':
+        print(comform.comName.data)
+        com.comName = comform.comName.data
+        com.comAddress = comform.comAddress.data
+        com.comUrl = comform.comUrl.data
+        com.comBrief = request.form.get('text')
+        com.comProject = comform.comProject.data
+        com.comMon = comform.comMon.data
+        com.comStaff = comform.comStaff.data
+        com.comContact = comform.comContact.data
+        com.comPhone = comform.comPhone.data
+        com.comEmail = comform.comEmail.data
+        com.comFax = comform.comFax.data
+        try:
+            db.session.add(com)
+            db.session.commit()
+            flash('修改成功！')
+            return redirect(url_for('.cominfor', id=id))
+        except Exception as e:
+            db.session.rollback()
+            flash('修改失败，请重试！')
+            return redirect(url_for('.editcominfor', comId=id))
+    return render_template('editComInfor.html', Permission=Permission, com=com, comform=comform)
 
 
 # delete
@@ -745,12 +1037,13 @@ def stuJournalList():
     journal = True
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    pagination = Student.query.join(InternshipInfor).order_by(Student.grade).paginate(page, per_page=8,error_out=False)
+    pagination = Student.query.join(InternshipInfor).order_by(Student.grade).paginate(page, per_page=8, error_out=False)
     student = pagination.items
     # 实习状态
     for stu in student:
         session[stu.stuId] = InternshipInfor.query.filter_by(stuId=stu.stuId, internStatus=0).count()
-    return render_template('stuList.html', form=form, pagination=pagination, student=student, Permission=Permission,journal=journal)
+    return render_template('stuList.html', form=form, pagination=pagination, student=student, Permission=Permission,
+                           journal=journal)
 
 
 # 学生日志 -- 选定学生 -- 该学生的日志列表
@@ -763,12 +1056,12 @@ def xJournalList():
         stuId = request.args.get('stuId')
     student = Student.query.filter_by(stuId=stuId).first()
     internlist = db.session.execute('select * from InternshipInfor,ComInfor \
-        where InternshipInfor.comId=ComInfor.comId and stuId=%s order by internStatus'% stuId)
-    return render_template('xJournalList.html',internlist=internlist, student=student, Permission=Permission)
+        where InternshipInfor.comId=ComInfor.comId and stuId=%s order by internStatus' % stuId)
+    return render_template('xJournalList.html', internlist=internlist, student=student, Permission=Permission)
 
 
 # 学生日志 -- 特定学生的日志详情
-@main.route('/xJournal', methods=['GET','POST'])
+@main.route('/xJournal', methods=['GET', 'POST'])
 @login_required
 def xJournal():
     if current_user.roleId == 0:
@@ -783,27 +1076,28 @@ def xJournal():
     journal = pagination.items
     # journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
     comInfor = db.session.execute('select * from ComInfor where comId in( \
-        select comId from InternshipInfor where Id=%s)'% internId).first()
+        select comId from InternshipInfor where Id=%s)' % internId).first()
     # 未被审核的日志数
     needCheck = Journal.query.filter_by(internId=internId, jourCheck=0).count()
     if internship.internCheck == 2:
-        return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal, student=student, comInfor=comInfor, pagination=pagination, needCheck=needCheck, page=page)
+        return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
+                               student=student, comInfor=comInfor, pagination=pagination, needCheck=needCheck,
+                               page=page)
     else:
         flash("实习申请需审核后,才能查看日志")
         return redirect(url_for('.xJournalList', stuId=stuId))
 
 
-
-@main.route('/journal_comfirm', methods=['POST','GET'])
+@main.route('/journal_comfirm', methods=['POST', 'GET'])
 @not_student_login
 def journal_comfirm():
     # 参数都是为了跳转 /xJournal 做准备
     stuId = request.args.get('stuId')
     jourId = request.args.get('jourId')
     if current_user.can(Permission.STU_JOUR_CHECK):
-        db.session.execute('update Journal set jourCheck=1 where Id=%s'% jourId)
+        db.session.execute('update Journal set jourCheck=1 where Id=%s' % jourId)
         flash("日志审核通过")
-        return redirect(url_for('.xJournalList',stuId=stuId))
+        return redirect(url_for('.xJournalList', stuId=stuId))
     else:
         # 非法操作,返回主页
         flash('你没有审核日志的权限')
@@ -829,7 +1123,7 @@ def stuJour():
 @login_required
 def stuUserList():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
+    if not current_user.roleId == 3:
         return redirect('/')
     form = searchForm()
     page = request.args.get('page', 1, type=int)
@@ -843,19 +1137,19 @@ def stuUserList():
 @login_required
 def addStudent():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
+    if not current_user.roleId == 3:
         return redirect('/')
     stuform = stuForm()
     if stuform.validate_on_submit():
         stu = Student(
-            stuName=stuform.stuName.data, 
-            stuId=stuform.stuId.data, 
+            stuName=stuform.stuName.data,
+            stuId=stuform.stuId.data,
             sex=stuform.sex.data,
-            institutes=stuform.institutes.data, 
-            major=stuform.major.data, 
+            institutes=stuform.institutes.data,
+            major=stuform.major.data,
             classes=stuform.classes.data,
             grade=stuform.grade.data
-            )
+        )
         db.session.add(stu)
         try:
             db.session.commit()
@@ -874,7 +1168,7 @@ def addStudent():
 @login_required
 def teaUserList():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
+    if not current_user.roleId == 3:
         return redirect('/')
     form = searchForm()
     page = request.args.get('page', 1, type=int)
@@ -891,7 +1185,7 @@ def teaUserList():
 @login_required
 def addTeacher():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
+    if not current_user.roleId == 3:
         return redirect('/')
     form = teaForm()
     if form.validate_on_submit():
@@ -914,8 +1208,8 @@ def addTeacher():
 @login_required
 def roleList():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
-       return redirect('/')
+    if not current_user.roleId == 3:
+        return redirect('/')
     role = Role.query.all()
     return render_template('roleList.html', Permission=Permission, role=role)
 
@@ -1030,3 +1324,187 @@ def addRole():
 def getMaxRoleId():
     res = db.session.query(func.max(Role.roleId).label('max_roleId')).one()
     return res.max_roleId
+
+
+# 企业信息筛选项，组合查询,当flag=Ture为企业实习信息和批量删除的功能,False为批量审核功能
+def create_com_filter(city, flag=True):
+    # 更新筛选项
+    if request.args.get('city') is not None:
+        session['city'] = request.args.get('city')
+        print(session['city'])
+
+    if request.args.get('name') is not None:
+        session['name'] = request.args.get('name')
+        print(session['name'])
+
+    if request.args.get('students') is not None:
+        session['students'] = request.args.get('students')
+        print(session['students'])
+
+    if request.args.get('status') is not None:
+        session['status'] = request.args.get('status')
+        print(session['status'])
+    i = 0
+    # 组合查询 *_*
+    try:
+        if session.get('city') is not None:
+            print('city:', session['city'])
+            com = ComInfor.query.filter_by(comAddress=session['city'])
+
+            if session.get('name') is not None:
+                if session['name'] == 'desc':
+                    com = com.order_by(ComInfor.comName.desc())
+                    print('name')
+                else:
+                    com = com.order_by(ComInfor.comName.asc())
+                    print('name')
+
+            if session.get('students') is not None:
+                if session['students'] == 'desc':
+                    com = com.order_by(ComInfor.students.desc())
+                    print('students')
+                else:
+                    com = com.order_by(ComInfor.students.asc())
+                    print('students')
+
+            if session.get('status') is not None:
+                if flag:
+                    if session['status'] == '2':
+                        com = com.filter_by(comCheck=2)
+                        print('status')
+                    else:
+                        com = com.filter(ComInfor.comCheck != 2)
+                        print('status')
+                else:
+                    if session['status'] == '1':
+                        com = com.filter_by(comCheck=1)
+                        print('status')
+                    else:
+                        com = com.filter_by(comCheck=0)
+                        print('status')
+            if flag:
+                if current_user.can(Permission.COM_INFOR_CHECK):
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                    print('pagination')
+                else:
+                    com = com.filter_by(comCheck=2)
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+        elif session.get('name') is not None:
+            if session['name'] == 'desc':
+                com = ComInfor.query.order_by(ComInfor.comName.desc())
+            else:
+                com = ComInfor.query.order_by(ComInfor.comName.asc())
+            if session.get('students') is not None:
+                if session['students'] == 'desc':
+                    com = com.order_by(ComInfor.students.desc())
+                else:
+                    com = com.order_by(ComInfor.students.asc())
+            if session.get('status') is not None:
+                if flag:
+                    if session['status'] == '2':
+                        com = com.filter_by(comCheck=2)
+                    else:
+                        com = com.filter(ComInfor.comCheck != 2)
+                else:
+                    if session['status'] == '1':
+                        com = com.filter_by(comCheck=1)
+                        print('status')
+                    else:
+                        com = com.filter_by(comCheck=0)
+                        print('status')
+            if session.get('city') is not None:
+                com = com.filter_by(comAddress=session['city'])
+
+            if flag:
+                if current_user.can(Permission.COM_INFOR_CHECK):
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                else:
+                    com = com.filter_by(comCheck=2)
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+        elif session.get('students') is not None:
+            if session['students'] == 'desc':
+                com = ComInfor.query.order_by(ComInfor.students.desc())
+            else:
+                com = ComInfor.query.order_by(ComInfor.students.asc())
+            if session.get('name') is not None:
+                if session['name'] == 'desc':
+                    com = com.order_by(ComInfor.comName.desc())
+                else:
+                    com = com.order_by(ComInfor.comName.asc())
+            if session.get('status') is not None:
+                if flag:
+                    if session['status'] == '2':
+                        com = com.filter_by(comCheck=2)
+                    else:
+                        com = com.filter(ComInfor.comCheck != 2)
+                else:
+                    if session['status'] == '1':
+                        com = com.filter_by(comCheck=1)
+                        print('status')
+                    else:
+                        com = com.filter_by(comCheck=0)
+                        print('status')
+            if session.get('city') is not None:
+                com = com.filter_by(comAddress=session['city'])
+
+            if flag:
+                if current_user.can(Permission.COM_INFOR_CHECK):
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                else:
+                    com = com.filter_by(comCheck=2)
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+        elif session.get('status') is not None:
+            if flag:
+                if session['status'] == '2':
+                    com = ComInfor.query.filter_by(comCheck=2)
+                else:
+                    com = ComInfor.query.filter(ComInfor.comCheck != 2)
+            else:
+                if session['status'] == '1':
+                    com = ComInfor.query.filter_by(comCheck=1)
+                    print('status')
+                else:
+                    com = ComInfor.query.filter_by(comCheck=0)
+                    print('status')
+
+            if session.get('name') is not None:
+                if session['name'] == 'desc':
+                    com = com.order_by(ComInfor.comName.desc())
+                else:
+                    com = com.order_by(ComInfor.comName.asc())
+            if session.get('students') is not None:
+                if session['students'] == 'desc':
+                    com = com.order_by(ComInfor.students.desc())
+                else:
+                    com = com.order_by(ComInfor.students.asc())
+            if session.get('city') is not None:
+                com = com.filter_by(comAddress=session['city'])
+
+            if flag:
+                if current_user.can(Permission.COM_INFOR_CHECK):
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                else:
+                    com = com.filter_by(comCheck=2)
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+        else:
+            if flag:
+                if current_user.can(Permission.COM_INFOR_CHECK):
+                    com = ComInfor.query.order_by(ComInfor.comDate.desc())
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                    print('hi')
+                else:
+                    com = ComInfor.query.filter_by(comCheck=2).order_by(ComInfor.comDate.desc())
+                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+            else:
+                com = ComInfor.query.filter(ComInfor.comCheck != 2).order_by(ComInfor.comDate.desc())
+                citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck!=2')
+        if not flag:
+            com = com.filter(ComInfor.comCheck != 2)
+            citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck!=2')
+    except Exception as e:
+        print('组合筛选：', e)
+    # 生成筛选项
+    for c in citys:
+        city[i] = c.comAddress
+        i = i + 1
+    return com

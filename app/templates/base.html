@@ -91,7 +91,7 @@
                 <ul class="nav navbar-nav">
                     {% if current_user.is_authenticated %}
                         {% if current_user.can(Permission.INTERNSHIP_LIST) %}
-                            <li><a href="{{ url_for('main.interncompany') }}">企业实习情况</a></li>
+                            <li><a href="{{ url_for('main.update_filter') }}">企业实习情况</a></li>
                         {% endif %}
                         <li><a href="{{ url_for('main.statistics') }}">统计</a></li>
                         {% if current_user.roleId==0 %}
@@ -108,9 +108,7 @@
                                     <li><a href="{{ url_for('main.xJournalList') }}">实习工作日志<span class="badge">0</span></a>
                                     </li>
                                     <li class="divider"></li>
-                                    <li><a href="#">实习工作总结<span class="badge">0</span></a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">我的成果<span class="badge">0</span></a></li>
+                                    <li><a href="#">我的总结和成果<span class="badge">0</span></a></li>
                                 </ul>
                             </li>
                         {% else %}
@@ -124,9 +122,7 @@
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('main.stuJournalList' ) }}">实习工作日志</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="#">实习工作总结</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#">实习工作成果</a></li>
+                                        <li><a href="#">工作总结和成果</a></li>
                                     </ul>
                                 </li>
                             {% endif %}

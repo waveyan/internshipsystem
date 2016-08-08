@@ -1,7 +1,7 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, SubmitField, TextAreaField, DateTimeField, SelectField, BooleanField, DateField, validators
+from wtforms import StringField, SubmitField, TextAreaField, DateTimeField, SelectField, BooleanField, DateField, \
+    validators
 from wtforms.validators import Required, URL, Email
-
 
 # datepicker failed
 '''
@@ -21,6 +21,7 @@ class DatePickerWidget(widgets.TextInput):
         kwargs['data-role'] = u'datepicker'
         return super(DatePickerWidget, self).__call__(field, **kwargs)
 '''
+
 
 class searchForm(Form):
     key = StringField(validators=[Required(message='请先输入搜索内容')])
@@ -49,6 +50,7 @@ class internshipForm(Form):
     end = DateTimeField('结束时间', format='%Y-%m-%d', validators=[Required(message='请按 年-月-日 的格式输入正确的日期')])
     submit = SubmitField('提交')
 
+
 '''
 # delete
 class directTeaForm(Form):
@@ -71,6 +73,7 @@ class schdirteaForm(Form):
     steaPhone = StringField('联系电话')
     steaEmail = StringField('邮箱')
     submit = SubmitField('提交')
+
 
 class comdirteaForm(Form):
     cteaName = StringField('企业教师姓名')
@@ -98,12 +101,12 @@ class stuForm(Form):
     stuName = StringField('姓名', validators=[Required(message='此项不能为空')])
     sex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='男')
     institutes = StringField('学院', default='计算机学院', validators=[Required(message='此项不能为空')])
-    grade = StringField('年级',  validators=[Required(message='此项不能为空')])
-    major = SelectField('专业', choices=[('计算机科学与技术','计算机科学与技术'), 
-        ('网络工程','网络工程'), 
-        ('软件工程','软件工程'), 
-        ('信息科学与技术','信息科学与技术')],
-         default='计算机科学与技术',validators=[Required(message='此项不能为空')])
+    grade = StringField('年级', validators=[Required(message='此项不能为空')])
+    major = SelectField('专业', choices=[('计算机科学与技术', '计算机科学与技术'),
+                                       ('网络工程', '网络工程'),
+                                       ('软件工程', '软件工程'),
+                                       ('信息科学与技术', '信息科学与技术')],
+                        default='计算机科学与技术', validators=[Required(message='此项不能为空')])
     classes = StringField('班级', validators=[Required(message='此项不能为空')])
     submit = SubmitField('提交')
 
@@ -117,6 +120,7 @@ class teaForm(Form):
 
 class permissionForm(Form):
     roleName = StringField('角色名称', validators=[Required(message='此项不能为空')])
+    roleDescribe = StringField('角色描述')
     COM_INFOR_SEARCH = BooleanField('企业信息查看', default=False, description='0X0000001', false_values='0x11')
     COM_INFOR_EDIT = BooleanField('企业信息编辑', default=False, description='0X0000002')
     COM_INFOR_CHECK = BooleanField('企业信息审核', default=False, description='0X0000004')
