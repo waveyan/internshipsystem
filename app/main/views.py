@@ -163,10 +163,8 @@ def addcominfor():
 def addInternship():
     comId = request.args.get('comId')
     iform = internshipForm()
-    # form = directTeaForm()
     schdirteaform = schdirteaForm()
     comdirteaform = comdirteaForm()
-    # dirctTea = DirctTea()
     i = 0
     j = 0
     try:
@@ -200,6 +198,13 @@ def addInternship():
                 stuId=current_user.stuId,
                 internStatus=internStatus
             )
+            db.session.add(internship)
+            try:
+                db.session.commit()
+            except Exception as e:
+                print('添加实习信息：', e)
+                db.session.rollback()
+                flash('添加实习信息失败，请重试！')
             while True:
                 i = i + 1
                 j = j + 1
@@ -207,19 +212,8 @@ def addInternship():
                 print(teaValue)
                 cteaValue = request.form.get('cteaName%s' % j)
                 print(cteaValue)
-                # if teaValue or cteaValue:
                 if teaValue:
                     print(teaValue)
-                    '''
-                    dirctTea = DirctTea(
-                        comId=comId, 
-                        teaId=teaValue, 
-                        teaName=request.form.get('teaName%s' % i),
-                        teaDuty=request.form.get('teaDuty%s' % i),
-                        teaPhone=request.form.get('teaPhone%s' % i),
-                        teaEmail=request.form.get('teaEmail%s' % i), 
-                        stuId=current_user.stuId)
-                    '''
                     schdirtea = SchDirTea(
                         teaId=teaValue,
                         stuId=current_user.stuId,
@@ -229,6 +223,17 @@ def addInternship():
                         teaEmail=request.form.get('teaEmail%s' % i)
                     )
                     db.session.add(schdirtea)
+                    if cteaValue:
+                        print(cteaValue)
+                        comdirtea = ComDirTea(
+                            stuId=current_user.stuId,
+                            teaName=cteaValue,
+                            comId=comId,
+                            teaDuty=request.form.get('cteaDuty%s' % j),
+                            teaEmail=request.form.get('cteaEmail%s' % j),
+                            teaPhone=request.form.get('cteaPhone%s' % j)
+                        )
+                        db.session.add(comdirtea)
                 elif cteaValue:
                     print(cteaValue)
                     comdirtea = ComDirTea(
@@ -240,21 +245,28 @@ def addInternship():
                         teaPhone=request.form.get('cteaPhone%s' % j)
                     )
                     db.session.add(comdirtea)
-                    '''
-                    dirctTea.cteaDuty = request.form.get('cteaDuty%s' % j)
-                    dirctTea.cteaEmail = request.form.get('cteaEmail%s' % j)
-                    dirctTea.cteaName = cteaValue
-                    dirctTea.cteaPhone = request.form.get('cteaPhone%s' % j)
-                    dirctTea.stuId = current_user.stuId
-
-                    db.session.add(dirctTea)
-                    '''
+                    if teaValue:
+                        print(teaValue)
+                        schdirtea = SchDirTea(
+                            teaId=teaValue,
+                            stuId=current_user.stuId,
+                            teaName=request.form.get('teaName%s' % i),
+                            teaDuty=request.form.get('teaDuty%s' % i),
+                            teaPhone=request.form.get('teaPhone%s' % i),
+                            teaEmail=request.form.get('teaEmail%s' % i)
+                        )
+                        db.session.add(schdirtea)
                 else:
                     break
+            try:
+                db.session.commit()
+            except Exception as e:
+                print('添加指导老师：', e)
+                db.session.rollback()
+                flash('添加实习信息失败，请重试！')
 
             # commit internship之后,internId才会更新
-            db.session.add(internship)
-            db.session.commit()
+
 
             # 初始化实习日志
             internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
@@ -788,6 +800,14 @@ def search(key):
                 if c.comName.find(key) != -1:
                     comInfor.append(c)
                     num = num + 1
+    elif request.args.get('me') == 'intern':
+        cominfor = ComInfor.query.filter_by(comCheck=2).all()
+        comInfor = []
+        num = 0
+        for c in cominfor:
+            if c.comName.find(key) != -1:
+                comInfor.append(c)
+                num = num + 1
     return render_template('searchResult.html', num=num, form=form, Permission=Permission, comInfor=comInfor, key=key)
 
 
