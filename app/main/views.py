@@ -1,13 +1,12 @@
 from flask import render_template, url_for, flash, redirect, request, session
-from .form import searchForm, comForm, internshipForm, journalForm, stuForm, teaForm, permissionForm, schdirteaForm, comdirteaForm
+from .form import searchForm, comForm, internshipForm, journalForm, stuForm, teaForm, permissionForm, schdirteaForm, \
+    comdirteaForm
 from . import main
 from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, not_student_login, update_intern_internStatus, update_intern_jourCheck
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func, desc
 from datetime import datetime, timedelta, date
-
-
 
 # datepicker failed
 '''
@@ -74,7 +73,7 @@ def index():
 
 
 # 个人实习企业列表
-@main.route('/stuInternList',methods=['GET','POST'])
+@main.route('/stuInternList', methods=['GET', 'POST'])
 @login_required
 @update_intern_jourCheck
 @update_intern_internStatus
@@ -102,8 +101,6 @@ def stuInternList():
     else:
         flash('非法操作')
         return redirect('/')
-
-
 
 
 # 选择实习企业
@@ -187,26 +184,32 @@ def addInternship():
                 internStatus = 0 #待实习
                 print ('this is 3')
             else:
-                internStatus = 1 # start=now, 实习中
-                print ('this is 4')
+                internStatus = 1  # start=now, 实习中
+                print('this is 4')
             internship = InternshipInfor(
-                task=request.form.get('task'), 
+                task=request.form.get('task'),
                 start=start,
                 end=end,
-                time = datetime.now().date(),
+                time=datetime.now().date(),
                 address=request.form.get('address'),
-                comId=comId, 
-                stuId=current_user.stuId, 
+                comId=comId,
+                stuId=current_user.stuId,
                 internStatus=internStatus
             )
+            db.session.add(internship)
+            try:
+                db.session.commit()
+            except Exception as e:
+                print('添加实习信息：', e)
+                db.session.rollback()
+                flash('添加实习信息失败，请重试！')
             while True:
                 i = i + 1
                 j = j + 1
                 teaValue = request.form.get('teaId%s' % i)
-                print (teaValue)
+                print(teaValue)
                 cteaValue = request.form.get('cteaName%s' % j)
-                print (cteaValue)
-                # if teaValue or cteaValue:
+                print(cteaValue)
                 if teaValue:
                     print(teaValue)
                     schdirtea = SchDirTea(
@@ -261,57 +264,55 @@ def addInternship():
                 print('添加指导老师：', e)
                 db.session.rollback()
                 flash('添加实习信息失败，请重试！')
-
             # 初始化实习日志
             internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
             weeks = end.isocalendar()[1] - start.isocalendar()[1] + 1
             if weeks > 1:
                 # 第一周. 因第一天未必是周一,所以需特别处理
                 journal = Journal(
-                    stuId = current_user.stuId,
-                    comId = comId,
-                    weekNo = 1,
-                    workStart = start,
-                    workEnd = start + timedelta(days=(7 - start.isoweekday())),
-                    internId = internId
-                    )
+                    stuId=current_user.stuId,
+                    comId=comId,
+                    weekNo=1,
+                    workStart=start,
+                    workEnd=start + timedelta(days=(7 - start.isoweekday())),
+                    internId=internId
+                )
                 db.session.add(journal)
                 start = start + timedelta(days=(7 - start.isoweekday() + 1))
                 # 第二周至第 n|(n-1) 周
-                for weekNo in range(weeks-2):
+                for weekNo in range(weeks - 2):
                     journal = Journal(
-                        stuId = current_user.stuId,
-                        comId = comId,
-                        weekNo = weekNo+2,
-                        workStart = start,
-                        workEnd = start + timedelta(days=6),
-                        internId = internId
-                        )
+                        stuId=current_user.stuId,
+                        comId=comId,
+                        weekNo=weekNo + 2,
+                        workStart=start,
+                        workEnd=start + timedelta(days=6),
+                        internId=internId
+                    )
                     db.session.add(journal)
                     start = start + timedelta(days=7)
                 # 如果还有几天凑不成一周
                 if end >= start:
                     journal = Journal(
-                        stuId = current_user.stuId,
-                        comId = comId,
-                        weekNo = weeks,
-                        workStart = start,
-                        workEnd = end,
-                        internId = internId
-                        )
+                        stuId=current_user.stuId,
+                        comId=comId,
+                        weekNo=weeks,
+                        workStart=start,
+                        workEnd=end,
+                        internId=internId
+                    )
                     db.session.add(journal)
             else:
                 # 如果实习时间不满一周
                 journal = Journal(
-                    stuId = current_user.stuId,
-                    comId = comId,
-                    weekNo = 1,
-                    workStart = start,
-                    workEnd = end,
-                    internId = internId
-                    )
+                    stuId=current_user.stuId,
+                    comId=comId,
+                    weekNo=1,
+                    workStart=start,
+                    workEnd=end,
+                    internId=internId
+                )
                 db.session.add(journal)
-
 
             # 更新累计实习人数
             cominfor = ComInfor.query.filter_by(comId=comId).first()
@@ -328,7 +329,8 @@ def addInternship():
         db.session.rollback
         flash('提交实习信息失败，请重试！')
         return redirect(url_for('.addcominfor'))
-    return render_template('addinternship.html', iform=iform, schdirteaform=schdirteaform, comdirteaform=comdirteaform, Permission=Permission)
+    return render_template('addinternship.html', iform=iform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,
+                           Permission=Permission)
 
 
 # 学生个人实习信息
@@ -370,8 +372,7 @@ def xIntern_comfirm():
             flash("实习申请审核失败")
             return redirect("/")
         flash("实习申请审核成功")
-    return redirect(url_for('.stuInternList',stuId=stuId))
-
+    return redirect(url_for('.stuInternList', stuId=stuId))
 
 
 # 修改实习信息
@@ -437,12 +438,12 @@ def xInternEdit_intern():
         time = "%s", \
         internCheck = %s \
         where Id=%s'
-        % (task, address, start, end, time, internCheck, internId)
-        )
+                       % (task, address, start, end, time, internCheck, internId)
+                       )
 
     # 实习信息修改,日志跟随变动
     # 先删除原来的日志
-    db.session.execute("delete from Journal where internId=%s"% internId)
+    db.session.execute("delete from Journal where internId=%s" % internId)
     # 初始化实习日志
     start = datetime.strptime(start, '%Y-%m-%d').date()
     end = datetime.strptime(end, '%Y-%m-%d').date()
@@ -460,7 +461,7 @@ def xInternEdit_intern():
         db.session.add(journal)
         start = start + timedelta(days=(7 - start.isoweekday() + 1))
         # 第二周至第 n|(n-1) 周
-        for weekNo in range(weeks-2):
+        for weekNo in range(weeks - 2):
             journal = Journal(
                 stuId = stuId,
                 comId = comId,
@@ -514,8 +515,8 @@ def xInternEdit_comdirtea():
     teaPhone = request.form.get('cteaPhone')
     teaEmail = request.form.get('cteaEmail')
     internId = request.form.get("internId")
-    print (internId)
-    print (stuId)
+    print(internId)
+    print(stuId)
     if teaName is None or comId is None or internId is None or stuId is None:
         flash("修改实习信息失败,请重试")
         return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
@@ -526,8 +527,8 @@ def xInternEdit_comdirtea():
         teaPhone ="%s", \
         teaEmail = "%s" \
         where Id=%s'
-        % (teaName, teaDuty, teaPhone, teaEmail, Id)
-        )
+                       % (teaName, teaDuty, teaPhone, teaEmail, Id)
+                       )
     flash("实习信息修改成功")
     return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
 
@@ -556,7 +557,7 @@ def comfirmDeletreJournal_Intern():
         if from_url == "/xJournal":
             return redirect(url_for('.stuJournalList'))
     except Exception as e:
-        print ('删除日志和实习信息失败:',e)
+        print('删除日志和实习信息失败:', e)
         db.session.rollback
         flash('提交实习信息失败，请重试！')
         if from_url == "/xIntern":
@@ -566,8 +567,9 @@ def comfirmDeletreJournal_Intern():
     return redirect('/')
 
 
-# 企业详细信息
-@main.route('/cominfor', methods=['GET','POST'])
+
+# 企业详细信息,方法POST不可删除，在修改返回时有用
+@main.route('/cominfor', methods=['GET', 'POST'])
 @login_required
 def cominfor():
     id = request.args.get('id')
@@ -590,6 +592,7 @@ def interncompany():
     comInfor = pagination.items
     return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor, city=city)
+
 
 
 # 企业信息用户操作筛选项,对所选筛选项进行删除
@@ -658,14 +661,14 @@ def addjournal(comId):
         # workend = datetime.strptime(form.workStart.data, '%Y-%m-%d').date()
         workend = form.workStart.data
         journal = Journal(
-            stuId=current_user.stuId, 
-            workStart=form.workStart.data.strftime('%Y-%m-%d'), 
+            stuId=current_user.stuId,
+            workStart=form.workStart.data.strftime('%Y-%m-%d'),
             weekNo=form.weekNo.data,
-            workEnd=workend, 
+            workEnd=workend,
             comId=comId,
-            mon=form.mon.data, 
-            tue=form.tue.data, 
-            wed=form.wed.data, 
+            mon=form.mon.data,
+            tue=form.tue.data,
+            wed=form.wed.data,
             thu=form.thu.data,
             fri=form.fri.data,
             sat=form.sat.data,
@@ -689,9 +692,10 @@ def addjournal(comId):
 def studentList(comId):
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    comName = ComInfor.query.filter(ComInfor.comId==comId).with_entities(ComInfor.comName).first()[0]
+    comName = ComInfor.query.filter(ComInfor.comId == comId).with_entities(ComInfor.comName).first()[0]
     # filter过滤当前特定企业ID
-    pagination = Student.query.join(InternshipInfor).filter(InternshipInfor.comId==comId).order_by(Student.grade).paginate(page, per_page=8, error_out=False)
+    pagination = Student.query.join(InternshipInfor).filter(InternshipInfor.comId == comId).order_by(
+        Student.grade).paginate(page, per_page=8, error_out=False)
     student = pagination.items
     for stu in student:
         internStatus = InternshipInfor.query.filter_by(comId=comId, stuId=stu.stuId, internStatus=0).count()
@@ -777,8 +781,7 @@ def allcomCheck():
         return redirect(url_for('.allcomCheck', page=pagination.page))
     return render_template('allcomCheck.html', form=form, Permission=Permission, comInfor=comInfor,
                            pagination=pagination, city=city)
-
-
+    
 
 # 批量删除企业信息
 @main.route('/allcomDelete', methods=['GET', 'POST'])
@@ -800,7 +803,6 @@ def allcomDelete():
             db.session.execute("delete from ComInfor where comId = %s" % x)
         return redirect(url_for('.allcomDelete', page=pagination.page))
     return render_template('allcomDelete.html', form=form, Permission=Permission, comInfor=comInfor,  pagination=pagination, city=city)
-
 
 
 # 修改实习信息，没有考虑学生修改自己的企业信息
@@ -969,11 +971,10 @@ def stuJournalList():
             .filter(InternshipInfor.internCheck==2).group_by(InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus,1,0,2)).paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
         return render_template('stuJournalList.html', internlist=internlist, Permission=Permission, pagination=pagination)
-        
 
 
 # 学生日志 -- 特定学生的日志详情
-@main.route('/xJournal', methods=['GET','POST'])
+@main.route('/xJournal', methods=['GET', 'POST'])
 @login_required
 def xJournal():
     if current_user.roleId == 0:
@@ -1003,8 +1004,7 @@ def xJournal():
         return redirect(url_for('.xJournalList', stuId=stuId))
 
 
-
-@main.route('/journal_comfirm', methods=['POST','GET'])
+@main.route('/journal_comfirm', methods=['POST', 'GET'])
 @not_student_login
 def journal_comfirm():
     # 参数都是为了跳转 /xJournal 做准备
@@ -1107,7 +1107,7 @@ def stuJour():
 @login_required
 def stuUserList():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
+    if not current_user.roleId == 3:
         return redirect('/')
     form = searchForm()
     page = request.args.get('page', 1, type=int)
@@ -1121,19 +1121,19 @@ def stuUserList():
 @login_required
 def addStudent():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
+    if not current_user.roleId == 3:
         return redirect('/')
     stuform = stuForm()
     if stuform.validate_on_submit():
         stu = Student(
-            stuName=stuform.stuName.data, 
-            stuId=stuform.stuId.data, 
+            stuName=stuform.stuName.data,
+            stuId=stuform.stuId.data,
             sex=stuform.sex.data,
-            institutes=stuform.institutes.data, 
-            major=stuform.major.data, 
+            institutes=stuform.institutes.data,
+            major=stuform.major.data,
             classes=stuform.classes.data,
             grade=stuform.grade.data
-            )
+        )
         db.session.add(stu)
         try:
             db.session.commit()
@@ -1152,7 +1152,7 @@ def addStudent():
 @login_required
 def teaUserList():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
+    if not current_user.roleId == 3:
         return redirect('/')
     form = searchForm()
     page = request.args.get('page', 1, type=int)
@@ -1169,7 +1169,7 @@ def teaUserList():
 @login_required
 def addTeacher():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
+    if not current_user.roleId == 3:
         return redirect('/')
     form = teaForm()
     if form.validate_on_submit():
@@ -1192,8 +1192,8 @@ def addTeacher():
 @login_required
 def roleList():
     # 非管理员,不能进入
-    if not current_user.roleId==3:
-       return redirect('/')
+    if not current_user.roleId == 3:
+        return redirect('/')
     role = Role.query.all()
     return render_template('roleList.html', Permission=Permission, role=role)
 
@@ -1308,6 +1308,7 @@ def addRole():
 def getMaxRoleId():
     res = db.session.query(func.max(Role.roleId).label('max_roleId')).one()
     return res.max_roleId
+
 
 # 企业信息筛选项，组合查询,当flag=Ture为企业实习信息和批量删除的功能,False为批量审核功能
 def create_com_filter(city, flag=True):

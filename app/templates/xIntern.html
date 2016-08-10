@@ -106,7 +106,12 @@
 
     <table align="center" border="2" class="table-bordered">
         <caption>
-            <h1>我的实习信息
+            <h1>
+                {% if current_user.roleId>0 %}
+                    {{ student.stuName }}的实习信息
+                {% else %}
+                    我的实习信息
+                {% endif %}
                 <div class="btn-group">
                     <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                             data-toggle="dropdown">编辑<span class="caret"></span>
@@ -121,6 +126,7 @@
                         {% elif internship.internCheck == 2 and current_user.roleId ==3 %}
                             <li><a onClick="Admin_ComfirmEdit()">修改</a></li>
                         {% endif %}
+                        <li><a href="#">导出</a></li>
                         <li><a onClick="ComfirmDelete()">删除</a></li>
                     </ul>
                 </div>
@@ -140,7 +146,7 @@
         <tr>
             <th width="200">学号</th>
             <td width="400" height="50" colspan="3">
-                {{student.stuId }}
+                {{ student.stuId }}
             </td>
             <th width="200">姓名</th>
             <td width="400" height="50" colspan="3">{{ student.stuName }}</td>

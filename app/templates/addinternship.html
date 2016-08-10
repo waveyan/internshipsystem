@@ -79,7 +79,6 @@
     </div>
     <div class="panel">
         <div class="panel-body">
-        <!-- delete
             <div class="teaForm" style="display: None">
                 {{ schdirteaform.hidden_tag() }}
                 {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="",
@@ -92,7 +91,7 @@
                 {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control",required='',placeholder="") }}
                 </br></br>
             </div>
-            <div class=" cteaForm" style="display: None">
+            <div class="cteaForm" style="display: None">
                 {{ comdirteaform.hidden_tag() }}
                 {{ comdirteaform.cteaName.label }} {{ comdirteaform.cteaName(class="form-control",required='',placeholder="",
             pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
@@ -102,22 +101,22 @@
                 {{ comdirteaform.cteaEmail.label }} {{ comdirteaform.cteaEmail(class="form-control",placeholder="") }}
                 </br></br>
             </div>
-            -->
+
             <form method="POST" role="form" id="S1">
                 <h3>实习岗位信息</h3>
                 <div>
                     {{ iform.hidden_tag() }}
                     {{ iform.address.label }}{{ iform.address(class="form-control",placeholder="",
-        oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                        oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                     </br>
                     {{ iform.task.label }}{{ iform.task(class="form-control",required='',placeholder="请输入实习任务",
-        oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                        oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                     </br>
                     {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='',
-        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
+                        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
                     </br>
                     {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='',
-        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
+                        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
                 </div>
                 <h3>校内指导老师信息</h3>
                 <div class="teaForm">
@@ -143,13 +142,11 @@
                 </div>
                 <input type="button" id="addcTea" class="btn" value="添加老师">
                 <input type="button" id="delcTea" class="btn" value="删除老师" style="display: none">
-                </br></br></br></br>
+                </br></br></br>
                 <!--
                 <button type="submit" />
                 -->
-            
                 {{ iform.submit(class="btn btn-success",type="submit",id='finish') }}
-
             </form>
             <br><br>
 {% endblock %}
