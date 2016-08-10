@@ -8,6 +8,7 @@ from functools import wraps
 from flask import _request_ctx_stack, abort, current_app, flash, redirect, request, session, url_for, has_request_context
 from flask.ext.login import current_user
 
+
 # 此装饰器用于学生没有权限访问的页面
 def not_student_login(func):
     @wraps(func)
@@ -20,6 +21,35 @@ def not_student_login(func):
             return redirect('/')
         return func(*args, **kwargs)
     return decorated_view
+
+
+# 装饰器: 更新 InternshipInfor 实习状态
+def update_intern_internStatus(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        now = datetime.now().date()
+        db.session.execute('update InternshipInfor set internStatus=0 where start > "%s"'% now)
+        db.session.execute('update InternshipInfor set internStatus=1 where start < "%s" and end > "%s"'% (now, now))
+        db.session.execute('update InternshipInfor set internStatus=2 where end < "%s"'% now)
+        return func(*args, **kwargs)
+    return decorated_view
+
+
+# 装饰器: 更新 InternshipInfor 日志审核状态
+def update_intern_jourCheck(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        now = datetime.now().date()
+        is_not_checked = db.session.execute('select distinct internId from Journal where jourCheck=0 and workEnd < "%s"'% now)
+        # print ("is_not_checked:", is_not_checked)
+        # for x in is_not_checked:
+        #     print("x:", x.internId)
+        if is_not_checked:
+            for x in is_not_checked:
+                db.session.execute('update InternshipInfor set jourCheck=0 where Id=%s'% x.internId)
+        return func(*args, **kwargs)
+    return decorated_view
+
 
 
 @login_manager.user_loader
@@ -235,7 +265,7 @@ class Journal(db.Model):
     jcheckTeaId = db.Column(db.String(8))
     jourCheck = db.Column(db.Integer, default=0)
     jcheckTime = db.Column(db.DATETIME)
-    internId = db.Column(db.Integer)
+    internId = db.Column(db.Integer, db.ForeignKey('InternshipInfor.Id'))
     opinion = db.Column(db.String(500),default='')
 
 

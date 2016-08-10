@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block title %}企业信息{% endblock %}
-{% block head %}{{ super() }}{% endblock %}
+{% block head %}
+    {{ super() }}
+    <!-- 确认删除窗口 ,传递参数-->
+    <script type="text/javascript">
+        function ComfirmDelete(str) {
+            $('#deleteToggle').modal();
+            var obj = document.getElementById("comId");
+            obj.value = str
+        }
+    </script>
+{% endblock %}
 {% block page_content %}
     <table align="center" border="2" class="table-bordered">
         <caption>
@@ -11,15 +21,20 @@
                                 data-toggle="dropdown">编辑<span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                                <li><a href="#">审核通过</a></li>
+                            {% if com.comCheck!=2 %}
+                                <li><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a></li>
                             {% endif %}
-                            <li><a href="#">修改</a></li>
-                            <li><a onclick="#">删除</a></li>
+                            <li><a href="#">导出</a></li>
+                            <li><a onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></li>
                         </ul>
                     </div>
                 {% endif %}
             </h1>
+            {% if com.comCheck == 2 %}
+                <div><span class="label label-info">已审核</span></div>
+            {% else %}
+                <span class="label label-warning">审核未通过</span>
+            {% endif %}
         </caption>
         <tr>
             <th width="200">公司名称</th>
@@ -57,5 +72,43 @@
             <td height="50">{{ com.comFax }}</td>
         </tr>
     </table>
+
+    <!-- 是否审核通过都要显示按钮，万一审核出错了，要重新审核 -->
+    <br><br>
+    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+        <a href="{{ url_for('.com_comfirm',comId=com.comId,check='pass') }}">
+            <button class="btn btn-success">审核通过</button>
+        </a>
+        <a href="{{ url_for('.com_comfirm',comId=com.comId,check='notpass') }}">
+            <button class="btn btn-primary">审核不通过</button>
+        </a>
+    {% endif %}
     <br><br><br><br>
+    <!--确认弹窗-->
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
+         aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        提示：
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否任要删除？</h4>
+                </div>
+                <div class="modal-footer">
+                    <form action="/com_delete" method="POST">
+                        <input type="hidden" id="comId" name="comId">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
 {% endblock %}

@@ -9,26 +9,52 @@
     <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
     <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
-
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#rearch").click(function () {
+                $(".rearchSubmit").click();
+            });
+        });
+    </script>
     <!-- 全选企业  -->
     <script type="text/javascript">
-        function select_all(){    
+        function select_all() {
             var checkboxes = document.getElementsByName('approve[]');
             var button = document.getElementById('toggle');
-    
-            if(button.value == '全选'){
-                for (var i in checkboxes){
+
+            if (button.value == '全选') {
+                for (var i in checkboxes) {
                     checkboxes[i].checked = 'FALSE';
                 }
                 button.value = '全不选'
-            }else{
-                for (var i in checkboxes){
+            } else {
+                for (var i in checkboxes) {
                     checkboxes[i].checked = '';
                 }
                 button.value = '全选';
             }
         }
-    </script>    
+    </script>
+    <!--筛选按钮-->
+    <script type="text/javascript">
+        window.onload = function () {
+            var obj = document.getElementById("sel");
+            obj.onclick = function () {
+                obj.className = (obj.className == "class1" ? "class2" : "class1");
+                obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
+            }
+        }
+    </script>
+    <!--更多-->
+    <style>
+        .first .second {
+            display: none;
+        }
+
+        .first:hover .second {
+            display: block;
+        }
+    </style>
 {% endblock %}
 {% block page_content %}
     <h1>实习企业信息
@@ -47,22 +73,117 @@
                     {% endif %}
         {% endif %}
         <div style="float:right;width:350px"><!--长度-->
-            <form role="form" method="POST" action="/search">
-                <div class="row head">
-                    <div class="col-lg-10"><!--位置-->
-                        <div class="input-group ">
-                            {{ form.key(type="text",class="form-control",placeholder="请先输入企业名称或所在城市",required='') }}
+            <div style="float:right;width:350px"><!--长度-->
+                <form role="form" method="POST" action="/interncompany">
+                    <div class="row head">
+                        <div class="col-lg-10"><!--位置-->
+                            <div class="input-group ">
+                                {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
                         <span class="input-group-btn">
                             <button class="btn btn-info" type="button" id="rearch"><span
                                     class="glyphicon glyphicon-search"></span></button>
                         </span>
+                            </div>
+                            {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
                         </div>
-                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </h1>
+
+    <div>
+        <ol class="breadcrumb">
+            <li><a href="{{ url_for('.update_filter',flag=0) }}">所有分类</a></li>
+            {% if session['city']!=None %}
+                <li><a href="{{ url_for('.update_filter',city='city',flag=0) }}">{{ session['city'] }}</a></li>
+            {% endif %}
+            {% if session['name']=='asc' %}
+                <li><a href="{{ url_for('.update_filter',name='name',flag=0) }}"> 企业名称按拼音首字母升序排列</a></li>
+            {% elif session['name']=='desc' %}
+                <li><a href="{{ url_for('.update_filter',name='name',flag=0) }}"> 企业名称按拼音首字母降序排列</a></li>
+            {% endif %}
+            {#            {% if session['students']=='asc' %}#}
+            {#                <li><a href="{{ url_for('.update_filter',students='students',flag=0) }}"> 累计实习人次按升序排列</a></li>#}
+            {#            {% elif session['students']=='desc' %}#}
+            {#                <li><a href="{{ url_for('.update_filter',students='students',flag=0) }}"> 累计实习人次按降序排列</a></li>#}
+            {#            {% endif %}#}
+            {% if session['status']=='2' %}
+                <li><a href="#"> 审核通过</a></li>
+            {% elif session['status']!='2' and session.get('status')!= None %}
+                <li><a href="#"> 审核不通过</a></li>
+            {% endif %}
+        </ol>
+        <input style="float:right;" type="button" class="class1" data-toggle="collapse"
+               data-target="#demo" id="sel" value="收起筛选"/>
+
+    </div>
+
+    <div id="demo" class="collapse in ">
+        <div class="panel panel-danger">
+            <div class="panel-body">
+
+
+                <table>
+                    <tr>
+                        <th width="100">城市:</th>
+                        {% for i in city.keys() %}
+                            {% if i<3 %}
+                                <td width="200"><a href="{{ url_for('.allcomDelete',city=city[i]) }}">{{ city[i] }}</a>
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        <td width="200">
+                            <div class="first">
+                                <a>更多</a>
+                                <div class="second">
+                                    {% for i in city.keys() %}
+                                        {% if i>2 %}
+                                            <li style="list-style-type:none;"><a
+                                                    href="{{ url_for('.allcomDelete',city=city[i]) }}">{{ city[i] }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                    <tr>
+                        <th width="200">企业名称：</th>
+                        <td width="400"><a href="{{ url_for('.allcomDelete',name='asc') }}">按拼音首字母升序排列</a></td>
+                        <td width="400"><a href="{{ url_for('.allcomDelete',name='desc') }}">按拼音首字母降序排列</a></td>
+                    </tr>
+
+                    {#                    <tr>#}
+                    {#                        <td>&nbsp;</td>#}
+                    {#                    </tr>#}
+                    {#                    <tr>#}
+                    {#                        <th width="200">累计实习人次：</th>#}
+                    {#                        <td width="400"><a href="{{ url_for('.allcomDelete',students='asc') }}">按人数升序排列</a></td>#}
+                    {#                        <td width="400"><a href="{{ url_for('.allcomDelete',students='desc') }}">按人数降序排列</a></td>#}
+                    {#                    </tr>#}
+
+                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <th width="200">审核状态：</th>
+                            <td width="400"><a href="{{ url_for('.allcomDelete',status=2) }}">审核通过</a></td>
+                            <td width="400"><a href="{{ url_for('.allcomDelete',status=0) }}">审核不通过</a></td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+        <p></p>
+    </div>
+
     <div>
         <table class="table">
             <thead>
@@ -81,39 +202,39 @@
             <tbody>
             <div id="div">
                 <form method="post">
-                {% for com in comInfor %}
+                    {% for com in comInfor %}
 
-                    <tr>
-                        <th><input type="checkbox" name='approve[]' value={{ com.comId }} ></th>
-                        <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
-                        <td>{{ com.comAddress }}</td>
-                        <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
-                        <td>{{ com.comPhone }}</td>
-                        
-                        <!-- 若将整个页面设置为仅审核老师以上才能访问,此判断就可以省去 -->
-                        {% if current_user.roleId==0 %}
-                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}</td>
-                        {% else %}
-                            <td><a href="{{ url_for('.studentList',comId=com.comId) }}">
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}</a></td>
-                        {% endif %}
-                        {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                            {% if com.comCheck==0 %}
-                                <td>待审核</td>
-                            {% elif com.comCheck==1 %}
-                                <td>被退回</td>
+                        <tr>
+                            <th><input type="checkbox" name='approve[]' value={{ com.comId }}></th>
+                            <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
+                            <td>{{ com.comAddress }}</td>
+                            <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
+                            <td>{{ com.comPhone }}</td>
+
+                            <!-- 若将整个页面设置为仅审核老师以上才能访问,此判断就可以省去 -->
+                            {% if current_user.roleId==0 %}
+                                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}</td>
                             {% else %}
-                                <td>已审核</td>
+                                <td><a href="{{ url_for('.studentList',comId=com.comId) }}">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}</a></td>
                             {% endif %}
-                        {% endif %}
+                            {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                                {% if com.comCheck==0 %}
+                                    <td>待审核</td>
+                                {% elif com.comCheck==1 %}
+                                    <td>被退回</td>
+                                {% else %}
+                                    <td>已审核</td>
+                                {% endif %}
+                            {% endif %}
 
-                    </tr>
-                {% endfor %}
+                        </tr>
+                    {% endfor %}
             </div>
             </tbody>
         </table>
         <div>
-            <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()" />
+            <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
             <button type="submit" class="btn btn-danger">删除</button>
             <!--
             <button type="button" class="btn btn-primary" id="back">取消</button>

@@ -2,80 +2,21 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}个人实习信息{% endblock %}
-{% block head %}{{ super() }}{% endblock %}<!--先执行父模板-->
+{% block head %}{{ super() }}
+<style type="text/css">
+        #task {
+            height: 200px;
+        }
+</style>
+
+{% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
 
     <table align="center" border="2" class="table-bordered">
         <caption>
-            <h1>我的实习信息
-            <!-- 没有下拉菜单
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                            data-toggle="dropdown">编辑<span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        {% if current_user.can(Permission.STU_INTERN_EXPORT) %}
-                            <li><a href="#">审核通过</a></li>
-                        {% endif %}
-                        <li><a href="#">导出到Excel</a></li>
-                        <li><a href="{{ url_for('.editStuIntern', comId=comId) }}">修改</a></li>
-                        <li><a href="#">删除</a></li>
-                    </ul>
-                </div>
-                -->
-            </h1>
+            <h1>我的实习信息            </h1>
         </caption>
-        
-        <!--
-        <form method="POST" role="form" >
-        -->
-    
-
-        <!-- 此页面仅能修改实习信息
-        <tr>
-            <td colspan="6" height="50">一、学生信息</td>
-        </tr>
-        <tr>
-            <th width="200">学号</th>
-            <td width="400" height="50" colspan="3">
-                {{ stuform.stuId(class="form-control",required='', value=student.stuId) }}
-            </td>
-            <th width="200">姓名</th>
-            <td width="400" height="50" colspan="3">
-            {{ stuform.stuName(class="form-control",required='', value=student.stuName) }}</td>
-        </tr>
-        <tr>
-            <th width="200">性别</th>
-            <td width="400" height="50" colspan="3">
-                {{ stuform.sex(class="form-control",required='', value=student.sex) }}
-            </td>
-            <th width="200">专业班级</th>
-            <td width="400" height="50" colspan="3">
-            {{ stuform.major(class="form-control",required='', value=student.major) }}
-            {{ stuform.classes(class="form-control",required='', value=student.classes) }}
-            班</td>
-        </tr>
-        <tr>
-            <td width="200" colspan="6" height="50">二、实习企业信息</td>
-        </tr>
-        <tr>
-            <th>企业名称</th>
-            <td height="50" width="400" colspan="5">
-            {{ comform.comName(class="form-control",required='', value=comInfor.comName) }}</td>
-        </tr>
-        <tr>
-            <th>企业地址</th>
-            <td height="50" width="400" colspan="5">
-            {{ comform.comAddress(class="form-control",required='', value=comInfor.comAddress) }}
-            </td></td>
-        </tr>
-        <tr>
-            <th>企业简介</th>
-            <td height="200" width="400" colspan="5">
-            {{ comform.comBrief(class="form-control",required='', value=combrief ) }}</td>
-        </tr>
-        -->
 
         <tr>
             <td colspan="6" height="50">一、学生信息</td>
@@ -114,7 +55,7 @@
         <tr>
             <td width="200"  height="50">三、实习岗位信息</td>
         </tr>
-        <form method="POST" action="/editStuIntern_intern">
+        <form method="POST" action="/xInternEdit_intern">
         <tr>
             <th>实习地点</th>
             <td width="400" height="50" colspan="5">
@@ -135,7 +76,7 @@
             <td width="400" height="200" colspan="5">
             <!-- it's a magic -->
             {% set temp_task = internform.task.process_data(internship.task) %}
-            {{ internform.task(class="form-control",required='') }}</td>
+            {{ internform.task(class="form-control", required='', cols="190", row="190") }}</td>
         </tr>
         <tr><td colspan="6" align="center">{{ internform.submit(class="btn btn-danger",type="submit",id='finish', value="确定修改") }}</td></tr>
         </form>
@@ -155,7 +96,7 @@
             {% for tea in comdirtea %}
                 {% if tea.teaName %}
                     <tr>
-                        <form method="POST" action="/editStuIntern_comdirtea" >
+                        <form method="POST" action="/xInternEdit_comdirtea" >
                         {{ comdirteaform.hidden_tag() }}
                         <input type="hidden" name="comId" value="{{ comInfor.comId }}">
                         <input type="hidden" name="start" value="{{ internship.start }}">
@@ -216,7 +157,7 @@
         </table>
     </table>
     <br>
-    <tr><td><a href="{{ url_for('.stuIntern',internId=internship.Id, comId=comInfor.comId, stuId=student.stuId) }}"><button class="btn btn-primary">返回</button></a>
+    <tr><td><a href="{{ url_for('.xIntern',internId=internship.Id, comId=comInfor.comId, stuId=student.stuId) }}"><button class="btn btn-primary">返回</button></a>
     <!--
     <tr><button type="submit" class="btn btn-success" id="toggle" onClick="select_all()" value=修改></button></tr>
     -->

@@ -91,7 +91,7 @@
                 <ul class="nav navbar-nav">
                     {% if current_user.is_authenticated %}
                         {% if current_user.can(Permission.INTERNSHIP_LIST) %}
-                            <li><a href="{{ url_for('main.interncompany') }}">企业实习情况</a></li>
+                            <li><a href="{{ url_for('main.update_filter') }}">企业实习情况</a></li>
                         {% endif %}
                         <li><a href="{{ url_for('main.statistics') }}">统计</a></li>
                         {% if current_user.roleId==0 %}
@@ -105,12 +105,11 @@
                                     <li><a href="{{ url_for('main.stuInternList') }}">实习信息<span class="badge">0</span></a>
                                     </li>
                                     <li class="divider"></li>
-                                    <li><a href="{{ url_for('main.xJournalList') }}">实习工作日志<span class="badge">0</span></a>
+                                    <li><a href="{{ url_for('main.stuJournalList') }}">实习工作日志<span class="badge">0</span></a>
                                     </li>
                                     <li class="divider"></li>
-                                    <li><a href="#">实习工作总结<span class="badge">0</span></a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">我的成果<span class="badge">0</span></a></li>
+                                    <li><a href="#">我的总结和成果<span class="badge">0</span></a></li>
+                                 </ul>
                                 </ul>
                             </li>
                         {% else %}
@@ -120,13 +119,11 @@
                                         学生信息 <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="{{ url_for('main.stuList') }}">实习信息</a></li>
+                                        <li><a href="{{ url_for('main.stuInternList') }}">实习信息</a></li>
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('main.stuJournalList' ) }}">实习工作日志</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="#">实习工作总结</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#">实习工作成果</a></li>
+                                         <li><a href="#">工作总结和成果</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -158,6 +155,15 @@
                     {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <li><a>
+                    {% if current_user.roleId==0 %}
+                        {{ current_user.stuName }}
+                    {% elif current_user.roleId==1 or current_user.roleId==2 %}
+                        {{ current_user.teaName }}
+                    {% elif current_user.roleId==3 %}
+                        管理员
+                    {% endif %}
+                    </a>
                     {% if current_user.is_authenticated %}
                         <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
                     {% else %}

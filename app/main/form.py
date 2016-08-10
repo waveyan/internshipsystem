@@ -28,7 +28,7 @@ class searchForm(Form):
 
 
 class comForm(Form):
-    comName = StringField('公司名称', validators=[Required(message='此项不能为空')])
+    comName = StringField('公司名称', validators=[Required(message='此项不能为空')], id='task')
     comAddress = StringField('公司地址', validators=[Required(message='此项不能为空')])
     comUrl = StringField('公司网址', validators=[Required(message='此项不能为空'), URL(message='请输入正确的URL')])
     comBrief = TextAreaField('公司简介')
@@ -83,13 +83,13 @@ class comdirteaForm(Form):
 class journalForm(Form):
     workStart = DateField('开始日期', format="%Y-%m-%d", validators=[Required(message='此项不能为空')])
     weekNo = StringField('周数', validators=[Required(message='此项不能为空')])
-    mon = TextAreaField('周一', validators=[Required(message='此项不能为空')])
-    tue = TextAreaField('周二', validators=[Required(message='此项不能为空')])
-    wed = TextAreaField('周三', validators=[Required(message='此项不能为空')])
-    thu = TextAreaField('周四', validators=[Required(message='此项不能为空')])
-    fri = TextAreaField('周五', validators=[Required(message='此项不能为空')])
-    sat = TextAreaField('周六', validators=[Required(message='此项不能为空')])
-    sun = TextAreaField('周日', validators=[Required(message='此项不能为空')])
+    mon = TextAreaField('周一', id='mon')
+    tue = TextAreaField('周二', id='tue')
+    wed = TextAreaField('周三', id='wed')
+    thu = TextAreaField('周四', id='thu')
+    fri = TextAreaField('周五', id='fri')
+    sat = TextAreaField('周六', id='sat')
+    sun = TextAreaField('周日', id='sun')
     submit = SubmitField('提交')
 
 
