@@ -56,8 +56,8 @@
                     {% if current_user.can(Permission.COM_INFOR_CHECK) %}
                         <li><a href="{{ url_for('.addcominfor') }}">添加</a></li>
                         <li><a href="#">批量添加</a></li>
-                        <li><a href="{{ url_for('.allcomCheck') }}">批量审核</a></li>
-                        <li><a href="{{ url_for('.allcomDelete') }}">批量删除</a></li>
+                        <li><a href="{{ url_for('.update_filter',flag=1) }}">批量审核</a></li>
+                        <li><a href="{{ url_for('.update_filter',flag=0) }}">批量删除</a></li>
                         </ul>
                         </div>
                     {% endif %}
@@ -141,7 +141,7 @@
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                    
+
                     <tr>
                         <th width="200">企业名称：</th>
                         <td width="400"><a href="{{ url_for('.interncompany',name='asc') }}">按拼音首字母升序排列</a></td>

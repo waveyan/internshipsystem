@@ -16,12 +16,23 @@
             });
         });
     </script>
-    <!-- 确认删除窗口 ,传递参数-->
+    <!-- 全选企业  -->
     <script type="text/javascript">
-        function ComfirmDelete(str) {
-            $('#deleteToggle').modal();
-            var obj = document.getElementById("teaId");
-            obj.value = str
+        function select_all() {
+            var checkboxes = document.getElementsByName('tea[]');
+            var button = document.getElementById('toggle');
+
+            if (button.value == '全选') {
+                for (var i in checkboxes) {
+                    checkboxes[i].checked = 'FALSE';
+                }
+                button.value = '全不选'
+            } else {
+                for (var i in checkboxes) {
+                    checkboxes[i].checked = '';
+                }
+                button.value = '全选';
+            }
         }
     </script>
 {% endblock %}<!--先执行父模板-->
@@ -38,7 +49,7 @@
                         <li><a href="{{ url_for('.addTeacher') }}">添加</a></li>
                         <li><a href="#">批量添加</a></li>
                         <li><a href="{{ url_for('.allTeaSet') }}">批量设置角色</a></li>
-                        <li><a href="{{ url_for('.allTeaDelete') }}">批量删除</a></li>
+                        <li><a href="">批量删除</a></li>
                         </ul>
                         </div>
                     {% endif %}
@@ -60,18 +71,16 @@
             </form>
         </div>
     </h1>
-    <p></p>
     <table class="table" id="t">
         <thead>
         <tr>
-            {% if session.get('way')=='1' %}
-                <th><a href="{{ url_for('.teaUserList',way=0) }}" data-toggle="tooltip" title="按拼音首字母升序排列">姓名<span
-                        class="glyphicon glyphicon-arrow-up"></span></a></th>
-
-            {% else %}
-                <th><a href="{{ url_for('.teaUserList',way=1) }}" data-toggle="tooltip" title="按拼音首字母降序排列">姓名<span
+            <th></th>
+            {% if session.get('way')=='0' %}
+                <th><a href="{{ url_for('.allTeaSet',way=1) }}" data-toggle="tooltip" title="按拼音首字母降序排列">姓名<span
                         class="glyphicon glyphicon-arrow-down"></span></a></th>
-
+            {% else %}
+                <th><a href="{{ url_for('.allTeaSet',way=0) }}" data-toggle="tooltip" title="按拼音首字母升序排列">姓名<span
+                        class="glyphicon glyphicon-arrow-up"></span></a></th>
             {% endif %}
             <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
             <th>性别</th>
@@ -79,61 +88,37 @@
             <th>教工号</th>
             <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
             <th>系统角色</th>
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作</th>
         </tr>
         </thead>
         <tbody>
-
-        {% for tea in teacher %}
-            <tr>
-                <td>{{ tea.teaName }}</td>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>{{ tea.teaSex }}</td>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>{{ tea.teaId }}</td>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>{{ tea.role.roleName }}</td>
-                <td><a href="{{ url_for('.editTeacher',teaId=tea.teaId) }}">修改</a>|<a
-                        href="{{ url_for('.selectRole',teaId=tea.teaId,name=tea.teaName) }}">设置角色</a>|<a href="#"
-                                                                                                         onclick="ComfirmDelete({{ tea.teaId }})">删除</a>
-                </td>
-            </tr>
-        {% endfor %}
-
+        <form method="post">
+            {% for tea in teacher %}
+                <tr>
+                    <th><input type="checkbox" name='tea[]' value={{ tea.teaId }}></th>
+                    <td>{{ tea.teaName }}</td>
+                    <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <td>{{ tea.teaSex }}</td>
+                    <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <td>{{ tea.teaId }}</td>
+                    <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <td>{{ tea.role.roleName }}</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
+    <div>
+        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
+        <button type="submit" class="btn btn-danger">删除</button>
+        <!--
+        <button type="button" class="btn btn-primary" id="back">取消</button>
+        -->
+    </div>
+    </form>
+
     {% if pagination %}
         <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.teaUserList',comId=comId) }}
+            {{ macros.pagination_widget(pagination,'.allTeaSet') }}
         </div>
     {% endif %}
-
-    <!--确认弹窗-->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
-         aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close"
-                            data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">
-                        提示：
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否仍要删除？</h4>
-                </div>
-                <div class="modal-footer">
-                    <form action="/teacher_delete" method="POST">
-                        <input type="hidden" id="teaId" name="teaId">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-primary">删除</button>
-                    </form>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
-    </div>
 
 {% endblock %}

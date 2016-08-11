@@ -13,23 +13,23 @@
 
     <!-- 全选企业  -->
     <script type="text/javascript">
-        function select_all(){    
+        function select_all() {
             var checkboxes = document.getElementsByName('approve[]');
             var button = document.getElementById('toggle');
-    
-            if(button.value == '全选'){
-                for (var i in checkboxes){
+
+            if (button.value == '全选') {
+                for (var i in checkboxes) {
                     checkboxes[i].checked = 'FALSE';
                 }
                 button.value = '全不选'
-            }else{
-                for (var i in checkboxes){
+            } else {
+                for (var i in checkboxes) {
                     checkboxes[i].checked = '';
                 }
                 button.value = '全选';
             }
         }
-    </script>    
+    </script>
 {% endblock %}
 
 {% block page_content %}
@@ -68,45 +68,49 @@
         </thead>
         <tbody>
         <form method="POST">
-        {% for intern in internlist %}
-            <tr>
-                <td><input type="checkbox" name="approve[]" value={{ intern.Id }} ></td>
-                <td><a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}在{{ intern.comName }}的日子</a></td>
-                <td>{{ intern.stuId }}</td>
-                <td>{{ intern.start }}</td>
-                <td>{{ intern.end }}</td>
+            {% for intern in internlist %}
+                <tr>
+                    <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
+                    <td>
+                        <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}在{{ intern.comName }}的日子</a>
+                    </td>
+                    <td>{{ intern.stuId }}</td>
+                    <td>{{ intern.start }}</td>
+                    <td>{{ intern.end }}</td>
 
-                <!-- 日志状态 -->
-                {% if intern.jourCheck == 0 %}
-                    <td>未审核</td>
-                {% elif intern.jourCheck == 1 %}
-                    <td>已审核</td>
-                {% endif %}
+                    <!-- 日志状态 -->
+                    {% if intern.jourCheck == 0 %}
+                        <td>未审核</td>
+                    {% elif intern.jourCheck == 1 %}
+                        <td>已审核</td>
+                    {% endif %}
 
-                <!-- 实习状态 -->
-                {% if intern.internStatus == 1 %}
-                    <td>实习中</td>
-                {% elif intern.internStatus == 2 %}
-                    <td>实习结束</td>
-                {% endif %}
+                    <!-- 实习状态 -->
+                    {% if intern.internStatus == 1 %}
+                        <td>实习中</td>
+                    {% elif intern.internStatus == 2 %}
+                        <td>实习结束</td>
+                    {% endif %}
 
-                <!-- 
-                <td><a>审核</a>|<a>删除</a></td>
-                -->
-            </tr>
-        {% endfor %}
+                    <!--
+                    <td><a>审核</a>|<a>删除</a></td>
+                    -->
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
     <div>
         <input type="hidden" name="page" value="{{ pagination.page }}">
-        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()" />
+        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
         <button type="submit" class="btn btn-success">审核通过</button>
         </form>
-        <a href="{{ url_for('.stuJournalList') }}"><button class="btn btn-primary">返回</button></a>
+        <a href="{{ url_for('.stuJournalList') }}">
+            <button class="btn btn-primary">返回</button>
+        </a>
     </div>
     {% if pagination %}
         <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.stuList') }}
+            {{ macros.pagination_widget(pagination,'.stuJournalList') }}
         </div>
     {% endif %}
 {% endblock %}1

@@ -10,6 +10,12 @@
             obj.value = str
         }
     </script>
+    <!-- 确认审核窗口 -->
+    <script type="text/javascript">
+        function ComfirmCheck() {
+            $('#checkToggle').modal();
+        }
+    </script>
 {% endblock %}
 {% block page_content %}
     <table align="center" border="2" class="table-bordered">
@@ -21,6 +27,9 @@
                                 data-toggle="dropdown">编辑<span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
+                            {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                                <li><a onClick="ComfirmCheck()">审核</a></li>
+                            {% endif %}
                             {% if com.comCheck!=2 %}
                                 <li><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a></li>
                             {% endif %}
@@ -72,18 +81,11 @@
             <td height="50">{{ com.comFax }}</td>
         </tr>
     </table>
-
-    <!-- 是否审核通过都要显示按钮，万一审核出错了，要重新审核 -->
+    <br>
+    <br><a href="{{ url_for('.interncompany') }}">
+    <div class="btn btn-primary">返回</div>
+</a>
     <br><br>
-    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
-        <a href="{{ url_for('.com_comfirm',comId=com.comId,check='pass') }}">
-            <button class="btn btn-success">审核通过</button>
-        </a>
-        <a href="{{ url_for('.com_comfirm',comId=com.comId,check='notpass') }}">
-            <button class="btn btn-primary">审核不通过</button>
-        </a>
-    {% endif %}
-    <br><br><br><br>
     <!--确认弹窗-->
     <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
          aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -111,4 +113,29 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal -->
     </div>
+
+    <!-- 审核操作窗口 -->
+    <div class="modal fade" id="checkToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="text-align:center;">
+                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">审核该企业信息！</h4>
+                </div>
+                <div class="modal-footer">
+                    <!-- 用form来获取数据 -->
+                    <form action="/com_comfirm" method="POST">
+                        <input type="hidden" name="comId" value="{{ com.comId }}"/>
+                        <button type="submit" name="comCheck" value="pass" class="btn btn-success">审核通过</button>
+                        <button type="submit" name="comCheck" value="notpass" class="btn btn-primary">审核不通过</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
