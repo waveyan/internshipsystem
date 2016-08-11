@@ -50,6 +50,7 @@
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
+<<<<<<< HEAD
                     {% for jour in journal %}
                         {% if current_user.roleId == 0 and jour.jourCheck == 0 %}
                             <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">更新日志</a></li>
@@ -60,6 +61,12 @@
                             <li class="divider" />
                         {% endif %}
                     {% endfor %}
+=======
+                    <li><a href="#">修改</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">导出</a></li>
+                    <li class="divider"></li>
+>>>>>>> origin/master
                     <li><a onClick="ComfirmDelete()">删除</a></li>
                 </ul>
             </div>

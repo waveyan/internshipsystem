@@ -109,7 +109,6 @@
                                     </li>
                                     <li class="divider"></li>
                                     <li><a href="#">我的总结和成果<span class="badge">0</span></a></li>
-                                 </ul>
                                 </ul>
                             </li>
                         {% else %}
@@ -123,7 +122,7 @@
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('main.stuJournalList' ) }}">实习工作日志</a></li>
                                         <li class="divider"></li>
-                                         <li><a href="#">工作总结和成果</a></li>
+                                        <li><a href="#">工作总结和成果</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -155,6 +154,7 @@
                     {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+<<<<<<< HEAD
                     <li><a>
                     {% if current_user.roleId==0 %}
                         {{ current_user.stuName }}
@@ -164,6 +164,17 @@
                         管理员
                     {% endif %}
                     </a>
+=======
+                        <li><a>
+                        {% if current_user.roleId==0 %}
+                        {{ current_user.stuName }}
+                        {% elif current_user.roleId==1 or current_user.roleId==2 %}
+                        {{ current_user.teaName }}
+                        {% elif current_user.roleId==3 %}
+                        管理员
+                        {% endif %}
+                        </a>
+>>>>>>> origin/master
                     {% if current_user.is_authenticated %}
                         <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
                     {% else %}

@@ -19,7 +19,26 @@
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
-    <h1>{{ comName }}<h4>公司实习状况
+    <h1>
+        {% if journal %}
+            学生实习日志
+        {% else %}
+            学生实习信息
+        {% endif %}
+        {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                        data-toggle="dropdown">编辑<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                        <li><a href="#" onclick="loadXMLDoc('/allcheck')">批量审核</a></li>
+                        <li><a href="#">批量删除</a></li>
+                        </ul>
+                        </div>
+                    {% endif %}
+
+        {% endif %}
         <div style="float:right;width:350px"><!--长度-->
             <form role="form" method="POST" action="/search">
                 <div class="row head">
@@ -46,32 +65,37 @@
             <th>年级</th>
             <th>专业班级</th>
             <th>实习状态</th>
+            <!--
             <th>操作</th>
+            -->
         </tr>
         </thead>
         <tbody>
         {% for stu in student %}
             <tr>
-                <td><a href="{{ url_for('.studetail',stuId=stu.stuId,comId=comId) }}">{{ stu.stuName }}</a></td>
+                {% if journal %}
+                    <td><a href="{{ url_for('.xJournalList',stuId=stu.stuId) }}"> {{ stu.stuName }}</a></td>
+                {% else %}
+                    <td><a href="{{ url_for('.stuInternList',stuId=stu.stuId) }}"> {{ stu.stuName }}</a></td>
+                {% endif %}
                 <td>{{ stu.stuId }}</td>
                 <td>{{ stu.grade }}</td>
-                <td>{{ stu.major }}{{ stu.classes }}</td>
-                <!--
-                <td>1</td>
-                -->
+                <td>{{ stu.major }}{{ stu.classes }}班</td>
                 {% if session[stu.stuId] %}
-                    <td>实习结束</td>
+                    <td>&nbsp;&nbsp;实习中&nbsp;&nbsp;</td>
                 {% else %}
-                    <td>实习中</td>
+                    <td>&nbsp;&nbsp;实习结束&nbsp;&nbsp;</td>
                 {% endif %}
+                <!--
                 <td><a>审核</a>|<a>删除</a></td>
-                </tr>
+                -->
+            </tr>
         {% endfor %}
         </tbody>
     </table>
     {% if pagination %}
         <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.studentList',comId=comId) }}
+            {{ macros.pagination_widget(pagination,'.stuList') }}
         </div>
     {% endif %}
 {% endblock %}

@@ -21,6 +21,7 @@
             $('#checkToggle').modal();
         }
     </script>
+<<<<<<< HEAD:app/templates/xIntern.html
 
     <!-- 换行显示 -->
     <style type="text/css">
@@ -103,15 +104,54 @@
 {% endblock %}<!--先执行父模板-->
 {% block page_content %}
     
+=======
+{% endblock %}<!--先执行父模板-->
+{% block page_content %}
+    <!--确认弹窗-->
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
+         aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h5 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否任要删除？</h5>
+                </div>
+                <div class="modal-footer">
+                    <form action="/comfirmDeleteJournal_Intern" method="POST">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                        <input type="hidden" name="internId" value="{{ internship.Id }}">
+                        <input type="hidden" name="from_url" value="/stuIntern">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+>>>>>>> origin/master:app/templates/stuIntern.html
 
     <table align="center" border="2" class="table-bordered">
         <caption>
-            <h1>我的实习信息
+            <h1>
+                {% if current_user.roleId>0 %}
+                    {{ student.stuName }}的实习信息
+                {% else %}
+                    我的实习信息
+                {% endif %}
                 <div class="btn-group">
                     <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                             data-toggle="dropdown">编辑<span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
+<<<<<<< HEAD:app/templates/xIntern.html
                         {% if current_user.can(Permission.STU_INTERN_CHECK) %}
                             <li><a onClick="ComfirmCheck()">审核</a></li>
                         {% endif %}
@@ -120,7 +160,14 @@
                             <li><a href="{{ url_for('main.xInternEdit',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">修改</a></li>
                         {% elif internship.internCheck == 2 and current_user.roleId ==3 %}
                             <li><a onClick="Admin_ComfirmEdit()">修改</a></li>
+=======
+                        {% if internship.internCheck != 2 or current_user.roleId==3 %}
+                            <li>
+                                <a href="{{ url_for('main.editStuIntern',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">
+                                    修改</a></li>
+>>>>>>> origin/master:app/templates/stuIntern.html
                         {% endif %}
+                        <li><a href="#">导出</a></li>
                         <li><a onClick="ComfirmDelete()">删除</a></li>
                     </ul>
                 </div>
@@ -140,7 +187,7 @@
         <tr>
             <th width="200">学号</th>
             <td width="400" height="50" colspan="3">
-                {{student.stuId }}
+                {{ student.stuId }}
             </td>
             <th width="200">姓名</th>
             <td width="400" height="50" colspan="3">{{ student.stuName }}</td>
@@ -245,6 +292,19 @@
             </tr>
         </table>
     </table>
+<<<<<<< HEAD:app/templates/xIntern.html
     <br>
     <br><a href="{{ url_for('.stuInternList') }}"><div class="btn btn-primary">返回</div></a>
+=======
+    <br><br>
+    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+        <a href="{{ url_for('.stuIntern_comfirm', internId=internship.Id, stuId=student.stuId, internCheck=2) }}">
+            <button class="btn btn-success">审核通过</button>
+        </a>
+        <a href="{{ url_for('.stuIntern_comfirm', internId=internship.Id, stuId=student.stuId, internCheck=1) }}">
+            <button class="btn btn-primary">退回修改</button>
+        </a>
+    {% endif %}
+    <br><br>
+>>>>>>> origin/master:app/templates/stuIntern.html
 {% endblock %}

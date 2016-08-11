@@ -5,7 +5,8 @@ from datetime import datetime
 
 # 装饰器not_student_login 所需要的模块
 from functools import wraps
-from flask import _request_ctx_stack, abort, current_app, flash, redirect, request, session, url_for, has_request_context
+from flask import _request_ctx_stack, abort, current_app, flash, redirect, request, session, url_for, \
+    has_request_context
 from flask.ext.login import current_user
 
 
@@ -20,6 +21,8 @@ def not_student_login(func):
         elif current_user.roleId == 0:
             return redirect('/')
         return func(*args, **kwargs)
+
+<<<<<<< HEAD
     return decorated_view
 
 
@@ -32,6 +35,8 @@ def update_intern_internStatus(func):
         db.session.execute('update InternshipInfor set internStatus=1 where start < "%s" and end > "%s"'% (now, now))
         db.session.execute('update InternshipInfor set internStatus=2 where end < "%s"'% now)
         return func(*args, **kwargs)
+=======
+>>>>>>> origin/master
     return decorated_view
 
 
@@ -119,7 +124,6 @@ class Student(db.Model, UserMixin):
     def __repr__(self):
         return '<Student %r>' % self.stuName
 
-
     # 创建大量虚拟信息
     @staticmethod
     def generate_fake(count=100):
@@ -130,22 +134,20 @@ class Student(db.Model, UserMixin):
         seed()
         for i in range(count):
             student = Student(
-                stuId = randint(201300000000,201600000000),
-                stuName = forgery_py.internet.user_name(True),
-                institutes = '计算机学院',
-                major = choice(['计算机科学与技术', '网络工程', '软件工程', '信息科学与技术']),
-                grade = choice([2013, 2014, 2015, 2016]),
-                classes = randint(1,10),
-                sex = choice(['男','女']),
-                password = '123'
-                )
+                stuId=randint(201300000000, 201600000000),
+                stuName=forgery_py.internet.user_name(True),
+                institutes='计算机学院',
+                major=choice(['计算机科学与技术', '网络工程', '软件工程', '信息科学与技术']),
+                grade=choice([2013, 2014, 2015, 2016]),
+                classes=randint(1, 10),
+                sex=choice(['男', '女']),
+                password='123'
+            )
             db.session.add(student)
             try:
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
-
-
 
 
 class ComInfor(db.Model):
@@ -236,6 +238,7 @@ class SchDirTea(db.Model):
     teaEmail = db.Column(db.String(20))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
 
+
 class ComDirTea(db.Model):
     __tablename__ = 'ComDirTea'
     Id = db.Column(db.Integer, primary_key=True)
@@ -255,18 +258,23 @@ class Journal(db.Model):
     weekNo = db.Column(db.Integer, default=1)
     workStart = db.Column(db.DATE)
     workEnd = db.Column(db.DATE)
-    mon = db.Column(db.String(500), default=' ' )
-    tue = db.Column(db.String(500), default=' ' )
-    wed = db.Column(db.String(500), default=' ' )
-    thu = db.Column(db.String(500), default=' ' )
-    fri = db.Column(db.String(500), default=' ' )
-    sat = db.Column(db.String(500), default=' ' )
-    sun = db.Column(db.String(500), default=' ' )
+    mon = db.Column(db.String(500), default=' ')
+    tue = db.Column(db.String(500), default=' ')
+    wed = db.Column(db.String(500), default=' ')
+    thu = db.Column(db.String(500), default=' ')
+    fri = db.Column(db.String(500), default=' ')
+    sat = db.Column(db.String(500), default=' ')
+    sun = db.Column(db.String(500), default=' ')
     jcheckTeaId = db.Column(db.String(8))
     jourCheck = db.Column(db.Integer, default=0)
     jcheckTime = db.Column(db.DATETIME)
+<<<<<<< HEAD
     internId = db.Column(db.Integer, db.ForeignKey('InternshipInfor.Id'))
     opinion = db.Column(db.String(500),default='')
+=======
+    internId = db.Column(db.Integer)
+    opinion = db.Column(db.String(500), default='')
+>>>>>>> origin/master
 
 
 class Permission:
