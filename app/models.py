@@ -21,8 +21,6 @@ def not_student_login(func):
         elif current_user.roleId == 0:
             return redirect('/')
         return func(*args, **kwargs)
-
-<<<<<<< HEAD
     return decorated_view
 
 
@@ -35,8 +33,6 @@ def update_intern_internStatus(func):
         db.session.execute('update InternshipInfor set internStatus=1 where start < "%s" and end > "%s"'% (now, now))
         db.session.execute('update InternshipInfor set internStatus=2 where end < "%s"'% now)
         return func(*args, **kwargs)
-=======
->>>>>>> origin/master
     return decorated_view
 
 
@@ -46,9 +42,6 @@ def update_intern_jourCheck(func):
     def decorated_view(*args, **kwargs):
         now = datetime.now().date()
         is_not_checked = db.session.execute('select distinct internId from Journal where jourCheck=0 and workEnd < "%s"'% now)
-        # print ("is_not_checked:", is_not_checked)
-        # for x in is_not_checked:
-        #     print("x:", x.internId)
         if is_not_checked:
             for x in is_not_checked:
                 db.session.execute('update InternshipInfor set jourCheck=0 where Id=%s'% x.internId)
@@ -268,13 +261,8 @@ class Journal(db.Model):
     jcheckTeaId = db.Column(db.String(8))
     jourCheck = db.Column(db.Integer, default=0)
     jcheckTime = db.Column(db.DATETIME)
-<<<<<<< HEAD
     internId = db.Column(db.Integer, db.ForeignKey('InternshipInfor.Id'))
     opinion = db.Column(db.String(500),default='')
-=======
-    internId = db.Column(db.Integer)
-    opinion = db.Column(db.String(500), default='')
->>>>>>> origin/master
 
 
 class Permission:
