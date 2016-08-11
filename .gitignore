@@ -1,6 +1,7 @@
 # python.gitignore
 # Byte-compiled / optimized / DLL files
 config.py
+.idea/
 
 __pycache__/
 *.py[cod]
