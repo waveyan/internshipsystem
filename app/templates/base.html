@@ -154,6 +154,7 @@
                     {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+<<<<<<< HEAD
                     <li><a>
                     {% if current_user.roleId==0 %}
                         {{ current_user.stuName }}
@@ -163,6 +164,17 @@
                         管理员
                     {% endif %}
                     </a>
+=======
+                        <li><a>
+                        {% if current_user.roleId==0 %}
+                        {{ current_user.stuName }}
+                        {% elif current_user.roleId==1 or current_user.roleId==2 %}
+                        {{ current_user.teaName }}
+                        {% elif current_user.roleId==3 %}
+                        管理员
+                        {% endif %}
+                        </a>
+>>>>>>> origin/master
                     {% if current_user.is_authenticated %}
                         <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
                     {% else %}
