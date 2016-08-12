@@ -89,6 +89,26 @@ class Teacher(db.Model, UserMixin):
     def __repr__(self):
         return '<Teacher %r>' % self.teaName
 
+    # 创建大量虚拟信息
+    @staticmethod
+    def generate_fake(count=100):
+        from sqlalchemy.exc import IntegrityError
+        from random import seed, randint, choice
+        import forgery_py
+
+        seed()
+        for i in range(count):
+            teacher = Teacher(
+                teaId=randint(20000000, 20160000),
+                teaName=forgery_py.internet.user_name(True),
+                teaSex=choice(['男', '女']),
+                password='123')
+            db.session.add(teacher)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
 
 class Student(db.Model, UserMixin):
     __tablename__ = 'Student'

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block title %}选择角色{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}<!--先执行父模板-->
+{% block page_content %}
+    <h1>请为 {{ name }} 选择系统角色</h1>
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th>角色号</th>
+            <th>角色名称</th>
+            <th>角色描述</th>
+            <th>权限位</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for r in roles %}
+            <tr>
+                <td>{{ r.roleId }}</td>
+                <td>{{ r.roleName }}</td>
+                <td>{{ r.roleDescribe }}</td>
+                <td>{{ r.permission }}</td>
+                <td><a href="{{ url_for('.selectRole',roleId=r.roleId) }}" class="btn btn-info btn-xs">
+                    <span class="glyphicon glyphicon-plus"></span>选择</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

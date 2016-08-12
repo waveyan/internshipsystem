@@ -102,11 +102,15 @@ class stuForm(Form):
     sex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='男')
     institutes = StringField('学院', default='计算机学院', validators=[Required(message='此项不能为空')])
     grade = StringField('年级', validators=[Required(message='此项不能为空')])
-    major = SelectField('专业', choices=[('计算机科学与技术', '计算机科学与技术'),
-                                       ('网络工程', '网络工程'),
-                                       ('软件工程', '软件工程'),
-                                       ('信息科学与技术', '信息科学与技术')],
-                        default='计算机科学与技术', validators=[Required(message='此项不能为空')])
+
+    # 新增专业
+    # major = SelectField('专业', choices=[('计算机科学与技术', '计算机科学与技术'),
+    #                                    ('网络工程', '网络工程'),
+    #                                    ('软件工程', '软件工程'),
+    #                                    ('信息科学与技术', '信息科学与技术')],
+    #                     default='计算机科学与技术', validators=[Required(message='此项不能为空')])
+
+    major = StringField('专业', validators=[Required(message='此项不能为空')])
     classes = StringField('班级', validators=[Required(message='此项不能为空')])
     submit = SubmitField('提交')
 
@@ -120,7 +124,7 @@ class teaForm(Form):
 
 class permissionForm(Form):
     roleName = StringField('角色名称', validators=[Required(message='此项不能为空')])
-    roleDescribe = StringField('角色描述')
+    roleDescribe = TextAreaField('角色描述')
     COM_INFOR_SEARCH = BooleanField('企业信息查看', default=False, description='0X0000001', false_values='0x11')
     COM_INFOR_EDIT = BooleanField('企业信息编辑', default=False, description='0X0000002')
     COM_INFOR_CHECK = BooleanField('企业信息审核', default=False, description='0X0000004')

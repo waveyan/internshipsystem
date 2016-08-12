@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}学生用户{% endblock %}
+{% block head %}
+    {{ super() }}
+    <!--提交和返回按钮-->
+    <script>
+        function back() {
+            var form = document.getElementById('comform');
+            form.action = '/stuUserList';
+            form.submit();
+        }
+        function save(stuid) {
+            var form = document.getElementById('comform');
+            form.action = '/editStudent?stuId=' + stuid;
+            form.submit();
+        }
+    </script>
+{% endblock %}
+{% block page_content %}
+    <form method="post" class="form-horizontal" id="comform">
+        <h1>学生基本信息</h1>
+        {{ form.hidden_tag() }}
+        {{ form.stuName.label }}{{ form.stuName(class="form-control",class="form-control",request='',value=stu.stuName) }}
+        {{ form.stuId.label }}{{ form.stuId(class="form-control",class="form-control",request='',value=stu.stuId) }}
+        <label for="name">性别</label>
+        {% if stu.sex=='男' %}
+            <select class="form-control" name="sex">
+                <option value="男" name="sex" selected>男</option>
+                <option value="女" name="sex">女</option>
+            </select>
+        {% else %}
+            <select class="form-control" name="sex">
+                <option value="男">男</option>
+                <option value="女" selected>女</option>
+            </select>
+        {% endif %}
+        {{ form.major.label }}{{ form.major(class="form-control",request='',value=stu.major) }}
+        {{ form.grade.label }}{{ form.grade(class="form-control",request='',value=stu.grade) }}
+        {{ form.classes.label }}{{ form.classes(class="form-control",class="form-control",request='',value=stu.classes) }}
+        <p></p>
+        <p></p>
+        <button class="btn btn-primary" onclick="save({{ stu.stuId }})">提交</button>
+        <button class="btn btn-default" onclick="back()">返回
+        </button>
+    </form>
+
+    <br><br><br><br>
+{% endblock %}

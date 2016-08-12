@@ -66,8 +66,8 @@
                 <ul class="dropdown-menu" role="menu">
                     {% if current_user.can(Permission.COM_INFOR_CHECK) %}
                         <li><a href="{{ url_for('.addcominfor') }}">添加</a></li>
-                        <li><a href="#">批量审核</a></li>
-                        <li><a href="{{ url_for('.allcomDelete') }}">批量删除</a></li>
+                        <li><a href="{{ url_for('.update_filter',flag=1) }}">批量审核</a></li>
+                        <li><a href="{{ url_for('.update_filter',flag=0) }}">批量删除</a></li>
                         </ul>
                         </div>
                     {% endif %}

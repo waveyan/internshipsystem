@@ -15,7 +15,7 @@
 
     <table align="center" border="2" class="table-bordered">
         <caption>
-            <h1>我的实习信息            </h1>
+            <h1>我的实习信息</h1>
         </caption>
 
         <tr>
@@ -137,11 +137,8 @@
                     </tr>
                 {% endif %}
             {% endfor %}
-        
-            <!--
-            <tr><td><button type="submit" class="btn btn-success" >确认修改</button></td></tr>
-            <tr>
-            -->
+
+
                 <td width="200" colspan="6" height="50">五、审核意见</td>
             </tr>
             <tr>
@@ -158,11 +155,6 @@
     </table>
     <br>
     <tr><td><a href="{{ url_for('.xIntern',internId=internship.Id, comId=comInfor.comId, stuId=student.stuId) }}"><button class="btn btn-primary">返回</button></a>
-    <!--
-    <tr><button type="submit" class="btn btn-success" id="toggle" onClick="select_all()" value=修改></button></tr>
-    -->
-    <!--
-    </form>
-    -->
+
 
 {% endblock %}

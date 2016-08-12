@@ -11,7 +11,7 @@ migrate = Migrate(app, db)
 
 
 def make_shell_context():
-    return dict(app=app, db=db, User=Teacher, Role=Role, Student=Student, ComInfor=ComInfor,
+    return dict(app=app, db=db, Teacher=Teacher, Role=Role, Student=Student, ComInfor=ComInfor,
                 InternshipInfor=InternshipInfor, Journal=Journal)
 
 

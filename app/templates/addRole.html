@@ -7,6 +7,85 @@
     <div class="page-header">
         <h1>欢迎您，请选择角色权限</h1>
     </div>
-    {{ wtf.quick_form(form) }}
+    {#    {{ wtf.quick_form(form) }}#}
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.roleName.label }}{{ form.roleName(class="form-control",request='') }}
+        {{ form.roleDescribe.label }}{{ form.roleDescribe(class="form-control") }}
+        <table class="table-bordered">
+            <tr>
+                <th width="200" height="50">企业信息：</th>
+                <th width="200" height="50">学生实习信息：</th>
+                <th width="200" height="50">学生实习日志：</th>
+                <th width="200" height="50">学生总结与成果：</th>
+                <th width="200" height="50">列表：</th>
+                <th width="200" height="50">管理：</th>
+            </tr>
+            <tr>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"> 请记住我
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.COM_INFOR_SEARCH(class="checkbox") }}查看企业信息
+                        </label>
+                    </div>
+                </td>
+                <td><div class="list-inline">{{ form.STU_INTERN_SEARCH.label }}{{ form.STU_INTERN_SEARCH(class="form-control") }}</div></td>
+                <td>{{ form.STU_JOUR_SEARCH.label }}{{ form.STU_JOUR_SEARCH(class="form-control") }}</td>
+                <td>{{ form.STU_SUM_SEARCH.label }}{{ form.STU_SUM_SEARCH(class="form-control") }}</td>
+                <td>{{ form.INTERNSHIP_LIST.label }}{{ form.INTERNSHIP_LIST(class="form-control") }}</td>
+                <td>{{ form.ADMIN.label }}{{ form.ADMIN(class="form-control") }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.COM_INFOR_EDIT.label }}{{ form.COM_INFOR_EDIT(class="form-control") }}</td>
+                <td>{{ form.STU_INTERN_EXPORT.label }}{{ form.STU_INTERN_EXPORT(class="form-control") }}</td>
+                <td>{{ form.STU_JOUR_EXPORT.label }}{{ form.STU_JOUR_EXPORT(class="form-control") }}</td>
+                <td>{{ form.STU_SUM_EXPORT.label }}{{ form.STU_SUM_EXPORT(class="form-control") }}</td>
+                <td>{{ form.INTERNSHIP_LIST.label }}{{ form.INTERNSHIP_LIST(class="form-control") }}</td>
+                <td>{{ form.STU_INTERN_IMPORT.label }}{{ form.STU_INTERN_IMPORT(class="form-control") }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.COM_INFOR_CHECK.label }}{{ form.COM_INFOR_CHECK(class="form-control") }}</td>
+                <td>{{ form.STU_INTERN_EDIT.label }}{{ form.STU_INTERN_EDIT(class="form-control") }}</td>
+                <td>{{ form.STU_JOUR_EDIT.label }}{{ form.STU_JOUR_EDIT(class="form-control") }}</td>
+                <td>{{ form.STU_SUM_EDIT.label }}{{ form.STU_SUM_EDIT(class="form-control") }}</td>
+                <td></td>
+                <td>{{ form.TEA_INFOR_IMPORT.label }}{{ form.TEA_INFOR_IMPORT(class="form-control") }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>{{ form.STU_INTERN_CHECK.label }}{{ form.STU_INTERN_CHECK(class="form-control") }}</td>
+                <td>{{ form.STU_JOUR_CHECK.label }}{{ form.STU_JOUR_CHECK(class="form-control") }}</td>
+                <td>{{ form.STU_SUM_CHECK.label }}{{ form.STU_SUM_CHECK(class="form-control") }}</td>
+                <td></td>
+                <td>{{ form.PERMIS_MANAGE.label }}{{ form.PERMIS_MANAGE(class="form-control") }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{ form.STU_SCO_SEARCH.label }}{{ form.STU_SCO_SEARCH(class="form-control") }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{ form.STU_SCO_EXPORT.label }}{{ form.STU_SCO_EXPORT(class="form-control") }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{ form.STU_SCO_EDIT.label }}{{ form.STU_SCO_EDIT(class="form-control") }}</td>
+            </tr>
+        </table>
+        {{ form.submit() }}
+    </form>
     <br><br><br>
 {% endblock %}

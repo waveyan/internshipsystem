@@ -32,7 +32,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header" style="text-align:center;">
-                <h4 class="modal-title" style="color:red;" id="deleteModalLabel">删除操作将无法撤回,是否仍要删除?</h4>
+                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-bodyr" >
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">删除操作将无法撤回,是否仍要删除?</h4>
             </div>
             <div class="modal-footer">
                 <!-- 用form来获取数据 -->
@@ -53,10 +56,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header" style="text-align:center;">
+                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-body">
                 {% if internship.internCheck != 2 %}
-                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">请对该实习做出审核</h4>
+                    <h4 class="modal-body" style="color:black;" id="deleteModalLabel">请对该实习做出审核</h4>
                 {% else %}
-                    <h4 class="modal-title" style="color:red;" id="deleteModalLabel">该实习申请已审核通过,是否仍要继续?</h4>
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习申请已审核通过,是否仍要继续?</h4>
                 {% endif %}
             </div>
             <div class="modal-footer">
@@ -66,9 +72,9 @@
                 <input type="hidden" name="internId" value="{{ internship.Id }}" />
                 <input type="hidden" name="comId" value="{{ comInfor.comId }}" />
                 {% if internship.opinion %}
-                    审核意见<textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空">{{ internship.opinion }}</textarea><br><br>
+                    <div style="text-align:center;">审核意见</div><textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空">{{ internship.opinion }}</textarea><br><br>
                 {% else %}
-                    审核意见<textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空"></textarea><br><br>
+                    <div style="text-align:center;">审核意见</div><textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空"></textarea><br><br>
                 {% endif %}
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="submit" name="internCheck" value="2" class="btn btn-success" >审核通过</button>
@@ -84,7 +90,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header" style="text-align:center;">
-                <h4 class="modal-title" style="color:red;" id="deleteModalLabel">该实习申请已审核通过,修改实习时间有可能清空部分实习日志,是否仍要继续?</h4>
+                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-body">
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习申请已审核通过,修改实习时间有可能清空部分实习日志,是否仍要继续?</h4>
             </div>
             <div class="modal-footer">
                 <!-- 用form来获取数据 -->

@@ -2,7 +2,8 @@ from flask import render_template, url_for, flash, redirect, request, session
 from .form import searchForm, comForm, internshipForm, journalForm, stuForm, teaForm, permissionForm, schdirteaForm, \
     comdirteaForm
 from . import main
-from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, not_student_login, update_intern_internStatus, update_intern_jourCheck
+from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, \
+    not_student_login, update_intern_internStatus, update_intern_jourCheck
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func, desc
@@ -19,6 +20,7 @@ def hello_world():
         return form.dt.data.strftime('%Y-%m-%d')
     return render_template('example.html')
 '''
+
 
 # @main.route('/search', methods=['GET', 'POST'])
 # def search():
@@ -74,7 +76,6 @@ def index():
     return render_template('index.html', Permission=Permission)
 
 
-
 # 个人实习企业列表
 @main.route('/stuInternList', methods=['GET', 'POST'])
 @login_required
@@ -91,17 +92,24 @@ def stuInternList():
             flash('您还没完成实习信息的填写，请完善相关实习信息！')
             return redirect(url_for('.addcominfor'))
         else:
-            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId==ComInfor.comId) \
-                .add_columns(ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck) \
-                .filter(InternshipInfor.stuId==stuId).order_by(func.field(InternshipInfor.internStatus,1,0,2)).paginate(page, per_page=8, error_out=False)
+            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
+                .add_columns(ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start,
+                             InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck) \
+                .filter(InternshipInfor.stuId == stuId).order_by(
+                func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
             internlist = pagination.items
-            return render_template('stuInternList.html', internlist=internlist, Permission=Permission, internship=internship, student=student, pagination=pagination)
+            return render_template('stuInternList.html', internlist=internlist, Permission=Permission,
+                                   internship=internship, student=student, pagination=pagination)
     elif current_user.can(Permission.STU_INTERN_SEARCH):
-        pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId==ComInfor.comId).join(Student, Student.stuId==InternshipInfor.stuId) \
-            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck) \
-            .order_by(func.field(InternshipInfor.internStatus,1,0,2)).paginate(page, per_page=8, error_out=False)
+        pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Student,
+                                                                                                        Student.stuId == InternshipInfor.stuId) \
+            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
+                         InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
+                         InternshipInfor.internCheck) \
+            .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
-        return render_template('stuInternList.html', internlist=internlist, Permission=Permission, pagination=pagination)
+        return render_template('stuInternList.html', internlist=internlist, Permission=Permission,
+                               pagination=pagination)
     else:
         flash('非法操作')
         return redirect('/')
@@ -242,8 +250,6 @@ def addInternship():
                     db.session.add(comdirtea)
                 else:
                     break
-
-
             # 先commit internship,更新等等需用到的internId
             try:
                 db.session.add(internship)
@@ -285,7 +291,7 @@ def addInternship():
 
 
 # 学生个人实习信息
-@main.route('/xIntern', methods=['GET','POST'])
+@main.route('/xIntern', methods=['GET', 'POST'])
 @login_required
 def xIntern():
     if current_user.roleId == 0:
@@ -304,7 +310,7 @@ def xIntern():
 
 
 # 审核通过实习信息
-@main.route('/xIntern_comfirm', methods=["POST","GET"])
+@main.route('/xIntern_comfirm', methods=["POST", "GET"])
 @not_student_login
 def xIntern_comfirm():
     if current_user.can(Permission.STU_INTERN_CHECK):
@@ -316,7 +322,8 @@ def xIntern_comfirm():
         com = ComInfor.query.filter_by(comId=comId).first()
         try:
             if opinion:
-                db.session.execute('update InternshipInfor set internCheck=%s, opinion="%s" where Id=%s' % (internCheck, opinion, internId))
+                db.session.execute('update InternshipInfor set internCheck=%s, opinion="%s" where Id=%s' % (
+                    internCheck, opinion, internId))
             else:
                 db.session.execute('update InternshipInfor set internCheck=%s where Id=%s' % (internCheck, internId))
             # 若所选企业未被审核通过,且用户有审核权限,自动审核通过企业
@@ -332,10 +339,10 @@ def xIntern_comfirm():
 
 
 # 修改实习信息
-@main.route('/xInternEdit', methods=['GET','POST'])
+@main.route('/xInternEdit', methods=['GET', 'POST'])
 @login_required
 def xInternEdit():
-    if current_user.roleId==0:
+    if current_user.roleId == 0:
         stuId = current_user.stuId
     elif not current_user.can(Permission.STU_INTERN_EDIT):
         flash('非法操作')
@@ -360,13 +367,13 @@ def xInternEdit():
     schdirteaform = schdirteaForm()
     comdirteaform = comdirteaForm()
     return render_template('xInternEdit.html', Permission=Permission, comInfor=comInfor, schdirtea=schdirtea, \
-        comdirtea=comdirtea, internship=internship, student=student, stuform=stuform, comform=comform, \
-        internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform)
-
+                           comdirtea=comdirtea, internship=internship, student=student, stuform=stuform, \
+                           comform=comform, \
+                           internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform)
 
 
 # 修改实习信息 个人实习信息--实习岗位信息
-@main.route('/xInternEdit_intern', methods=["POST","GET"])
+@main.route('/xInternEdit_intern', methods=["POST", "GET"])
 @login_required
 def xInternEdit_intern():
     if current_user.roleId == 0:
@@ -448,11 +455,11 @@ def comfirmDeletreJournal_Intern():
     try:
         # 企业指导老师,日志,实习一同删除
         comId = InternshipInfor.query.filter_by(Id=internId).first().comId
-        db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s'% (stuId, comId))
-        db.session.execute('delete from Journal where internId=%s and stuId=%s'% (internId, stuId))
-        db.session.execute('delete from InternshipInfor where Id=%s and stuId=%s'% (internId, stuId))
+        db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s' % (stuId, comId))
+        db.session.execute('delete from Journal where internId=%s and stuId=%s' % (internId, stuId))
+        db.session.execute('delete from InternshipInfor where Id=%s and stuId=%s' % (internId, stuId))
         # 企业累计实习人数减一
-        db.session.execute('update ComInfor set students = students -1 where comId=%s'% temp_comId)
+        db.session.execute('update ComInfor set students = students -1 where comId=%s' % temp_comId)
         flash('删除日志和实习信息成功')
         if from_url == "/xIntern":
             return redirect(url_for('.stuInternList'))
@@ -478,7 +485,6 @@ def cominfor():
     return render_template('cominfor.html', Permission=Permission, com=com)
 
 
-
 # 实习企业列表
 @main.route('/interncompany', methods=['GET', 'POST'])
 @login_required
@@ -489,12 +495,10 @@ def interncompany():
     city = {}
     page = request.args.get('page', 1, type=int)
     com = create_com_filter(city)
-    pagination = com.paginate(page, per_page=8, error_out=False)
+    pagination = com.order_by(ComInfor.comDate.desc()).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
     return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor, city=city)
-
-
 
 
 # 企业信息用户操作筛选项,对所选筛选项进行删除
@@ -525,7 +529,6 @@ def update_filter():
         return redirect(url_for('.allcomDelete'))
     else:
         return redirect(url_for('.interncompany'))
-
 
 
 # 搜索,只对企业名称存在的关键字作搜索
@@ -601,7 +604,8 @@ def studentList(comId):
     for stu in student:
         internStatus = InternshipInfor.query.filter_by(comId=comId, stuId=stu.stuId, internStatus=0).count()
         session[stu.stuId] = internStatus
-    return render_template('studentList.html', form=form, pagination=pagination, student=student, Permission=Permission, comId=comId, comName=comName)
+    return render_template('studentList.html', form=form, pagination=pagination, student=student, Permission=Permission,
+                           comId=comId, comName=comName)
 
 
 # 单条审核企业信息
@@ -611,27 +615,29 @@ def com_comfirm():
     if not current_user.can(Permission.COM_INFOR_CHECK):
         return redirect(url_for('.interncompany'))
     else:
-        comId = request.args.get('comId')
-        check = request.args.get('check')
-        print(check)
-        com = ComInfor.query.filter_by(comId=comId).first()
-        if check == 'pass':
-            com.comCheck = 2
-            str = '审核成功，一条信息审核通过。'
-            print(str)
-        else:
-            com.comCheck = 1
-            str = '审核成功，一条信息审核未通过。'
-        try:
-            db.session.add(com)
-            db.session.commit()
-            flash(str)
-            return redirect(url_for(('.interncompany')))
-        except Exception as e:
-            print('企业信息单条审核：', e)
-            db.session.rollback()
-            flash('审核失败，请重试！')
-            return redirect(url_for(('.interncompany')))
+        if request.method == 'POST':
+            comId = request.form.get('comId')
+            check = request.form.get('comCheck')
+            print(check)
+            print(comId)
+            com = ComInfor.query.filter_by(comId=comId).first()
+            if check == 'pass':
+                com.comCheck = 2
+                str = '审核成功，一条信息审核通过。'
+                print(str)
+            else:
+                com.comCheck = 1
+                str = '审核成功，一条信息审核未通过。'
+            try:
+                db.session.add(com)
+                db.session.commit()
+                flash(str)
+                return redirect(url_for(('.interncompany')))
+            except Exception as e:
+                print('企业信息单条审核：', e)
+                db.session.rollback()
+                flash('审核失败，请重试！')
+                return redirect(url_for(('.interncompany')))
 
 
 # 批量审核企业信息
@@ -645,7 +651,7 @@ def allcomCheck():
     page = request.args.get('page', 1, type=int)
     city = {}
     com = create_com_filter(city, flag=False)
-    pagination = com.order_by(ComInfor.comDate).paginate(page, per_page=8, error_out=False)
+    pagination = com.order_by(ComInfor.comDate.desc()).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
     # 确定企业审核通过
     if request.method == "POST":
@@ -691,7 +697,7 @@ def allcomDelete():
         return redirect('.interncompany')
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    # 只有无人实习的企业,或者实习信息被清空的企业,才能被删除
+    # flash('只有无人实习的企业,或者实习信息被清空的企业,才能被删除')
     city = {}
     com = create_com_filter(city)
     pagination = com.filter_by(students=0).order_by(ComInfor.comDate.desc()).paginate(page, per_page=8, error_out=False)
@@ -702,10 +708,11 @@ def allcomDelete():
         for x in comId:
             db.session.execute("delete from ComInfor where comId = %s" % x)
         return redirect(url_for('.allcomDelete', page=pagination.page))
-    return render_template('allcomDelete.html', form=form, Permission=Permission, comInfor=comInfor,  pagination=pagination, city=city)
+    return render_template('allcomDelete.html', form=form, Permission=Permission, comInfor=comInfor,
+                           pagination=pagination, city=city)
 
 
-# 修改实习信息，没有考虑学生修改自己的企业信息
+# 修改企业信息
 @main.route('/editcominfor', methods=['GET', 'POST'])
 @not_student_login
 def editcominfor():
@@ -745,9 +752,13 @@ def stuIntern_allCheck():
         flash("非法操作")
         return redirect('/')
     page = request.args.get('page', 1, type=int)
-    pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId==ComInfor.comId).join(Student, Student.stuId==InternshipInfor.stuId) \
-        .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck) \
-        .filter(InternshipInfor.internCheck!=2).order_by(InternshipInfor.internStatus).paginate(page, per_page=8, error_out=False)
+    pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Student,
+                                                                                                    Student.stuId == InternshipInfor.stuId) \
+        .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
+                     InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
+                     InternshipInfor.internCheck) \
+        .filter(InternshipInfor.internCheck != 2).order_by(InternshipInfor.internStatus).paginate(page, per_page=8,
+                                                                                                  error_out=False)
     internlist = pagination.items
     # 确定实习审核通过
     if request.method == "POST":
@@ -767,7 +778,8 @@ def stuIntern_allCheck():
             return redirect("/")
         flash('实习信息审核成功')
         return redirect(url_for('.stuIntern_allCheck', page=pagination.page))
-    return render_template('stuIntern_allCheck.html', Permission=Permission, internlist=internlist, pagination=pagination)
+    return render_template('stuIntern_allCheck.html', Permission=Permission, internlist=internlist,
+                           pagination=pagination)
 
 
 # 批量删除实习信息
@@ -778,8 +790,11 @@ def stuIntern_allDelete():
         flash("非法操作")
         return redirect('/')
     page = request.args.get('page', 1, type=int)
-    pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId==ComInfor.comId).join(Student, Student.stuId==InternshipInfor.stuId) \
-        .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck) \
+    pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Student,
+                                                                                                    Student.stuId == InternshipInfor.stuId) \
+        .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
+                     InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
+                     InternshipInfor.internCheck) \
         .order_by(InternshipInfor.internCheck, InternshipInfor.internStatus).paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
     # 确定删除实习
@@ -790,14 +805,15 @@ def stuIntern_allDelete():
             temp_intern = InternshipInfor.query.filter_by(Id=x).first()
             temp_comId = temp_intern.comId
             temp_stuId = temp_intern.stuId
-            db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s'% (temp_stuId, temp_comId))
-            db.session.execute('delete from Journal where internId=%s'% x)
-            db.session.execute('delete from InternshipInfor where Id=%s'% x)
+            db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s' % (temp_stuId, temp_comId))
+            db.session.execute('delete from Journal where internId=%s' % x)
+            db.session.execute('delete from InternshipInfor where Id=%s' % x)
             # 企业累计实习人数减一
-            db.session.execute('update ComInfor set students = students -1 where comId=%s'% temp_comId)
+            db.session.execute('update ComInfor set students = students -1 where comId=%s' % temp_comId)
         flash('实习信息删除成功')
         return redirect(url_for('.stuIntern_allDelete', page=pagination.page))
-    return render_template('stuIntern_allDelete.html', Permission=Permission, internlist=internlist, pagination=pagination)
+    return render_template('stuIntern_allDelete.html', Permission=Permission, internlist=internlist,
+                           pagination=pagination)
 
 
 # 批量审核日志
@@ -809,19 +825,26 @@ def stuJournal_allCheck():
         return redirect('/')
     now = datetime.now().date()
     page = request.args.get('page', 1, type=int)
-    pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId==ComInfor.comId).join(Journal, InternshipInfor.Id==Journal.internId).join(Student, InternshipInfor.stuId==Student.stuId) \
-        .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-        .filter(InternshipInfor.internCheck==2, InternshipInfor.internStatus !=0, InternshipInfor.jourCheck==0).group_by(InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus,1,0,2)).paginate(page, per_page=8, error_out=False)
+    pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal,
+                                                                                                    InternshipInfor.Id == Journal.internId).join(
+        Student, InternshipInfor.stuId == Student.stuId) \
+        .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id,
+                     InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
+                     InternshipInfor.internCheck, InternshipInfor.jourCheck) \
+        .filter(InternshipInfor.internCheck == 2, InternshipInfor.internStatus != 0,
+                InternshipInfor.jourCheck == 0).group_by(InternshipInfor.Id).order_by(
+        func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
     # 确定日志审核通过
     if request.method == "POST":
         internId = request.form.getlist('approve[]')
         for x in internId:
-            db.session.execute('update InternshipInfor set jourCheck=1 where Id=%s'% x)
-            db.session.execute('update Journal set jourCheck=1 where internId=%s and workEnd<"%s"'% (x, now))
+            db.session.execute('update InternshipInfor set jourCheck=1 where Id=%s' % x)
+            db.session.execute('update Journal set jourCheck=1 where internId=%s and workEnd<"%s"' % (x, now))
         flash('日志审核成功')
         return redirect(url_for('.stuJournal_allCheck', page=pagination.page))
-    return render_template('stuJournal_allCheck.html', Permission=Permission, pagination=pagination, internlist=internlist)
+    return render_template('stuJournal_allCheck.html', Permission=Permission, pagination=pagination,
+                           internlist=internlist)
 
 
 # 批量删除日志
@@ -833,12 +856,17 @@ def stuJournal_allDelete():
         return redirect('/')
     now = datetime.now().date()
     page = request.args.get('page', 1, type=int)
-    pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId==ComInfor.comId).join(Journal, InternshipInfor.Id==Journal.internId).join(Student, InternshipInfor.stuId==Student.stuId) \
-        .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-        .filter(InternshipInfor.internCheck==2).group_by(InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus,1,0,2)).paginate(page, per_page=8, error_out=False)
+    pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal,
+                                                                                                    InternshipInfor.Id == Journal.internId).join(
+        Student, InternshipInfor.stuId == Student.stuId) \
+        .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id,
+                     InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
+                     InternshipInfor.internCheck, InternshipInfor.jourCheck) \
+        .filter(InternshipInfor.internCheck == 2).group_by(InternshipInfor.Id).order_by(
+        func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
     # pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId==ComInfor.comId).join(Journal, InternshipInfor.Id==Journal.internId).join(Student, InternshipInfor.stuId==Student.stuId) \
-        # .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-        # .filter(InternshipInfor.internCheck==2, InternshipInfor.internStatus !=0).group_by(InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus,1,0,2)).paginate(page, per_page=8, error_out=False)
+    # .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
+    # .filter(InternshipInfor.internCheck==2, InternshipInfor.internStatus !=0).group_by(InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus,1,0,2)).paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
     # 确定删除日志
     if request.method == "POST":
@@ -848,15 +876,15 @@ def stuJournal_allDelete():
             temp_intern = InternshipInfor.query.filter_by(Id=x).first()
             temp_comId = temp_intern.comId
             temp_stuId = temp_intern.stuId
-            db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s'% (temp_stuId, temp_comId))
-            db.session.execute('delete from Journal where internId=%s'% x)
-            db.session.execute('delete from InternshipInfor where Id=%s'% x)
+            db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s' % (temp_stuId, temp_comId))
+            db.session.execute('delete from Journal where internId=%s' % x)
+            db.session.execute('delete from InternshipInfor where Id=%s' % x)
             # 企业累计实习人数减一
-            db.session.execute('update ComInfor set students = students -1 where comId=%s'% temp_comId)
+            db.session.execute('update ComInfor set students = students -1 where comId=%s' % temp_comId)
         flash('日志删除成功')
         return redirect(url_for('.stuJournal_allDelete', page=pagination.page))
-    return render_template('stuJournal_allDelete.html', Permission=Permission, pagination=pagination, internlist=internlist)
-    
+    return render_template('stuJournal_allDelete.html', Permission=Permission, pagination=pagination,
+                           internlist=internlist)
 
 
 # 学生日志 -- 包含所有实习学生的列表
@@ -871,17 +899,34 @@ def stuJournalList():
             flash('目前还没有通过审核的实习信息,请完善相关实习信息,或耐心等待审核通过')
             return redirect('/')
         else:
-            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId==ComInfor.comId).join(Journal, InternshipInfor.Id==Journal.internId).join(Student, InternshipInfor.stuId==Student.stuId) \
-                .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-                .filter(InternshipInfor.stuId==stuId, InternshipInfor.internCheck==2).group_by(InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus,1,0,2)).paginate(page, per_page=8, error_out=False)            
+            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal,
+                                                                                                            InternshipInfor.Id == Journal.internId).join(
+                Student, InternshipInfor.stuId == Student.stuId) \
+                .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId,
+                             InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
+                             InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
+                .filter(InternshipInfor.stuId == stuId, InternshipInfor.internCheck == 2).group_by(
+                InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page,
+                                                                                                         per_page=8,
+                                                                                                         error_out=False)
             internlist = pagination.items
-            return render_template('stuJournalList.html', internlist=internlist, Permission=Permission, pagination=pagination)
+            print(len(internlist))
+            for x in internlist:
+                print(x.stuName)
+            return render_template('stuJournalList.html', internlist=internlist, Permission=Permission,
+                                   pagination=pagination)
     elif current_user.can(Permission.STU_JOUR_SEARCH):
-        pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId==ComInfor.comId).join(Journal, InternshipInfor.Id==Journal.internId).join(Student, InternshipInfor.stuId==Student.stuId) \
-            .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-            .filter(InternshipInfor.internCheck==2).group_by(InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus,1,0,2)).paginate(page, per_page=8, error_out=False)
+        pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal,
+                                                                                                        InternshipInfor.Id == Journal.internId).join(
+            Student, InternshipInfor.stuId == Student.stuId) \
+            .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id,
+                         InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
+                         InternshipInfor.internCheck, InternshipInfor.jourCheck) \
+            .filter(InternshipInfor.internCheck == 2).group_by(InternshipInfor.Id).order_by(
+            func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
-        return render_template('stuJournalList.html', internlist=internlist, Permission=Permission, pagination=pagination)
+        return render_template('stuJournalList.html', internlist=internlist, Permission=Permission,
+                               pagination=pagination)
 
 
 # 学生日志 -- 特定学生的日志详情
@@ -897,19 +942,21 @@ def xJournal():
     student = Student.query.filter_by(stuId=stuId).first()
     # 获得当前时间对应的页码
     now = datetime.now().date()
-    cur_page = Journal.query.filter(Journal.stuId==stuId, Journal.internId==internId, Journal.workStart<=now, Journal.workEnd>=now).first()
+    cur_page = Journal.query.filter(Journal.stuId == stuId, Journal.internId == internId, Journal.workStart <= now,
+                                    Journal.workEnd >= now).first()
     if cur_page:
         page = request.args.get('page', cur_page.weekNo, type=int)
     else:
-        page = request.args.get('page', 1 , type=int)
+        page = request.args.get('page', 1, type=int)
 
     pagination = Journal.query.filter_by(internId=internId).paginate(page, per_page=1, error_out=False)
     journal = pagination.items
     # journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
     comInfor = db.session.execute('select * from ComInfor where comId in( \
-        select comId from InternshipInfor where Id=%s)'% internId).first()
+        select comId from InternshipInfor where Id=%s)' % internId).first()
     if internship.internCheck == 2:
-        return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal, student=student, comInfor=comInfor, pagination=pagination, page=page, now=now)
+        return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
+                               student=student, comInfor=comInfor, pagination=pagination, page=page, now=now)
     else:
         flash("实习申请需审核后,才能查看日志")
         return redirect(url_for('.xJournalList', stuId=stuId))
@@ -921,13 +968,14 @@ def journal_comfirm():
     # 参数都是为了跳转 /xJournal 做准备
     stuId = request.args.get('stuId')
     jourId = request.args.get('jourId')
-    internId = request.args.get('internId')    
+    internId = request.args.get('internId')
     if current_user.can(Permission.STU_JOUR_CHECK):
-        db.session.execute('update Journal set jourCheck=1 where Id=%s'% jourId)
+        db.session.execute('update Journal set jourCheck=1 where Id=%s' % jourId)
         # 检查是否需要更新 InternshipInfor.jourCheck
-        jourCheck = Journal.query.filter(Journal.internId==internId, Journal.jourCheck==0, Journal.workEnd < datetime.now().date()).count()
+        jourCheck = Journal.query.filter(Journal.internId == internId, Journal.jourCheck == 0,
+                                         Journal.workEnd < datetime.now().date()).count()
         if jourCheck == 0:
-            db.session.execute('update InternshipInfor set jourCheck=1 where Id=%s'% internId)
+            db.session.execute('update InternshipInfor set jourCheck=1 where Id=%s' % internId)
 
         flash("日志审核通过")
         return redirect(url_for('.stuJournalList'))
@@ -937,7 +985,7 @@ def journal_comfirm():
         return redirect('/')
 
 
-@main.route('/xJournalEdit', methods=['POST','GET'])
+@main.route('/xJournalEdit', methods=['POST', 'GET'])
 @login_required
 def xJournalEdit():
     if current_user.roleId == 0:
@@ -946,7 +994,7 @@ def xJournalEdit():
         stuId = request.args.get('stuId')
     else:
         flash("非法操作")
-        return redirect("/")    
+        return redirect("/")
     jourId = request.args.get('jourId')
     comId = request.args.get('comId')
     internId = request.args.get('internId')
@@ -955,11 +1003,11 @@ def xJournalEdit():
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     jourform = journalForm()
-    return render_template('xJournalEdit.html', Permission=Permission, jour=jour, student=student, comInfor=comInfor, internship=internship, jourform=jourform)
+    return render_template('xJournalEdit.html', Permission=Permission, jour=jour, student=student, comInfor=comInfor,
+                           internship=internship, jourform=jourform)
 
 
-
-@main.route('/xJournalEditProcess', methods=['POST','GET'])
+@main.route('/xJournalEditProcess', methods=['POST', 'GET'])
 @login_required
 def xJournalEditProcess():
     if current_user.roleId == 0:
@@ -990,9 +1038,9 @@ def xJournalEditProcess():
             sat = "%s", \
             sun = "%s" \
             where Id=%s and stuId="%s"'
-            % (mon, tue, wed, thu, fri, sat, sun, jourId, stuId))
+                           % (mon, tue, wed, thu, fri, sat, sun, jourId, stuId))
     except Exception as e:
-        print (datetime.now(),": 学号为",stuId,"修改日志失败", e)
+        print(datetime.now(), ": 学号为", stuId, "修改日志失败", e)
         flash("修改日志失败")
         return redirect("/")
     flash("修改日志成功")
@@ -1013,6 +1061,7 @@ def stuJour():
 '''
 
 
+# -------------管理-----------------------------------------------------------------------------------
 # 学生用户列表
 @main.route('/stuUserList', methods=['GET', 'POST'])
 @login_required
@@ -1021,10 +1070,45 @@ def stuUserList():
     if not current_user.roleId == 3:
         return redirect('/')
     form = searchForm()
+    grade = {}
+    classes = {}
+    major = {}
+    stu = create_stu_filter(grade, major, classes)
     page = request.args.get('page', 1, type=int)
-    pagination = Student.query.order_by(Student.grade).paginate(page, per_page=8, error_out=False)
+    pagination = stu.paginate(page, per_page=8, error_out=False)
     student = pagination.items
-    return render_template('stuUserList.html', pagination=pagination, form=form, Permission=Permission, student=student)
+    return render_template('stuUserList.html', pagination=pagination, form=form, Permission=Permission, student=student,
+                           grade=grade, major=major, classes=classes)
+
+
+# 学生用户信息的筛选项操作,对所选筛选项进行删除,flag=1批量设置
+@main.route('/update_stu_filter', methods=['GET', 'POST'])
+@login_required
+def update_stu_filter():
+    grade = request.args.get('grade')
+    major = request.args.get('major')
+    classes = request.args.get('classes')
+    flag = request.args.get('flag')
+    if grade is not None:
+        session['major'] = None
+        session['classes'] = None
+        session['sex'] = None
+    elif major is not None:
+        session['sex'] = None
+        session['classes'] = None
+    elif classes is not None:
+        session['sex'] = None
+    else:
+        session['major'] = None
+        session['classes'] = None
+        session['sex'] = None
+        session['grade'] = None
+    if flag == '1':
+        return redirect(url_for('.allStuSet'))
+    elif flag == '0':
+        return redirect(url_for('.allStuDelete'))
+    else:
+        return redirect(url_for('.stuUserList'))
 
 
 # 添加学生用户
@@ -1058,6 +1142,165 @@ def addStudent():
     return render_template('addStudent.html', stuform=stuform, Permission=Permission)
 
 
+# 修改学生用户信息
+@main.route('/editStudent', methods=['GET', 'POST'])
+@login_required
+def editStudent():
+    form = stuForm()
+    stuId = request.args.get('stuId')
+    stu = Student.query.filter_by(stuId=stuId).first()
+    if request.method == 'POST':
+        try:
+            stu.stuId = form.stuId.data
+            stu.stuName = form.stuName.data
+            stu.sex = request.form.get('sex')
+            print(request.form.get('sex'))
+            stu.major = form.major.data
+            stu.grade = form.grade.data
+            stu.classes = form.classes.data
+            db.session.add(stu)
+            db.session.commit()
+            flash('修改成功！')
+            return redirect(url_for('.stuUserList'))
+        except Exception as e:
+            print('修改学生用户信息：', e)
+            db.session.rollback()
+            flash('修改失败，请重试！')
+            return redirect(url_for('.editStudent', stuId=stuId))
+    return render_template('editStudent.html', Permission=Permission, form=form, stu=stu)
+
+
+# 单条删除学生用户信息
+@main.route('/student_delete', methods=['GET', 'POST'])
+@login_required
+def student_delete():
+    stuId = request.form.get('stuId')
+    stu = Student.query.filter_by(stuId=stuId).first()
+    try:
+        db.session.delete(stu)
+        db.session.commit()
+        flash('删除成功')
+        return redirect(url_for('.stuUserList'))
+    except Exception as e:
+        print('单条删除学生用户：', e)
+        db.session.rollback()
+        flash('删除失败，请重试！')
+        return redirect(url_for('.stuUserList'))
+
+
+# 选择和设置角色
+@main.route('/selectRole', methods=['GET', 'POST'])
+@login_required
+def selectRole():
+    roles = Role.query.all()
+    stuId = request.args.get('stuId')
+    teaId = request.args.get('teaId')
+    roleId = request.args.get('roleId')
+    name = request.args.get('name')
+    if stuId:
+        # 与批量审核生成的stuId集合一致
+        stu = []
+        stu.append(stuId)
+        session['stu'] = stu
+        print('stu')
+    if teaId:
+        # 同上
+        tea = []
+        tea.append(teaId)
+        session['tea'] = tea
+        print(teaId)
+    # 点击选择后发生
+    if roleId:
+        # 学生
+        if session.get('stu'):
+            for stuId in session['stu']:
+                print(stuId)
+                stu = Student.query.filter_by(stuId=stuId).first()
+                stu.roleId = roleId
+                try:
+                    db.session.add(stu)
+                    db.session.commit()
+                except Exception as e:
+                    print('设置学生角色', e)
+                    flash('设置角色失败，请重试！')
+                    db.session.rollback()
+                    return redirect(url_for('.selectRole'))
+            flash('设置角色成功！')
+            return redirect(url_for('.stuUserList'))
+        # 教师
+        elif session.get('tea'):
+            print('教师啊')
+            for teaId in session['tea']:
+                tea = Teacher.query.filter_by(teaId=teaId).first()
+                tea.roleId = roleId
+                try:
+                    db.session.add(tea)
+                    db.session.commit()
+                except Exception as e:
+                    print('设置教师角色', e)
+                    flash('设置角色失败，请重试！')
+                    db.session.rollback()
+                    return redirect(url_for('.selectRole'))
+            flash('设置角色成功！')
+            return redirect(url_for('.teaUserList'))
+    return render_template('selectRole.html', Permission=Permission, roles=roles, name=name)
+
+
+# 学生用户批量设置角色
+@main.route('/allStuSet', methods=['GET', 'POST'])
+@login_required
+def allStuSet():
+    form = searchForm()
+    if session.get('tea'):
+        session['tea'] = None
+    grade = {}
+    major = {}
+    classes = {}
+    stu = create_stu_filter(grade, major, classes)
+    page = request.args.get('page', 1, type=int)
+    pagination = stu.paginate(page, per_page=8, error_out=False)
+    student = pagination.items
+    # session['stu']存储选中的学生学号
+    if session.get('stu') is not None:
+        session['stu'] = None
+    if request.method == 'POST':
+        session['stu'] = request.form.getlist('stu[]')
+        tips = '%s位学生用户' % len(session['stu'])
+        return redirect(url_for('.selectRole', name=tips))
+    return render_template('allStuSet.html', Permission=Permission, form=form, student=student, pagination=pagination,
+                           page=page, grade=grade, major=major, classes=classes)
+
+
+# 批量删除学生用户
+@main.route('/allStuDelete', methods=['GET', 'POST'])
+@login_required
+def allStuDelete():
+    form = searchForm()
+    grade = {}
+    major = {}
+    classes = {}
+    stu = create_stu_filter(grade, major, classes)
+    page = request.args.get('page', 1, type=int)
+    pagination = stu.paginate(page, per_page=8, error_out=False)
+    student = pagination.items
+    if request.method == 'POST':
+        for x in request.form.getlist('stu[]'):
+            try:
+                db.session.execute('delete from Student where stuId=%s' % x)
+            except Exception as e:
+                db.session.rollback()
+                print('批量删除学生用户：', e)
+                flash('删除失败，请重试！')
+                return redirect(url_for('.allStuDelete'))
+        flash('删除成功！')
+        return redirect(url_for('.allStuDelete'))
+    return render_template('allStuDelete.html', Permission=Permission, form=form, student=student,
+                           pagination=pagination,
+                           page=page, grade=grade, major=major, classes=classes)
+
+
+# --------------------------------------------
+
 # 教师用户列表
 @main.route('/teaUserList', methods=['GET', 'POST'])
 @login_required
@@ -1066,8 +1309,16 @@ def teaUserList():
     if not current_user.roleId == 3:
         return redirect('/')
     form = searchForm()
+    # 与student共用一个selectRole先清空session['stu']
+    if session.get('stu'):
+        session['stu'] = None
+    if request.args.get('way'):
+        session['way'] = request.args.get('way')
     page = request.args.get('page', 1, type=int)
-    pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
+    if session.get('way') == '1':
+        pagination = Teacher.query.order_by(Teacher.teaName.desc()).paginate(page, per_page=8, error_out=False)
+    else:
+        pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
     teacher = pagination.items
     for tea in teacher:
         session[tea.teaId] = tea.role.roleName
@@ -1098,6 +1349,106 @@ def addTeacher():
     return render_template('addTeacher.html', form=form, Permission=Permission)
 
 
+# 修改教师用户信息
+@main.route('/editTeacher', methods=['GET', 'POST'])
+@login_required
+def editTeacher():
+    form = teaForm()
+    teaId = request.args.get('teaId')
+    tea = Teacher.query.filter_by(teaId=teaId).first()
+    if request.method == 'POST':
+        try:
+            tea.teaId = form.teaId.data
+            tea.teaName = form.teaName.data
+            tea.teaSex = request.form.get('sex')
+            print(request.form.get('sex'))
+            db.session.add(tea)
+            db.session.commit()
+            flash('修改成功！')
+            return redirect(url_for('.teaUserList'))
+        except Exception as e:
+            print('修改教师用户信息：', e)
+            db.session.rollback()
+            flash('修改失败，请重试！')
+            return redirect(url_for('.editTeacher', teaId=teaId))
+    return render_template('editTeacher.html', Permission=Permission, form=form, tea=tea)
+
+
+# 单条删除教师用户信息
+@main.route('/teacher_delete', methods=['GET', 'POST'])
+@login_required
+def teacher_delete():
+    teaId = request.form.get('teaId')
+    tea = Teacher.query.filter_by(teaId=teaId).first()
+    try:
+        db.session.delete(tea)
+        db.session.commit()
+        flash('删除成功')
+        return redirect(url_for('.teaUserList'))
+    except Exception as e:
+        print('单条删除学生用户：', e)
+        db.session.rollback()
+        flash('删除失败，请重试！')
+        return redirect(url_for('.teaUserList'))
+
+
+# 教师用户批量设置角色
+@main.route('/allTeaSet', methods=['GET', 'POST'])
+@login_required
+def allTeaSet():
+    form = searchForm()
+    # 与学生共用一个函数
+    if session.get('stu'):
+        session['stu'] = None
+    if request.args.get('way'):
+        session['way'] = request.args.get('way')
+    page = request.args.get('page', 1, type=int)
+    if session.get('way') == '1':
+        pagination = Teacher.query.order_by(Teacher.teaName.desc()).paginate(page, per_page=8, error_out=False)
+    else:
+        pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
+    page = request.args.get('page', 1, type=int)
+    teacher = pagination.items
+    # session['tea']存储选中的教师ID
+    if session.get('tea') is not None:
+        session['tea'] = None
+    if request.method == 'POST':
+        session['tea'] = request.form.getlist('tea[]')
+        tips = '%s位教师用户' % len(session['tea'])
+        return redirect(url_for('.selectRole', name=tips))
+    return render_template('allTeaSet.html', Permission=Permission, form=form, teacher=teacher,
+                           pagination=pagination, page=page)
+
+
+# 批量删除教师用户
+@main.route('/allTeaDelete', methods=['GET', 'POST'])
+@login_required
+def allTeaDelete():
+    form = searchForm()
+    page = request.args.get('page', 1, type=int)
+    if request.args.get('way'):
+        session['way'] = request.args.get('way')
+    page = request.args.get('page', 1, type=int)
+    if session.get('way') == '1':
+        pagination = Teacher.query.order_by(Teacher.teaName.desc()).paginate(page, per_page=8, error_out=False)
+    else:
+        pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
+    teacher = pagination.items
+    if request.method == 'POST':
+        for x in request.form.getlist('tea[]'):
+            try:
+                db.session.execute('delete from Teacher where teaId=%s' % x)
+            except Exception as e:
+                db.session.rollback()
+                print('批量删除教师用户：', e)
+                flash('删除失败，请重试！')
+                return redirect(url_for('.allTeaDelete'))
+        flash('删除成功！')
+        return redirect(url_for('.allTeaDelete'))
+    return render_template('allTeaDelete.html', Permission=Permission, form=form, teacher=teacher,
+                           pagination=pagination, page=page)
+
+
 # 系统角色列表
 @main.route('/roleList', methods=['GET', 'POST'])
 @login_required
@@ -1107,12 +1458,6 @@ def roleList():
         return redirect('/')
     role = Role.query.all()
     return render_template('roleList.html', Permission=Permission, role=role)
-
-
-# 查询最大的企业Id
-def getMaxComId():
-    res = db.session.query(func.max(ComInfor.comId).label('max_comId')).one()
-    return res.max_comId
 
 
 # 添加角色,靠你们改善这个蠢方法了,\r\n不能换行，导致角色列表里的describe不能显全
@@ -1221,7 +1566,7 @@ def getMaxRoleId():
     return res.max_roleId
 
 
-# 企业信息筛选项，组合查询,当flag=Ture为企业实习信息和批量删除的功能,False为批量审核功能
+# 企业信息筛选项，组合查询,,更新筛选项，当flag=Ture为企业实习信息和批量删除的功能,False为批量审核功能
 def create_com_filter(city, flag=True):
     # 更新筛选项
     if request.args.get('city') is not None:
@@ -1523,3 +1868,105 @@ def update_iso():
         print (jourId)
         db.session.execute('update Journal set isoweek=%s, isoyear=%s where Id=%s'% (start.isocalendar()[1], start.isocalendar()[0], jourId))
     return 1
+
+
+# 学生筛选项，组合查询,更新筛选项
+def create_stu_filter(grade, major, classes, flag=True):
+    # 更新筛选项
+    if request.args.get('grade') is not None:
+        session['grade'] = request.args.get('grade')
+        print(session['grade'])
+
+    if request.args.get('major') is not None:
+        session['major'] = request.args.get('major')
+        print(session['major'])
+
+    if request.args.get('classes') is not None:
+        session['classes'] = request.args.get('classes')
+        print(session['classes'])
+
+    if request.args.get('sex') is not None:
+        session['sex'] = request.args.get('sex')
+        print(session['sex'])
+    i = 0
+    j = 0
+    k = 0
+    # 组合查询 *_*
+    try:
+        if session.get('grade') is not None:
+            print('grade:', session['grade'])
+            stu = Student.query.filter_by(grade=session['grade'])
+
+            if session.get('major') is not None:
+                stu = stu.filter_by(major=session['major'])
+
+            if session.get('classes') is not None:
+                stu = stu.filter_by(classes=session['classes'])
+
+            if session.get('sex') is not None:
+                stu = stu.filter_by(sex=session['sex'])
+
+        elif session.get('major') is not None:
+            print('major:', session['major'])
+            stu = Student.query.filter_by(major=session['major'])
+
+            if session.get('grade') is not None:
+                stu = stu.filter_by(grade=session['grade'])
+
+            if session.get('classes') is not None:
+                stu = stu.filter_by(classes=session['classes'])
+
+            if session.get('sex') is not None:
+                stu = stu.filter_by(sex=session['sex'])
+
+        elif session.get('classes') is not None:
+            print('classes:', session['classes'])
+            stu = Student.query.filter_by(classes=session['classes'])
+
+            if session.get('grade') is not None:
+                stu = stu.filter_by(grade=session['grade'])
+
+            if session.get('major') is not None:
+                stu = stu.filter_by(major=session['major'])
+
+            if session.get('sex') is not None:
+                stu = stu.filter_by(sex=session['sex'])
+
+        elif session.get('sex') is not None:
+            print('sex:', session['sex'])
+            stu = Student.query.filter_by(sex=session['sex'])
+
+            if session.get('grade') is not None:
+                stu = stu.filter_by(grade=session['grade'])
+
+            if session.get('major') is not None:
+                stu = stu.filter_by(major=session['major'])
+
+            if session.get('classes') is not None:
+                stu = stu.filter_by(classes=session['classes'])
+
+        else:
+            stu = Student.query.order_by(Student.grade.asc())
+
+        grades = db.session.execute('select DISTINCT grade from Student')
+        majors = db.session.execute('select DISTINCT major from Student')
+        classess = db.session.execute('select DISTINCT classes from Student ORDER BY classes')
+    except Exception as e:
+        print('组合筛选：', e)
+    # 生成筛选项
+    for g in grades:
+        grade[i] = g.grade
+        i = i + 1
+    for m in majors:
+        major[j] = m.major
+        j = j + 1
+    for c in classess:
+        classes[k] = c.classes
+        k = k + 1
+    return stu
+
+
+# 查询最大的企业Id
+def getMaxComId():
+    res = db.session.query(func.max(ComInfor.comId).label('max_comId')).one()
+    return res.max_comId
