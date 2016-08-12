@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}个人实习信息{% endblock %}
+{% block head %}{{ super() }}
+<style type="text/css">
+        #task {
+            height: 200px;
+        }
+</style>
+
+{% endblock %}<!--先执行父模板-->
+
+{% block page_content %}
+
+    <table align="center" border="2" class="table-bordered">
+        <caption>
+            <h1>我的实习信息</h1>
+        </caption>
+
+        <tr>
+            <td colspan="6" height="50">一、学生信息</td>
+        </tr>
+        <tr>
+            <th width="200">学号</th>
+            <td width="400" height="50" colspan="3">
+                {{student.stuId }}
+            </td>
+            <th width="200">姓名</th>
+            <td width="400" height="50" colspan="3">{{ student.stuName }}</td>
+        </tr>
+        <tr>
+            <th width="200">性别</th>
+            <td width="400" height="50" colspan="3">
+                {{ student.sex }}
+            </td>
+            <th width="200">专业班级</th>
+            <td width="400" height="50" colspan="3">{{ student.major }}{{ student.classes }}班</td>
+        </tr>
+        <tr>
+            <td width="200" colspan="6" height="50">二、实习企业信息</td>
+        </tr>
+        <tr>
+            <th>企业名称</th>
+            <td height="50" width="400" colspan="5">{{ comInfor.comName }}</td>
+        </tr>
+        <tr>
+            <th>企业地址</th>
+            <td height="50" width="400" colspan="5">{{ comInfor.comAddress }}</td>
+        </tr>
+        <tr>
+            <th>企业简介</th>
+            <td height="200" width="400" colspan="5">{{ comInfor.comBrief }}</td>
+        </tr>
+        <tr>
+            <td width="200"  height="50">三、实习岗位信息</td>
+        </tr>
+        <form method="POST" action="/xInternEdit_intern">
+        <tr>
+            <th>实习地点</th>
+            <td width="400" height="50" colspan="5">
+            <input type="hidden" name="comId" value="{{ comInfor.comId }}">
+            <input type="hidden" name="internId" value="{{ internship.Id }}">
+            <input type="hidden" name="stuId" value="{{ student.stuId }}">
+            {{ internform.address(class="form-control",required='', value=internship.address) }}</td></td>
+        </tr>
+        <tr>
+            <th>实习期间</th>
+            <td width="400" height="50" colspan="5">
+            {{ internform.start(required='', value=internship.start) }}至
+            {{ internform.end(required='', value=internship.end) }}</td>
+            </td>
+        </tr>
+        <tr>
+            <th>工作任务</th>
+            <td width="400" height="200" colspan="5">
+            <!-- it's a magic -->
+            {% set temp_task = internform.task.process_data(internship.task) %}
+            {{ internform.task(class="form-control", required='', cols="190", row="190") }}</td>
+        </tr>
+        <tr><td colspan="6" align="center">{{ internform.submit(class="btn btn-danger",type="submit",id='finish', value="确定修改") }}</td></tr>
+        </form>
+        <tr>
+            <td width="200" colspan="6" height="50">四、实习指导老师</td>
+        </tr>
+        <table align="center" border="2" class="table-bordered">
+            <tr>
+                <th height="50" colspan="6">企业指导老师</th>
+            </tr>
+            <tr>
+                <td height="50" width="300">姓名</td>
+                <td height="50" width="300">职务/职称</td>
+                <td height="50" width="300">电话</td>
+                <td height="50" width="300">E-mail</td>
+            </tr>
+            {% for tea in comdirtea %}
+                {% if tea.teaName %}
+                    <tr>
+                        <form method="POST" action="/xInternEdit_comdirtea" >
+                        {{ comdirteaform.hidden_tag() }}
+                        <input type="hidden" name="comId" value="{{ comInfor.comId }}">
+                        <input type="hidden" name="start" value="{{ internship.start }}">
+                        <input type="hidden" name="internId" value="{{ internship.Id }}">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                        <input type="hidden" name="Id" value="{{ tea.Id }}">
+                        <td height="50">{{ comdirteaform.cteaName(required='', value=tea.teaName) }}</td>
+                        <td height="50">{{ comdirteaform.cteaDuty(required='', value=tea.teaDuty) }}</td>
+                        <td height="50">{{ comdirteaform.cteaPhone(required='', value=tea.teaPhone) }}</td>
+                        <td height="50" colspan="2">{{ comdirteaform.cteaEmail(required='', value=tea.teaEmail) }}</td>
+                         {{ comdirteaform.csrf_token }} 
+                        <td>{{ comdirteaform.submit(class="btn btn-danger",type="submit", value="确定修改") }}</td>
+                        </form>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <table align="center" border="2" class="table-bordered">
+            <!-- 校内指导老师在"个人信息--学生信息"处修改 -->
+            <tr>
+                <th height="50" colspan="6">校内指导老师</th>
+            </tr>
+            <tr>
+                <td height="50" width="240">教工号</td>
+                <td height="50" width="240">姓名</td>
+                <td height="50" width="240">职务/职称</td>
+                <td height="50" width="240">电话</td>
+                <td height="50" width="240">E-mail</td>
+            </tr>
+            {% for tea in schdirtea %}
+                {% if tea.teaName %}
+                    <tr>
+                        <td height="50">{{ tea.teaId }}</td>
+                        <td height="50">{{ tea.teaName }}</td>
+                        <td height="50">{{ tea.teaDuty }}</td>
+                        <td height="50">{{ tea.teaPhone }}</td>
+                        <td height="50" colspan="2">{{ tea.teaEmail }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+
+
+                <td width="200" colspan="6" height="50">五、审核意见</td>
+            </tr>
+            <tr>
+                <th width="200">专业意见</th>
+                <td height="200" colspan="5">
+                    {% if internship.opinion %}
+                        {{ internship.opinion }}
+                    {% else %}
+                        暂无
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </table>
+    <br>
+    <tr><td><a href="{{ url_for('.xIntern',internId=internship.Id, comId=comInfor.comId, stuId=student.stuId) }}"><button class="btn btn-primary">返回</button></a>
+
+
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}企业信息{% endblock %}
+{% block head %}
+    {{ super() }}
+    <!--提交和返回按钮-->
+    <script>
+        function back(comid) {
+            var form = document.getElementById('comform');
+            form.action = '/cominfor?id=' + comid;
+            form.submit();
+        }
+        function save(comid) {
+            var form = document.getElementById('comform');
+            form.action = '/editcominfor?comId=' + comid;
+            form.submit();
+        }
+    </script>
+{% endblock %}
+{% block page_content %}
+    <form method="post" class="form-horizontal" id="comform">
+        {{ comform.hidden_tag() }}
+        <table align="center" border="2" class="table-bordered">
+            <caption>
+                <h1>企业信息
+                    {% if current_user.can(Permission.COM_INFOR_EDIT) %}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                                    data-toggle="dropdown">编辑<span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                {% if com.comCheck!=2 %}
+                                    <li><a href="#">修改</a></li>
+                                {% endif %}
+                                <li><a href="#">导出</a></li>
+                                <li><a onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </h1>
+            </caption>
+            <tr>
+                <th width="200">公司名称</th>
+                <td width="400" height="50"
+                    colspan="3">{{ comform.comName( class="form-control",request='',value=com.comName) }}</td>
+            </tr>
+            <tr>
+                <th>公司地址</th>
+                <td width="400" height="50"
+                    colspan="3">{{ comform.comAddress(class="form-control",request='',value=com.comAddress) }}</td>
+            </tr>
+            <tr>
+                <th>公司网址</th>
+                <td width="400" height="50"
+                    colspan="3">{{ comform.comUrl(class="form-control",request='',value=com.comUrl) }}</td>
+            </tr>
+            <tr>
+                <th>公司简介</th>
+                <td height="200" width="900"
+                    colspan="3"><textarea class="form-control" name="text">{{ com.comBrief }}</textarea></td>
+            </tr>
+            <tr>
+                <th>年营业额</th>
+                <td height="50">{{ comform.comMon(class="form-control",lrequest='',value=com.comMon) }}</td>
+                <th>员工人数</th>
+                <td height="50">{{ comform.comStaff(class="form-control",request='',value=com.comStaff) }}</td>
+
+            </tr>
+            <tr>
+                <th>联系人</th>
+                <td height="50">{{ comform.comContact(class="form-control",request='',value=com.comContact) }}</td>
+                <th>Email</th>
+                <td height="50">{{ comform.comEmail(class="form-control",request='',value=com.comEmail) }}</td>
+            </tr>
+            <tr>
+                <th>联系电话</th>
+                <td height="50">{{ comform.comPhone(class="form-control",request='',value=com.comPhone) }}</td>
+                <th>传真</th>
+                <td height="50">{{ comform.comFax(class="form-control",request='',value=com.comFax) }}</td>
+            </tr>
+        </table>
+        <p></p>
+        <p></p>
+        <p></p>
+        <button class="btn btn-primary" onclick="save({{ com.comId }})">提交</button>
+        <button class="btn btn-default" onclick="back({{ com.comId }})">返回
+        </button>
+    </form>
+
+    <br><br><br><br>
+{% endblock %}

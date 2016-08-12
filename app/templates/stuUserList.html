@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block title %}实习学生{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/JS/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#rearch").click(function () {
+                $(".rearchSubmit").click();
+            });
+        });
+    </script>
+    <!--筛选按钮-->
+    <script type="text/javascript">
+        window.onload = function () {
+            var obj = document.getElementById("sel");
+            obj.onclick = function () {
+                obj.className = (obj.className == "class1" ? "class2" : "class1");
+                obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
+            }
+        }
+    </script>
+    <!--更多-->
+    <style>
+        .first .second {
+            display: none;
+        }
+
+        .first:hover .second {
+            display: block;
+        }
+    </style>
+    <!-- 确认删除窗口 ,传递参数-->
+    <script type="text/javascript">
+        function ComfirmDelete(str) {
+            $('#deleteToggle').modal();
+            var obj = document.getElementById("stuId");
+            obj.value = str
+        }
+    </script>
+{% endblock %}<!--先执行父模板-->
+
+{% block page_content %}
+    <h1>学生用户
+        {% if current_user.can(Permission.COM_INFOR_EDIT) %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                        data-toggle="dropdown">编辑<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                        <li><a href="{{ url_for('.addStudent') }}">添加</a></li>
+                        <li><a href="#">批量添加</a></li>
+                        <li><a href="{{ url_for('.update_stu_filter',flag=1) }}">批量设置角色</a></li>
+                        <li><a href="{{ url_for('.update_stu_filter',flag=0) }}">批量删除</a></li>
+                        </ul>
+                        </div>
+                    {% endif %}
+        {% endif %}
+        <div style="float:right;width:350px"><!--长度-->
+            <form role="form" method="POST" action="/search">
+                <div class="row head">
+                    <div class="col-lg-10"><!--位置-->
+                        <div class="input-group ">
+                            {{ form.key(type="text",class="form-control",placeholder="请先输入关键字",required='') }}
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" id="rearch"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                        </div>
+                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </h1>
+    <div>
+        <ol class="breadcrumb">
+            <li><a href="{{ url_for('.update_stu_filter') }}">所有分类</a></li>
+            {% if session['grade']!=None %}
+                <li><a href="{{ url_for('.update_stu_filter',grade='1') }}">{{ session['grade'] }}</a></li>
+            {% endif %}
+            {% if session['major']!=None %}
+                <li><a href="{{ url_for('.update_stu_filter',major='1') }}">{{ session['major'] }}</a></li>
+            {% endif %}
+
+            {% if session['classes']!=None %}
+                <li><a href="{{ url_for('.update_stu_filter',classes='1') }}">{{ session['classes'] }}班</a></li>
+            {% endif %}
+            {% if session['sex']!=None %}
+                <li><a href="#">{{ session['sex'] }}</a></li>
+            {% endif %}
+        </ol>
+        <input style="float:right;" type="button" class="class1" data-toggle="collapse"
+               data-target="#demo" id="sel" value="收起筛选"/>
+
+    </div>
+
+    <div id="demo" class="collapse in ">
+        <div class="panel panel-danger">
+            <div class="panel-body">
+
+
+                <table>
+                    <tr>
+                        <th width="100">年级:</th>
+                        {% for i in grade.keys() %}
+                            {% if i<3 %}
+                                <td width="200"><a
+                                        href="{{ url_for('.stuUserList',grade=grade[i]) }}">{{ grade[i] }}级</a>
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        <td width="200">
+                            <div class="first">
+                                <a>更多</a>
+                                <div class="second">
+                                    {% for i in grade.keys() %}
+                                        {% if i>2 %}
+                                            <li style="list-style-type:none;"><a
+                                                    href="{{ url_for('.stuUserList',grade=grade[i]) }}">{{ grade[i] }}级</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th width="100">专业:</th>
+                        {% for i in major.keys() %}
+                            {% if i<3 %}
+                                <td width="200"><a
+                                        href="{{ url_for('.stuUserList',major=major[i]) }}">{{ major[i] }}</a></td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>
+                            <div class="first">
+                                <a>更多</a>
+                                <div class="second">
+                                    {% for i in major.keys() %}
+                                        {% if i>2 %}
+                                            <li style="list-style-type:none;"><a
+                                                    href="{{ url_for('.stuUserList',major=major[i]) }}">{{ major[i] }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th width="200">班级：</th>
+                        {% for i in classes.keys() %}
+                            {% if i<3 %}
+                                <td width="200"><a
+                                        href="{{ url_for('.stuUserList',classes=classes[i]) }}">{{ classes[i] }}班</a>
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>
+                            <div class="first">
+                                <a>更多</a>
+                                <div class="second">
+                                    {% for i in classes.keys() %}
+                                        {% if i>2 %}
+                                            <li style="list-style-type:none;"><a
+                                                    href="{{ url_for('.stuUserList',classes=classes[i]) }}">{{ classes[i] }}班</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th width="200">性别：</th>
+                        <td width="300"><a href="{{ url_for('.stuUserList',sex='男') }}">男</a></td>
+                        <td width="300"><a href="{{ url_for('.stuUserList',sex='女') }}">女</a></td>
+                        <td>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+        <p></p>
+    </div>
+
+
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th>姓名</th>
+            <th>学号</th>
+            <th>性别</th>
+            <th>年级</th>
+            <th>专业班级</th>
+            <th>系统角色</th>
+            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for stu in student %}
+            <tr>
+                <td>{{ stu.stuName }}</td>
+                <td>{{ stu.stuId }}</td>
+                <td>{{ stu.sex }}</td>
+                <td>{{ stu.grade }}</td>
+                <td>{{ stu.major }}{{ stu.classes }}班</td>
+                <td>{{ stu.role.roleName }}</td>
+                <td><a href="{{ url_for('.editStudent',stuId=stu.stuId) }}">修改</a>|<a
+                        href="{{ url_for('.selectRole',stuId=stu.stuId,name=stu.stuName) }}">设置角色</a>|<a
+                        onclick="ComfirmDelete({{ stu.stuId }})" href="#">删除</a></td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination,'.stuUserList') }}
+        </div>
+    {% endif %}
+
+    <!--确认弹窗-->
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
+         aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        提示：
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否仍要删除？</h4>
+                </div>
+                <div class="modal-footer">
+                    <form action="/student_delete" method="POST">
+                        <input type="hidden" id="stuId" name="stuId">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+{% endblock %}

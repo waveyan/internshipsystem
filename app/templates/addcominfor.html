@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}添加企业信息{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block page_content %}
+    <div class="progress progress-striped active">
+        <div class="progress-bar progress-bar-success" role="progressbar"
+             aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+             style="width: 0%;">
+        </div>
+    </div>
+    <div class="page-header">
+        <h1>请填写实习企业信息</h1>
+    </div>
+
+
+    <form method="POST" role="form" id="S1">
+        <a href="{{ url_for('.selectCom') }}"><span class="label label-primary">从已有的企业信息中选择</span></a><br><br>
+        {{ form.hidden_tag() }}
+        {{ form.comName.label }} {{ form.comName(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comAddress.label }} {{ form.comAddress(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comUrl.label }} {{ form.comUrl(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comBrief.label }} {{ form.comBrief(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comProject.label }} {{ form.comProject(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comMon.label }} {{ form.comMon(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comStaff.label }} {{ form.comStaff(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comContact.label }} {{ form.comContact(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comPhone.label }} {{ form.comPhone(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comEmail.label }} {{ form.comEmail(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comFax.label }} {{ form.comFax(class="form-control", required="", placeholder="") }} <br>
+        {{ form.csrf_token }}
+        <!-- 若是从 .stuInternList 添加实习信息跳转至此,则现在跳转到 .addinternship,继续完善实习信息添加 -->
+        {% if from_url == "stuInternList" %}
+            {{ form.submit(class="btn btn-success", type="submit", id="finish", value="下一步") }}
+        {% else %}
+            {{ form.submit(class="btn btn-success", type="submit", id="finish", value="提交") }}
+        {% endif %}
+     </form>
+{% endblock %}

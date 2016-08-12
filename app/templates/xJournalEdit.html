@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block head %}
+    {{ super() }}
+<style type="text/css">
+        #mon {
+            height: 290px;
+        }
+        #tue {
+            height: 290px;
+        }
+        #wed {
+            height: 290px;
+        }
+        #thu {
+            height: 290px;
+        }
+        #fri {
+            height: 290px;
+        }
+        #sat {
+            height: 290px;
+        }
+        #sun {
+            height: 290px;
+        }
+</style>
+{% endblock %}<!--先执行父模板-->
+
+{% block title %}实习日志{% endblock %}
+
+{% block page_content %}
+     
+    <div class="page-`er">
+    <h1>我的实习日志</h1>
+    
+        <!-- 总体日志审核 -->
+        {% if needCheck == 0 %}
+        <div><span class="label label-info" >已审核</span></div>
+        {% else %}
+        <span class="label label-warning">待审核...</span>
+        {% endif %}
+        <br><br>
+
+    </div>
+    <table align="center" border="2" class="table-bordered">
+        <tr>
+            <th width="200">学号</th>
+            <td width="400" height="50">{{ student.stuId }}</td>
+            <th width="200">专业班级</th>
+            <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
+        </tr>
+        <tr>
+            <th width="200">姓名</th>
+            <td width="400" height="50">{{ student.stuName }}</td>
+            <th width="200">实习单位</th>
+            <td width="400" height="50">{{ comInfor.comName }}</td>
+        </tr>
+        <tr>
+            <th width="200">实习期间</th>
+            <td height="50">{{ internship.start }} 至 {{ internship.end }} </td>
+        </tr>
+    </table>
+    <br>
+    <table align="center" border="2" class="table-bordered">
+    <form method="POST" action="/xJournalEditProcess">
+        {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'七'} %}
+                {% set cur = jour.workStart.isoweekday() %}
+                {% set cur_end = jour.workEnd.isoweekday() %}
+                <tr>
+                    <th width="200" height="50">第{{ jour.weekNo }}周</th>
+                    <th width="100" height="50">星期</th>
+                    <th width="900" height="50">工作内容</th>
+                </tr>
+                
+                {% if cur==1 and cur_end==7 %}
+                    <tr>
+                        <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
+                        <td height="50">一</td>
+                        {% set temp=jourform.mon.process_data(jour.mon) %}
+                        <td height="300">{{ jourform.mon(class="form-control") }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">二</td>
+                        {% set temp=jourform.tue.process_data(jour.tue) %}
+                        <td height="300">{{ jourform.tue(class="form-control") }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">三</td>
+                        {% set temp=jourform.wed.process_data(jour.wed) %}
+                        <td height="300">{{ jourform.wed(class="form-control") }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">四</td>
+                        {% set temp=jourform.thu.process_data(jour.thu) %}
+                        <<td height="300">{{ jourform.thu(class="form-control") }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">五</td>
+                        {% set temp=jourform.fri.process_data(jour.fri) %}
+                        <td height="300">{{ jourform.fri(class="form-control") }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">六</td>
+                        {% set temp=jourform.sat.process_data(jour.sat) %}
+                        <td height="300">{{ jourform.sat(class="form-control") }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td height="50">日</td>
+                        {% set temp=jourform.sun.process_data(jour.sun) %}
+                        <td height="300">{{ jourform.sun(class="form-control") }}</td>
+                    </tr>
+                {% else %}
+
+                    <tr>
+                        <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
+                        <td height="50">{{ weekday2ch[cur] }}</td>
+                        {% if cur==1 %}
+                            {% set temp=jourform.mon.process_data(jour.mon) %}
+                            <td height="300">{{ jourform.mon(class="form-control") }}</td>
+                        {%elif cur==2 %}
+                            {% set temp=jourform.tue.process_data(jour.tue) %}
+                            <td height="300">{{ jourform.tue(class="form-control") }}</td>
+                        {%elif cur==3 %}
+                            {% set temp=jourform.wed.process_data(jour.wed) %}
+                            <td height="300">{{ jourform.wed(class="form-control") }}</td>
+                        {%elif cur==4 %}
+                            {% set temp=jourform.thu.process_data(jour.thu) %}
+                            <td height="300">{{ jourform.thu(class="form-control") }}</td>
+                        {%elif cur==5 %}
+                            {% set temp=jourform.fri.process_data(jour.fri) %}
+                            <td height="300">{{ jourform.fri(class="form-control") }}</td>
+                        {%elif cur==6 %}
+                            {% set temp=jourform.sat.process_data(jour.sat) %}
+                            <td height="300">{{ jourform.sat(class="form-control") }}</td>
+                        {%elif cur==7 %}
+                            {% set temp=jourform.sun.process_data(jour.sun) %}
+                            <td height="300">{{ jourform.sun(class="form-control") }}</td>
+                        {% endif %}
+                    </tr>
+                    {% set cur_last = (jour.workEnd.isoweekday() - jour.workStart.isoweekday()) %}
+                    {% for x in range(cur_last) %}
+                        <tr>
+                            <th></th>
+                            <td height="50">{{ weekday2ch[cur+x+1] }}</td>
+                            {%if cur+x+1==2 %}
+                                {% set temp=jourform.tue.process_data(jour.tue) %}
+                                <td height="300">{{ jourform.tue(class="form-control") }}</td>
+                            {%elif cur+x+1==3 %}
+                                {% set temp=jourform.wed.process_data(jour.wed) %}
+                                <td height="300">{{ jourform.wed(class="form-control") }}</td>
+                            {%elif cur+x+1==4 %}
+                                {% set temp=jourform.thu.process_data(jour.thu) %}
+                                <td height="300">{{ jourform.thu(class="form-control") }}</td>
+                            {%elif cur+x+1==5 %}
+                                {% set temp=jourform.fri.process_data(jour.fri) %}
+                                <td height="300">{{ jourform.fri(class="form-control") }}</td>
+                            {%elif cur+x+1==6 %}
+                                {% set temp=jourform.sat.process_data(jour.sat) %}
+                                <td height="300">{{ jourform.sat(class="form-control") }}</td>
+                            {%elif cur+x+1==7 %}
+                                {% set temp=jourform.sun.process_data(jour.sun) %}
+                                <td height="300">{{ jourform.sun(class="form-control") }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                <input type="hidden" name="jourId" value="{{ jour.Id }}">
+                <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                <input type="hidden" name="internId" value="{{ internship.Id }}">
+                <tr><td colspan="6" align="center">{{ jourform.submit(class="btn btn-success", type="submit", id="finish", width="100") }}</td></tr>
+            </form>
+    </table>
+         
+{% endblock %}
+

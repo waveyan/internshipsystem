@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}添加系统角色{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block page_content %}
+    <div class="page-header">
+        <h1>欢迎您!</h1>
+    </div>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.roleName.label }}{{ form.roleName(class="form-control",request='') }}
+        {{ form.roleDescribe.label }}{{ form.roleDescribe(class="form-control") }}
+        <table class="table-bordered">
+            <tr>
+                <th width="200" height="60">企业信息：</th>
+                <th width="200" height="60">学生实习信息：</th>
+                <th width="200" height="60">学生实习日志：</th>
+                <th width="200" height="60">学生总结与成果：</th>
+                <th width="200" height="60">列表：</th>
+                <th width="200" height="60">管理：</th>
+            </tr>
+            <tr>
+                <td height="50">
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.COM_INFOR_SEARCH(type='checkbox') }}{{ form.COM_INFOR_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_INTERN_SEARCH(type='checkbox') }}{{ form.STU_INTERN_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_JOUR_SEARCH(type="checkbox") }}{{ form.STU_JOUR_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_SUM_SEARCH(type="checkbox") }}{{ form.STU_SUM_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.INTERNSHIP_LIST(type="checkbox") }}{{ form.INTERNSHIP_LIST.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.ADMIN(type="checkbox") }}{{ form.ADMIN.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td height="50">
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.COM_INFOR_EDIT(type="checkbox") }}{{ form.COM_INFOR_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_INTERN_EXPORT(type="checkbox") }}{{ form.STU_INTERN_EXPORT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_JOUR_EXPORT(type="checkbox") }}{{ form.STU_JOUR_EXPORT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_SUM_EXPORT(type="checkbox") }}{{ form.STU_SUM_EXPORT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_INTERN_LIST(type="checkbox") }}{{ form.STU_INTERN_LIST.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_INTERN_IMPORT(type="checkbox") }}{{ form.STU_INTERN_IMPORT.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td height="50">
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.COM_INFOR_CHECK(type="checkbox") }}{{ form.COM_INFOR_CHECK.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_INTERN_EDIT(type="checkbox") }}{{ form.STU_INTERN_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_JOUR_EDIT(type="checkbox") }}{{ form.STU_JOUR_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_SUM_EDIT(type="checkbox") }}{{ form.STU_SUM_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.TEA_INFOR_IMPORT(type="checkbox") }}{{ form.TEA_INFOR_IMPORT.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td height="50"></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_INTERN_CHECK(type="checkbox") }}{{ form.STU_INTERN_CHECK.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_JOUR_CHECK(type="checkbox") }}{{ form.STU_JOUR_CHECK.label }}
+                        </label>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_SCO_SEARCH(type="checkbox") }}{{ form.STU_SCO_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.PERMIS_MANAGE(type="checkbox") }}{{ form.PERMIS_MANAGE.label }}
+                        </label>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td height="50"></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_SCO_EXPORT(type="checkbox") }}{{ form.STU_SCO_EXPORT.label }}
+                        </label>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td height="50"></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_SCO_EDIT(type="checkbox") }}{{ form.STU_SCO_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td height="50"></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.STU_SUM_SCO_CHECK(type="checkbox") }}{{ form.STU_SUM_SCO_CHECK.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br><br>
+        {{ form.submit(class='btn btn-primary') }}
+    </form>
+    <br><br><br>
+{% endblock %}

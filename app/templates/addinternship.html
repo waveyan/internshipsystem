@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}添加学生实习信息{% endblock %}
+{% block head %}
+    {{ super() }}
+    <!-- 选择多个教师 -->
+    <script xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+        $(document).ready(function () {
+            var i = 1;
+            $("#addTea").click(function () {
+                $(".teaForm:first").clone(true).insertAfter(".teaForm:last");
+                $(".teaForm:last").slideDown();
+                i++;
+                $(".teaForm .form-control").eq(i + i + i + i + i).attr({name: "teaId" + i});
+                $(".teaForm .form-control").eq(i + i + i + i + i + 1).attr({name: "teaName" + i});
+                $(".teaForm .form-control").eq(i + i + i + i + i + 2).attr({name: "teaDuty" + i});
+                $(".teaForm .form-control").eq(i + i + i + i + i + 3).attr({name: "teaPhone" + i});
+                $(".teaForm .form-control").eq(i + i + i + i + i + 4).attr({name: "teaEmail" + i});
+                if (i > 1) {
+                    $("#delTea").show();
+                }
+            });
+            $("#delTea").click(function () {
+                i--;
+                $(".teaForm:last").remove();
+                if (i == 1) {
+                    $("#delTea").slideUp();
+                }
+            });
+            var j = 1;
+            $("#addcTea").click(function () {
+                $(".cteaForm:first").clone(true).insertAfter(".cteaForm:last");
+                $(".cteaForm:last").slideDown();
+                j++;
+                $(".cteaForm .form-control").eq(j + j + j + j).attr({name: "cteaName" + j});
+                $(".cteaForm .form-control").eq(j + j + j + j + 1).attr({name: "cteaDuty" + j});
+                $(".cteaForm .form-control").eq(j + j + j + j + 2).attr({name: "cteaPhone" + j});
+                $(".cteaForm .form-control").eq(j + j + j + j + 3).attr({name: "cteaEmail" + j});
+                if (j > 1) {
+                    $("#delcTea").show();
+                }
+            });
+            $("#delcTea").click(function () {
+                j--;
+                $(".cteaForm:last").remove();
+                if (j == 1) {
+                    $("#delcTea").slideUp();
+                }
+            });
+            $("#finish").click(function () {
+                $(".teaForm .form-control").eq(5).attr({name: "teaId" + 1});
+                $(".teaForm .form-control").eq(6).attr({name: "teaName" + 1});
+                $(".teaForm .form-control").eq(7).attr({name: "teaDuty" + 1});
+                $(".teaForm .form-control").eq(8).attr({name: "teaPhone" + 1});
+                $(".teaForm .form-control").eq(9).attr({name: "teaEmail" + 1});
+                $(".cteaForm .form-control").eq(4).attr({name: "cteaName" + 1});
+                $(".cteaForm .form-control").eq(5).attr({name: "cteaDuty" + 1});
+                $(".cteaForm .form-control").eq(6).attr({name: "cteaPhone" + 1});
+                $(".cteaForm .form-control").eq(7).attr({name: "cteaEmail" + 1});
+                $(".buttonStd").click();
+                $(".buttonTea").click();
+            });
+        });
+    </script>
+{% endblock %}
+{% block page_content %}
+    <div class="progress progress-striped active">
+        <div class="progress-bar progress-bar-success" role="progressbar"
+             aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+             style="width: 50%;">
+        </div>
+    </div>
+    <div class="page-header">
+        <h1>请填写实习信息</h1>
+    </div>
+    <div class="panel">
+        <div class="panel-body">
+            <div class="teaForm" style="display: None">
+                {{ schdirteaform.hidden_tag() }}
+                {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="",
+            pattern="[0-9]{6}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
+                {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="",
+            pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
+                {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="",
+            oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",required='',placeholder="") }}
+                {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control",required='',placeholder="") }}
+                </br></br>
+            </div>
+            <div class="cteaForm" style="display: None">
+                {{ comdirteaform.hidden_tag() }}
+                {{ comdirteaform.cteaName.label }} {{ comdirteaform.cteaName(class="form-control",required='',placeholder="",
+            pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                {{ comdirteaform.cteaDuty.label }} {{ comdirteaform.cteaDuty(class="form-control",required='',placeholder="",
+            oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                {{ comdirteaform.cteaPhone.label }} {{ comdirteaform.cteaPhone(class="form-control",required='',placeholder="") }}
+                {{ comdirteaform.cteaEmail.label }} {{ comdirteaform.cteaEmail(class="form-control",placeholder="") }}
+                </br></br>
+            </div>
+
+            <form method="POST" role="form" id="S1">
+                {% if current_user.roleId != 0%}
+                    <h3>学生信息</h3>
+                    <div>
+                        <b>学生学号<b><br><input type="text" name="stuId" required=""><br>
+                        <br><b>学生姓名<b><br><input type="text" name="stuName" required=""><br>
+                    </div>
+                {% endif %}
+                <h3>实习岗位信息</h3>
+                <div>
+                    {{ iform.hidden_tag() }}
+                    {{ iform.address.label }}{{ iform.address(class="form-control",placeholder="",
+                        oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                    </br>
+                    {{ iform.task.label }}{{ iform.task(class="form-control",required='',placeholder="请输入实习任务",
+                        oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                    </br>
+                    {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='',
+                        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
+                    </br>
+                    {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='',
+                        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
+                </div>
+                <h3>校内指导老师信息</h3>
+                <div class="teaForm">
+                    {{ schdirteaform.hidden_tag() }}
+                    {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="", pattern="[0-9]{6}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
+                    {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="", pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
+                    {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                    {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",required='',placeholder="") }}
+                    {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control",required='',placeholder="") }}
+                    </br></br>
+                </div>
+                <input type="button" id="addTea" class="btn" value="添加老师">
+                <input type="button" id="delTea" class="btn" value="删除老师" style="display: none">
+                </br></br>
+                <h3>企业指导老师信息</h3>
+                <div class=" cteaForm">
+                    {{ comdirteaform.hidden_tag() }}
+                    {{ comdirteaform.cteaName.label }} {{ comdirteaform.cteaName(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                    {{ comdirteaform.cteaDuty.label }} {{ comdirteaform.cteaDuty(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                    {{ comdirteaform.cteaPhone.label }} {{ comdirteaform.cteaPhone(class="form-control",required='',placeholder="") }}
+                    {{ comdirteaform.cteaEmail.label }} {{ comdirteaform.cteaEmail(class="form-control",cols=50,rows=5,placeholder="") }}
+                    </br></br>
+                </div>
+                <input type="button" id="addcTea" class="btn" value="添加老师">
+                <input type="button" id="delcTea" class="btn" value="删除老师" style="display: none">
+                </br></br></br>
+                <!--
+                <button type="submit" />
+                -->
+                {{ iform.submit(class="btn btn-success",type="submit",id='finish') }}
+            </form>
+            <br><br>
+{% endblock %}

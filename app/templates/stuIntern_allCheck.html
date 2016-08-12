@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block title %}学生实习信息{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/JS/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#rearch").click(function () {
+                $(".rearchSubmit").click();
+            });
+        });
+    </script>
+
+    <!-- 全选学生实习信息  -->
+    <script type="text/javascript">
+        function select_all(){    
+            var checkboxes = document.getElementsByName('approve[]');
+            var button = document.getElementById('toggle');
+    
+            if(button.value == '全选'){
+                for (var i in checkboxes){
+                    checkboxes[i].checked = 'FALSE';
+                }
+                button.value = '全不选'
+            }else{
+                for (var i in checkboxes){
+                    checkboxes[i].checked = '';
+                }
+                button.value = '全选';
+            }
+        }
+    </script>    
+{% endblock %}<!--先执行父模板-->
+
+{% block page_content %}
+    <table class="table" id="t">
+        <thead>
+        <h1>学生实习企业
+            <a href="{{ url_for('.addcominfor') }}" class="btn btn-info btn-xs">
+                <span class="glyphicon glyphicon-plus"></span> 添加
+            </a>
+            {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                        data-toggle="dropdown">编辑<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                        <li><a href="#" >批量审核</a></li>
+                        <li><a href="{{ url_for('.stuIntern_allDelete') }}">批量删除</a></li>
+                        </ul>
+                        </div>
+                    {% endif %}
+
+        {% endif %}
+        </h1>
+        <tr>
+            <th></th>
+            <th>学号</th>
+            <th>姓名</th>
+            <th>企业名称</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>审核状态</th>
+            <th>实习状态</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form method="POST">
+        {% for intern in internlist %}
+            <tr>
+                <td><input type="checkbox" name="approve[]" value={{ intern.Id }} ></th>
+                <td><a href="{{ url_for('.xIntern',stuId=intern.stuId, internId=intern.Id, comId=intern.comId) }}">{{ intern.stuId }}</a></td>
+                <td>{{ intern.stuname }}</td>
+                <td>{{ intern.comName }}</td>
+                <td>{{ intern.start }}</td>
+                <td>{{ intern.end }}</td>
+                {% if intern.internCheck==0 %}
+                    <td>未审核</td>
+                {% elif intern.internCheck==1 %}
+                    <td>被退回</td>
+                {% else %}
+                    <td>已审核</td>
+                {% endif %}
+                {% if intern.internStatus==0 %}
+                    <td>待实习</td>
+                {% elif intern.internStatus==1 %}
+                    <td>实习中</td>
+                {% else %}
+                    <td>实习结束</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()" />
+        <button type="submit" class="btn btn-success">审核通过</button>
+        </form>
+        <a href="{{ url_for('.stuInternList') }}"><button class="btn btn-primary">返回</button></a>
+    </div>
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination,'.stuInternList') }}
+        </div>
+    {% endif %}
+{% endblock %}

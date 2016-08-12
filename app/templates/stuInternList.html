@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block title %}
+    {% if current_user.roleId==0 %}
+        我的实习信息
+    {% else %}
+        学生实习信息
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}<!--先执行父模板-->
+
+{% block page_content %}
+    <table class="table" id="t">
+        <thead>
+        {% if current_user.roleId==0 %}
+            <h1>{{ student.stuName }}的实习企业
+        {% else %}
+            <h1>学生实习企业
+        {% endif %}
+
+        {% if current_user.roleId == 0 %}
+            <a href="{{ url_for('.addcominfor') }}" class="btn btn-info btn-xs">
+                <span class="glyphicon glyphicon-plus"></span> 添加
+            </a>
+        {% endif %}
+        {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                        data-toggle="dropdown">编辑<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                        <li><a href="{{ url_for('.addcominfor', from_url='stuInternList') }}" >添加</a></li>
+                        <li><a href="{{ url_for('.stuIntern_allCheck') }}" >批量审核</a></li>
+                        <li><a href="{{ url_for('.stuIntern_allDelete') }}">批量删除</a></li>
+                        </ul>
+                        </div>
+                    {% endif %}
+
+        {% endif %}
+        </h1>
+        <tr>
+            {% if current_user.roleId!=0 %}
+                <th>姓名</th>
+                <th>学号</th>
+            {% endif %}
+            <th>企业名称</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>审核状态</th>
+            <th>实习状态</th>
+          <!--   {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+                <th>操作</th>
+            {% endif %} -->
+        </tr>
+        </thead>
+        <tbody>
+        {% for intern in internlist %}
+            <tr>
+                {% if current_user.roleId!=0 %}
+                    <td><a href="{{ url_for('.xIntern',stuId=intern.stuId, internId=intern.Id, comId=intern.comId) }}">{{ intern.stuName }}</a></td>
+                    <td>{{ intern.stuId }}</td>
+                    <td>{{ intern.comName }}</a></td>
+                {% else %}
+                    <td><a href="{{ url_for('.xIntern',stuId=intern.stuId, internId=intern.Id, comId=intern.comId) }}">{{ intern.comName }}</a></td>
+                {% endif %}
+
+                <td>{{ intern.start }}</td>
+                <td>{{ intern.end }}</td>
+                {% if intern.internCheck==0 %}
+                    <td>未审核</td>
+                {% elif intern.internCheck==1 %}
+                    <td>被退回</td>
+                {% else %}
+                    <td>已审核</td>
+                {% endif %}
+                {% if intern.internStatus==0 %}
+                    <td>待实习</td>
+                {% elif intern.internStatus==1 %}
+                    <td>实习中</td>
+                {% else %}
+                    <td>实习结束</td>
+                {% endif %}
+       <!--          {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+                    <td>
+                        <a href="{{ url_for('.xInternEdit', stuId=intern.stuId, internId=intern.Id, comId=intern.comId) }}">修改</a>
+                        {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                            {% if intern.internCheck != 2 %}
+                                | <a onClick="ComfirmCheck()">审核</a>
+                            {% elif intern.internCheck == 2 %}
+                                | <a onClick="Admin_ComfirmEdit()">审核</a>
+                            {% endif %}
+                        {% endif %}
+                        | <a onClick="ComfirmDelete()">删除</a>
+                    </td>
+                {% endif %} -->
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination,'.stuInternList') }}
+        </div>
+    {% endif %}
+{% endblock %}
