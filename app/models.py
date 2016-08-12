@@ -21,7 +21,6 @@ def not_student_login(func):
         elif current_user.roleId == 0:
             return redirect('/')
         return func(*args, **kwargs)
-
     return decorated_view
 
 
@@ -30,11 +29,10 @@ def update_intern_internStatus(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
         now = datetime.now().date()
-        db.session.execute('update InternshipInfor set internStatus=0 where start > "%s"' % now)
-        db.session.execute('update InternshipInfor set internStatus=1 where start < "%s" and end > "%s"' % (now, now))
-        db.session.execute('update InternshipInfor set internStatus=2 where end < "%s"' % now)
+        db.session.execute('update InternshipInfor set internStatus=0 where start > "%s"'% now)
+        db.session.execute('update InternshipInfor set internStatus=1 where start < "%s" and end > "%s"'% (now, now))
+        db.session.execute('update InternshipInfor set internStatus=2 where end < "%s"'% now)
         return func(*args, **kwargs)
-
     return decorated_view
 
 
@@ -43,13 +41,11 @@ def update_intern_jourCheck(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
         now = datetime.now().date()
-        is_not_checked = db.session.execute(
-            'select distinct internId from Journal where jourCheck=0 and workEnd < "%s"' % now)
+        is_not_checked = db.session.execute('select distinct internId from Journal where jourCheck=0 and workEnd < "%s"'% now)
         if is_not_checked:
             for x in is_not_checked:
-                db.session.execute('update InternshipInfor set jourCheck=0 where Id=%s' % x.internId)
+                db.session.execute('update InternshipInfor set jourCheck=0 where Id=%s'% x.internId)
         return func(*args, **kwargs)
-
     return decorated_view
 
 
@@ -292,8 +288,7 @@ class Journal(db.Model):
     jourCheck = db.Column(db.Integer, default=0)
     jcheckTime = db.Column(db.DATETIME)
     internId = db.Column(db.Integer, db.ForeignKey('InternshipInfor.Id'))
-    opinion = db.Column(db.String(500), default='')
-    opinion = db.Column(db.String(500), default='')
+    opinion = db.Column(db.String(500),default='')
     isoweek = db.Column(db.Integer)
     isoyear = db.Column(db.Integer)
 
