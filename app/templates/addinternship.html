@@ -75,7 +75,7 @@
         </div>
     </div>
     <div class="page-header">
-        <h1>{{ current_user.stuName }}欢迎您，请填写您的实习信息</h1>
+        <h1>请填写实习信息</h1>
     </div>
     <div class="panel">
         <div class="panel-body">
@@ -103,6 +103,13 @@
             </div>
 
             <form method="POST" role="form" id="S1">
+                {% if current_user.roleId != 0%}
+                    <h3>学生信息</h3>
+                    <div>
+                        <b>学生学号<b><br><input type="text" name="stuId" required=""><br>
+                        <br><b>学生姓名<b><br><input type="text" name="stuName" required=""><br>
+                    </div>
+                {% endif %}
                 <h3>实习岗位信息</h3>
                 <div>
                     {{ iform.hidden_tag() }}

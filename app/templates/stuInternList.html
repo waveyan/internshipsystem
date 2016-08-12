@@ -23,16 +23,19 @@
             <h1>学生实习企业
         {% endif %}
 
-        {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+        {% if current_user.roleId == 0 %}
             <a href="{{ url_for('.addcominfor') }}" class="btn btn-info btn-xs">
                 <span class="glyphicon glyphicon-plus"></span> 添加
             </a>
+        {% endif %}
+        {% if current_user.can(Permission.STU_INTERN_CHECK) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                        <li><a href="{{ url_for('.addcominfor', from_url='stuInternList') }}" >添加</a></li>
                         <li><a href="{{ url_for('.stuIntern_allCheck') }}" >批量审核</a></li>
                         <li><a href="{{ url_for('.stuIntern_allDelete') }}">批量删除</a></li>
                         </ul>

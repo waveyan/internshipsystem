@@ -52,11 +52,11 @@
                 <ul class="dropdown-menu" role="menu">
                     {% for jour in journal %}
                         {% if current_user.roleId == 0 and jour.jourCheck == 0 %}
-                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">更新日志</a></li>
+                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
                             <li class="divider" />
                         {% endif %}
                         {% if current_user.roleId == 3 %}
-                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">修改日志</a></li>
+                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
                             <li class="divider" />
                         {% endif %}
                     {% endfor %}
@@ -171,17 +171,21 @@
                     {% endfor %}
                 {% endif %}
                 <!-- 审核通过 -->  
-                {% if jour.jourCheck == 0 and current_user.can(Permission.STU_JOUR_CHECK) and now > jour.workEnd %}
-                    <br><br><a href="{{ url_for('.journal_comfirm', jourId=jour.Id, stuId=student.stuId, internId=internship.Id) }}"><button class="btn btn-success">点击这里,通过审核</button></a><br><br>
-                {% endif %}
+                
         {% endfor %}
     </table>
-         
+
     {% if pagination %}
         <div class="pagination">
             {{ macros.pagination_widget(pagination, '.xJournal',stuId=student.stuId, internId=internship.Id) }}
         </div>
     {% endif %}
-    <br><a href="{{ url_for('.stuJournalList') }}"><div class="btn btn-primary">返回</div></a>
+
+    <br><a href="{{ url_for('.stuJournalList') }}"><div class="btn btn-primary">返回&nbsp;</div></a>
+    {% for jour in journal %}
+        {% if jour.jourCheck == 0 and current_user.can(Permission.STU_JOUR_CHECK) and now > jour.workEnd %}
+                    <a href="{{ url_for('.journal_comfirm', jourId=jour.Id, stuId=student.stuId, internId=internship.Id) }}"><button class="btn btn-success">点击这里，通过这周日志的审核</button></a>
+        {% endif %}
+    {% endfor %}
 {% endblock %}
 

@@ -40,7 +40,7 @@ class comForm(Form):
     comPhone = StringField('联系电话', validators=[Required(message='此项不能为空')])
     comEmail = StringField('Email', validators=[Required(message='此项不能为空'), Email(message='请输入正确的邮箱地址')])
     comFax = StringField('传真', validators=[Required(message='此项不能为空')])
-    submit = SubmitField('下一步')
+    submit = SubmitField('提交')
 
 
 class internshipForm(Form):

@@ -263,6 +263,8 @@ class Journal(db.Model):
     jcheckTime = db.Column(db.DATETIME)
     internId = db.Column(db.Integer, db.ForeignKey('InternshipInfor.Id'))
     opinion = db.Column(db.String(500),default='')
+    isoweek = db.Column(db.Integer)
+    isoyear = db.Column(db.Integer)
 
 
 class Permission:
