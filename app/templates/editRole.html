@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}修改系统角色{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block page_content %}
+    <div class="page-header">
+        <h1>欢迎您!</h1>
+    </div>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ form.roleName.label }}{{ form.roleName(class="form-control",request='',value=role.roleName) }}
+        {{ form.roleDescribe.label }}<textarea class="form-control"
+                                               name="roleDescribe">{{ role.roleDescribe }}</textarea>
+        <table class="table-bordered">
+            <tr>
+                <th width="200" height="60">企业信息：</th>
+                <th width="200" height="60">学生实习信息：</th>
+                <th width="200" height="60">学生实习日志：</th>
+                <th width="200" height="60">学生总结与成果：</th>
+                <th width="200" height="60">列表：</th>
+                <th width="200" height="60">管理：</th>
+            </tr>
+            <tr>
+                <td height="50">
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.COM_INFOR_SEARCH) %}
+                                {{ form.COM_INFOR_SEARCH(type='checkbox',checked='True') }}
+                            {% else %}
+                                {{ form.COM_INFOR_SEARCH(type='checkbox') }}
+                            {% endif %}
+                            {{ form.COM_INFOR_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_INTERN_SEARCH) %}
+                                {{ form.STU_INTERN_SEARCH(type='checkbox',checked='True') }}
+                            {% else %}
+                                {{ form.STU_INTERN_SEARCH(type='checkbox') }}
+                            {% endif %}
+                            {{ form.STU_INTERN_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_JOUR_SEARCH) %}
+                                {{ form.STU_JOUR_SEARCH(type="checkbox",checked='true') }}
+                            {% else %}
+                                {{ form.STU_JOUR_SEARCH(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_JOUR_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_SUM_SEARCH) %}
+                                {{ form.STU_SUM_SEARCH(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_SUM_SEARCH(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_SUM_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.INTERNSHIP_LIST) %}
+                                {{ form.INTERNSHIP_LIST(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.INTERNSHIP_LIST(type="checkbox") }}
+                            {% endif %}
+                            {{ form.INTERNSHIP_LIST.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.ADMIN) %}
+                                {{ form.ADMIN(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.ADMIN(type="checkbox") }}
+                            {% endif %}
+                            {{ form.ADMIN.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td height="50">
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.COM_INFOR_EDIT) %}
+                                {{ form.COM_INFOR_EDIT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.COM_INFOR_EDIT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.COM_INFOR_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_INTERN_EXPORT) %}
+                                {{ form.STU_INTERN_EXPORT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_INTERN_EXPORT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_INTERN_EXPORT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_JOUR_EXPORT) %}
+                                {{ form.STU_JOUR_EXPORT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_JOUR_EXPORT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_JOUR_EXPORT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_SUM_EXPORT) %}
+                                {{ form.STU_SUM_EXPORT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_SUM_EXPORT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_SUM_EXPORT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_INTERN_LIST) %}
+                                {{ form.STU_INTERN_LIST(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_INTERN_LIST(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_INTERN_LIST.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_INTERN_IMPORT) %}
+                                {{ form.STU_INTERN_IMPORT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_INTERN_IMPORT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_INTERN_IMPORT.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td height="50">
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.COM_INFOR_CHECK) %}
+                                {{ form.COM_INFOR_CHECK(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.COM_INFOR_CHECK(type="checkbox") }}
+                            {% endif %}
+                            {{ form.COM_INFOR_CHECK.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_INTERN_EDIT) %}
+                                {{ form.STU_INTERN_EDIT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_INTERN_EDIT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_INTERN_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_JOUR_EDIT) %}
+                                {{ form.STU_JOUR_EDIT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_JOUR_EDIT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_JOUR_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_SUM_EDIT) %}
+                                {{ form.STU_SUM_EDIT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_SUM_EDIT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_SUM_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.TEA_INFOR_IMPORT) %}
+                                {{ form.TEA_INFOR_IMPORT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.TEA_INFOR_IMPORT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.TEA_INFOR_IMPORT.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td height="50"></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_INTERN_CHECK) %}
+                                {{ form.STU_INTERN_CHECK(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_INTERN_CHECK(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_INTERN_CHECK.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_JOUR_CHECK) %}
+                                {{ form.STU_JOUR_CHECK(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_JOUR_CHECK(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_JOUR_CHECK.label }}
+                        </label>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_SCO_SEARCH) %}
+                                {{ form.STU_SCO_SEARCH(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_SCO_SEARCH(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_SCO_SEARCH.label }}
+                        </label>
+                    </div>
+                </td>
+
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.PERMIS_MANAGE) %}
+                                {{ form.PERMIS_MANAGE(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.PERMIS_MANAGE(type="checkbox") }}
+                            {% endif %}
+                            {{ form.PERMIS_MANAGE.label }}
+                        </label>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td height="50"></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_SCO_EXPORT) %}
+                                {{ form.STU_SCO_EXPORT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_SCO_EXPORT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_SCO_EXPORT.label }}
+                        </label>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td height="50"></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_SCO_EDIT) %}
+                                {{ form.STU_SCO_EDIT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_SCO_EDIT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_SCO_EDIT.label }}
+                        </label>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td height="50"></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.STU_SUM_SCO_CHECK) %}
+                                {{ form.STU_SUM_SCO_CHECK(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.STU_SUM_SCO_CHECK(type="checkbox") }}
+                            {% endif %}
+                            {{ form.STU_SUM_SCO_CHECK.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br><br>
+        {{ form.submit(class='btn btn-primary') }}
+    </form>
+    <br><br><br>
+{% endblock %}

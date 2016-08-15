@@ -1,4 +1,6 @@
-from flask import render_template, url_for, flash, redirect, request, session
+# -*- coding: utf-8 -*-
+
+from flask import render_template, url_for, flash, redirect, request, session, send_file
 from .form import searchForm, comForm, internshipForm, journalForm, stuForm, teaForm, permissionForm, schdirteaForm, \
     comdirteaForm
 from . import main
@@ -6,8 +8,11 @@ from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea
     not_student_login, update_intern_internStatus, update_intern_jourCheck
 from flask.ext.login import current_user, login_required
 from .. import db
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, and_
 from datetime import datetime, timedelta, date
+import xlwt, xlrd, os, random
+from collections import OrderedDict
+from werkzeug.utils import secure_filename
 
 # datepicker failed
 '''
@@ -52,7 +57,6 @@ def journal():
 def summary():
     return render_template('summary.html', Permission=Permission)
 
-
 # 评分表
 @main.route('/score', methods=['GET', 'POST'])
 def score():
@@ -65,14 +69,9 @@ def statistics():
 
 
 # --------------------------------------------------------------------
-
-
 # 首页
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    # 由于增加新列,所以需要初始化数据
-    # 加载完一次主页后,就可以删除改行. 还有最下面的 update_iso() 函数
-    update_iso()
     return render_template('index.html', Permission=Permission)
 
 
@@ -101,13 +100,15 @@ def stuInternList():
             return render_template('stuInternList.html', internlist=internlist, Permission=Permission,
                                    internship=internship, student=student, pagination=pagination)
     elif current_user.can(Permission.STU_INTERN_SEARCH):
-        pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Student,
-                                                                                                        Student.stuId == InternshipInfor.stuId) \
-            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
-                         InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
-                         InternshipInfor.internCheck) \
-            .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
+        pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Teacher, Teacher.teaId==InternshipInfor.icheckTeaId).outerjoin(SchDirTea, SchDirTea.stuId==InternshipInfor.stuId).outerjoin(ComDirTea, and_(ComDirTea.stuId==InternshipInfor.stuId, ComDirTea.comId==InternshipInfor.comId)) \
+        .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName, InternshipInfor.opinion, InternshipInfor.icheckTime, SchDirTea.steaName, SchDirTea.steaDuty, SchDirTea.steaPhone, SchDirTea.steaEmail, ComDirTea.cteaName, ComDirTea.cteaDuty, ComDirTea.cteaPhone, ComDirTea.cteaEmail) \
+        .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
+        # 批量导出实习excel表
+        if request.method == "POST" and current_user.can(Permission.STU_INTERN_CHECK) :
+            isexport = request.form.get('isexport')
+            if isexport:
+                return excel_export(excel_export_intern, internlist)
         return render_template('stuInternList.html', internlist=internlist, Permission=Permission,
                                pagination=pagination)
     else:
@@ -490,18 +491,25 @@ def cominfor():
 @login_required
 def interncompany():
     form = searchForm()
-    if request.method == 'POST':
-        return redirect(url_for('.search', key=form.key.data, me='intern'))
     city = {}
     page = request.args.get('page', 1, type=int)
     com = create_com_filter(city)
     pagination = com.order_by(ComInfor.comDate.desc()).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
+    # 批量导出实习excel表
+    if request.method == "POST" and current_user.can(Permission.COM_INFOR_CHECK) :
+        isexport = request.form.get('isexport')
+        if isexport:
+            return excel_export(excel_export_com, com.all())
+    # 搜索
+    if request.method == 'POST':
+        return redirect(url_for('.search', key=form.key.data, me='intern'))
     return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor, city=city)
 
 
-# 企业信息用户操作筛选项,对所选筛选项进行删除
+
+# 企业信息用户操作筛选项,对所选筛选项进行清空
 @main.route('/update_filter', methods=['GET', 'POST'])
 @login_required
 def update_filter():
@@ -606,7 +614,6 @@ def studentList(comId):
         session[stu.stuId] = internStatus
     return render_template('studentList.html', form=form, pagination=pagination, student=student, Permission=Permission,
                            comId=comId, comName=comName)
-
 
 # 单条审核企业信息
 @main.route('/com_comfirm', methods=['GET', 'POST'])
@@ -1047,6 +1054,7 @@ def xJournalEditProcess():
     return redirect(url_for('.xJournal', stuId=stuId, internId=internId))
 
 
+
 '''
 # 学生日志详情
 @main.route('/stuJour', methods=['GET'])
@@ -1456,8 +1464,11 @@ def roleList():
     # 非管理员,不能进入
     if not current_user.roleId == 3:
         return redirect('/')
-    role = Role.query.all()
-    return render_template('roleList.html', Permission=Permission, role=role)
+    page = request.args.get('page', 1, type=int)
+    pagination = Role.query.order_by(Role.permission).paginate(page, per_page=8, error_out=False)
+    role = pagination.items
+    return render_template('roleList.html', Permission=Permission, role=role, pagination=pagination)
+
 
 
 # 添加角色,靠你们改善这个蠢方法了,\r\n不能换行，导致角色列表里的describe不能显全
@@ -1465,88 +1476,68 @@ def roleList():
 @login_required
 def addRole():
     form = permissionForm()
-    p = []
     a = 0
     if form.validate_on_submit():
+        # 生成角色权限
         if form.COM_INFOR_SEARCH.data:
-            p.append('企业信息查看\r\n')
+            print('1')
             a = eval(form.COM_INFOR_SEARCH.description) | a
         if form.COM_INFOR_EDIT.data:
             a = eval(form.COM_INFOR_EDIT.description) | a
-            p.append('企业信息编辑\r\n')
+            print('2')
         if form.COM_INFOR_CHECK.data:
             a = eval(form.COM_INFOR_CHECK.description) | a
-            p.append('企业信息审核\r\n')
+            print('4')
         if form.INTERNSHIP_LIST.data:
             a = eval(form.INTERNSHIP_LIST.description) | a
-            p.append('实习企业信息列表\r\n')
+            print('8')
         if form.STU_INTERN_LIST.data:
             a = eval(form.STU_INTERN_LIST.description) | a
-            p.append('学生实习信息列表\r\n')
         if form.STU_INTERN_SEARCH.data:
             a = eval(form.STU_INTERN_SEARCH.description) | a
-            p.append('学生实习信息查看\r\n')
         if form.STU_INTERN_EDIT.data:
             a = eval(form.STU_INTERN_EDIT.description) | a
-            p.append('学生实习信息编辑\r\n')
         if form.STU_INTERN_CHECK.data:
             a = eval(form.STU_INTERN_CHECK.description) | a
-            p.append('学生实习信息审核\r\n')
         if form.STU_INTERN_EXPORT.data:
             a = eval(form.STU_INTERN_EXPORT.description) | a
-            p.append('学生实习信息导出\r\n')
         if form.STU_JOUR_SEARCH.data:
             a = eval(form.STU_JOUR_SEARCH.description) | a
-            p.append('学生实习日志查看\r\n')
         if form.STU_JOUR_EDIT.data:
             a = eval(form.STU_JOUR_EDIT.description) | a
-            p.append('学生实习日志编辑\r\n')
         if form.STU_JOUR_CHECK.data:
             a = eval(form.STU_JOUR_CHECK.description) | a
-            p.append('学生实习日志审核\r\n')
         if form.STU_JOUR_EXPORT.data:
             a = eval(form.STU_JOUR_EXPORT.description) | a
-            p.append('学生实习日志导出\r\n')
         if form.STU_SUM_SEARCH.data:
             a = eval(form.STU_SUM_SEARCH.description) | a
-            p.append('学生实习总结查看\r\n')
         if form.STU_SUM_EDIT.data:
             a = eval(form.STU_SUM_EDIT.description) | a
-            p.append('学生实习总结编辑\r\n')
         if form.STU_SUM_EXPORT.data:
             a = eval(form.STU_SUM_EXPORT.description) | a
-            p.append('学生实习总结导出\r\n')
-        if form.STU_SUM_CHECK.data:
-            a = eval(form.STU_SUM_CHECK.description) | a
-            p.append('学生实习总结审核\r\n')
+        if form.STU_SUM_SCO_CHECK.data:
+            a = eval(form.STU_SUM_SCO_CHECK.description) | a
         if form.STU_SCO_SEARCH.data:
             a = eval(form.STU_SCO_SEARCH.description) | a
-            p.append('学生实习成果查看\r\n')
         if form.STU_SCO_EDIT.data:
             a = eval(form.STU_SCO_EDIT.description) | a
-            p.append('学生实习成果编辑\r\n')
         if form.STU_SCO_EXPORT.data:
             a = eval(form.STU_SCO_EXPORT.description) | a
-            p.append('学生实习成果导出\r\n')
         if form.ADMIN.data:
             a = eval(form.ADMIN.description) | a
-            p.append('管理\r\n')
         if form.STU_INTERN_IMPORT.data:
             a = eval(form.STU_INTERN_IMPORT.description) | a
-            p.append('学生信息导入\r\n')
         if form.TEA_INFOR_IMPORT.data:
             a = eval(form.TEA_INFOR_IMPORT.description) | a
-            p.append('老师信息导入\r\n')
         if form.PERMIS_MANAGE.data:
             a = eval(form.PERMIS_MANAGE.description) | a
-            p.append('权限管理\r\n')
         per = hex(a)
         print(per)
-        describe = ''.join(p)
-        print(describe)
+        # print(per)
+        # describe = ''.join(p)
+        # print(describe)
         id = getMaxRoleId() + 1
-        print(id)
-        role = Role(roleName=form.roleName.data, roleDescribe=describe, permission=per, roleId=id)
+        role = Role(roleName=form.roleName.data, roleDescribe=form.roleDescribe.data, permission=per, roleId=id)
         try:
             db.session.add(role)
             db.session.commit()
@@ -1560,13 +1551,112 @@ def addRole():
     return render_template('addRole.html', Permission=Permission, form=form)
 
 
+# 删除角色
+@main.route('/role_delete', methods=['GET', 'POST'])
+@login_required
+def role_delete():
+    if request.method == 'POST':
+        try:
+            db.session.execute('delete from Role where roleId=%s' % request.form.get('roleId'))
+            flash('删除成功！')
+            return redirect(url_for('.roleList'))
+        except Exception as e:
+            print('删除角色：', e)
+            flash('删除失败，请重试！')
+            db.session.rollback()
+            return redirect(url_for('.roleList'))
+
+
+# 编辑角色
+@main.route('/editRole', methods=['GET', 'POST'])
+@login_required
+def editRole():
+    form = permissionForm()
+    roleId = request.args.get('roleId')
+    role = Role.query.filter_by(roleId=roleId).first()
+    if request.method == 'POST':
+        a = 0
+        # 生成角色权限
+        if form.COM_INFOR_SEARCH.data:
+            print('1')
+            a = eval(form.COM_INFOR_SEARCH.description) | a
+        if form.COM_INFOR_EDIT.data:
+            a = eval(form.COM_INFOR_EDIT.description) | a
+            print('2')
+        if form.COM_INFOR_CHECK.data:
+            a = eval(form.COM_INFOR_CHECK.description) | a
+            print('4')
+        if form.INTERNSHIP_LIST.data:
+            a = eval(form.INTERNSHIP_LIST.description) | a
+            print('8')
+        if form.STU_INTERN_LIST.data:
+            a = eval(form.STU_INTERN_LIST.description) | a
+        if form.STU_INTERN_SEARCH.data:
+            a = eval(form.STU_INTERN_SEARCH.description) | a
+        if form.STU_INTERN_EDIT.data:
+            a = eval(form.STU_INTERN_EDIT.description) | a
+        if form.STU_INTERN_CHECK.data:
+            a = eval(form.STU_INTERN_CHECK.description) | a
+        if form.STU_INTERN_EXPORT.data:
+            a = eval(form.STU_INTERN_EXPORT.description) | a
+        if form.STU_JOUR_SEARCH.data:
+            a = eval(form.STU_JOUR_SEARCH.description) | a
+        if form.STU_JOUR_EDIT.data:
+            a = eval(form.STU_JOUR_EDIT.description) | a
+        if form.STU_JOUR_CHECK.data:
+            a = eval(form.STU_JOUR_CHECK.description) | a
+        if form.STU_JOUR_EXPORT.data:
+            a = eval(form.STU_JOUR_EXPORT.description) | a
+        if form.STU_SUM_SEARCH.data:
+            a = eval(form.STU_SUM_SEARCH.description) | a
+        if form.STU_SUM_EDIT.data:
+            a = eval(form.STU_SUM_EDIT.description) | a
+        if form.STU_SUM_EXPORT.data:
+            a = eval(form.STU_SUM_EXPORT.description) | a
+        if form.STU_SUM_SCO_CHECK.data:
+            a = eval(form.STU_SUM_SCO_CHECK.description) | a
+        if form.STU_SCO_SEARCH.data:
+            a = eval(form.STU_SCO_SEARCH.description) | a
+        if form.STU_SCO_EDIT.data:
+            a = eval(form.STU_SCO_EDIT.description) | a
+        if form.STU_SCO_EXPORT.data:
+            a = eval(form.STU_SCO_EXPORT.description) | a
+        if form.ADMIN.data:
+            a = eval(form.ADMIN.description) | a
+        if form.STU_INTERN_IMPORT.data:
+            a = eval(form.STU_INTERN_IMPORT.description) | a
+        if form.TEA_INFOR_IMPORT.data:
+            a = eval(form.TEA_INFOR_IMPORT.description) | a
+        if form.PERMIS_MANAGE.data:
+            a = eval(form.PERMIS_MANAGE.description) | a
+        per = hex(a)
+        role.roleName = form.roleName.data
+        role.roleDescribe = request.form.get('roleDescribe')
+        role.permission = per
+        try:
+            db.session.add(role)
+            db.session.commit()
+            flash('修改成功！')
+            return redirect(url_for('.roleList'))
+        except Exception as e:
+            db.session.rollback()
+            flash('修改失败，请重试！')
+            print('修改角色', e)
+            return redirect(url_for('.editRole', roleId=roleId))
+    return render_template('editRole.html', Permission=Permission, role=role, form=form)
+
+
+
 # 查询最大的角色Id
 def getMaxRoleId():
     res = db.session.query(func.max(Role.roleId).label('max_roleId')).one()
     return res.max_roleId
 
 
-# 企业信息筛选项，组合查询,,更新筛选项，当flag=Ture为企业实习信息和批量删除的功能,False为批量审核功能
+
+# 企业信息生成筛选项，组合查询,,更新筛选项，当flag=Ture为企业实习信息的组合查询
+# 和批量删除的组合查询功能,False为批量审核的组合查询功能
+# 返回的企业信息查询结果com，生成筛选项赋值在字典city中
 def create_com_filter(city, flag=True):
     # 更新筛选项
     if request.args.get('city') is not None:
@@ -1860,17 +1950,9 @@ def journal_migrate(internId):
         return redirect('/')
     return 1
 
-def update_iso():
-    jourlist = Journal.query.all()
-    for jour in jourlist:
-        start = jour.workStart
-        jourId = jour.Id
-        print (jourId)
-        db.session.execute('update Journal set isoweek=%s, isoyear=%s where Id=%s'% (start.isocalendar()[1], start.isocalendar()[0], jourId))
-    return 1
 
-
-# 学生筛选项，组合查询,更新筛选项
+# 学生用户筛选项的生成，组合查询,更新筛选项
+# 返回的学生用户信息查询结果stu，筛选项生成在字grade，major，classes中，flag暂未用到
 def create_stu_filter(grade, major, classes, flag=True):
     # 更新筛选项
     if request.args.get('grade') is not None:
@@ -1970,3 +2052,219 @@ def create_stu_filter(grade, major, classes, flag=True):
 def getMaxComId():
     res = db.session.query(func.max(ComInfor.comId).label('max_comId')).one()
     return res.max_comId
+
+
+#---------------Excel表格导入导出-----------------------------------------------
+
+# Excel文档列名的模板. 导入和导出
+# 实习信息表
+excel_export_intern = OrderedDict(( ('stuId','学号'), ('stuName','姓名'), ('comName','企业名称'), ('address','地址'), ('internCheck','审核状态'), ('internStatus','实习状态'), ('start','开始日期'), ('end','结束日期'), ('task','任务'), ('teaName','审核教师'), ('opinion','审核意见'), ('icheckTime','审核时间'), ('steaName','校内指导老师'), ('steaDuty','校内指导老师职务'), ('steaPhone','校内指导老师电话'), ('steaEmail','校内指导老师邮箱'), ('cteaName','企业指导老师' ), ('cteaDuty','企业指导老师职务'), ('cteaPhone','企业指导老师电话'), ('cteaEmail','企业指导老师邮箱')))
+excel_import_intern = { '学号':'stuId', '姓名':'stuName', '企业编号':'comId', '地址':'address', '开始日期':'start', '结束日期':'end', '任务':'task', '审核教师':'teaName', '审核意见':'opinion', '审核时间':'icheckTime', '企业指导老师':'cteaName', '企业指导老师职务':'cteaDuty', '企业指导老师电话':'cteaPhone', '企业指导老师邮箱':'cteaEmail' }
+# 企业信息表
+excel_export_com = OrderedDict(( ('comId','企业编号'), ('comName','企业名称'), ('comBrief','企业简介'), ('comAddress','地址'), ('comUrl','网站'), ('comMon','营业额'), ('comContact','联系人'), ('comDate','录入时间'), ('comProject','企业项目'), ('comStaff','员工人数'), ('comPhone','电话'), ('comEmail','邮箱'), ('comFax','传真'), ('comCheck','审核状态'), ('students','实习学生人数') ))
+excel_import_com = { '企业名称':'comName', '企业简介':'comBrief', '地址':'comAddress', '网站':'comUrl', '营业额':'comMon', '联系人':'comContact', '录入时间':'comDate', '企业项目':'comProject', '员工人数':'comStaff', '电话':'comPhone', '邮箱':'comEmail', '传真':'comFax'}
+
+
+IMPORT_FOLDER = os.path.abspath('file_cache/xls_import')
+EXPORT_FOLDER = os.path.abspath('file_cache/xls_export')
+# 可加上成果的上传文件格式限制
+ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+
+
+# 导出Excel
+def excel_export(template, data):
+    wb = xlwt.Workbook()
+    ws = wb.add_sheet('Sheet 1')
+    # 列名
+    for col, colname in zip( range(len(template)), template ):
+        ws.write(0, col, template.get(colname))
+    # 数据
+    for row, xdata in zip( range(len(data)), data):
+        for col, colname in zip( range(len(template)), template ):
+            # 根据输出到Excel的类型和内容做判断
+            if colname in ['internCheck', 'comCheck']:
+                if getattr(xdata, colname) == 0:
+                    ws.write(row+1, col, '待审核')
+                elif getattr(xdata, colname) == 1:
+                    ws.write(row+1, col, '被退回修改')
+                else:
+                    ws.write(row+1, col, '已审核')
+            elif colname in ['internStatus']:
+                if getattr(xdata, colname) == 0:
+                    ws.write(row+1, col, '待实习')
+                elif getattr(xdata, colname) == 1:
+                    ws.write(row+1, col, '实习中')
+                else:
+                    ws.write(row+1, col, '实习结束')
+            elif colname in ['stuId', 'comMon', 'cteaPhone', 'steaPhone']:
+                if getattr(xdata, colname):
+                    ws.write(row+1, col, int(getattr(xdata, colname)))
+            elif colname in ['start','end', 'task', 'teaName', 'opinion', 'icheckTime', 'comDate']:
+                ws.write(row+1, col, str(getattr(xdata, colname)))
+            else:
+                ws.write(row+1, col, getattr(xdata, colname))
+    # 每个模板最多保存100份导出临时文件
+    if template == excel_export_intern:
+        file_name = 'internlist_%s.xls' % random.randint(1,100)
+        file_attachname = '实习信息导出表_%s.xls' % datetime.now().date()
+    elif template == excel_export_com:
+        file_name = 'comlist.xls_%s' % random.randint(1,100)
+        file_attachname = '企业信息导出表_%s.xls' % datetime.now().date()
+    wb.save((os.path.join(EXPORT_FOLDER,file_name)))
+    # attachment_finaname为下载时,提供的默认文件名
+    return send_file(os.path.join(EXPORT_FOLDER, file_name), as_attachment=True, attachment_filename = file_attachname.encode('utf-8') )
+
+
+# 导入Excel
+def excel_import(file,template):
+    book = xlrd.open_workbook(file)
+    data = []
+    for sheet in range(book.nsheets):
+        sh = book.sheet_by_index(sheet)
+        col_name = []
+        for col in range(sh.ncols):
+            # 如果template里面没找到对应的key,则为None. 所在列的数据也不会录入
+            col_name.append(template.get(sh.cell_value(rowx=0, colx=col)))
+        for row in range(sh.nrows-1):
+            data_row = {}
+            for col in range(sh.ncols):
+                if col_name[col]:
+                    data_row[col_name[col]] = str(sh.cell_value(rowx=row+1, colx=col))
+            data.append(data_row)
+    return data
+
+
+# excel导入页面处理
+@main.route('/excel_importpage', methods=['GET', 'POST'])
+@not_student_login
+def excel_importpage():
+    from_url = request.args.get('from_url')
+    if from_url == 'stuInternList':
+        permission = current_user.can(Permission.STU_INTERN_CHECK)
+    elif from_url == 'interncompany':
+        permission = current_user.can(Permission.COM_INFOR_CHECK)
+    if not permission:
+        flash('非法操作')
+        return redirect('/')
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect('/')
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect('/')
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save( os.path.join(IMPORT_FOLDER, filename))
+            # 上传成功,开始导入
+            if from_url == "stuInternList":
+                internlist = excel_import( os.path.join(IMPORT_FOLDER,filename), excel_import_intern)
+                # 判断属性是否齐全
+                for x in ['stuId','stuName', 'comId', 'start', 'end']:
+                    if x not in internlist[0].keys():
+                        flash('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
+                        print('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
+                        return redirect('/')
+                now = datetime.now().date()
+                try:
+                    for intern, col in zip(internlist, range(len(internlist)) ):
+                        # 判断必需数据是否完整
+                        for x in ['stuId','stuName', 'comId', 'start', 'end']:
+                            if intern[x] is None:
+                                flash('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col+1)
+                                print('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col+1)
+                                return redirect('/')
+                        # 判定日期分隔符是'-'还是'/'
+                        start = intern['start']
+                        end = intern['end']
+                        if len(start.split('-')) == 3:
+                            start = datetime.strptime(start, '%Y-%m-%d').date()
+                            end = datetime.strptime(end, '%Y-%m-%d').date()
+                        elif len(start.split('/')) == 3:
+                            start = datetime.strptime(start, '%Y/%m/%d').date()
+                            end = datetime.strptime(end, '%Y/%m/%d').date()
+                        else:
+                            flash('日志格式错误,日志格式应为 "2000-01-01" 或 "2000/01/01" ')
+                            print('日志格式错误,日志格式应为 "2000-01-01" 或 "2000/01/01" ')
+                            return redirect('/')
+                        if now < start:
+                            intern['internStatus'] = 0 # 待实习
+                        elif now >= start and now <= end:
+                            intern['internStatus'] = 1 # 实习中
+                        else:
+                            intern['internStatus'] = 2 # 实习结束
+                        internship = InternshipInfor(
+                            # 使Excel生成的保留一位小数数字,变成保留到个位
+                            stuId = str(intern['stuId'])[:-2],
+                            address = intern['address'],
+                            start = intern['start'],
+                            end = intern['end'],
+                            task = intern['task'],
+                            comId = intern['comId'],
+                            internStatus = intern['internStatus']
+                            # 这里还应该有很多需要添加的
+                            )
+                        db.session.add(internship)
+                    db.session.commit()
+                except Exception as e:
+                    flash('导入出现异常')
+                    print('导入出现异常:', e)
+                    db.session.rollback()
+                    return redirect('/')
+                flash('导入成功')
+                return redirect(url_for('.stuInternList'))
+            if from_url == 'interncompany':
+                comlist = excel_import( os.path.join(IMPORT_FOLDER,filename), excel_import_com)
+                # 判断属性是否齐全
+                print (comlist[0].keys())
+                for x in ['comName', 'comAddress', 'comProject', 'comPhone','comEmail']:
+                    if x not in comlist[0].keys():
+                        print (x)
+                        flash('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
+                        print('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
+                        return redirect('/')
+                try:
+                    for com, col in zip(comlist, range(len(comlist)) ):
+                        # 判断必需数据是否完整
+                        for x in ['comName', 'comAddress', 'comProject', 'comPhone','comEmail']:
+                            if com[x] is None:
+                                flash('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col+1)
+                                print('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col+1)
+                                return redirect('/')
+                        cominfor = ComInfor(
+                            comName = com['comName'],
+                            comBrief = com['comBrief'],
+                            comAddress = com['comAddress'],
+                            comUrl = com['comUrl'],
+                            # 使Excel生成的保留一位小数数字,变成保留到个位
+                            comMon = str(com['comMon'])[:-2],
+                            comContact = com['comContact'],
+                            comProject = com['comProject'],
+                            comStaff = com['comStaff'],
+                            comPhone = com['comPhone'],
+                            comEmail = com['comEmail'],
+                            comFax = com['comFax'],
+                            comCheck = 2
+                            )
+                        db.session.add(cominfor)
+                    db.session.commit()
+                except Exception as e:
+                    flash('导入出现异常')
+                    print('导入出现异常:', e)
+                    db.session.rollback()
+                    return redirect('/')
+                flash('导入成功')
+                return redirect(url_for('.interncompany'))
+        else:
+            flash('请上传正确的Excel文件( .xls和 .xlsx格式)')
+            return redirect('/')
+    return render_template('excel_import.html',Permission=Permission)
+

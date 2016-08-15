@@ -73,7 +73,6 @@
     <script src="/static/JS/bootstrap-datepicker.min.js"></script>
     <script src="/static/JS/bootstrap-datepicker.zh-CN.min.js"></script>
 {% endblock %}
-    
 
 {% block navbar %}
     <div class="navbar navbar-inverse" role="navigation">
@@ -146,7 +145,7 @@
                                     {% if current_user.can(Permission.PERMIS_MANAGE) %}
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('.roleList') }}">权限管理</a></li>
-                                    {% endif %}                                
+                                    {% endif %}
                                 </ul>
                             </li>
                         {% endif %}

@@ -49,7 +49,6 @@ def update_intern_jourCheck(func):
     return decorated_view
 
 
-
 @login_manager.user_loader
 def load_user(Id):
     return Teacher.query.get(Id) or Student.query.get(Id)
@@ -67,6 +66,13 @@ class Role(db.Model):
 
     def __repr__(self):
         return '<Role %r>' % self.name
+
+    # 对角色进行权限判断
+    @staticmethod
+    def can(role, permissions):
+        if role.permission is not None:
+            p = eval(role.permission)
+        return (p & permissions) == permissions
 
 
 class Teacher(db.Model, UserMixin):
@@ -245,20 +251,20 @@ class SchDirTea(db.Model):
     __tablename__ = 'SchDirTea'
     Id = db.Column(db.Integer, primary_key=True)
     teaId = db.Column(db.String(10))
-    teaName = db.Column(db.String(10))
-    teaDuty = db.Column(db.String(20))
-    teaPhone = db.Column(db.String(15))
-    teaEmail = db.Column(db.String(20))
+    steaName = db.Column(db.String(10))
+    steaDuty = db.Column(db.String(20))
+    steaPhone = db.Column(db.String(15))
+    steaEmail = db.Column(db.String(20))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
 
 
 class ComDirTea(db.Model):
     __tablename__ = 'ComDirTea'
     Id = db.Column(db.Integer, primary_key=True)
-    teaName = db.Column(db.String(10))
-    teaDuty = db.Column(db.String(20))
-    teaPhone = db.Column(db.String(15))
-    teaEmail = db.Column(db.String(20))
+    cteaName = db.Column(db.String(10))
+    cteaDuty = db.Column(db.String(20))
+    cteaPhone = db.Column(db.String(15))
+    cteaEmail = db.Column(db.String(20))
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
 
@@ -324,8 +330,8 @@ class Permission:
     STU_SUM_EDIT = 0X0004000
     # 学生实习总结导出
     STU_SUM_EXPORT = 0X0008000
-    # 学生实习总结审核
-    STU_SUM_CHECK = 0X0010000
+    # 学生实习总结和成果审核
+    STU_SUM_SCO_CHECK = 0X0010000
 
     # 学生实习成果查看
     STU_SCO_SEARCH = 0X0020000

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import Teacher, Role, Student, ComInfor, Journal, InternshipInfor
+from app.models import Teacher, Role, Student, ComInfor, Journal, InternshipInfor, ComDirTea, SchDirTea
 from flask.ext.script import Manager, Shell, Server
 from flask.ext.migrate import Migrate, MigrateCommand
 

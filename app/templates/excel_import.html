@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}批量导入{% endblock %}
+{% block head %}{{ super() }}{% endblock %}
+{% block page_content %}
+    <h1>批量导入</h1>
+    <form action="" method=post enctype=multipart/form-data autocomplete='ON'>
+      <p><input type=file name=file value="选择文件"><br>
+         <input type=submit value="上传">
+    </form>
+{% endblock %}
+

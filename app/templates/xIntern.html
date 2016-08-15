@@ -144,7 +144,7 @@
                 <span class="label label-warning">待审核</span>
             {% elif internship.internCheck == 1 %}
                 <span class="label label-primary">退回待修改</span>
-            {% elif internship.internCheck == 2 %}    
+            {% elif internship.internCheck == 2 %}
                 <span class="label label-info">已审核</span>
             {% endif %}
         </caption>
@@ -263,3 +263,4 @@
     <br>
     <br><a href="{{ url_for('.stuInternList') }}"><div class="btn btn-primary">返回</div></a>
 {% endblock %}
+

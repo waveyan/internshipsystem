@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="page-header">
-        <h1>请填写实习企业信息</h1>        
+        <h1>请填写实习企业信息</h1>
     </div>
 
 
@@ -29,7 +29,7 @@
         {{ form.comPhone.label }} {{ form.comPhone(class="form-control", required="", placeholder="") }} <br>
         {{ form.comEmail.label }} {{ form.comEmail(class="form-control", required="", placeholder="") }} <br>
         {{ form.comFax.label }} {{ form.comFax(class="form-control", required="", placeholder="") }} <br>
-        {{ form.csrf_token }} 
+        {{ form.csrf_token }}
         <!-- 若是从 .stuInternList 添加实习信息跳转至此,则现在跳转到 .addinternship,继续完善实习信息添加 -->
         {% if from_url == "stuInternList" %}
             {{ form.submit(class="btn btn-success", type="submit", id="finish", value="下一步") }}

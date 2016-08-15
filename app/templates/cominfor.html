@@ -30,7 +30,7 @@
                             {% if current_user.can(Permission.COM_INFOR_CHECK) %}
                                 <li><a onClick="ComfirmCheck()">审核</a></li>
                             {% endif %}
-                            {% if com.comCheck!=2 %}
+                            {% if com.comCheck!=2 or current_user.can(Permission.COM_INFOR_CHECK) %}
                                 <li><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a></li>
                             {% endif %}
                             <li><a href="#">导出</a></li>
@@ -45,6 +45,10 @@
                 <span class="label label-warning">审核未通过</span>
             {% endif %}
         </caption>
+        <tr>
+            <th width="200">企业编号</th>
+            <td width="400" height="50" colspan="3">{{ com.comId }}</td>
+        </tr>
         <tr>
             <th width="200">公司名称</th>
             <td width="400" height="50" colspan="3">{{ com.comName }}</td>
