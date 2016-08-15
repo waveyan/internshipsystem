@@ -13,23 +13,33 @@
 
     <!-- 全选企业  -->
     <script type="text/javascript">
-        function select_all(){    
+        function select_all() {
             var checkboxes = document.getElementsByName('approve[]');
             var button = document.getElementById('toggle');
-    
-            if(button.value == '全选'){
-                for (var i in checkboxes){
+
+            if (button.value == '全选') {
+                for (var i in checkboxes) {
                     checkboxes[i].checked = 'FALSE';
                 }
                 button.value = '全不选'
-            }else{
-                for (var i in checkboxes){
+            } else {
+                for (var i in checkboxes) {
                     checkboxes[i].checked = '';
                 }
                 button.value = '全选';
             }
         }
-    </script>    
+    </script>
+    <!--筛选按钮-->
+    <script type="text/javascript">
+        window.onload = function () {
+            var obj = document.getElementById("sel");
+            obj.onclick = function () {
+                obj.className = (obj.className == "class1" ? "class2" : "class1");
+                obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
+            }
+        }
+    </script>
 {% endblock %}
 
 {% block page_content %}
@@ -41,15 +51,163 @@
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     {% if current_user.can(Permission.STU_INTERN_CHECK) %}
-                        <li><a href="{{ url_for('.stuJournal_allCheck') }}">批量审核</a></li>
-                        <li><a href="{{ url_for('.stuJournal_allDelete') }}">批量删除</a></li>
+                        <li><a href="{{ url_for('.update_intern_filter',flag=3) }}">批量审核</a></li>
+                        <li><a href="{{ url_for('.update_intern_filter',flag=4) }}">批量删除</a></li>
                         </ul>
                         </div>
                     {% endif %}
-
+            <div style="float:right;width:300px"><!--长度-->
+                <form role="form" method="POST" action="/interncompany">
+                    <div class="row head">
+                        <div class="col-lg-10"><!--位置-->
+                            <div class="input-group ">
+                                {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" id="rearch"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                            </div>
+                            {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
         {% endif %}
     </h1>
-    <p></p>
+    <div>
+        <ol class="breadcrumb">
+            <li><a href="{{ url_for('.update_intern_filter',flag=4) }}">所有分类</a></li>
+            {% if session['grade']!=None %}
+                <li><a href="{{ url_for('.update_intern_filter',grade='1',flag=4) }}">{{ session['grade'] }}</a></li>
+            {% endif %}
+            {% if session['major']!=None %}
+                <li><a href="{{ url_for('.update_intern_filter',major='1',flag=4) }}">{{ session['major'] }}</a></li>
+            {% endif %}
+
+            {% if session['classes']!=None %}
+                <li><a href="{{ url_for('.update_intern_filter',classes='1',flag=4) }}">{{ session['classes'] }}班</a>
+                </li>
+            {% endif %}
+            {% if session['internStatus']!=None %}
+                {% if session['internStatus']=='0' %}
+                    <li><a href="#">待实习</a></li>
+                {% elif session['internStatus']=='1' %}
+                    <li><a href="#">实习中</a></li>
+                {% else %}
+                    <li><a href="#">实习结束</a></li>
+                {% endif %}
+            {% endif %}
+        </ol>
+        <input style="float:right;" type="button" class="class1" data-toggle="collapse"
+               data-target="#demo" id="sel" value="收起筛选"/>
+    </div>
+
+    <div id="demo" class="collapse in ">
+        <div class="panel panel-danger">
+            <div class="panel-body">
+                <table>
+                    <tr>
+                        <th width="150">年级:</th>
+                        {% for i in grade.keys() %}
+                            {% if i<3 %}
+                                <td width="200"><a
+                                        href="{{ url_for('.stuJournal_allDelete',grade=grade[i]) }}">{{ grade[i] }}级</a>
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        {% if 3 in grade %}
+                            <td width="200">
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in grade.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.stuJournal_allDelete',grade=grade[i]) }}">{{ grade[i] }}级</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th width="150">专业:</th>
+                        {% for i in major.keys() %}
+                            {% if i<3 %}
+                                <td width="200"><a
+                                        href="{{ url_for('.stuJournal_allDelete',major=major[i]) }}">{{ major[i] }}</a>
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        {% if 3 in major %}
+                            <td>
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in major.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.stuJournal_allDelete',major=major[i]) }}">{{ major[i] }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th width="150">班级：</th>
+                        {% for i in classes.keys() %}
+                            {% if i<3 %}
+                                <td width="200"><a
+                                        href="{{ url_for('.stuJournal_allDelete',classes=classes[i]) }}">{{ classes[i] }}班</a>
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        {% if 3 in classes %}
+                            <td>
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in classes.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.stuJournal_allDelete',classes=classes[i]) }}">{{ classes[i] }}班</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <th width="150">实习状态：</th>
+                        <td width="200"><a href="{{ url_for('.stuJournal_allDelete',internStatus=0) }}">待实习</a></td>
+                        <td width="200"><a href="{{ url_for('.stuJournal_allDelete',internStatus=1) }}">实习中</a></td>
+                        <td width="150"><a href="{{ url_for('.stuJournal_allDelete',internStatus=2) }}">实习结束</a></td>
+                        <td>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <p></p>
+    </div>
 
     <table class="table" id="t">
         <thead>
@@ -68,46 +226,50 @@
         </thead>
         <tbody>
         <form method="POST">
-        {% for intern in internlist %}
-            <tr>
-                <td><input type="checkbox" name="approve[]" value={{ intern.Id }} ></td>
-                <td><a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}在{{ intern.comName }}的日子</a></td>
-                <td>{{ intern.stuId }}</td>
-                <td>{{ intern.start }}</td>
-                <td>{{ intern.end }}</td>
+            {% for intern in internlist %}
+                <tr>
+                    <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
+                    <td>
+                        <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}在{{ intern.comName }}的日子</a>
+                    </td>
+                    <td>{{ intern.stuId }}</td>
+                    <td>{{ intern.start }}</td>
+                    <td>{{ intern.end }}</td>
 
-                <!-- 日志状态 -->
-                {% if intern.jourCheck == 0 %}
-                    <td>未审核</td>
-                {% elif intern.jourCheck == 1 %}
-                    <td>已审核</td>
-                {% endif %}
+                    <!-- 日志状态 -->
+                    {% if intern.jourCheck == 0 %}
+                        <td>未审核</td>
+                    {% elif intern.jourCheck == 1 %}
+                        <td>已审核</td>
+                    {% endif %}
 
-                <!-- 实习状态 -->
-                {% if intern.internStatus == 1 %}
-                    <td>实习中</td>
-                {% elif intern.internStatus == 2 %}
-                    <td>实习结束</td>
-                {% endif %}
+                    <!-- 实习状态 -->
+                    {% if intern.internStatus == 1 %}
+                        <td>实习中</td>
+                    {% elif intern.internStatus == 2 %}
+                        <td>实习结束</td>
+                    {% endif %}
 
-                <!-- 
-                <td><a>审核</a>|<a>删除</a></td>
-                -->
-            </tr>
-        {% endfor %}
+                    <!--
+                    <td><a>审核</a>|<a>删除</a></td>
+                    -->
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
     <span class="label label-warning">注意: 删除实习日志同时,会销毁其相应的实习信息</span><br><br>
     <div>
         <input type="hidden" name="page" value="{{ pagination.page }}">
-        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()" />
+        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
         <button type="submit" class="btn btn-danger">删除</button>
         </form>
-        <a href="{{ url_for('.stuJournalList') }}"><button class="btn btn-primary">返回</button></a>
+        <a href="{{ url_for('.stuJournalList') }}">
+            <button class="btn btn-primary">返回</button>
+        </a>
     </div>
     {% if pagination %}
         <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.stuJournalList') }}
+            {{ macros.pagination_widget(pagination,'.stuJournal_allDelete') }}
         </div>
     {% endif %}
 {% endblock %}

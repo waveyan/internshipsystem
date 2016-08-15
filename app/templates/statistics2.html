@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block title %}实习企业信息统计{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/JS/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+{% endblock %}<!--先执行父模板-->
+{% block page_content %}
+    <h1>实习企业情况统计
+    </h1>
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{{ url_for('main.statistics2') }}">地域统计图</a></li>
+        <li><a href="{{ url_for('main.statistics3') }}">企业统计图</a></li>
+        <li><a href="{{ url_for('main.statistics') }}">企业排行</a></li>
+        <li><a href="{{ url_for('main.statistics1') }}">地域排行</a></li>
+    </ul>
+
+    {% set sum = 0 %}
+    {% for com in comInfor %}
+        {% set address = com.comAddress %}
+        <div style="display:none" id="ten{{ loop.index0 }}">  {{ address }}</div>
+        {% set students = com.students %}
+        <div style="display:none" id="ten1{{ loop.index0 }}">  {{ students }} </div>
+        {% if not loop.last %}
+            {% set sum = sum +students %}
+        {% else %}
+            <div style="display:none" id="other"> {{ sum+students }} </div>
+        {% endif %}
+
+    {% endfor %}
+
+    <script src="/static/JS/echarts.common.min.js"></script>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <br><br>
+    <div id="main" style="width: 1000px;height:450px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '地域累计实习人数统计图：'
+            },
+            tooltip: {},
+            legend: {
+                data: ['累计实习人数top6']
+            },
+            xAxis: {
+                data: [ten0.innerHTML, ten1.innerHTML, ten2.innerHTML, ten3.innerHTML, ten4.innerHTML, ten5.innerHTML, "其他"]
+            },
+            yAxis: {},
+            series: [{
+                name: '累计实习人数',
+                type: 'bar',
+                data: [ten10.innerHTML, ten11.innerHTML, ten12.innerHTML, ten13.innerHTML, ten14.innerHTML, ten15.innerHTML, other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML]
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+    <br><br>
+    <div style="height: 100%; margin: 0">
+    <div id="container" style="height: 700%"></div>
+    <script type="text/javascript">
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        var app = {};
+        option = {
+            title: {
+                text: '地域累计实习人数百分比统计图：'
+            },
+            tooltip: {},
+            series: [
+                {
+                    name: '累计实习人数',
+                    type: 'pie',
+                    radius: '65%',
+                    data: [
+                        {value: ten10.innerHTML, name: ten0.innerHTML},
+                        {value: ten11.innerHTML, name: ten1.innerHTML},
+                        {value: ten12.innerHTML, name: ten2.innerHTML},
+                        {value: ten13.innerHTML, name: ten3.innerHTML},
+                        {value: ten14.innerHTML, name: ten4.innerHTML},
+                        {value: ten15.innerHTML, name: ten5.innerHTML},
+                        {
+                            value: other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML,
+                            name: "其他"
+                        },
+                    ],
+                    roseType: 'angle',
+                    itemStyle: {
+                        normal: {
+                            shadowBlur: 200,
+                            shadowColor: 'rgba(0, 0, 0, 0,0,0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        ;
+        if (option && typeof option === "object") {
+            myChart.setOption(option, true);
+        }
+    </script>
+    </div>
+{% endblock %}       
+
+
+

@@ -48,7 +48,7 @@
 
 {% block page_content %}
     <h1>学生用户
-        {% if current_user.can(Permission.COM_INFOR_EDIT) %}
+        {% if current_user.can(Permission.ADMIN) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
@@ -99,7 +99,6 @@
         </ol>
         <input style="float:right;" type="button" class="class1" data-toggle="collapse"
                data-target="#demo" id="sel" value="收起筛选"/>
-
     </div>
 
     <div id="demo" class="collapse in ">
@@ -117,21 +116,23 @@
                                 </td>
                             {% endif %}
                         {% endfor %}
-                        <td width="200">
-                            <div class="first">
-                                <a>更多</a>
-                                <div class="second">
-                                    {% for i in grade.keys() %}
-                                        {% if i>2 %}
-                                            <li style="list-style-type:none;"><a
-                                                    href="{{ url_for('.stuUserList',grade=grade[i]) }}">{{ grade[i] }}级</a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
+                        {% if 3 in grade %}
+                            <td width="200">
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in grade.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.stuUserList',grade=grade[i]) }}">{{ grade[i] }}级</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
 
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
@@ -144,20 +145,22 @@
                                         href="{{ url_for('.stuUserList',major=major[i]) }}">{{ major[i] }}</a></td>
                             {% endif %}
                         {% endfor %}
-                        <td>
-                            <div class="first">
-                                <a>更多</a>
-                                <div class="second">
-                                    {% for i in major.keys() %}
-                                        {% if i>2 %}
-                                            <li style="list-style-type:none;"><a
-                                                    href="{{ url_for('.stuUserList',major=major[i]) }}">{{ major[i] }}</a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
+                        {% if 3 in major %}
+                            <td>
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in major.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.stuUserList',major=major[i]) }}">{{ major[i] }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
@@ -171,20 +174,22 @@
                                 </td>
                             {% endif %}
                         {% endfor %}
-                        <td>
-                            <div class="first">
-                                <a>更多</a>
-                                <div class="second">
-                                    {% for i in classes.keys() %}
-                                        {% if i>2 %}
-                                            <li style="list-style-type:none;"><a
-                                                    href="{{ url_for('.stuUserList',classes=classes[i]) }}">{{ classes[i] }}班</a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
+                        {% if 3 in classes %}
+                            <td>
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in classes.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.stuUserList',classes=classes[i]) }}">{{ classes[i] }}班</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+                        {% endif %}
                     </tr>
 
                     <tr>

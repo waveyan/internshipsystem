@@ -92,7 +92,7 @@
                         {% if current_user.can(Permission.INTERNSHIP_LIST) %}
                             <li><a href="{{ url_for('main.update_filter') }}">企业实习情况</a></li>
                         {% endif %}
-                        <li><a href="{{ url_for('main.statistics') }}">统计</a></li>
+                        <li><a href="{{ url_for('main.statistics2') }}">统计</a></li>
                         {% if current_user.roleId==0 %}
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -119,9 +119,9 @@
                                         学生信息 <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="{{ url_for('main.stuInternList') }}">实习信息</a></li>
+                                        <li><a href="{{ url_for('main.update_intern_filter') }}">实习信息</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="{{ url_for('main.stuJournalList' ) }}">实习工作日志</a></li>
+                                        <li><a href="{{ url_for('main.update_intern_filter',flag=2) }}">实习工作日志</a></li>
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('main.summary') }}">工作总结和成果</a></li>
                                     </ul>

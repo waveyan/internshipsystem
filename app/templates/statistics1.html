@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+
+{% block title %}实习企业信息统计{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/JS/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+{% endblock %}<!--先执行父模板-->
+{% block page_content %}
+    <h1>实习企业信息统计
+    </h1>
+    <ul class="nav nav-tabs">
+        <li><a href="{{ url_for('main.statistics2') }}">地域统计图</a></li>
+        <li><a href="{{ url_for('main.statistics3') }}">企业统计图</a></li>
+        <li><a href="{{ url_for('main.statistics') }}">企业排行</a></li>
+        <li  class="active"><a href="{{ url_for('main.statistics1') }}">地域排行</a></li>
+    </ul>
+    <div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>企业地址</th>
+                <th>企业网址</th>
+                <th>联系电话</th>
+                <th>累计实习人次</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for com in comInfor %}
+                <tr>
+                    <td>{{ com.comAddress }}</td>
+                    <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
+                    <td>{{ com.comPhone }}</td>
+                    {% if current_user.roleId==0 %}
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
+                    {% else %}
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% if pagination %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination,'.statistics1') }}
+            </div>
+        {% endif %}
+{% endblock %}

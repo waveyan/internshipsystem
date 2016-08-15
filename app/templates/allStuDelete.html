@@ -21,10 +21,6 @@
         function select_all() {
             var checkboxes = document.getElementsByName('stu[]');
             var button = document.getElementById('toggle');
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
             if (button.value == '全选') {
                 for (var i in checkboxes) {
                     checkboxes[i].checked = 'FALSE';
@@ -53,6 +49,7 @@
         .first .second {
             display: none;
         }
+
         .first:hover .second {
             display: block;
         }
@@ -130,21 +127,22 @@
                                 </td>
                             {% endif %}
                         {% endfor %}
-                        <td width="200">
-                            <div class="first">
-                                <a>更多</a>
-                                <div class="second">
-                                    {% for i in grade.keys() %}
-                                        {% if i>2 %}
-                                            <li style="list-style-type:none;"><a
-                                                    href="{{ url_for('.allStuDelete',grade=grade[i]) }}">{{ grade[i] }}级</a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-
+                        {% if 3 in grade %}
+                            <td width="200">
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in grade.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.allStuDelete',grade=grade[i]) }}">{{ grade[i] }}级</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
@@ -157,20 +155,22 @@
                                         href="{{ url_for('.allStuDelete',major=major[i]) }}">{{ major[i] }}</a></td>
                             {% endif %}
                         {% endfor %}
-                        <td>
-                            <div class="first">
-                                <a>更多</a>
-                                <div class="second">
-                                    {% for i in major.keys() %}
-                                        {% if i>2 %}
-                                            <li style="list-style-type:none;"><a
-                                                    href="{{ url_for('.allStuDelete',major=major[i]) }}">{{ major[i] }}</a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
+                        {% if 3 in major %}
+                            <td>
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in major.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.allStuDelete',major=major[i]) }}">{{ major[i] }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
@@ -184,20 +184,22 @@
                                 </td>
                             {% endif %}
                         {% endfor %}
-                        <td>
-                            <div class="first">
-                                <a>更多</a>
-                                <div class="second">
-                                    {% for i in classes.keys() %}
-                                        {% if i>2 %}
-                                            <li style="list-style-type:none;"><a
-                                                    href="{{ url_for('.allStuDelete',classes=classes[i]) }}">{{ classes[i] }}班</a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
+                        {% if 3 in classes %}
+                            <td>
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in classes.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.allStuDelete',classes=classes[i]) }}">{{ classes[i] }}班</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+                        {% endif %}
                     </tr>
 
                     <tr>

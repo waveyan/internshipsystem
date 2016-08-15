@@ -64,13 +64,16 @@
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
+                    <li><a href="{{ url_for('.addcominfor') }}">添加</a></li>
+                    <li><a href="{{ url_for('.excel_importpage', from_url='interncompany') }}">批量导入</a></li>
+                    <li><a href="javascript:{}"
+                           onclick="document.getElementById('export_form').submit();">批量导出</a></li>
                     {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                        <li><a href="{{ url_for('.addcominfor') }}">添加</a></li>
                         <li><a href="{{ url_for('.update_filter',flag=1) }}">批量审核</a></li>
                         <li><a href="{{ url_for('.update_filter',flag=0) }}">批量删除</a></li>
-                        </ul>
-                        </div>
                     {% endif %}
+                </ul>
+            </div>
         {% endif %}
         <div style="float:right;width:350px"><!--长度-->
             <div style="float:right;width:350px"><!--长度-->
@@ -133,21 +136,23 @@
                                 </td>
                             {% endif %}
                         {% endfor %}
-                        <td width="200">
-                            <div class="first">
-                                <a>更多</a>
-                                <div class="second">
-                                    {% for i in city.keys() %}
-                                        {% if i>2 %}
-                                            <li style="list-style-type:none;"><a
-                                                    href="{{ url_for('.allcomDelete',city=city[i]) }}">{{ city[i] }}</a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
+                        {% if 3 in city %}
+                            <td width="200">
+                                <div class="first">
+                                    <a>更多</a>
+                                    <div class="second">
+                                        {% for i in city.keys() %}
+                                            {% if i>2 %}
+                                                <li style="list-style-type:none;"><a
+                                                        href="{{ url_for('.allcomDelete',city=city[i]) }}">{{ city[i] }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
 
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
@@ -158,15 +163,6 @@
                         <td width="400"><a href="{{ url_for('.allcomDelete',name='asc') }}">按拼音首字母升序排列</a></td>
                         <td width="400"><a href="{{ url_for('.allcomDelete',name='desc') }}">按拼音首字母降序排列</a></td>
                     </tr>
-
-                    {#                    <tr>#}
-                    {#                        <td>&nbsp;</td>#}
-                    {#                    </tr>#}
-                    {#                    <tr>#}
-                    {#                        <th width="200">累计实习人次：</th>#}
-                    {#                        <td width="400"><a href="{{ url_for('.allcomDelete',students='asc') }}">按人数升序排列</a></td>#}
-                    {#                        <td width="400"><a href="{{ url_for('.allcomDelete',students='desc') }}">按人数降序排列</a></td>#}
-                    {#                    </tr>#}
 
                     {% if current_user.can(Permission.COM_INFOR_CHECK) %}
                         <tr>
@@ -227,7 +223,6 @@
                                     <td>已审核</td>
                                 {% endif %}
                             {% endif %}
-
                         </tr>
                     {% endfor %}
             </div>
