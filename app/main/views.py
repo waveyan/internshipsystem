@@ -1951,6 +1951,7 @@ def journal_migrate(internId):
     return 1
 
 
+
 # 学生用户筛选项的生成，组合查询,更新筛选项
 # 返回的学生用户信息查询结果stu，筛选项生成在字grade，major，classes中，flag暂未用到
 def create_stu_filter(grade, major, classes, flag=True):
