@@ -50,7 +50,8 @@ def journal():
 
 @main.route('/summary', methods=['GET', 'POST'])
 def summary():
-    return render_template('summary.html', Permission=Permission)
+    p = '/static/Flexpaper/docs/22.swf'
+    return render_template('summary.html', Permission=Permission, p=p)
 
 
 # 评分表
@@ -200,16 +201,16 @@ def addInternship():
             end = datetime.strptime(request.form.get('end'), '%Y-%m-%d').date()
             now = datetime.now().date()
             # 比较实习时间与当前时间,判断实习状态
-            if start < now :
-                if end <= now :
-                    internStatus = 2 # 实习结束
-                    print ('this is 1')
-                if end > now :
-                    internStatus = 1 #实习中
-                    print ('this is 2')
-            elif start > now :
-                internStatus = 0 #待实习
-                print ('this is 3')
+            if start < now:
+                if end <= now:
+                    internStatus = 2  # 实习结束
+                    print('this is 1')
+                if end > now:
+                    internStatus = 1  # 实习中
+                    print('this is 2')
+            elif start > now:
+                internStatus = 0  # 待实习
+                print('this is 3')
             else:
                 internStatus = 1  # start=now, 实习中
                 print('this is 4')
@@ -262,10 +263,10 @@ def addInternship():
             # 若所选企业未被审核通过,且用户有审核权限,自动审核通过企业
             if current_user.can(Permission.COM_INFOR_CHECK):
                 try:
-                    db.session.execute('update ComInfor set comCheck=2 where comId=%s'% comId)
+                    db.session.execute('update ComInfor set comCheck=2 where comId=%s' % comId)
                 except Exception as e:
                     db.session.rollback()
-                    print(datetime.now(),'/addinternship 审核企业失败:',e)
+                    print(datetime.now(), '/addinternship 审核企业失败:', e)
                     flash('所选企业审核失败,请重试')
                     return redirect('/')
             # 初始化日志
@@ -328,10 +329,10 @@ def xIntern_comfirm():
                 db.session.execute('update InternshipInfor set internCheck=%s where Id=%s' % (internCheck, internId))
             # 若所选企业未被审核通过,且用户有审核权限,自动审核通过企业
             if com.comCheck != 2 and current_user.can(Permission.COM_INFOR_CHECK):
-                db.session.execute('update ComInfor set comCheck=2 where comId=%s'% comId)
+                db.session.execute('update ComInfor set comCheck=2 where comId=%s' % comId)
         except Exception as e:
             db.session.rollback()
-            print(datetime.now(),":", current_user.get_id(), "审核实习申请失败", e)
+            print(datetime.now(), ":", current_user.get_id(), "审核实习申请失败", e)
             flash("实习申请审核失败")
             return redirect("/")
         flash("实习申请审核成功")
@@ -401,8 +402,8 @@ def xInternEdit_intern():
         time = "%s", \
         internCheck = %s \
         where Id=%s' \
-        % (task, address, start, end, time, internCheck, internId)
-        )
+                       % (task, address, start, end, time, internCheck, internId)
+                       )
     # 实习信息修改,日志跟随变动
     journal_migrate(internId)
     return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
@@ -499,7 +500,6 @@ def interncompany():
     comInfor = pagination.items
     return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor, city=city)
-
 
 
 # 企业信息用户操作筛选项,对所选筛选项进行清空
@@ -607,6 +607,7 @@ def studentList(comId):
         session[stu.stuId] = internStatus
     return render_template('studentList.html', form=form, pagination=pagination, student=student, Permission=Permission,
                            comId=comId, comName=comName)
+
 
 # 单条审核企业信息
 @main.route('/com_comfirm', methods=['GET', 'POST'])
@@ -738,10 +739,11 @@ def editcominfor():
             flash('修改成功！')
             return redirect(url_for('.cominfor', id=id))
         except Exception as e:
+            print('修改企业信息', e)
             db.session.rollback()
             flash('修改失败，请重试！')
             return redirect(url_for('.editcominfor', comId=id))
-    return render_template('editComInfor.html', Permission=Permission, com=com, comform=comform)
+    return render_template('editComInfor.html', Permission=Permission, com=com, comform=comform, cominfor=cominfor)
 
 
 # 批量审核实习信息
@@ -770,10 +772,10 @@ def stuIntern_allCheck():
                 comId = InternshipInfor.query.filter_by(Id=x).first().comId
                 com = ComInfor.query.filter_by(comId=comId).first()
                 if com.comCheck != 2 and current_user.can(Permission.COM_INFOR_CHECK):
-                    db.session.execute('update ComInfor set comCheck=2 where comId=%s'% comId)
+                    db.session.execute('update ComInfor set comCheck=2 where comId=%s' % comId)
         except Exception as e:
             db.session.rollback()
-            print(datetime.now(),":", current_user.get_id(), "审核实习申请失败", e)
+            print(datetime.now(), ":", current_user.get_id(), "审核实习申请失败", e)
             flash("实习申请审核失败")
             return redirect("/")
         flash('实习信息审核成功')
@@ -1045,7 +1047,6 @@ def xJournalEditProcess():
         return redirect("/")
     flash("修改日志成功")
     return redirect(url_for('.xJournal', stuId=stuId, internId=internId))
-
 
 
 '''
@@ -1463,7 +1464,6 @@ def roleList():
     return render_template('roleList.html', Permission=Permission, role=role, pagination=pagination)
 
 
-
 # 添加角色,靠你们改善这个蠢方法了,\r\n不能换行，导致角色列表里的describe不能显全
 @main.route('/addRole', methods=['GET', 'POST'])
 @login_required
@@ -1639,12 +1639,10 @@ def editRole():
     return render_template('editRole.html', Permission=Permission, role=role, form=form)
 
 
-
 # 查询最大的角色Id
 def getMaxRoleId():
     res = db.session.query(func.max(Role.roleId).label('max_roleId')).one()
     return res.max_roleId
-
 
 
 # 企业信息生成筛选项，组合查询,,更新筛选项，当flag=Ture为企业实习信息的组合查询
@@ -1833,7 +1831,6 @@ def create_com_filter(city, flag=True):
     return com
 
 
-
 # 初始化日志
 def journal_init(internId):
     internship = InternshipInfor.query.filter_by(Id=internId).first()
@@ -1854,9 +1851,9 @@ def journal_init(internId):
         # 第1年至 n-1 年的周数累计
         for x in range(end_isoweek - start_isoweek):
             if x == 0:
-                weeks = datetime(start_isoyear,12,31).isocalendar()[1] - start_isoweek + 1
+                weeks = datetime(start_isoyear, 12, 31).isocalendar()[1] - start_isoweek + 1
             else:
-                weeks = weeks + datetime(start_isoyear+x,12,31).isocalendar()[1]
+                weeks = weeks + datetime(start_isoyear + x, 12, 31).isocalendar()[1]
         # 第 n 年的周数累计
         weeks = weeks + end_isoweek
     try:
@@ -1917,7 +1914,7 @@ def journal_init(internId):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        print(current_user.get_id(),datetime.now(),"初始化日志失败",e)
+        print(current_user.get_id(), datetime.now(), "初始化日志失败", e)
         flash('初始化日志失败')
         return redirect('/')
     return 1
@@ -1929,20 +1926,19 @@ def journal_init(internId):
 # 最后删除旧的实习信息和日志
 def journal_migrate(internId):
     try:
-        db.session.execute('update Journal set internId=%s where internId=%s'% (-int(internId), internId))
+        db.session.execute('update Journal set internId=%s where internId=%s' % (-int(internId), internId))
         journal_init(internId)
         db.session.execute('update Journal j1, Journal j2 \
             set j1.mon=j2.mon, j1.tue=j2.tue, j1.wed=j2.wed, j1.thu=j2.thu, j1.fri=j2.fri, j1.sat=j2.sat, j1.sun=j2.sun \
             where j1.internId=%s and j2.internId=%s and j1.isoweek=j2.isoweek and j1.isoyear=j2.isoyear' \
-            % (internId, -int(internId)))
-        db.session.execute('delete from Journal where internId=%s'% -int(internId))
+                           % (internId, -int(internId)))
+        db.session.execute('delete from Journal where internId=%s' % -int(internId))
     except Exception as e:
         db.session.rollback()
-        print(current_user.get_id(),datetime.now(),"初始化并转移日志失败",e)
+        print(current_user.get_id(), datetime.now(), "初始化并转移日志失败", e)
         flash('初始化并转移日志失败')
         return redirect('/')
     return 1
-
 
 
 def update_iso():
@@ -1950,11 +1946,9 @@ def update_iso():
     for jour in jourlist:
         start = jour.workStart
         jourId = jour.Id
-        print(jourId)
         db.session.execute('update Journal set isoweek=%s, isoyear=%s where Id=%s' % (
             start.isocalendar()[1], start.isocalendar()[0], jourId))
     return 1
-
 
 
 # 学生用户筛选项的生成，组合查询,更新筛选项

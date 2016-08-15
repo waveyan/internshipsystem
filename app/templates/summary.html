@@ -1,84 +1,70 @@
-{% extends "bootstrap/base.html" %}
-{% block title %}学生实习工作日志{% endblock %}
-{% block head %}{{ super() }}{% endblock %}
-{% block body %}
-    <table align="center" border="2" class="table-bordered">
-        <caption>
-            <h1>学生实习工作总结(待审核)
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                            data-toggle="dropdown">编辑<span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                       <li><a href="#">审核通过</a></li>
-                        <li><a href="#">导出到Word</a></li>
-                        <li><a href="#">修改</a></li>
-                        <li><a href="#">删除</a></li>
-                    </ul>
-                </div>
-            </h1>
-        </caption>
-        <tr>
-            <th height="50" width="100">专业班级</th>
-            <td height="50" width="450">1234567894</td>
-            <th height="50" width="100">实训科目</th>
-            <td height="50" width="450">5464565</td>
-        </tr>
-        <tr>
-            <th height="50">姓名</th>
-            <td height="50">小龙</td>
-            <th height="50">学号</th>
-            <td height="50">5464565</td>
-        </tr>
-        <tr>
-            <th height="50">实习企业</th>
-            <td height="50">小龙</td>
-            <th height="50">实习地点</th>
-            <td height="50">5464565</td>
-        </tr>
-        <tr>
-            <th height="50">实习时间</th>
-            <td height="50" align="center" colspan="3">年月日</td>
-        </tr>
-    </table>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">
-                一实习目的
-            </h3>
-        </div>
-        <div class="panel-body">
-            面板内容
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">
-                一、实习目的
-            </h3>
-        </div>
-        <div class="panel-body">
-            面板内容
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">
-                二、实习内容和过程
-            </h3>
-        </div>
-        <div class="panel-body">
-            面板内容
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">
-                三、实习总结和体会
-            </h3>
-        </div>
-        <div class="panel-body">
-            面板内容
-        </div>
-    </div>
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width"/>
+    <style type="text/css" media="screen">
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: auto;
+        }
+
+        #flashContent {
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="/static/Flexpaper/css/flexpaper.css"/>
+    <script type="text/javascript" src="/static/Flexpaper/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/Flexpaper/js/flexpaper.js"></script>
+    <script type="text/javascript" src="/static/Flexpaper/js/flexpaper_handlers.js"></script>
+
+
 {% endblock %}
+{% block page_content %}
+    <input type='hidden' id='route' name='provSelect1' runat='server' value='{{ p }}'/><!--参数swf文件路径-->
+    <div style="position:absolute;left:100px;top:100px;">
+        <div id="documentViewer" class="flexpaper_viewer" style="width:770px;height:500px"></div>
+    </div>
+    <script type="text/javascript">
+        var route = $("#route").val();<!--swf文件路径-->
+        $('#documentViewer').FlexPaperViewer(
+                {
+                    config: {
+
+                        SWFFile: route, <!--swf文件路径-->
+                        jsDirectory: '/static/Flexpaper/', <!--FlexPaperViewer.swf所在文件夹-->
+                        expressInstall: '/static/Flexpaper/js/expressInstall.swf', <!--文件expressInstall.swf所在路径-->
+
+                        Scale: 2.0, <!--缩放比例-->
+                        ZoomTransition: 'easeOut', <!--缩放样式-->
+                        ZoomTime: 0.5,
+                        ZoomInterval: 0.2,
+                        FitPageOnLoad: true,
+                        FitWidthOnLoad: false,
+                        FullScreenAsMaxWindow: false,
+                        ProgressiveLoading: false,
+                        MinZoomSize: 0.2,
+                        MaxZoomSize: 5,
+                        SearchMatchAll: false,
+                        InitViewMode: 'Portrait',
+                        RenderingOrder: 'flash',
+                        StartAtPage: '3',
+
+                        ViewModeToolsVisible: true,
+                        ZoomToolsVisible: true,
+                        NavToolsVisible: true,
+                        CursorToolsVisible: true,
+                        SearchToolsVisible: true,
+                        WMode: 'window',
+                        localeChain: 'en_US'
+                    }
+                }
+        );
+    </script>
+{% endblock %}
+

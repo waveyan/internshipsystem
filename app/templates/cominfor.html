@@ -31,7 +31,7 @@
                                 <li><a onClick="ComfirmCheck()">审核</a></li>
                             {% endif %}
                             {% if com.comCheck!=2 or current_user.can(Permission.COM_INFOR_CHECK) %}
-                                <li><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a></li>
+                                <li><a href="{{ url_for('.editcominfor',comId=com.comId,cominfor='1') }}">修改</a></li>
                             {% endif %}
                             <li><a href="#">导出</a></li>
                             <li><a onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></li>
@@ -82,9 +82,9 @@
         </tr>
     </table>
     <br>
-    <br><a href="{{ url_for('.interncompany') }}">
-    <div class="btn btn-primary">返回</div>
-</a>
+    <a href="{{ url_for('.interncompany') }}">
+        <div class="btn btn-default">返回</div>
+    </a>
     <br><br>
     <!--确认弹窗-->
     <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"

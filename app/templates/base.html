@@ -101,10 +101,12 @@
 
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ url_for('main.stuInternList') }}">实习信息<span class="badge">0</span></a>
+                                    <li><a href="{{ url_for('main.stuInternList') }}">实习信息<span
+                                            class="badge">0</span></a>
                                     </li>
                                     <li class="divider"></li>
-                                    <li><a href="{{ url_for('main.stuJournalList') }}">实习工作日志<span class="badge">0</span></a>
+                                    <li><a href="{{ url_for('main.stuJournalList') }}">实习工作日志<span
+                                            class="badge">0</span></a>
                                     </li>
                                     <li class="divider"></li>
                                     <li><a href="#">我的总结和成果<span class="badge">0</span></a></li>
@@ -121,7 +123,7 @@
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('main.stuJournalList' ) }}">实习工作日志</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="#">工作总结和成果</a></li>
+                                        <li><a href="{{ url_for('main.summary') }}">工作总结和成果</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -136,15 +138,16 @@
                                         <li class="dropdown-submenu">
                                             <a tabindex="-1" href="#">用户管理</a>
                                             <ul class="dropdown-menu">
-                                                <li><a tabindex="-1" href="{{ url_for('main.update_stu_filter') }}">学生用户</a></li>
+                                                <li><a tabindex="-1"
+                                                       href="{{ url_for('main.update_stu_filter') }}">学生用户</a></li>
                                                 <li class="divider"></li>
-                                                <li><a tabindex="-1" href="{{ url_for('.teaUserList') }}">教师用户</a></li>
+                                                <li><a tabindex="-1" href="{{ url_for('main.teaUserList') }}">教师用户</a></li>
                                             </ul>
                                         </li>
                                     {% endif %}
                                     {% if current_user.can(Permission.PERMIS_MANAGE) %}
                                         <li class="divider"></li>
-                                        <li><a href="{{ url_for('.roleList') }}">权限管理</a></li>
+                                        <li><a href="{{ url_for('main.roleList') }}">权限管理</a></li>
                                     {% endif %}
                                 </ul>
                             </li>
@@ -154,19 +157,19 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a>
-                    {% if current_user.roleId==0 %}
-                        {{ current_user.stuName }}
-                    {% elif current_user.roleId==1 or current_user.roleId==2 %}
-                        {{ current_user.teaName }}
-                    {% elif current_user.roleId==3 %}
-                        管理员
-                    {% endif %}
+                        {% if current_user.roleId==0 %}
+                            {{ current_user.stuName }}
+                        {% elif current_user.roleId==1 or current_user.roleId==2 %}
+                            {{ current_user.teaName }}
+                        {% elif current_user.roleId==3 %}
+                            管理员
+                        {% endif %}
                     </a>
-                    {% if current_user.is_authenticated %}
-                        <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
-                    {% else %}
-                        <li><a href="{{ url_for('auth.login') }}">登录</a></li>
-                    {% endif %}
+                        {% if current_user.is_authenticated %}
+                            <li><a href="{{ url_for('auth.logout') }}">退出</a></li>
+                        {% else %}
+                            <li><a href="{{ url_for('auth.login') }}">登录</a></li>
+                        {% endif %}
                 </ul>
             </div>
         </div>
@@ -182,8 +185,8 @@
                 {{ message }}
             </div>
         {% endfor %}
-    {% block page_content %}
-    </div>
-    {% endblock %}
+        {% block page_content %}
+            </div>
+        {% endblock %}
 {% endblock %}
 
