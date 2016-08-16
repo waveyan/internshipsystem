@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
+{% import "_com_filter.html" as filter %}
 
 {% block title %}实习企业信息{% endblock %}
 {% block head %}
@@ -81,103 +82,8 @@
             </form>
         </div>
     </h1>
-
-    <div>
-        <ol class="breadcrumb">
-            <li><a href="{{ url_for('.update_filter') }}">所有分类</a></li>
-            {% if session['city']!=None %}
-                <li><a href="{{ url_for('.update_filter',city='city') }}">{{ session['city'] }}</a></li>
-            {% endif %}
-            {% if session['name']=='asc' %}
-                <li><a href="{{ url_for('.update_filter',name='name') }}"> 企业名称按拼音首字母升序排列</a></li>
-            {% elif session['name']=='desc' %}
-                <li><a href="{{ url_for('.update_filter',name='name') }}"> 企业名称按拼音首字母降序排列</a></li>
-            {% endif %}
-            {% if session['students']=='asc' %}
-                <li><a href="{{ url_for('.update_filter',students='students') }}"> 累计实习人次按升序排列</a></li>
-            {% elif session['students']=='desc' %}
-                <li><a href="{{ url_for('.update_filter',students='students') }}"> 累计实习人次按降序排列</a></li>
-            {% endif %}
-            {% if session['status']=='2' %}
-                <li><a href="#"> 审核通过</a></li>
-            {% elif session['status']!='2' and session.get('status')!= None %}
-                <li><a href="#"> 审核不通过</a></li>
-            {% endif %}
-        </ol>
-        <input style="float:right;" type="button" class="class1" data-toggle="collapse"
-               data-target="#demo" id="sel" value="收起筛选"/>
-
-    </div>
-
-    <div id="demo" class="collapse in ">
-        <div class="panel panel-danger">
-            <div class="panel-body">
-
-
-                <table>
-                    <tr>
-                        <th width="100">城市:</th>
-                        {% for i in city.keys() %}
-                            {% if i<3 %}
-                                <td width="200"><a href="{{ url_for('.interncompany',city=city[i]) }}">{{ city[i] }}</a>
-                                </td>
-                            {% endif %}
-                        {% endfor %}
-                        {% if 3 in city %}
-                            <td width="200">
-                                <div class="first">
-                                    <a>更多</a>
-                                    <div class="second">
-                                        {% for i in city.keys() %}
-                                            {% if i>2 %}
-                                                <li style="list-style-type:none;"><a
-                                                        href="{{ url_for('.interncompany',city=city[i]) }}">{{ city[i] }}</a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-
-                                    </div>
-                                </div>
-                            </td>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-
-                    <tr>
-                        <th width="200">企业名称：</th>
-                        <td width="400"><a href="{{ url_for('.interncompany',name='asc') }}">按拼音首字母升序排列</a></td>
-                        <td width="400"><a href="{{ url_for('.interncompany',name='desc') }}">按拼音首字母降序排列</a></td>
-                    </tr>
-
-                    <tr>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th width="200">累计实习人次：</th>
-                        <td width="400"><a href="{{ url_for('.interncompany',students='asc') }}">按人数升序排列</a></td>
-                        <td width="400"><a href="{{ url_for('.interncompany',students='desc') }}">按人数降序排列</a></td>
-                    </tr>
-
-                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                        <tr>
-                            <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                            <th width="200">审核状态：</th>
-                            <td width="400"><a href="{{ url_for('.interncompany',status=2) }}">审核通过</a></td>
-                            <td width="400"><a href="{{ url_for('.interncompany',status=0) }}">审核不通过</a></td>
-                        </tr>
-                    {% endif %}
-                </table>
-            </div>
-        </div>
-        <p></p>
-    </div>
-
-
+    {#筛选项#}
+    {{ filter.com_filter('.interncompany',2,city,current_user,Permission) }}
     <div>
         <table class="table">
             <thead>

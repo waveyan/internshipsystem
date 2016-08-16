@@ -1150,7 +1150,8 @@ def xJournalEditProcess():
     return redirect(url_for('.xJournal', stuId=stuId, internId=internId))
 
 
-# 学生信息的筛选项操作,对所选筛选项进行删除
+# 学生信息的筛选项操作,对所选筛选项进行删除,0实习信息批量审核，
+# 1实习信息批量删除，2日志列表，3日志批量审核，4,日志批量删除，5实习信息列表
 @main.route('/update_intern_filter', methods=['GET', 'POST'])
 @login_required
 def update_intern_filter():
@@ -1977,15 +1978,12 @@ def create_intern_filter(grade, major, classes):
     # 更新筛选项
     if request.args.get('grade') is not None:
         session['grade'] = request.args.get('grade')
-        print(session['grade'])
 
     if request.args.get('major') is not None:
         session['major'] = request.args.get('major')
-        print(session['major'])
 
     if request.args.get('classes') is not None:
         session['classes'] = request.args.get('classes')
-        print(session['classes'])
 
     if request.args.get('internStatus') is not None:
         session['internStatus'] = request.args.get('internStatus')
@@ -2006,11 +2004,9 @@ def create_intern_filter(grade, major, classes):
                 intern = intern.filter(Student.classes == session['classes'])
 
             if session.get('internStatus') is not None:
-                print(session['internStatus'] + 'sssss')
                 intern = intern.filter(InternshipInfor.internStatus == session['internStatus'])
 
         elif session.get('major') is not None:
-            print('2')
             intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
                 Student.major == session['major'])
 
@@ -2024,7 +2020,6 @@ def create_intern_filter(grade, major, classes):
                 intern = intern.filter(InternshipInfor.internStatus == session['internStatus'])
 
         elif session.get('classes') is not None:
-            print('3')
             intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
                 Student.classes == session['classes'])
 

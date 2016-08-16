@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
+{% import "_intern_filter.html" as filter %}
 
 {% block title %}学生实习信息{% endblock %}
 {% block head %}
@@ -83,141 +84,25 @@
             </form>
         </div>
     </h1>
-    <div>
-        <ol class="breadcrumb">
-            <li><a href="{{ url_for('.update_intern_filter',flag=1) }}">所有分类</a></li>
-            {% if session['grade']!=None %}
-                <li><a href="{{ url_for('.update_intern_filter',grade='1',flag=1) }}">{{ session['grade'] }}</a></li>
-            {% endif %}
-            {% if session['major']!=None %}
-                <li><a href="{{ url_for('.update_intern_filter',major='1',flag=1) }}">{{ session['major'] }}</a></li>
-            {% endif %}
-
-            {% if session['classes']!=None %}
-                <li><a href="{{ url_for('.update_intern_filter',classes='1',flag=1) }}">{{ session['classes'] }}班</a>
-                </li>
-            {% endif %}
-            {% if session['internStatus']!=None %}
-                {% if session['internStatus']=='0' %}
-                    <li><a href="#">待实习</a></li>
-                {% elif session['internStatus']=='1' %}
-                    <li><a href="#">实习中</a></li>
-                {% else %}
-                    <li><a href="#">实习结束</a></li>
-                {% endif %}
-            {% endif %}
-        </ol>
-        <input style="float:right;" type="button" class="class1" data-toggle="collapse"
-               data-target="#demo" id="sel" value="收起筛选"/>
-    </div>
-
-    <div id="demo" class="collapse in ">
-        <div class="panel panel-danger">
-            <div class="panel-body">
-                <table>
-                    <tr>
-                        <th width="150">年级:</th>
-                        {% for i in grade.keys() %}
-                            {% if i<3 %}
-                                <td width="150"><a
-                                        href="{{ url_for('.stuIntern_allDelete',grade=grade[i]) }}">{{ grade[i] }}级</a>
-                                </td>
-                            {% endif %}
-                        {% endfor %}
-                        {% if 3 in grade %}
-                            <td width="150">
-                                <div class="first">
-                                    <a>更多</a>
-                                    <div class="second">
-                                        {% for i in grade.keys() %}
-                                            {% if i>2 %}
-                                                <li style="list-style-type:none;"><a
-                                                        href="{{ url_for('.stuIntern_allDelete',grade=grade[i]) }}">{{ grade[i] }}级</a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </td>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th width="150">专业:</th>
-                        {% for i in major.keys() %}
-                            {% if i<3 %}
-                                <td width="150"><a
-                                        href="{{ url_for('.stuIntern_allDelete',major=major[i]) }}">{{ major[i] }}</a>
-                                </td>
-                            {% endif %}
-                        {% endfor %}
-                        {% if 3 in major %}
-                            <td>
-                                <div class="first">
-                                    <a>更多</a>
-                                    <div class="second">
-                                        {% for i in major.keys() %}
-                                            {% if i>2 %}
-                                                <li style="list-style-type:none;"><a
-                                                        href="{{ url_for('.stuIntern_allDelete',major=major[i]) }}">{{ major[i] }}</a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </td>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th width="150">班级：</th>
-                        {% for i in classes.keys() %}
-                            {% if i<3 %}
-                                <td width="200"><a
-                                        href="{{ url_for('.stuIntern_allDelete',classes=classes[i]) }}">{{ classes[i] }}班</a>
-                                </td>
-                            {% endif %}
-                        {% endfor %}
-                        {% if 3 in classes %}
-                            <td>
-                                <div class="first">
-                                    <a>更多</a>
-                                    <div class="second">
-                                        {% for i in classes.keys() %}
-                                            {% if i>2 %}
-                                                <li style="list-style-type:none;"><a
-                                                        href="{{ url_for('.stuIntern_allDelete',classes=classes[i]) }}">{{ classes[i] }}班</a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </td>
-                        {% endif %}
-                    </tr>
-
-                    <tr>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th width="150">实习状态：</th>
-                        <td width="200"><a href="{{ url_for('.stuIntern_allDelete',internStatus=0) }}">待实习</a></td>
-                        <td width="200"><a href="{{ url_for('.stuIntern_allDelete',internStatus=1) }}">实习中</a></td>
-                        <td width="150"><a href="{{ url_for('.stuIntern_allDelete',internStatus=2) }}">实习结束</a></td>
-                        <td>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <p></p>
-    </div>
+    {#    筛选项#}
+    {{ filter.intern_filter('.stuIntern_allDelete',1,grade,major,classes) }}
     <table class="table" id="t">
         <thead>
+        <tr>
+            {% if current_user.roleId!=0 %}
+                <th></th>
+                <th>学号</th>
+                <th>姓名</th>
+            {% endif %}
+            <th>企业名称</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>审核状态</th>
+            <th>实习状态</th>
+            <!--   {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+                <th>操作</th>
+            {% endif %} -->
+        </tr>
         </thead>
         <tbody>
         <form method="POST">
@@ -228,7 +113,7 @@
                     <td>
                         <a href="{{ url_for('.xIntern',stuId=intern.stuId, internId=intern.Id, comId=intern.comId) }}">{{ intern.stuId }}</a>
                     </td>
-                    <td>{{ intern.stuname }}</td>
+                    <td>{{ intern.stuName }}</td>
                     <td>{{ intern.comName }}</td>
                     <td>{{ intern.start }}</td>
                     <td>{{ intern.end }}</td>
