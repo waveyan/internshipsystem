@@ -2069,10 +2069,10 @@ excel_import_com = { '企业名称':'comName', '企业简介':'comBrief', '地�
 IMPORT_FOLDER = os.path.abspath('file_cache/xls_import')
 EXPORT_FOLDER = os.path.abspath('file_cache/xls_export')
 # 可加上成果的上传文件格式限制
-ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
+# ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+def allowed_file(filename, secure_postfix):
+    return '.' in filename and filename.rsplit('.', 1)[1] in secure_postfix
 
 
 
@@ -2103,7 +2103,7 @@ def excel_export(template, data):
                     ws.write(row+1, col, '实习结束')
             elif colname in ['stuId', 'comMon', 'cteaPhone', 'steaPhone']:
                 if getattr(xdata, colname):
-                    ws.write(row+1, col, int(getattr(xdata, colname)))
+                    ws.write(row+1, col, (getattr(xdata, colname)))
             elif colname in ['start','end', 'task', 'teaName', 'opinion', 'icheckTime', 'comDate']:
                 ws.write(row+1, col, str(getattr(xdata, colname)))
             else:
@@ -2113,7 +2113,7 @@ def excel_export(template, data):
         file_name = 'internlist_%s.xls' % random.randint(1,100)
         file_attachname = '实习信息导出表_%s.xls' % datetime.now().date()
     elif template == excel_export_com:
-        file_name = 'comlist.xls_%s' % random.randint(1,100)
+        file_name = 'comlist_%s.xls' % random.randint(1,100)
         file_attachname = '企业信息导出表_%s.xls' % datetime.now().date()
     wb.save((os.path.join(EXPORT_FOLDER,file_name)))
     # attachment_finaname为下载时,提供的默认文件名
@@ -2162,8 +2162,8 @@ def excel_importpage():
         if file.filename == '':
             flash('No selected file')
             return redirect('/')
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+        if file and allowed_file(file.filename, ['xls', 'xlsx']):
+            filename = file.filename
             file.save( os.path.join(IMPORT_FOLDER, filename))
             # 上传成功,开始导入
             if from_url == "stuInternList":
@@ -2268,4 +2268,122 @@ def excel_importpage():
             flash('请上传正确的Excel文件( .xls和 .xlsx格式)')
             return redirect('/')
     return render_template('excel_import.html',Permission=Permission)
+
+
+
+# ---------------实习总结与成果---------------------------------------
+
+# # FTP
+# import ftplib
+
+# # 暂不设定timeout
+# ftp = ftplib.FTP(host='192.168.1.166', user='intern', passwd='intern')
+# ftp_dict = {'SCO':'实习成果', 'SUM':'实习总结'}
+
+# # 指定学生的实习总结或实习成果
+# def ftp_list(stuId, dest):
+#     dest = ftp_dict.get(dest)
+#     if dest:
+#         grade = stuId[0:4]
+#         stuName = Student.query.filter_by(stuId=stuId).first().stuName
+#         ftp.cwd('/%s/%s_%s/%s' % (grade, stuId, stuName, dest) )
+#         return ftp.retrlines('NLST')
+
+# # ftp下载
+# def ftp_download(stuId, dest, dest_filename):
+#     filelist = ftp_list(stuId, dest)
+#     if dest_filename in filelist:
+#         temp_filename = '%s.temp' % random.randint(1,100)
+#         with open( os.path.join(FTP_DOWNLOAD,temp_filename) ) as f:
+#             ftp.retrbinary( ('RETR %s' % dest_filename), f.write )
+#         return send_file( os.path.join(FTP_DOWNLOAD, temp_filename), as_attachment=True, attachment_filename = dest_filename.encode('utf-8') )
+
+# # ftp上传
+# def ftp_upload(stuId, dest, upload_file):
+#     filelist = ftp_list(stuId, dest)
+
+
+
+STORAGE_FOLDER = os.path.join( os.path.abspath('.'), 'storage')
+
+# 返回想对应的存储路径
+def storage_cwd(stuId, dest):
+    if dest in ['score', 'summary', 'attachment']:
+        file_path = os.path.join(STORAGE_FOLDER, stuId, dest)
+        return file_path
+
+# 目录下的文件列表
+# 文件名 文件大小 上传时间
+# 返回嵌套字典 {'file01':{'fsize':'2MB', 'mtime':'2016-01-01 08:00'}, 'file02':{'fsize':'144KB', 'mtime':'2016-11-01 08:12'}}
+def storage_list(stuId, dest):
+    file_path = storage_cwd(stuId, dest)
+    file_list = {}
+    for f in os.listdir(file_path):
+        # 文件大小h.join(file_path, f))/1024
+        if fsize < 0.1:
+            fsize = '0.1KB'
+        elif fsize > 1024:
+            fsize = '%s' % fsize/1024
+            # 仅保留一位小数
+            integer = fsize.split('.')[0]
+            decimal = fsize.split('.')[1][0]
+            fsize = '%s.%sMB' % (integer, decimal)
+        else:
+            fsize = '%s' % fsize
+            # 仅保留一位小数
+            integer = fsize.split('.')[0]
+            decimal = fsize.split('.')[1][0]
+            fsize = '%s.%sKB' % (integer, decimal)
+        # 上传时间
+        mtime = datetime.fromtimestamp(os.path.getmtime(os.path.join(file_path,f))).strftime('%Y-%m-%d %H:%M')
+        file_list[f] = {'fsize': fsize, 'mtime':mtime }
+    return file_list
+
+# 下载文件
+# return这个函数,直接弹窗下载
+def storage_download(stuId, dest, dest_filename):
+    file_path = storage_cwd(stuId, dest)
+    if dest_filename in os.listdir(file_path):
+        return send_file(os.path.join(file_path, dest_filename), as_attachment=True, attachment_filename=dest_filename.encode('utf-8'))
+
+# 上传文件
+# 上传成功返回True
+# if request.method == 'POST':
+def storage_upoload(stuId, dest):
+    if 'file' not in request.files:
+        flash('No file part')
+        return 0
+    file = request.files['file']
+    # 是否为空
+    if file.filename == '':
+        flash('No selected file')
+        return 0
+    if file:
+        filename = file.filename
+        file_path = storage_cwd(stuId, dest)
+        file.save( os.path.join(file_path, filename))
+        return 1
+
+# @main.route('/test', methods=['GET','POST'])
+# def test():
+#     if request.method == 'POST':
+#         if storage_upoload('201513717292', 'score'):
+#             flash('success')
+#             return redirect('/')
+#     return render_template('excel_import.html',Permission=Permission)
+
+
+
+# 在线阅读获取文件
+
+
+# @main.route('stuSumList', methods={'GET', 'POST'])
+# @login_required
+# def stuSumList():
+    
+
+
+
+
+
 
