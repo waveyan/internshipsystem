@@ -1147,7 +1147,8 @@ def xJournalEditProcess():
     return redirect(url_for('.xJournal', stuId=stuId, internId=internId))
 
 
-# 学生信息的筛选项操作,对所选筛选项进行删除
+# 学生信息的筛选项操作,对所选筛选项进行删除,0实习信息批量审核，
+# 1实习信息批量删除，2日志列表，3日志批量审核，4,日志批量删除，5实习信息列表
 @main.route('/update_intern_filter', methods=['GET', 'POST'])
 @login_required
 def update_intern_filter():
@@ -1974,15 +1975,12 @@ def create_intern_filter(grade, major, classes):
     # 更新筛选项
     if request.args.get('grade') is not None:
         session['grade'] = request.args.get('grade')
-        print(session['grade'])
 
     if request.args.get('major') is not None:
         session['major'] = request.args.get('major')
-        print(session['major'])
 
     if request.args.get('classes') is not None:
         session['classes'] = request.args.get('classes')
-        print(session['classes'])
 
     if request.args.get('internStatus') is not None:
         session['internStatus'] = request.args.get('internStatus')
@@ -2003,11 +2001,9 @@ def create_intern_filter(grade, major, classes):
                 intern = intern.filter(Student.classes == session['classes'])
 
             if session.get('internStatus') is not None:
-                print(session['internStatus'] + 'sssss')
                 intern = intern.filter(InternshipInfor.internStatus == session['internStatus'])
 
         elif session.get('major') is not None:
-            print('2')
             intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
                 Student.major == session['major'])
 
@@ -2021,7 +2017,6 @@ def create_intern_filter(grade, major, classes):
                 intern = intern.filter(InternshipInfor.internStatus == session['internStatus'])
 
         elif session.get('classes') is not None:
-            print('3')
             intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
                 Student.classes == session['classes'])
 
@@ -2051,7 +2046,6 @@ def create_intern_filter(grade, major, classes):
         else:
             print('5')
             intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId)
-
 
     except Exception as e:
         print('组合筛选：', e)
@@ -2326,7 +2320,6 @@ EXPORT_FOLDER = os.path.abspath('file_cache/xls_export')
 def allowed_file(filename, secure_postfix):
     return '.' in filename and filename.rsplit('.', 1)[1] in secure_postfix
 
-
 # 导出Excel
 # 由于实习
 def excel_export(template, data):
@@ -2526,37 +2519,6 @@ def excel_importpage():
 
 # ---------------实习总结与成果---------------------------------------
 
-# # FTP
-# import ftplib
-
-# # 暂不设定timeout
-# ftp = ftplib.FTP(host='192.168.1.166', user='intern', passwd='intern')
-# ftp_dict = {'SCO':'实习成果', 'SUM':'实习总结'}
-
-# # 指定学生的实习总结或实习成果
-# def ftp_list(stuId, dest):
-#     dest = ftp_dict.get(dest)
-#     if dest:
-#         grade = stuId[0:4]
-#         stuName = Student.query.filter_by(stuId=stuId).first().stuName
-#         ftp.cwd('/%s/%s_%s/%s' % (grade, stuId, stuName, dest) )
-#         return ftp.retrlines('NLST')
-
-# # ftp下载
-# def ftp_download(stuId, dest, dest_filename):
-#     filelist = ftp_list(stuId, dest)
-#     if dest_filename in filelist:
-#         temp_filename = '%s.temp' % random.randint(1,100)
-#         with open( os.path.join(FTP_DOWNLOAD,temp_filename) ) as f:
-#             ftp.retrbinary( ('RETR %s' % dest_filename), f.write )
-#         return send_file( os.path.join(FTP_DOWNLOAD, temp_filename), as_attachment=True, attachment_filename = dest_filename.encode('utf-8') )
-
-# # ftp上传
-# def ftp_upload(stuId, dest, upload_file):
-#     filelist = ftp_list(stuId, dest)
-
-
-
 STORAGE_FOLDER = os.path.join( os.path.abspath('.'), 'storage')
 
 # 返回想对应的存储路径
@@ -2603,24 +2565,6 @@ def storage_download(internId):
         if file_name:
             file_path = storage_cwd(internId, path_dict[x])
             return send_file(os.path.join(file_path, file_name), as_attachment=True, attachment_filename=file_name.encode('utf-8'))
-        
-# 上传文件
-# 上传成功返回True
-# if request.method == 'POST':
-# def storage_upload(internId, request_get):
-#     path_dict = {'attachment_upload':'attachment', 'summary_doc_upload':'summary_doc'}
-#     dest = path_dict[request_get]
-#     # file = request.files[request_get]
-#     file = request.files.get(request_get)
-#     if file:
-#         try:
-#             filename = file.filename
-#             file_path = storage_cwd(internId, dest)
-#             file.save(os.path.join(file_path, filename))
-#             return True
-#         except Exception as e:
-#             print(datetime.now(), '上传文件失败', e)
-#             return False
 
 
 def storage_upload(internId):
@@ -2637,22 +2581,7 @@ def storage_upload(internId):
             except Exception as e:
                 print(datetime.now(), '上传文件失败', e)
                 return False
-    # dest = path_dict[request_get]
-    # # file = request.files[request_get]
-    # file = request.files.get(request_get)
-    # if file:
-    #     try:
-    #         filename = file.filename
-    #         file_path = storage_cwd(internId, dest)
-    #         file.save(os.path.join(file_path, filename))
-    #         return True
-    #     except Exception as e:
-    #         print(datetime.now(), '上传文件失败', e)
-    #         return False
 
-
-
-    
 
 
 # 学生实习总结与成果列表
