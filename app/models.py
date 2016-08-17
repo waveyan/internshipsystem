@@ -224,6 +224,7 @@ class InternshipInfor(db.Model):
     time = db.Column(db.DATETIME, default=datetime.now())
     icheckTeaId = db.Column(db.String(8))
     internCheck = db.Column(db.Integer, default=0)
+    internStatus = db.Column(db.Integer, default=0)
     icheckTime = db.Column(db.DATETIME)
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
@@ -268,6 +269,28 @@ class ComDirTea(db.Model):
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
 
+
+class Summary(db.Model):
+    __tablename__ = 'Summary'
+    internId = db.Column(db.Integer,  primary_key=True)
+    sumCheck = db.Column(db.Integer)
+    sumCheckTeaId = db.Column(db.String(10))
+    sumCheckTime = db.Column(db.DATETIME)
+    com01 = db.Column(db.Integer)
+    com02 = db.Column(db.Integer)
+    com03 = db.Column(db.Integer)
+    com04 = db.Column(db.Integer)
+    com05 = db.Column(db.Integer)
+    com06 = db.Column(db.Integer)
+    com07 = db.Column(db.Integer)
+    com08 = db.Column(db.Integer)
+    com09 = db.Column(db.Integer)
+    com10 = db.Column(db.Integer)
+    com10 = db.Column(db.Integer)
+    comOpinion = db.Column(db.String(200))
+    comScore = db.Column(db.Integer)
+    schScore = db.Column(db.Integer)
+    sumScore = db.Column(db.Integer)
 
 class Journal(db.Model):
     __tablename__ = 'Journal'

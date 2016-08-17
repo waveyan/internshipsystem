@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
+{% import "_intern_filter.html" as filter %}
 
 {% block title %}实习日志{% endblock %}
 {% block head %}
@@ -16,6 +17,16 @@
             });
         });
     </script>
+    <!--筛选按钮-->
+    <script type="text/javascript">
+        window.onload = function () {
+            var obj = document.getElementById("sel");
+            obj.onclick = function () {
+                obj.className = (obj.className == "class1" ? "class2" : "class1");
+                obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
+            }
+        }
+    </script>
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
@@ -23,49 +34,69 @@
         <h1>{{ internlist[0].stuName }}的实习日志
     {% else %}
         <h1>学生实习日志
-            {% if current_user.can(Permission.STU_INTERN_EDIT) %}
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                            data-toggle="dropdown">编辑<span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        {% if current_user.can(Permission.STU_INTERN_CHECK) %}
-                            <li><a href="{{ url_for('.stuJournal_allCheck') }}">批量审核</a></li>
-                            <li><a href="{{ url_for('.stuJournal_allDelete') }}">批量删除</a></li>
-                            </ul>
+        {% if current_user.can(Permission.STU_JOUR_EDIT) %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                        data-toggle="dropdown">编辑<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                        <li><a href="{{ url_for('.update_intern_filter',flag=3) }}">批量审核</a></li>
+                        <li><a href="{{ url_for('.update_intern_filter',flag=4) }}">批量删除</a></li>
+                        </ul>
+                        </div>
+                    {% endif %}
+            <div style="float:right;width:300px"><!--长度-->
+                <form role="form" method="POST" action="/interncompany">
+                    <div class="row head">
+                        <div class="col-lg-10"><!--位置-->
+                            <div class="input-group ">
+                                {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" id="rearch"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+                        </span>
                             </div>
-                        {% endif %}
-    
-            {% endif %}
+                            {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        {% endif %}
     {% endif %}
-    </h1>
-
-
-    <div>
-        <table class="table" id="t">
-            <thead>
-            <tr>
-                <th>日志名称</th>
-                {% if current_user.roleId !=0 %}
-                    <th>学号</th>
-                {% endif %}
-                <th>开始时间</th>
-                <th>结束时间</th>
-                <th>日志状态</th>
-                <th>实习状态</th>
-                <!--
-                <th>操作</th>
-                -->
-            </tr>
-            </thead>
-            <tbody>
-            <div>
+</h1>
+    {#    筛选项#}
+    {{ filter.intern_filter('.stuJournalList',2,grade,major,classes) }}
+<div>
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th>日志名称</th>
+            {% if current_user.roleId !=0 %}
+                <th>学号</th>
+            {% endif %}
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>日志状态</th>
+            <th>实习状态</th>
+            <!--
+            <th>操作</th>
+            -->
+        </tr>
+        </thead>
+        <tbody>
+        <div>
             {% for intern in internlist %}
                 <tr>
                     {% if current_user.roleId==0 %}
-                        <td><a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">我在{{ intern.comName }}的日子</a></td>
+                        <td>
+                            <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">我在{{ intern.comName }}的日子</a>
+                        </td>
                     {% else %}
-                        <td><a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}在{{ intern.comName }}的日子</a></td>
+                        <td>
+                            <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}在{{ intern.comName }}的日子</a>
+                        </td>
                         <td>{{ intern.stuId }}</td>
                     {% endif %}
                     <td>{{ intern.start }}</td>
@@ -89,13 +120,13 @@
                     -->
                 </tr>
             {% endfor %}
-            </div>
-            </tbody>
-        </table>
-        {% if pagination %}
-            <div class="pagination">
-                {{ macros.pagination_widget(pagination,'.stuJournalList') }}
-            </div>
-        {% endif %}
-    </div>
+        </div>
+        </tbody>
+    </table>
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination,'.stuJournalList') }}
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

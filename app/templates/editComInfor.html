@@ -29,7 +29,7 @@
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 {% if com.comCheck!=2 %}
-                                    <li><a href="#">修改</a></li>
+                                    <li><a href="{{ url_for('.editcominfor',comId=com.comId,cominfor='1') }}">修改</a></li>
                                 {% endif %}
                                 <li><a href="#">导出</a></li>
                                 <li><a onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></li>
