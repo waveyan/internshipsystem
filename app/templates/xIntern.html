@@ -9,7 +9,7 @@
     </style>
 
 
-    <!-- 确认删除窗口 -->
+    <!-- 确认请求窗口 -->
     <script type="text/javascript">
         function ComfirmDelete() {
             $('#deleteToggle').modal();
@@ -39,10 +39,10 @@
             </div>
             <div class="modal-footer">
                 <!-- 用form来获取数据 -->
-                <form action="/comfirmDeleteJournal_Intern" method="POST">
+                <form action="/intern_delete" method="POST">
                 <input type="hidden" name="stuId" value="{{ student.stuId }}">
                 <input type="hidden" name="internId" value="{{ internship.Id }}">
-                <input type="hidden" name="from_url" value="/xIntern">
+                <input type="hidden" name="from_url" value="xIntern">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="submit" class="btn btn-primary" >删除</button>
                 </form>
@@ -70,7 +70,6 @@
                 <form name="xIntern_comfirm_form" action="/xIntern_comfirm" method="POST">
                 <input type="hidden" name="stuId" value="{{ student.stuId }}" />
                 <input type="hidden" name="internId" value="{{ internship.Id }}" />
-                <input type="hidden" name="comId" value="{{ comInfor.comId }}" />
                 {% if internship.opinion %}
                     <div style="text-align:center;">审核意见</div><textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空">{{ internship.opinion }}</textarea><br><br>
                 {% else %}
@@ -213,12 +212,12 @@
                 <td height="50" width="300">E-mail</td>
             </tr>
             {% for tea in comdirtea %}
-                {% if tea.teaName %}
+                {% if tea.cteaName %}
                     <tr>
-                        <td height="50">{{ tea.teaName }}</td>
-                        <td height="50">{{ tea.teaDuty }}</td>
-                        <td height="50">{{ tea.teaPhone }}</td>
-                        <td height="50" colspan="2">{{ tea.teaEmail }}</td>
+                        <td height="50">{{ tea.cteaName }}</td>
+                        <td height="50">{{ tea.cteaDuty }}</td>
+                        <td height="50">{{ tea.cteaPhone }}</td>
+                        <td height="50" colspan="2">{{ tea.cteaEmail }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}
@@ -235,13 +234,13 @@
                 <td height="50" width="240">E-mail</td>
             </tr>
             {% for tea in schdirtea %}
-                {% if tea.teaName %}
+                {% if tea.steaName %}
                     <tr>
                         <td height="50">{{ tea.teaId }}</td>
-                        <td height="50">{{ tea.teaName }}</td>
-                        <td height="50">{{ tea.teaDuty }}</td>
-                        <td height="50">{{ tea.teaPhone }}</td>
-                        <td height="50" colspan="2">{{ tea.teaEmail }}</td>
+                        <td height="50">{{ tea.steaName }}</td>
+                        <td height="50">{{ tea.steaDuty }}</td>
+                        <td height="50">{{ tea.steaPhone }}</td>
+                        <td height="50" colspan="2">{{ tea.steaEmail }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}

@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, request, flash
 from . import auth
 from .form import LoginForm
 from ..models import Teacher, Student,Permission
-from flask.ext.login import login_required, login_user, logout_user
+from flask.ext.login import login_required, login_user, logout_user,session
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -15,9 +15,21 @@ def login():
             login_user(teacher, form.remember_me.data)
             return redirect(request.args.get('next') or url_for('main.index'))
         if stu is not None and stu.password == form.password.data:
+        # 消息提示
+            print(session.get('message') is None)
+            message = {}
+            internCheck = Student.query.filter_by(stuId=form.ID.data).first().internCheck
+            print(internCheck)
+            message[0] = internCheck
+            jourCheck = Student.query.filter_by(stuId=form.ID.data).first().jourCheck
+            message[1] = jourCheck
+            sumCheck = Student.query.filter_by(stuId=form.ID.data).first().sumCheck
+            message[2] = sumCheck
+            session['message'] = message
             login_user(stu, form.remember_me.data)
             return redirect(request.args.get('next') or url_for('main.index'))
         flash('账户或密码不正确！')
+
     return render_template('auth/login.html', form=form, Permission=Permission)
 
 

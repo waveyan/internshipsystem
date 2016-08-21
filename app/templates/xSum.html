@@ -2,19 +2,65 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
 
+{% block title %}实习总结与成果{% endblock %}
 {% block head %}
     {{ super() }}
-    <!-- 确认删除窗口 -->
+    <!-- 确认请求窗口 -->
     <script type="text/javascript">
         function ComfirmDelete() {
             $('#deleteToggle').modal();
         }
+        function Admin_ComfirmEdit() {
+            $('#editToggle').modal();
+        }
+        function ComfirmCheck() {
+            $('#checkToggle').modal();
+        }
     </script>
+
     <style type="text/css">
         p {
             white-space: pre-line;
         }
     </style>
+
+    <!-- 审核操作窗口 -->
+    <div class="modal fade" id="checkToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="text-align:center;">
+                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+                </div>
+                <div class="modal-body">
+                    {% if summary.sumnCheck == 2 %}
+                        <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习总结已审核通过,是否仍要继续?</h4>
+                    {% else %}
+                        <h4 class="modal-body" style="color:black;" id="deleteModalLabel">请对该实习总结做出审核</h4>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <!-- 用form来获取数据 -->
+                    <form name="xSum_comfirm_form" action="/xSum_comfirm" method="POST">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}"/>
+                        <input type="hidden" name="internId" value="{{ summary.internId }}"/>
+                        {% if summary.sumCheckOpinion %}
+                            <div style="text-align:center;">审核意见</div>
+                            <textarea name="sumCheckOpinion" cols="70" rows="5"
+                                      placeholder="若审核通过,意见可为空">{{ summary.sumCheckOpinion }}</textarea><br><br>
+                        {% else %}
+                            <div style="text-align:center;">审核意见</div>
+                            <textarea name="sumCheckOpinion" cols="70" rows="5" placeholder="若审核通过,意见可为空"></textarea>
+                            <br><br>
+                        {% endif %}
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" name="sumCheck" value="2" class="btn btn-success">审核通过</button>
+                        <button type="submit" name="sumCheck" value="1" class="btn btn-primary">退回修改</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 在线阅读 -->
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -40,34 +86,31 @@
     <script type="text/javascript" src="/static/Flexpaper/js/flexpaper_handlers.js"></script>
 {% endblock %}<!--先执行父模板-->
 
-{% block title %}实习总结与成果{% endblock %}
-
 {% block page_content %}
+    <h1>fuck</h1>
     <!-- 删除确认窗口 -->
     <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
          aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="text-align:center;">
-                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
-                        日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
-                </div>
-                <div class="modal-footer">
-                    <!-- 用form来获取数据 -->
-                    <form action="/comfirmDeleteJournal_Intern" method="POST">
-                        <input type="hidden" name="internId" value="{{ internship.Id }}">
-                        <input type="hidden" name="from_url" value="/xJournal">
-                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        1
-                        <button type="submit" class="btn btn-primary">删除</button>
-                    </form>
-                </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-body">
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
+            </div>
+            <div class="modal-footer">
+                <!-- 用form来获取数据 -->
+                <form action="/intern_delete" method="POST">
+                    <input type="hidden" name="internId" value="{{ internship.Id }}">
+                    <input type="hidden" name="from_url" value="xSum">
+                    <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">删除</button>
+                </form>
             </div>
         </div>
+    </div>
     </div>
 
     <div class="page-`er">
@@ -81,6 +124,9 @@
                     data-toggle="dropdown">编辑<span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
+                {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
+                    <li><a onClick="ComfirmCheck()">审核</a></li>
+                {% endif %}
                 <li><a onClick="ComfirmDelete()">删除</a></li>
                 <li><a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a>
                 </li>
@@ -88,11 +134,11 @@
         </div>
         </h1>
 
-        <!-- 日志总体审核情况 -->
-        {% if internship.jourCheck == 0 %}
-            <span class="label label-warning">待审核...</span>
-        {% else %}
+        <!-- 审核情况 -->
+        {% if summary.sumCheck == 2 %}
             <span class="label label-info">已审核</span>
+        {% else %}
+            <span class="label label-warning">待审核...</span>
         {% endif %}
         <br><br>
 
@@ -134,6 +180,7 @@
         </tr>
         </thead>
         <tbody>
+        <!-- 总结文档 -->
         {% for summary in summary_doc %}
             <tr>
                 <!-- 提供下载的form -->
@@ -151,6 +198,22 @@
                 <td><a href="javascript:{}" onclick="document.getElementById('{{ summary }}').submit();">下载</a></td>
             </tr>
         {% endfor %}
+
+        {#        <!-- 总结文档 -->#}
+        {#        {% if summary_doc %}#}
+        {#        <tr>#}
+        {#            {% for file_name in summary_doc %}#}
+        {#                <!-- 提供下载的form -->#}
+        {#                <form id="summary_download_form" method="post">#}
+        {#                    <input type="hidden" name="summary_doc_download" value="{{ file_name }}" >#}
+        {#                </form>#}
+        {#                <td><a href="javascript:{}" onclick="document.getElementById('summary_download_form').submit();">{{ file_name }}</a></td>#}
+        {#                <td>{{ summary_doc[file_name]['fsize'] }}</td>#}
+        {#                <td>{{ summary_doc[file_name]['mtime'] }}</td>#}
+        {#        </tr>#}
+        {#            {% endfor %}#}
+        {#        {% endif %}#}
+
         {% for attach in attachment %}
             <tr>
                 <!-- 提供下载的form -->
@@ -173,7 +236,7 @@
     {% if path %}
         <table>
             <thead>
-                <h2>在线阅览</h2>
+            <h2>在线阅览</h2>
             </thead>
             <tbody>
             <tr>
@@ -208,7 +271,6 @@
                                         InitViewMode: 'Portrait',
                                         RenderingOrder: 'flash',
                                         StartAtPage: '1',
-
                                         ViewModeToolsVisible: true,
                                         ZoomToolsVisible: true,
                                         NavToolsVisible: true,
@@ -218,12 +280,13 @@
                                         localeChain: 'en_US'
                                     }
                                 }
-                        );
+                        )
+                        ;
                     </script>
                 </div>
             </tr>
             </tbody>
         </table>
+        <br><br>
     {% endif %}
-    <br><br>
 {% endblock %}

@@ -80,16 +80,13 @@
             <th>结束时间</th>
             <th>日志状态</th>
             <th>实习状态</th>
-            <!--
-            <th>操作</th>
-            -->
         </tr>
         </thead>
         <tbody>
         <form method="POST">
             {% for intern in internlist %}
                 <tr>
-                    <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
+                    <td>22<input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
                     <td>
                         <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}在{{ intern.comName }}的日子</a>
                     </td>
@@ -110,10 +107,6 @@
                     {% elif intern.internStatus == 2 %}
                         <td>实习结束</td>
                     {% endif %}
-
-                    <!--
-                    <td><a>审核</a>|<a>删除</a></td>
-                    -->
                 </tr>
             {% endfor %}
         </tbody>

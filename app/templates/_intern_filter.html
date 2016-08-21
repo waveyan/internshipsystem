@@ -148,8 +148,12 @@
                     <tr>
                         <th width="150">审核状态：</th>
                         <td width="150"><a href="{{ url_for(endpoint,checkStatus=0) }}">待审核</a></td>
-                        <td width="150"><a href="{{ url_for(endpoint,checkStatus=1) }}">被退回</a></td>
-                        <td width="150"><a href="{{ url_for(endpoint,checkStatus=2) }}">审核通过</a></td>
+                        {% if flags>1 and flags<5 %}
+                            <td width="150"><a href="{{ url_for(endpoint,checkStatus=1) }}">审核通过</a></td>
+                        {% else %}
+                            <td width="150"><a href="{{ url_for(endpoint,checkStatus=1) }}">被退回</a></td>
+                            <td width="150"><a href="{{ url_for(endpoint,checkStatus=2) }}">审核通过</a></td>
+                        {% endif %}
                     </tr>
                 </table>
             </div>

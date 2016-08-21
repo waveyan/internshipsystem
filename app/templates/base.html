@@ -95,21 +95,29 @@
                         <li><a href="{{ url_for('main.statistics2') }}">统计</a></li>
                         {% if current_user.roleId==0 %}
                             <li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                    个人信息 <span class="badge">0</span>
-                                    <span class="caret"></span>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">个人信息
+                                    {% if session['message']['0']==1 or session['message']['1']==1 or session['message']['2']==1 %}
+                                        <span class="glyphicon glyphicon-bell"></span>
+                                    {% endif %}
 
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ url_for('main.stuInternList') }}">实习信息<span
-                                            class="badge">0</span></a>
+                                    <li><a href="{{ url_for('main.stuInternList') }}">实习信息
+                                        {% if session['message']['0']==1 %}
+                                        <span class="glyphicon glyphicon-bell"></span>
+                                    {% endif %}</a>
                                     </li>
                                     <li class="divider"></li>
-                                    <li><a href="{{ url_for('main.stuJournalList') }}">实习工作日志<span
-                                            class="badge">0</span></a>
+                                    <li><a href="{{ url_for('main.stuJournalList') }}">实习工作日志
+                                    {% if session['message']['1']==1 %}
+                                        <span class="glyphicon glyphicon-bell"></span>
+                                    {% endif %}</a>
                                     </li>
                                     <li class="divider"></li>
-                                    <li><a href="{{ url_for('main.stuSumList') }}">我的总结和成果<span class="badge">0</span></a></li>
+                                    <li><a href="{{ url_for('main.stuSumList') }}">我的总结和成果
+                                    {% if session['message']['2']==1 %}
+                                        <span class="glyphicon glyphicon-bell"></span>
+                                    {% endif %}</a></li>
                                 </ul>
                             </li>
                         {% else %}
@@ -141,7 +149,8 @@
                                                 <li><a tabindex="-1"
                                                        href="{{ url_for('main.update_stu_filter') }}">学生用户</a></li>
                                                 <li class="divider"></li>
-                                                <li><a tabindex="-1" href="{{ url_for('main.teaUserList') }}">教师用户</a></li>
+                                                <li><a tabindex="-1" href="{{ url_for('main.teaUserList') }}">教师用户</a>
+                                                </li>
                                             </ul>
                                         </li>
                                     {% endif %}

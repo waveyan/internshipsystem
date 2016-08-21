@@ -49,13 +49,13 @@
                     <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
             </div>
             <div class="modal-body">
-                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">实习总结将会连同实习信息,日志一起删除,且删除操作将无法撤回,是否仍要删除</h4>
             </div>
             <div class="modal-footer">
                 <!-- 用form来获取数据 -->
-                <form action="/comfirmDeleteJournal_Intern" method="POST">
+                <form action="/intern_delete" method="POST">
                 <input type="hidden" name="internId" value="{{ internship.Id }}">
-                <input type="hidden" name="from_url" value="/xJournal">
+                <input type="hidden" name="from_url" value="xSum_fileManager">
                 <input type="hidden" name="stuId" value="{{ student.stuId }}">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>1
                 <button type="submit" class="btn btn-primary" >删除</button>
@@ -64,6 +64,7 @@
         </div>
     </div>
     </div>
+
 
     <div class="page-`er">
     {% if current_user.roleId==0 %}
@@ -142,11 +143,41 @@
                 <!-- 提供下载的form -->
                 <form id="{{ attach }}" method="post">
                     <input type="hidden" name="attachment_download" value="{{ attach }}" >
+                </form> 
+                <!-- 删除 -->
+                {% set action_delete = 'action_delete_' + attach %}
+                <form id="{{ action_delete }}" method="post">
+                    <input type="hidden" name="action" value="delete" >
+                    <input type="hidden" name="file_name" value="{{ attach }}" >
+                    <input type="hidden" name="dest_path" value="attachment">
                 </form>
-                <td><a href="javascript:{}" onclick="document.getElementById('{{ attach }}').submit();">{{ attach }}</a></td>
+                <!-- 开始重命名 -->
+                {% set action_rename_begin = 'action_rename_begin_' + attach %}
+                <form id="{{ action_rename_begin }}" method="post">
+                    <input type="hidden" name="action" value="rename_begin" >
+                    <input type="hidden" name="file_name" value="{{ attach }}" >
+                    <input type="hidden" name="dest_path" value="attachment">
+                </form>
+
+                {% if rename == attach %}
+                    <!-- 确定重命名 -->
+                    {% set action_rename_comfirm = 'action_rename_comfirm_' + attach %}
+                    <form id="{{ action_rename_comfirm }}" method="post">
+                        <input type="hidden" name="action" value="rename_comfirm" >
+                        <input type="hidden" name="file_name" value="{{ attach }}" >
+                        <input type="hidden" name="dest_path" value="attachment">
+                    <td><input name="new_name" value="{{ attach }}"><button type="submit">&nbsp提交</button></td>
+                    </form>
+                {% else %}
+                    <td><a href="javascript:{}" onclick="document.getElementById('{{ attach }}').submit();">{{ attach }}</a></td>
+                {% endif %}
                 <td>{{ attachment[attach]['fsize'] }}</td>
                 <td>{{ attachment[attach]['mtime'] }}</td>
-                <td><a href="#">删除</a>|<a herf="#">重命名</a><td>
+                <td>
+                    <a href="javascript:{}" onclick="document.getElementById('{{ action_delete }}').submit();">删除</a>
+                    |
+                    <a href="javascript:{}" onclick="document.getElementById('{{ action_rename_begin }}').submit();">重命名</a>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -176,10 +207,40 @@
                             <form id="summary_download_form" method="post">
                                 <input type="hidden" name="summary_doc_download" value="{{ file_name }}" >
                             </form>
-                            <td><a href="javascript:{}" onclick="document.getElementById('summary_download_form').submit();">{{ file_name }}</a></td>
-                            <td>{{ file_name['fsize'] }}</td>
-                            <td>{{ file_name['mtime'] }}</td>
-                            <td><a href="#">删除</a>|<a herf="#">重命名</a><td>
+                            <!-- 删除 -->
+                            {% set action_delete = 'action_delete_' + file_name %}
+                            <form id="{{ action_delete }}" method="post">
+                                <input type="hidden" name="action" value="delete" >
+                                <input type="hidden" name="file_name" value="{{ file_name }}" >
+                                <input type="hidden" name="dest_path" value="summary_doc">
+                            </form>
+                            <!-- 开始重命名 -->
+                            {% set action_rename_begin = 'action_rename_begin_' + file_name %}
+                            <form id="{{ action_rename_begin }}" method="post">
+                                <input type="hidden" name="action" value="rename_begin" >
+                                <input type="hidden" name="file_name" value="{{ file_name }}" >
+                                <input type="hidden" name="dest_path" value="summary_doc">
+                            </form>
+
+                            {% if rename == file_name %}
+                                <!-- 确定重命名 -->
+                                {% set action_rename_comfirm = 'action_rename_comfirm_' + file_name %}
+                                <form id="{{ action_rename_comfirm }}" method="post">
+                                    <input type="hidden" name="action" value="rename_comfirm" >
+                                    <input type="hidden" name="file_name" value="{{ file_name }}" >
+                                    <input type="hidden" name="dest_path" value="summary_doc">
+                                <td><input name="new_name" value="{{ file_name }}"><button type="submit">&nbsp提交</button></td>
+                                </form>
+                            {% else %}
+                                <td><a href="javascript:{}" onclick="document.getElementById('summary_download_form').submit();">{{ file_name }}</a></td>
+                            {% endif %}
+                            <td>{{ summary_doc[file_name]['fsize'] }}</td>
+                            <td>{{ summary_doc[file_name]['mtime'] }}</td>
+                            <td>
+                                <a href="javascript:{}" onclick="document.getElementById('{{ action_delete }}').submit();">删除</a>
+                                |
+                                <a href="javascript:{}" onclick="document.getElementById('{{ action_rename_begin }}').submit();">重命名</a>
+                            </td>
                 </tr>
                         {% endfor %}
             </tbody>
