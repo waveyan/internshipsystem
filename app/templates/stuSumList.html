@@ -61,9 +61,9 @@
         <ul class="dropdown-menu" role="menu">
             </li>
             {% if current_user.can(Permission.STU_INTERN_CHECK) %}
-                <li><a href="{{ url_for('.update_intern_filter',flag=0) }}">批量审核</a></li>
+                <li><a href="{{ url_for('.update_intern_filter',flag=5) }}">批量审核</a></li>
+                <li><a href="{{ url_for('.update_intern_filter',flag=6) }}">批量删除</a></li>
             {% endif %}
-            <li><a href="{{ url_for('.update_intern_filter',flag=1) }}">批量删除</a></li>
         </ul>
     </div>
 {% endif %}
@@ -254,12 +254,12 @@
             <td>{{ intern.sumScore }}</td>
             <td>{{ intern.start }}</td>
             <td>{{ intern.end }}</td>
-            {% if intern.sumCheck==0 %}
-                <td>未审核</td>
+            {% if intern.sumCheck==2 %}
+                <td>已审核</td>
             {% elif intern.sumCheck==1 %}
                 <td>被退回</td>
             {% else %}
-                <td>已审核</td>
+                <td>未审核</td>
             {% endif %}
         </tr>
     {% endfor %}

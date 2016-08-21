@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html"as macros %}
+{% import "_intern_filter.html"as filter %}
+
+{% block title %}实习总结成果{% endblock %}
+{% block head %}
+    {{ super() }}
+    <!-- should be delete -->
+    <script src="/static/JS/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+
+    <!-- 全选企业  -->
+    <script type="text/javascript">
+        function select_all() {
+            var checkboxes = document.getElementsByName('approve[]');
+            var button = document.getElementById('toggle');
+
+            if (button.value == '全选') {
+                for (var i in checkboxes) {
+                    checkboxes[i].checked = 'FALSE';
+                }
+                button.value = '全不选'
+            } else {
+                for (var i in checkboxes) {
+                    checkboxes[i].checked = '';
+                }
+                button.value = '全选';
+            }
+        }
+    </script>
+    <!--筛选按钮-->
+    <script type="text/javascript">
+        window.onload = function () {
+            var obj = document.getElementById("sel");
+            obj.onclick = function () {
+                obj.className = (obj.className == "class1" ? "class2" : "class1");
+                obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block page_content %}
+    <h1>学生实习总结成果
+        {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                        data-toggle="dropdown">编辑<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                        <li><a href="{{ url_for('.update_intern_filter',flag=5) }}">批量审核</a></li>
+                        <li><a href="{{ url_for('.update_intern_filter',flag=6) }}">批量删除</a></li>
+                        </ul>
+                        </div>
+                    {% endif %}
+            <div style="float:right;width:300px"><!--长度-->
+                <form role="form" method="POST" action="/interncompany">
+                    <div class="row head">
+                        <div class="col-lg-10"><!--位置-->
+                            <div class="input-group ">
+                                {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" id="rearch"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                            </div>
+                            {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+    </h1>
+    {#    筛选项#}
+    {{ filter.intern_filter('.stuSum_allCheck',5,grade,major,classes) }}
+
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th></th>
+            <th>姓名</th>
+            <th>学号</th>
+            <th>企业名称</th>
+            <th>实习成绩</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>审核状态</th>
+        </tr>
+        </thead>
+        <tbody>
+        <form method="POST">
+        {% for intern in internlist %}
+        <tr>
+            <td>
+                <a href="{{ url_for('.xSum',stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}</a>
+            </td>
+            <td>{{ intern.stuId }}</td>
+            <td>{{ intern.comName }}</td>
+            <td>{{ intern.sumScore }}</td>
+            <td>{{ intern.start }}</td>
+            <td>{{ intern.end }}</td>
+            {% if intern.sumCheck==2 %}
+                <td>已审核</td>
+            {% elif intern.sumCheck==1 %}
+                <td>被退回</td>
+            {% else %}
+                <td>未审核</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        <input type="hidden" name="page" value="{{ pagination.page }}">
+        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
+        <button type="submit" class="btn btn-success">审核通过</button>
+        </form>
+        <a href="{{ url_for('.stuSumList') }}">
+            <button class="btn btn-primary">返回</button>
+        </a>
+    </div>
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination,'.stuSum_allCheck') }}
+        </div>
+    {% endif %}
+{% endblock %}1

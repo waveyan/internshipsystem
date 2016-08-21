@@ -31,9 +31,9 @@
             </div>
             <div class="modal-footer">
                 <!-- 用form来获取数据 -->
-                <form action="/comfirmDeleteJournal_Intern" method="POST">
+                <form action="/intern_delete" method="POST">
                 <input type="hidden" name="internId" value="{{ internship.Id }}">
-                <input type="hidden" name="from_url" value="/xJournal">
+                <input type="hidden" name="from_url" value="xSumScore">
                 <input type="hidden" name="stuId" value="{{ student.stuId }}">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>1
                 <button type="submit" class="btn btn-primary" >删除</button>
@@ -49,26 +49,7 @@
     {% else %}
         <h1>{{ student.stuName }}的实习评分
     {% endif %}
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                        data-toggle="dropdown">编辑<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a onClick="ComfirmDelete()">删除</a></li>
-                    <li><a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a></li>
-                </ul>
-            </div>
-        </h1>
-
-    <!-- 日志总体审核情况 -->
-    {% if internship.jourCheck == 0 %}
-        <span class="label label-warning">待审核...</span>
-    {% else %}
-        <span class="label label-info">已审核</span>
-    {% endif %}
-        <br><br>
-
-    </div>
+    </div><br>
 
 
     <table align="center" border="2" class="table-bordered">
@@ -94,46 +75,10 @@
     <br>
 
 
-    <h3><b>企业评分</b></h3>
-    <table align="center" border="2" class="table-bordered">
-        <tr>
-            <th width="200">工作态度</th>
-            <td width="400" height="50">{{ summary.com01 }}</td>
-            <th width="200">专业能力</th>
-            <td width="400" height="50">{{ summary.com02 }}</td>
-        </tr>
-        <tr>
-            <th width="200">工作质量</th>
-            <td width="400" height="50">{{ summary.com03 }}</td>
-            <th width="200">人际关系</th>
-            <td width="400" height="50">{{ summary.com04 }}</td>
-        </tr>
-        <tr>
-            <th width="200">沟通能力</th>
-            <td width="400" height="50">{{ summary.com05 }} </td>
-            <th width="200">学习意愿</th>
-            <td width="400" height="50">{{ summary.com06 }} </td>
-        </tr>
-        <tr>
-            <th width="200">团队协作</th>
-            <td width="400" height="50">{{ summary.com07 }} </td>
-            <th width="200">责任心</th>
-            <td width="400" height="50">{{ summary.com08 }} </td>
-        </tr>
-        <tr>
-            <th width="200">出勤率</th>
-            <td width="400" height="50">{{ summary.com09 }}</td>
-            <th width="200">实习成果</th>
-            <td width="400" height="50">{{ summary.com10 }} </td>
-        </tr>
-    </table>
-    <br>
-
-
     <h3><b>总分计算</b></h3>
     <table align="center" border="2" class="table-bordered">
         <tr>
-            <th width="200">企业总分</th>
+            <th width="200">企业实习评分</th>
             <td width="400" height="50">{{ summary.sumScore }}</td>
             <th width="200">校内指导老师评分</th>
             <td width="400" height="50">{{ summary.schScore }}</td>

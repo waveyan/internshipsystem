@@ -9,7 +9,7 @@
     </style>
 
 
-    <!-- 确认删除窗口 -->
+    <!-- 确认请求窗口 -->
     <script type="text/javascript">
         function ComfirmDelete() {
             $('#deleteToggle').modal();
@@ -39,10 +39,10 @@
             </div>
             <div class="modal-footer">
                 <!-- 用form来获取数据 -->
-                <form action="/comfirmDeleteJournal_Intern" method="POST">
+                <form action="/intern_delete" method="POST">
                 <input type="hidden" name="stuId" value="{{ student.stuId }}">
                 <input type="hidden" name="internId" value="{{ internship.Id }}">
-                <input type="hidden" name="from_url" value="/xIntern">
+                <input type="hidden" name="from_url" value="xIntern">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="submit" class="btn btn-primary" >删除</button>
                 </form>
@@ -70,7 +70,6 @@
                 <form name="xIntern_comfirm_form" action="/xIntern_comfirm" method="POST">
                 <input type="hidden" name="stuId" value="{{ student.stuId }}" />
                 <input type="hidden" name="internId" value="{{ internship.Id }}" />
-                <input type="hidden" name="comId" value="{{ comInfor.comId }}" />
                 {% if internship.opinion %}
                     <div style="text-align:center;">审核意见</div><textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空">{{ internship.opinion }}</textarea><br><br>
                 {% else %}

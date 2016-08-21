@@ -30,11 +30,11 @@
             </div>
             <div class="modal-footer">
                 <!-- 用form来获取数据 -->
-                <form action="/comfirmDeleteJournal_Intern" method="POST">
+                <form action="/intern_delete" method="POST">
                 <input type="hidden" name="internId" value="{{ internship.Id }}">
-                <input type="hidden" name="from_url" value="/xJournal">
+                <input type="hidden" name="from_url" value="xJournal">
                 <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>1
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="submit" class="btn btn-primary" >删除</button>
                 </form>
             </div>
