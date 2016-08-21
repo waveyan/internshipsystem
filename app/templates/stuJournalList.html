@@ -2,6 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
 {% import "_intern_filter.html" as filter %}
+{% import "_search.html" as search %}
 
 {% block title %}实习日志{% endblock %}
 {% block head %}
@@ -46,28 +47,14 @@
                         </ul>
                         </div>
                     {% endif %}
-            <div style="float:right;width:300px"><!--长度-->
-                <form role="form" method="POST" action="/interncompany">
-                    <div class="row head">
-                        <div class="col-lg-10"><!--位置-->
-                            <div class="input-group ">
-                                {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
-                        <span class="input-group-btn">
-                            <button class="btn btn-info" type="button" id="rearch"><span
-                                    class="glyphicon glyphicon-search"></span></button>
-                        </span>
-                            </div>
-                            {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
-                        </div>
-                    </div>
-                </form>
-            </div>
-
+            {{ search.search(url_for('.journal_search',journal='journal'),form) }}
         {% endif %}
     {% endif %}
 </h1>
+{% if current_user.role.roleId!=0 %}
     {#    筛选项#}
     {{ filter.intern_filter('.stuJournalList',2,grade,major,classes) }}
+{% endif %}
 <div>
     <table class="table" id="t">
         <thead>

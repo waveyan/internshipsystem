@@ -1,29 +1,22 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
+{% import "_search.html" as search %}
 
 {% block title %}企业信息{% endblock %}
 {% block head %}
     {{ super() }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#rearch").click(function () {
+                $(".rearchSubmit").click();
+            });
+        });
+    </script>
 {% endblock %}<!--先执行父模板-->
 {% block page_content %}
     <h1>请选择您的实习企业
-        <div style="float:right;width:350px"><!--长度-->
-            <form role="form" method="POST" action="/search">
-                <div class="row head">
-                    <div class="col-lg-10"><!--位置-->
-                        <div class="input-group ">
-                            {{ form.key(type="text",class="form-control",placeholder="请先输入企业名称或所在城市",required='') }}
-                        <span class="input-group-btn">
-                            <button class="btn btn-info" type="button" id="rearch"><span
-                                    class="glyphicon glyphicon-search"></span></button>
-                        </span>
-                        </div>
-                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
-                    </div>
-                </div>
-            </form>
-        </div>
+        {{ search.search(url_for('.com_search',selectCom='selectCom'),form) }}
     </h1>
     <table class="table" id="t">
         <thead>

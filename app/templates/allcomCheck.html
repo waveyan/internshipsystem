@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "_macros.html"as macros %}
 {% import "_com_filter.html" as filter %}
+{% import "_search.html" as search %}
 
 {% block title %}实习企业信息{% endblock %}
 {% block head %}
@@ -76,22 +77,7 @@
                 </ul>
             </div>
         {% endif %}
-        <div style="float:right;width:350px"><!--长度-->
-            <form role="form" method="POST" action="/interncompany">
-                <div class="row head">
-                    <div class="col-lg-10"><!--位置-->
-                        <div class="input-group ">
-                            {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
-                        <span class="input-group-btn">
-                            <button class="btn btn-info" type="button" id="rearch"><span
-                                    class="glyphicon glyphicon-search"></span></button>
-                        </span>
-                        </div>
-                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
-                    </div>
-                </div>
-            </form>
-        </div>
+        {{ search.search(url_for('.com_search'),form) }}
     </h1>
     {#筛选项#}
     {{ filter.com_filter('.allcomCheck',1,city,current_user,Permission) }}

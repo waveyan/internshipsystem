@@ -3,23 +3,35 @@
         <ol class="breadcrumb">
             <li><a href="{{ url_for('.update_intern_filter',flag=flags) }}">所有分类</a></li>
             {% if session['grade']!=None %}
-                <li><a href="{{ url_for('.update_intern_filter',grade='1',flag=flags) }}">{{ session['grade'] }}</a></li>
+                <li><a href="{{ url_for('.update_intern_filter',grade='1',flag=flags) }}">{{ session['grade'] }}</a>
+                </li>
             {% endif %}
             {% if session['major']!=None %}
-                <li><a href="{{ url_for('.update_intern_filter',major='1',flag=flags) }}">{{ session['major'] }}</a></li>
+                <li><a href="{{ url_for('.update_intern_filter',major='1',flag=flags) }}">{{ session['major'] }}</a>
+                </li>
             {% endif %}
 
             {% if session['classes']!=None %}
-                <li><a href="{{ url_for('.update_intern_filter',classes='1',flag=flags) }}">{{ session['classes'] }}班</a>
+                <li>
+                    <a href="{{ url_for('.update_intern_filter',classes='1',flag=flags) }}">{{ session['classes'] }}班</a>
                 </li>
             {% endif %}
-            {% if session['internStatus']!=None %}
+            {% if session['internStatus']!=None and flags<6 %}
                 {% if session['internStatus']=='0' %}
-                    <li><a href="#">待实习</a></li>
+                    <li><a href="{{ url_for('.update_intern_filter',internStatus='1',flag=flags) }}">待实习</a></li>
                 {% elif session['internStatus']=='1' %}
-                    <li><a href="#">实习中</a></li>
+                    <li><a href="{{ url_for('.update_intern_filter',internStatus='1',flag=flags) }}">实习中</a></li>
                 {% else %}
-                    <li><a href="#">实习结束</a></li>
+                    <li><a href="{{ url_for('.update_intern_filter',internStatus='1',flag=flags) }}">实习结束</a></li>
+                {% endif %}
+            {% endif %}
+            {% if session['checkStatus']!=None %}
+                {% if session['checkStatus']=='0' %}
+                    <li><a href="#">待审核</a></li>
+                {% elif session['checkStatus']=='1' %}
+                    <li><a href="#">被退回</a></li>
+                {% else %}
+                    <li><a href="#">审核通过</a></li>
                 {% endif %}
             {% endif %}
         </ol>
@@ -115,17 +127,29 @@
                             </td>
                         {% endif %}
                     </tr>
-
+                    {% if flags<6 %}
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <th width="150">实习状态：</th>
+                            {% if flags<2 or flags>4 %}
+                                <td width="150"><a href="{{ url_for(endpoint,internStatus=0) }}">待实习</a></td>
+                            {% endif %}
+                            <td width="150"><a href="{{ url_for(endpoint,internStatus=1) }}">实习中</a></td>
+                            <td width="150"><a href="{{ url_for(endpoint,internStatus=2) }}">实习结束</a></td>
+                            <td>
+                            </td>
+                        </tr>
+                    {% endif %}
                     <tr>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <th width="150">实习状态：</th>
-                        <td width="150"><a href="{{ url_for(endpoint,internStatus=0) }}">待实习</a></td>
-                        <td width="150"><a href="{{ url_for(endpoint,internStatus=1) }}">实习中</a></td>
-                        <td width="150"><a href="{{ url_for(endpoint,internStatus=2) }}">实习结束</a></td>
-                        <td>
-                        </td>
+                        <th width="150">审核状态：</th>
+                        <td width="150"><a href="{{ url_for(endpoint,checkStatus=0) }}">待审核</a></td>
+                        <td width="150"><a href="{{ url_for(endpoint,checkStatus=1) }}">被退回</a></td>
+                        <td width="150"><a href="{{ url_for(endpoint,checkStatus=2) }}">审核通过</a></td>
                     </tr>
                 </table>
             </div>

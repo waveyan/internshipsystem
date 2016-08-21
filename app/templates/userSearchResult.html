@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_search.html" as search %}
+
+{% block title %}搜索结果{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/JS/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#rearch").click(function () {
+                $(".rearchSubmit").click();
+            });
+        });
+    </script>
+{% endblock %}<!--先执行父模板-->
+{% block page_content %}
+    {% if tea==None %}
+        <h2>{{ key }} 的搜索结果,共搜到 {{ snum }} 位学生用户：
+            {{ search.search(url_for('.user_search'),form) }}
+        </h2>
+        <table class="table" id="t">
+            <thead>
+            <tr>
+                <th>姓名</th>
+                <th>学号</th>
+                <th>性别</th>
+                <th>年级</th>
+                <th>专业班级</th>
+                <th>系统角色</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for stu in student %}
+                <tr>
+                    <td>{{ stu.stuName }}</td>
+                    <td>{{ stu.stuId }}</td>
+                    <td>{{ stu.sex }}</td>
+                    <td>{{ stu.grade }}</td>
+                    <td>{{ stu.major }}{{ stu.classes }}班</td>
+                    <td>{{ stu.role.roleName }}</td>
+                    <td><a href="{{ url_for('.editStudent',stuId=stu.stuId) }}">修改</a>|<a
+                            href="{{ url_for('.selectRole',stuId=stu.stuId,name=stu.stuName) }}">设置角色</a>|<a
+                            onclick="ComfirmDelete({{ stu.stuId }})" href="#">删除</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h2>{{ key }} 的搜索结果,共搜到 {{ tnum }} 位教师用户：
+            {{ search.search(url_for('.user_search',tea='tea'),form) }}
+        </h2>
+        <table class="table" id="t">
+            <thead>
+            <tr>
+                <th>姓名</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>性别</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>教工号</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>系统角色</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for tea in teacher %}
+                <tr>
+                    <td>{{ tea.teaName }}</td>
+                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{ tea.teaSex }}</td>
+                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{ tea.teaId }}</td>
+                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{ tea.role.roleName }}</td>
+                    <td><a href="{{ url_for('.editTeacher',teaId=tea.teaId) }}">修改</a>|<a
+                            href="{{ url_for('.selectRole',teaId=tea.teaId,name=tea.teaName) }}">设置角色</a>|<a href="#"
+                                                                                                             onclick="ComfirmDelete({{ tea.teaId }})">删除</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

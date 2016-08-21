@@ -2,6 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
 {% import "_intern_filter.html" as filter %}
+{% import "_search.html" as search %}
 
 {% block title %}
     {% if current_user.roleId==0 %}
@@ -54,13 +55,6 @@
         <span class="glyphicon glyphicon-plus"></span> 添加
     </a>
 {% endif %}
-
-
-<!--Excel导出-->
-<form id="export_form" method="post">
-    <input type="hidden" name="isexport" value="1">
-</form>
-
 {% if current_user.can(Permission.STU_INTERN_EDIT) %}
     <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggled btn-sm"
@@ -78,26 +72,16 @@
         </ul>
     </div>
 {% endif %}
-<div style="float:right;width:300px"><!--长度-->
-    <form role="form" method="POST" action="/interncompany">
-        <div class="row head">
-            <div class="col-lg-10"><!--位置-->
-                <div class="input-group ">
-                    {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
-                        <span class="input-group-btn">
-                            <button class="btn btn-info" type="button" id="rearch"><span
-                                    class="glyphicon glyphicon-search"></span></button>
-                        </span>
-                </div>
-                {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
-            </div>
-        </div>
-    </form>
-</div>
-
+{{ search.search(url_for('.intern_search'),form) }}
 </h1>
-{#    筛选项#}
-{{ filter.intern_filter('.stuInternList',5,grade,major,classes) }}
+<!--Excel导出-->
+<form id="export_form" method="post">
+    <input type="hidden" name="isexport" value="1">
+</form>
+{% if current_user.role.roleId!=0 %}
+    {#    筛选项#}
+    {{ filter.intern_filter('.stuInternList',5,grade,major,classes) }}
+{% endif %}
 
 <table class="table" id="t">
     <thead>
