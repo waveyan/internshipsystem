@@ -56,8 +56,15 @@
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                        <!--Excel导出-->
+                        <form id="export_form" method="post">
+                            <input type="hidden" name="isexport" value="1">
+                        </form>
+
                         <li><a href="{{ url_for('.addStudent') }}">添加</a></li>
                         <li><a href="#">批量添加</a></li>
+                        <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出</a>
+                        <li><a href="{{ url_for('.excel_importpage', from_url='stuUserList') }}">批量导入</a></li>
                         <li><a href="{{ url_for('.update_stu_filter',flag=1) }}">批量设置角色</a></li>
                         <li><a href="{{ url_for('.update_stu_filter',flag=0) }}">批量删除</a></li>
                         </ul>

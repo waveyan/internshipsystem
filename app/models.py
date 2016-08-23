@@ -228,7 +228,7 @@ class InternshipInfor(db.Model):
     icheckTime = db.Column(db.DATETIME)
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
-    jourCheck = db.Column(db.Integer)
+    jourCheck = db.Column(db.Integer, default=0)
 
 
 # can be delete

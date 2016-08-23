@@ -48,11 +48,6 @@
     {% else %}
         <h1>学生实习总结与成果
     {% endif %}
-{% if current_user.roleId == 0 %}
-    <a href="{{ url_for('.addcominfor', from_url='stuInternList') }}" class="btn btn-info btn-xs">
-        <span class="glyphicon glyphicon-plus"></span> 添加
-    </a>
-{% endif %}
 {% if current_user.can(Permission.STU_INTERN_EDIT) %}
     <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggled btn-sm"
@@ -269,5 +264,9 @@
     <div class="pagination">
         {{ macros.pagination_widget(pagination,'.stuInternList') }}
     </div>
+{% endif %}
+{% if current_user.roleId != 0 %}
+    <br><span class="label label-danger">注意</span>
+    <br>*&nbsp&nbsp若部分实习总结与成果未能显示, 请先通过其实习信息的审核
 {% endif %}
 {% endblock %}

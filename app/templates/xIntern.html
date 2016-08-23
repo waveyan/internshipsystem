@@ -110,7 +110,10 @@
 
 {% endblock %}<!--先执行父模板-->
 {% block page_content %}
-
+    <!--Excel导出-->
+    <form id="export_form" method="post">
+        <input type="hidden" name="isexport" value="1">
+    </form>
 
     <table align="center" border="2" class="table-bordered">
         <caption>
@@ -122,20 +125,22 @@
                 {% endif %}
                 <div class="btn-group">
                     <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                            data-toggle="dropdown">编辑<span class="caret"></span>
+                            data-toggle="dropdown">更多<span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         {% if current_user.can(Permission.STU_INTERN_CHECK) %}
                             <li><a onClick="ComfirmCheck()">审核</a></li>
                         {% endif %}
-                        <li><a href="#">导出到Excel</a></li>
+                        <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">导出到Excel</a></li>
                         {% if internship.internCheck != 2 %}
                             <li><a href="{{ url_for('main.xInternEdit',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">修改</a></li>
                         {% elif internship.internCheck == 2 and current_user.roleId ==3 %}
                             <li><a onClick="Admin_ComfirmEdit()">修改</a></li>
                         {% endif %}
-                        <li><a href="#">导出</a></li>
                         <li><a onClick="ComfirmDelete()">删除</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a></li>
+                        <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId) }}">实习总结与成果</a></li>
                     </ul>
                 </div>
             </h1>

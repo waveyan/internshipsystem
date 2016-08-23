@@ -50,11 +50,12 @@
     {% endif %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                        data-toggle="dropdown">编辑<span class="caret"></span>
+                        data-toggle="dropdown">更多<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     {% for jour in journal %}
-                        {% if current_user.roleId == 0 and jour.jourCheck == 0 %}
+                        <!-- 最多只能编辑当前周的日志 -->
+                        {% if current_user.roleId == 0 and jour.jourCheck == 0 and jour.workStart <= now %}
                             <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
                             <li class="divider" />
                         {% endif %}
@@ -64,6 +65,9 @@
                         {% endif %}
                     {% endfor %}
                     <li><a onClick="ComfirmDelete()">删除</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
+                    <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId) }}">实习总结与成果</a></li>
                 </ul>
             </div>
         </h1>
@@ -183,7 +187,7 @@
 
     <br><a href="{{ url_for('.stuJournalList') }}"><div class="btn btn-primary">返回&nbsp;</div></a>
     {% for jour in journal %}
-        {% if jour.jourCheck == 0 and current_user.can(Permission.STU_JOUR_CHECK) and now > jour.workEnd %}
+        {% if jour.jourCheck == 0 and current_user.can(Permission.STU_JOUR_CHECK) and jour.workEnd < now%}
                     <a href="{{ url_for('.journal_comfirm', jourId=jour.Id, stuId=student.stuId, internId=internship.Id) }}"><button class="btn btn-success">点击这里，通过这周日志的审核</button></a>
         {% endif %}
     {% endfor %}

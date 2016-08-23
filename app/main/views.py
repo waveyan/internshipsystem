@@ -371,6 +371,19 @@ def xIntern():
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
     comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
+    # 导出实习excel表
+    intern_excel = InternshipInfor.query.join(Student, Student.stuId==InternshipInfor.stuId).join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(
+            Teacher, Teacher.teaId == InternshipInfor.icheckTeaId) \
+            .filter(InternshipInfor.Id == internId) \
+            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId,
+                         InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
+                         InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
+                         InternshipInfor.opinion, InternshipInfor.icheckTime )
+    if request.method == "POST": 
+        if current_user.roleId == 0 or current_user.can(Permission.STU_INTERN_CHECK):
+            isexport = request.form.get('isexport')
+            if isexport:
+                return excel_export(excel_export_intern, intern_excel)
     return render_template('xIntern.html', Permission=Permission, comInfor=comInfor,
                            schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student)
 
@@ -513,16 +526,17 @@ def xInternEdit_comdirtea():
 @main.route('/intern_delete', methods=['POST'])
 @login_required
 def comfirmDeletreJournal_Intern():
-    if current_user.roleId == 0:
-        stuId = current_user.stuId
-    else:
-        stuId = request.form.get('stuId')
     internId = request.form.get('internId')
     from_url = request.form.get('from_url')
-    if from_url == 'xSum':
-        permission = current_user.can(Permission.STU_INTERN_CHECK) and current_user.can(Permission.STU_JOUR_CHECK) and current_user.can(Permission.STU_SUM_SCO_CHECK)
+    if current_user.roleId == 0:
+        stuId = current_user.stuId
+        permission = True
     else:
-        permission = current_user.can(Permission.STU_INTERN_CHECK) and current_user.can(Permission.STU_JOUR_CHECK)
+        stuId = request.form.get('stuId')
+        if from_url == 'xSum':
+            permission = current_user.can(Permission.STU_INTERN_CHECK) and current_user.can(Permission.STU_JOUR_CHECK) and current_user.can(Permission.STU_SUM_SCO_CHECK)
+        else:
+            permission = current_user.can(Permission.STU_INTERN_CHECK) and current_user.can(Permission.STU_JOUR_CHECK)
     if not permission:
         flash('非法操作')
         return redirect('/')
@@ -548,7 +562,7 @@ def comfirmDeletreJournal_Intern():
                 return redirect(url_for('.stuSumList'))
         except Exception as e:
             print('删除日志和实习信息失败:', e)
-            db.session.rollback
+            db.session.rollback()
             flash('提交实习信息失败，请重试！')
             if from_url == "/xIntern":
                 return redirect(url_for('.stuInternList'))
@@ -565,6 +579,11 @@ def comfirmDeletreJournal_Intern():
 def cominfor():
     id = request.args.get('id')
     com = ComInfor.query.filter_by(comId=id).first()
+    # 批量导出实习excel表
+    if request.method == "POST" and current_user.can(Permission.COM_INFOR_CHECK):
+        isexport = request.form.get('isexport')
+        if isexport:
+            return excel_export(excel_export_com, ComInfor.query.filter_by(comId=id).all())
     return render_template('cominfor.html', Permission=Permission, com=com)
 
 
@@ -580,7 +599,6 @@ def interncompany():
     comInfor = pagination.items
     # 批量导出实习excel表
     if request.method == "POST" and current_user.can(Permission.COM_INFOR_CHECK):
-        print('excel')
         isexport = request.form.get('isexport')
         if isexport:
             return excel_export(excel_export_com, com.all())
@@ -1020,27 +1038,20 @@ def stuJournalList():
     page = request.args.get('page', 1, type=int)
     if current_user.roleId == 0:
         stuId = current_user.stuId
-        internship = InternshipInfor.query.filter_by(stuId=stuId, internCheck=2).count()
-        if internship == 0:
-            flash('目前还没有通过审核的实习信息,请完善相关实习信息,或耐心等待审核通过')
-            return redirect('/')
-        else:
-            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal,
-                                                                                                            InternshipInfor.Id == Journal.internId).join(
-                Student, InternshipInfor.stuId == Student.stuId) \
-                .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId,
-                             InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
-                             InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-                .filter(InternshipInfor.stuId == stuId, InternshipInfor.internCheck == 2).group_by(
-                InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page,
-                                                                                                         per_page=8,
-                                                                                                         error_out=False)
-            internlist = pagination.items
-            print(len(internlist))
-            for x in internlist:
-                print(x.stuName)
-            return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
-                                   pagination=pagination, grade=grade, major=major, classes=classes)
+        internship = InternshipInfor.query.filter_by(stuId=stuId).count()
+        pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal,
+                                                                                                        InternshipInfor.Id == Journal.internId).join(
+            Student, InternshipInfor.stuId == Student.stuId) \
+            .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId,
+                         InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
+                         InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
+            .filter(InternshipInfor.stuId == stuId, InternshipInfor.internCheck == 2).group_by(
+            InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page,
+                                                                                                     per_page=8,
+                                                                                                     error_out=False)
+        internlist = pagination.items
+        return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
+                               pagination=pagination, grade=grade, major=major, classes=classes)
     elif current_user.can(Permission.STU_JOUR_SEARCH):
         pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal,
                                                                                          InternshipInfor.Id == Journal.internId) \
@@ -1079,12 +1090,16 @@ def xJournal():
     # journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
     comInfor = db.session.execute('select * from ComInfor where comId in( \
         select comId from InternshipInfor where Id=%s)' % internId).first()
-    if internship.internCheck == 2:
+    if current_user.roleId == 0:
         return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
-                               student=student, comInfor=comInfor, pagination=pagination, page=page, now=now)
+                           student=student, comInfor=comInfor, pagination=pagination, page=page, now=now)
     else:
-        flash("实习申请需审核后,才能查看日志")
-        return redirect(url_for('.xJournalList', stuId=stuId))
+        if internship.internCheck == 2:
+            return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
+                               student=student, comInfor=comInfor, pagination=pagination, page=page, now=now)
+        else:
+            flash("实习申请需审核后,才能查看日志")
+            return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
 
 
 @main.route('/journal_comfirm', methods=['POST', 'GET'])
@@ -1129,6 +1144,9 @@ def xJournalEdit():
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     jourform = journalForm()
+    if jour.jourCheck == 1 and current_user.roleId != 3:
+        flash('日志已通过审核,无法修改')
+        return redirect('/')
     return render_template('xJournalEdit.html', Permission=Permission, jour=jour, student=student, comInfor=comInfor,
                            internship=internship, jourform=jourform)
 
@@ -1244,6 +1262,11 @@ def stuUserList():
     page = request.args.get('page', 1, type=int)
     pagination = stu.paginate(page, per_page=8, error_out=False)
     student = pagination.items
+    # 权限带修改
+    if request.method == "POST" and current_user.can(Permission.STU_INTERN_CHECK):
+            isexport = request.form.get('isexport')
+            if isexport:
+                return excel_export(excel_export_stuUser, student)
     return render_template('stuUserList.html', pagination=pagination, form=form, Permission=Permission, student=student,
                            grade=grade, major=major, classes=classes)
 
@@ -1493,8 +1516,14 @@ def teaUserList():
     teacher = pagination.items
     for tea in teacher:
         session[tea.teaId] = tea.role.roleName
+    # 权限带修改
+    if request.method == "POST" and current_user.can(Permission.STU_INTERN_CHECK):
+            isexport = request.form.get('isexport')
+            if isexport:
+                return excel_export(excel_export_teaUser, teacher)
     return render_template('teaUserList.html', pagination=pagination, form=form, Permission=Permission,
                            teacher=teacher)
+
 
 
 # 添加教师用户
@@ -2114,7 +2143,7 @@ def journal_init(internId):
     if end_isoyear == start_isoyear:
         weeks = end_isoweek - start_isoweek + 1
     else:
-        week = 0
+        weeks = 0
         # 第1年至 n-1 年的周数累计
         for x in range(end_isoweek - start_isoweek):
             if x == 0:
@@ -2341,6 +2370,17 @@ excel_import_com = {'企业名称': 'comName', '企业简介': 'comBrief', '地�
                     '联系人': 'comContact', '录入时间': 'comDate', '企业项目': 'comProject', '员工人数': 'comStaff', '电话': 'comPhone',
                     '邮箱': 'comEmail', '传真': 'comFax'}
 
+# 学生用户列表
+excel_export_stuUser = OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('sex','性别'), ('institutes','院系'), ('grade','年级'), ('major','专业'),('classes','班级')))
+
+excel_import_stuUser = {'学号':'stuId', '姓名':'stuName', '性别':'sex', '年级':'grade', '专业':'major', '班级':'classes', '院系':'institutes'}
+
+# 教师用户列表
+excel_export_teaUser = OrderedDict((('teaId','教工号'), ('teaName','姓名'), ('teaSex','性别'), ('roleId','系统角色')))
+
+excel_import_teaUser = { '教工号':'teaId', '姓名':'teaName', '性别':'teaSex', '系统角色':'roleId' }
+
+
 IMPORT_FOLDER = os.path.abspath('file_cache/xls_import')
 EXPORT_FOLDER = os.path.abspath('file_cache/xls_export')
 # 可加上成果的上传文件格式限制
@@ -2427,11 +2467,20 @@ def excel_export(template, data):
                     ws.write(row + 1, col, '实习中')
                 else:
                     ws.write(row + 1, col, '实习结束')
-            elif colname in ['stuId', 'comMon', 'cteaPhone', 'steaPhone']:
+            elif colname in ['stuId', 'teaId', 'comMon', 'cteaPhone', 'steaPhone']:
                 if getattr(xdata, colname):
                     ws.write(row + 1, col, int(getattr(xdata, colname)))
             elif colname in ['start', 'end', 'task', 'teaName', 'opinion', 'icheckTime', 'comDate']:
                 ws.write(row + 1, col, str(getattr(xdata, colname)))
+            elif colname in ['classes']:
+                ws.write(row + 1, col, str(getattr(xdata, colname))+'班')
+            elif colname in ['roleId']:
+                if getattr(xdata, colname) == 3:
+                    ws.write(row + 1, col, '管理员')
+                elif getattr(xdata, colname) == 2:
+                    ws.write(row + 1, col, '审核老师')
+                elif getattr(xdata, colname) == 1:
+                    ws.write(row + 1, col, '普通老师')
             else:
                 ws.write(row + 1, col, getattr(xdata, colname))
         # 若一学生存在多个导师
@@ -2453,6 +2502,12 @@ def excel_export(template, data):
     elif template == excel_export_com:
         file_name = 'comlist_%s.xls' % random.randint(1,100)
         file_attachname = '企业信息导出表_%s.xls' % datetime.now().date()
+    elif template == excel_export_stuUser:
+        file_name = 'stuUserList_%s.xls' % random.randint(1,100)
+        file_attachname = '学生用户信息导出表_%s.xls' % datetime.now().date()
+    elif template == excel_export_teaUser:
+        file_name = 'teaUserList_%s.xls' % random.randint(1,100)
+        file_attachname = '教师用户信息导出表_%s.xls' % datetime.now().date()
     wb.save((os.path.join(EXPORT_FOLDER, file_name)))
     # attachment_finaname为下载时,提供的默认文件名
     return send_file(os.path.join(EXPORT_FOLDER, file_name), as_attachment=True,
@@ -2476,6 +2531,28 @@ def excel_import(file, template):
             data.append(data_row)
     return data
 
+# 导入excel表, 检查数据是否完整或出错
+EXCEL_IMPORT_CHECK_STUINTERNLIST = ['stuId', 'stuName', 'comId', 'start', 'end']
+EXCEL_IMPORT_CHECK_INTERNCOMPANY = ['comName', 'comAddress', 'comProject', 'comPhone', 'comEmail']
+EXCEL_IMPORT_CHECK_STUUSERLIST = ['stuId', 'stuName', 'grade', 'classes', 'major','sex']
+# 教师工号可为空
+EXCEL_IMPORT_CHECK_TEAUSERLIST = ['teaName', 'teaSex', 'roleId']
+def excel_import_check(data, template):
+    if template in [EXCEL_IMPORT_CHECK_STUUSERLIST, EXCEL_IMPORT_CHECK_INTERNCOMPANY, EXCEL_IMPORT_CHECK_STUUSERLIST]:
+        # 判断属性是否齐全
+        for x in template:
+            if x not in data[0].keys():
+                flash('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
+                print('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
+                return redirect('/')
+        for xdata, col in zip(data, range(len(data))):
+            # 判断必需数据是否完整
+            for x in template:
+                if xdata[x] is None:
+                    flash('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col + 1)
+                    print('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col + 1)
+                    return redirect('/')
+
 
 # excel导入页面处理
 @main.route('/excel_importpage', methods=['GET', 'POST'])
@@ -2486,6 +2563,12 @@ def excel_importpage():
         permission = current_user.can(Permission.STU_INTERN_CHECK)
     elif from_url == 'interncompany':
         permission = current_user.can(Permission.COM_INFOR_EDIT)
+    # 权限待修改
+    elif from_url == 'stuUserList':
+        permission = current_user.can(Permission.STU_INTERN_CHECK)
+    # 权限待修改
+    elif from_url == 'teaUserList':
+        permission = current_user.can(Permission.STU_INTERN_CHECK)
     if not permission:
         flash('非法操作')
         return redirect('/')
@@ -2504,23 +2587,13 @@ def excel_importpage():
             filename = file.filename
             file.save( os.path.join(IMPORT_FOLDER, filename))
             # 上传成功,开始导入
-            if from_url == "stuInternList":
-                internlist = excel_import(os.path.join(IMPORT_FOLDER, filename), excel_import_intern)
-                # 判断属性是否齐全
-                for x in ['stuId', 'stuName', 'comId', 'start', 'end']:
-                    if x not in internlist[0].keys():
-                        flash('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
-                        print('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
-                        return redirect('/')
-                now = datetime.now().date()
-                try:
+            try:
+                if from_url == "stuInternList":
+                    internlist = excel_import(os.path.join(IMPORT_FOLDER, filename), excel_import_intern)
+                    # 检查数据是否完整或出错
+                    excel_import_check(internlist, EXCEL_IMPORT_CHECK_STUINTERNLIST)
+                    now = datetime.now().date()
                     for intern, col in zip(internlist, range(len(internlist))):
-                        # 判断必需数据是否完整
-                        for x in ['stuId', 'stuName', 'comId', 'start', 'end']:
-                            if intern[x] is None:
-                                flash('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col + 1)
-                                print('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col + 1)
-                                return redirect('/')
                         # 判定日期分隔符是'-'还是'/'
                         start = intern['start']
                         end = intern['end']
@@ -2534,6 +2607,7 @@ def excel_importpage():
                             flash('日志格式错误,日志格式应为 "2000-01-01" 或 "2000/01/01" ')
                             print('日志格式错误,日志格式应为 "2000-01-01" 或 "2000/01/01" ')
                             return redirect('/')
+                        # 实习状态
                         if now < start:
                             intern['internStatus'] = 0  # 待实习
                         elif now >= start and now <= end:
@@ -2552,32 +2626,11 @@ def excel_importpage():
                             # 这里还应该有很多需要添加的
                         )
                         db.session.add(internship)
-                    db.session.commit()
-                except Exception as e:
-                    flash('导入出现异常')
-                    print('导入出现异常:', e)
-                    db.session.rollback()
-                    return redirect('/')
-                flash('导入成功')
-                return redirect(url_for('.stuInternList'))
-            if from_url == 'interncompany':
-                comlist = excel_import(os.path.join(IMPORT_FOLDER, filename), excel_import_com)
-                # 判断属性是否齐全
-                print(comlist[0].keys())
-                for x in ['comName', 'comAddress', 'comProject', 'comPhone', 'comEmail']:
-                    if x not in comlist[0].keys():
-                        print(x)
-                        flash('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
-                        print('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
-                        return redirect('/')
-                try:
+                elif from_url == 'interncompany':
+                    comlist = excel_import(os.path.join(IMPORT_FOLDER, filename), excel_import_com)
+                    # 检查数据是否完整或出错
+                    excel_import_check(comlist, EXCEL_IMPORT_CHECK_INTERNCOMPANY)
                     for com, col in zip(comlist, range(len(comlist))):
-                        # 判断必需数据是否完整
-                        for x in ['comName', 'comAddress', 'comProject', 'comPhone', 'comEmail']:
-                            if com[x] is None:
-                                flash('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col + 1)
-                                print('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col + 1)
-                                return redirect('/')
                         cominfor = ComInfor(
                             comName=com['comName'],
                             comBrief=com['comBrief'],
@@ -2594,14 +2647,42 @@ def excel_importpage():
                             comCheck=2
                         )
                         db.session.add(cominfor)
-                    db.session.commit()
-                except Exception as e:
-                    flash('导入出现异常')
-                    print('导入出现异常:', e)
-                    db.session.rollback()
-                    return redirect('/')
+                elif from_url == 'stuUserList':
+                    stuUserList = excel_import(os.path.join(IMPORT_FOLDER, filename), excel_import_stuUser)
+                    # 检查数据是否完整或出错
+                    excel_import_check(stuUserList, EXCEL_IMPORT_CHECK_STUUSERLIST)
+                    for stuUser, col in zip(stuUserList, range(len(stuUserList))):
+                        student = Student(
+                            stuId = str(stuUser['stuId'])[:-2],
+                            stuName = stuUser['stuName'],
+                            major = stuUser['major'],
+                            sex = stuUser['sex'],
+                            classes = stuUser['classes'],
+                            grade = stuUser['grade'],
+                            institutes = stuUser['institutes']
+                        )
+                        db.session.add(student)
+                elif from_url == 'teaUserList':
+                    teaUserList = excel_import(os.path.join(IMPORT_FOLDER, filename), excel_import_teaUser)
+                    # 检查数据是否完整或出错
+                    excel_import_check(teaUserList, EXCEL_IMPORT_CHECK_TEAUSERLIST)
+                    for teaUser, col in zip(teaUserList, range(len(teaUserList))):
+                        teacher = Teacher(
+                            teaId = str(teaUser['teaId'])[:-2],
+                            teaName = teaUser['teaName'],
+                            teaSex = teaUser['teaSex'],
+                            roleId = teaUser['roleId']
+                        )
+                        db.session.add(teacher)
+                # 最后提交并跳转到原本的地址
+                db.session.commit()
                 flash('导入成功')
-                return redirect(url_for('.interncompany'))
+                return redirect(url_for('.%s' % from_url))
+            except Exception as e:
+                flash('导入出现异常')
+                print(from_url, '导入出现异常:', e)
+                db.session.rollback()
+                return redirect('/')
         else:
             flash('请上传正确的Excel文件( .xls和 .xlsx格式)')
             return redirect('/')
@@ -2710,7 +2791,7 @@ def stuSumList():
         # 函数返回的intern已经join了Student
         intern = create_intern_filter(grade, major, classes)
         pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(Teacher, Teacher.teaId == InternshipInfor.icheckTeaId).outerjoin(SchDirTea, SchDirTea.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id) \
-            .filter(InternshipInfor.end < now) \
+            .filter(InternshipInfor.end < now, InternshipInfor.internCheck == 2) \
             .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
                          InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
@@ -2739,16 +2820,21 @@ def xSum():
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     now = datetime.now().date()
-    if internship.end < now:
-        student = Student.query.filter_by(stuId=stuId).first()
-        comInfor = ComInfor.query.filter_by(comId=comId).first()
-        summary = Summary.query.filter_by(internId=internId).first()
-        summary_doc = storage_list(internId, 'summary_doc')
-        attachment = storage_list(internId, 'attachment')
-        print (summary.sumCheckOpinion)
-        if request.method == 'POST':
-            return storage_download(internId)
+    student = Student.query.filter_by(stuId=stuId).first()
+    comInfor = ComInfor.query.filter_by(comId=comId).first()
+    summary = Summary.query.filter_by(internId=internId).first()
+    summary_doc = storage_list(internId, 'summary_doc')
+    attachment = storage_list(internId, 'attachment')
+    # if request.method == 'POST':
+    #     return storage_download(internId)
+    if current_user.roleId == 0:
         return render_template('xSum.html', Permission=Permission, comInfor=comInfor, internship=internship, student=student, summary=summary, attachment=attachment, summary_doc=summary_doc)
+    elif internship.end < now:
+        if internship.internCheck == 2:
+            return render_template('xSum.html', Permission=Permission, comInfor=comInfor, internship=internship, student=student, summary=summary, attachment=attachment, summary_doc=summary_doc)
+        else:
+            flash("实习申请需审核后,才能查看日志")
+            return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
 
 
 # 学生个人实习总结与成果的"文件管理"!

@@ -129,4 +129,8 @@
         </div>
     {% endif %}
 </div>
+{% if current_user.roleId != 0 %}
+    <br><span class="label label-danger">注意</span>
+    <br>*&nbsp&nbsp若部分实习日志未能显示, 请先通过其实习信息的审核
+{% endif %}
 {% endblock %}

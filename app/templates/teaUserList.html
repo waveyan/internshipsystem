@@ -27,6 +27,11 @@
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
+    <!--Excel导出-->
+    <form id="export_form" method="post">
+        <input type="hidden" name="isexport" value="1">
+    </form>
+
     <h1>教师用户
         {% if current_user.can(Permission.COM_INFOR_EDIT) %}
             <div class="btn-group">
@@ -36,6 +41,8 @@
                 <ul class="dropdown-menu" role="menu">
                     {% if current_user.can(Permission.COM_INFOR_CHECK) %}
                         <li><a href="{{ url_for('.addTeacher') }}">添加</a></li>
+                        <li><a href="{{ url_for('.excel_importpage', from_url='teaUserList') }}">批量导入</a></li>
+                        <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出</a>
                         <li><a href="#">批量添加</a></li>
                         <li><a href="{{ url_for('.allTeaSet') }}">批量设置角色</a></li>
                         <li><a href="{{ url_for('.allTeaDelete') }}">批量删除</a></li>
