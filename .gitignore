@@ -3,6 +3,7 @@
 config.py
 .idea/
 storage/
+onlineFile/*
 
 __pycache__/
 *.py[cod]
