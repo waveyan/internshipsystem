@@ -11,11 +11,13 @@
         }
     </script>
     <style type="text/css">
-    p {white-space: pre-line;}
+        p {
+            white-space: pre-line;
+        }
     </style>
 
     <!-- 在线阅读 -->
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width"/>
     <style type="text/css" media="screen">
         html, body {
@@ -41,63 +43,70 @@
 {% block title %}实习总结与成果 - 文件管理{% endblock %}
 
 {% block page_content %}
-      <!-- 删除确认窗口 -->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="text-align:center;">
+    <!-- 删除确认窗口 -->
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="text-align:center;">
                     <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-            </div>
-            <div class="modal-body">
-                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">实习总结将会连同实习信息,日志一起删除,且删除操作将无法撤回,是否仍要删除</h4>
-            </div>
-            <div class="modal-footer">
-                <!-- 用form来获取数据 -->
-                <form action="/intern_delete" method="POST">
-                <input type="hidden" name="internId" value="{{ internship.Id }}">
-                <input type="hidden" name="from_url" value="xSum_fileManager">
-                <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>1
-                <button type="submit" class="btn btn-primary" >删除</button>
-                </form>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
+                        实习总结将会连同实习信息,日志一起删除,且删除操作将无法撤回,是否仍要删除</h4>
+                </div>
+                <div class="modal-footer">
+                    <!-- 用form来获取数据 -->
+                    <form action="/intern_delete" method="POST">
+                        <input type="hidden" name="internId" value="{{ internship.Id }}">
+                        <input type="hidden" name="from_url" value="xSum_fileManager">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        1
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
 
     <div class="page-`er">
-    {% if current_user.roleId==0 %}
-        <h1>我的实习总结与成果 - 文件管理
-    {% else %}
-        <h1>{{ student.stuName }}的实习总结与成果 - 文件管理
-    {% endif %}
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                        data-toggle="dropdown">编辑<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    {% for jour in journal %}
-                        {% if current_user.roleId == 0 and jour.jourCheck == 0 %}
-                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
-                            <li class="divider" />
-                        {% endif %}
-                        {% if current_user.roleId == 3 %}
-                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
-                            <li class="divider" />
-                        {% endif %}
-                    {% endfor %}
-                    <li><a onClick="ComfirmDelete()">删除</a></li>
-                </ul>
-            </div>
+        {% if current_user.roleId==0 %}
+            <h1>我的实习总结与成果 - 文件管理
+        {% else %}
+            <h1>{{ student.stuName }}的实习总结与成果 - 文件管理
+        {% endif %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                    data-toggle="dropdown">编辑<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                {% for jour in journal %}
+                    {% if current_user.roleId == 0 and jour.jourCheck == 0 %}
+                        <li>
+                            <a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a>
+                        </li>
+                        <li class="divider"/>
+                    {% endif %}
+                    {% if current_user.roleId == 3 %}
+                        <li>
+                            <a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a>
+                        </li>
+                        <li class="divider"/>
+                    {% endif %}
+                {% endfor %}
+                <li><a onClick="ComfirmDelete()">删除</a></li>
+            </ul>
+        </div>
         </h1>
 
-    <!-- 日志总体审核情况 -->
-    {% if internship.jourCheck == 0 %}
-        <span class="label label-warning">待审核...</span>
-    {% else %}
-        <span class="label label-info">已审核</span>
-    {% endif %}
+        <!-- 日志总体审核情况 -->
+        {% if internship.jourCheck == 0 %}
+            <span class="label label-warning">待审核...</span>
+        {% else %}
+            <span class="label label-info">已审核</span>
+        {% endif %}
         <br><br>
 
     </div>
@@ -120,8 +129,9 @@
             <th width="200">实习期间</th>
             <td width="400" height="50">{{ internship.start }} 至 {{ internship.end }} </td>
             <th width="200">评分成绩</th>
-            <td width="400" height="50">{{ summary.sumScore }} 
-                <a href='{{ url_for('.xSumScore', stuId=student.stuId, internId=internship.Id) }}'><span class="label label-info">详情<span></a>
+            <td width="400" height="50">{{ summary.sumScore }}
+                <a href='{{ url_for('.xSumScore', stuId=student.stuId, internId=internship.Id) }}'><span
+                        class="label label-info">详情<span></a>
             </td>
         </tr>
     </table>
@@ -142,20 +152,20 @@
             <tr>
                 <!-- 提供下载的form -->
                 <form id="{{ attach }}" method="post">
-                    <input type="hidden" name="attachment_download" value="{{ attach }}" >
-                </form> 
+                    <input type="hidden" name="attachment_download" value="{{ attach }}">
+                </form>
                 <!-- 删除 -->
                 {% set action_delete = 'action_delete_' + attach %}
                 <form id="{{ action_delete }}" method="post">
-                    <input type="hidden" name="action" value="delete" >
-                    <input type="hidden" name="file_name" value="{{ attach }}" >
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="file_name" value="{{ attach }}">
                     <input type="hidden" name="dest_path" value="attachment">
                 </form>
                 <!-- 开始重命名 -->
                 {% set action_rename_begin = 'action_rename_begin_' + attach %}
                 <form id="{{ action_rename_begin }}" method="post">
-                    <input type="hidden" name="action" value="rename_begin" >
-                    <input type="hidden" name="file_name" value="{{ attach }}" >
+                    <input type="hidden" name="action" value="rename_begin">
+                    <input type="hidden" name="file_name" value="{{ attach }}">
                     <input type="hidden" name="dest_path" value="attachment">
                 </form>
 
@@ -163,97 +173,107 @@
                     <!-- 确定重命名 -->
                     {% set action_rename_comfirm = 'action_rename_comfirm_' + attach %}
                     <form id="{{ action_rename_comfirm }}" method="post">
-                        <input type="hidden" name="action" value="rename_comfirm" >
-                        <input type="hidden" name="file_name" value="{{ attach }}" >
+                        <input type="hidden" name="action" value="rename_comfirm">
+                        <input type="hidden" name="file_name" value="{{ attach }}">
                         <input type="hidden" name="dest_path" value="attachment">
-                    <td><input name="new_name" value="{{ attach }}"><button type="submit">&nbsp提交</button></td>
+                        <td><input name="new_name" value="{{ attach }}">
+                            <button type="submit">&nbsp提交</button>
+                        </td>
                     </form>
                 {% else %}
-                    <td><a href="javascript:{}" onclick="document.getElementById('{{ attach }}').submit();">{{ attach }}</a></td>
+                    <td><a href="javascript:{}"
+                           onclick="document.getElementById('{{ attach }}').submit();">{{ attach }}</a></td>
                 {% endif %}
                 <td>{{ attachment[attach]['fsize'] }}</td>
                 <td>{{ attachment[attach]['mtime'] }}</td>
                 <td>
                     <a href="javascript:{}" onclick="document.getElementById('{{ action_delete }}').submit();">删除</a>
                     |
-                    <a href="javascript:{}" onclick="document.getElementById('{{ action_rename_begin }}').submit();">重命名</a>
+                    <a href="javascript:{}"
+                       onclick="document.getElementById('{{ action_rename_begin }}').submit();">重命名</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-        <form action="" method=post enctype=multipart/form-data>
-          <input type=file name="attachment_upload" value="选择文件"><br>
-            <input type="hidden" name="attachment_upload" values="1">
-             <input type=submit value="上传">
-        </form>
+    <form action="" method=post enctype=multipart/form-data>
+        <input type=file name="attachment_upload" value="选择文件"><br>
+        <input type="hidden" name="attachment_upload" values="1">
+        <input type=submit value="上传">
+    </form>
 
     <br><br><h2>实习总结</h2>
-    
-        <table class="table" id="t">
-            <thead>
-            <tr>
-                <th>文件名</th>
-                <th>大小</th>
-                <th>修改时间</th>
-                <th>&nbsp&nbsp&nbsp操作</th>
-            </tr>
-            </thead>
-            <tbody>
-                    {% if summary_doc %}
-                <tr>
-                        {% for file_name in summary_doc %}
-                            <!-- 提供下载的form -->
-                            <form id="summary_download_form" method="post">
-                                <input type="hidden" name="summary_doc_download" value="{{ file_name }}" >
-                            </form>
-                            <!-- 删除 -->
-                            {% set action_delete = 'action_delete_' + file_name %}
-                            <form id="{{ action_delete }}" method="post">
-                                <input type="hidden" name="action" value="delete" >
-                                <input type="hidden" name="file_name" value="{{ file_name }}" >
-                                <input type="hidden" name="dest_path" value="summary_doc">
-                            </form>
-                            <!-- 开始重命名 -->
-                            {% set action_rename_begin = 'action_rename_begin_' + file_name %}
-                            <form id="{{ action_rename_begin }}" method="post">
-                                <input type="hidden" name="action" value="rename_begin" >
-                                <input type="hidden" name="file_name" value="{{ file_name }}" >
-                                <input type="hidden" name="dest_path" value="summary_doc">
-                            </form>
 
-                            {% if rename == file_name %}
-                                <!-- 确定重命名 -->
-                                {% set action_rename_comfirm = 'action_rename_comfirm_' + file_name %}
-                                <form id="{{ action_rename_comfirm }}" method="post">
-                                    <input type="hidden" name="action" value="rename_comfirm" >
-                                    <input type="hidden" name="file_name" value="{{ file_name }}" >
-                                    <input type="hidden" name="dest_path" value="summary_doc">
-                                <td><input name="new_name" value="{{ file_name }}"><button type="submit">&nbsp提交</button></td>
-                                </form>
-                            {% else %}
-                                <td><a href="javascript:{}" onclick="document.getElementById('summary_download_form').submit();">{{ file_name }}</a></td>
-                            {% endif %}
-                            <td>{{ summary_doc[file_name]['fsize'] }}</td>
-                            <td>{{ summary_doc[file_name]['mtime'] }}</td>
-                            <td>
-                                <a href="javascript:{}" onclick="document.getElementById('{{ action_delete }}').submit();">删除</a>
-                                |
-                                <a href="javascript:{}" onclick="document.getElementById('{{ action_rename_begin }}').submit();">重命名</a>
-                            </td>
-                </tr>
-                        {% endfor %}
-            </tbody>
-        </table>
-                    {% else %}
-            </tbody>
-        </table>
-                    <form action="" method=post enctype=multipart/form-data>
-                        <input type=file name="summary_doc_upload" value="选择文件"><br>
-                        <input type="hidden" name="summary_doc2_upload" values="1">
-                        <input type=submit value="上传">
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th>文件名</th>
+            <th>大小</th>
+            <th>修改时间</th>
+            <th>&nbsp&nbsp&nbsp操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if summary_doc %}
+            <tr>
+                {% for file_name in summary_doc %}
+                    <!-- 提供下载的form -->
+                    <form id="summary_download_form" method="post">
+                        <input type="hidden" name="summary_doc_download" value="{{ file_name }}">
                     </form>
+                    <!-- 删除 -->
+                    {% set action_delete = 'action_delete_' + file_name %}
+                    <form id="{{ action_delete }}" method="post">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="file_name" value="{{ file_name }}">
+                        <input type="hidden" name="dest_path" value="summary_doc">
+                    </form>
+                    <!-- 开始重命名 -->
+                    {% set action_rename_begin = 'action_rename_begin_' + file_name %}
+                    <form id="{{ action_rename_begin }}" method="post">
+                        <input type="hidden" name="action" value="rename_begin">
+                        <input type="hidden" name="file_name" value="{{ file_name }}">
+                        <input type="hidden" name="dest_path" value="summary_doc">
+                    </form>
+
+                    {% if rename == file_name %}
+                        <!-- 确定重命名 -->
+                        {% set action_rename_comfirm = 'action_rename_comfirm_' + file_name %}
+                        <form id="{{ action_rename_comfirm }}" method="post">
+                            <input type="hidden" name="action" value="rename_comfirm">
+                            <input type="hidden" name="file_name" value="{{ file_name }}">
+                            <input type="hidden" name="dest_path" value="summary_doc">
+                            <td><input name="new_name" value="{{ file_name }}">
+                                <button type="submit">&nbsp提交</button>
+                            </td>
+                        </form>
+                    {% else %}
+                        <td><a href="javascript:{}"
+                               onclick="document.getElementById('summary_download_form').submit();">{{ file_name }}</a>
+                        </td>
                     {% endif %}
+                    <td>{{ summary_doc[file_name]['fsize'] }}</td>
+                    <td>{{ summary_doc[file_name]['mtime'] }}</td>
+                    <td>
+                        <a href="javascript:{}"
+                           onclick="document.getElementById('{{ action_delete }}').submit();">删除</a>
+                        |
+                        <a href="javascript:{}"
+                           onclick="document.getElementById('{{ action_rename_begin }}').submit();">重命名</a>
+                    </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        {% else %}
+            </tbody>
+            </table>
+            <form action="" method=post enctype=multipart/form-data>
+                <input type=file name="summary_doc_upload" value="选择文件"><br>
+                <input type="hidden" name="summary_doc2_upload" values="1">
+                <input type=submit value="上传">
+            </form>
+        {% endif %}
 
     <!-- <br><p>*&nbsp实习总结文档只能存在一份. 若要上传新的文档,请先删除旧的文档 -->
     <br><span class="label label-danger">注意</span>

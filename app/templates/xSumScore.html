@@ -11,7 +11,9 @@
         }
     </script>
     <style type="text/css">
-    p {white-space: pre-line;}
+        p {
+            white-space: pre-line;
+        }
     </style>
 
 {% endblock %}<!--先执行父模板-->
@@ -19,36 +21,48 @@
 {% block title %}实习总结与成果{% endblock %}
 
 {% block page_content %}
-      <!-- 删除确认窗口 -->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="text-align:center;">
+    <!-- 删除确认窗口 -->
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="text-align:center;">
                     <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-            </div>
-            <div class="modal-body">
-                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
-            </div>
-            <div class="modal-footer">
-                <!-- 用form来获取数据 -->
-                <form action="/intern_delete" method="POST">
-                <input type="hidden" name="internId" value="{{ internship.Id }}">
-                <input type="hidden" name="from_url" value="xSumScore">
-                <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>1
-                <button type="submit" class="btn btn-primary" >删除</button>
-                </form>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
+                        日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
+                </div>
+                <div class="modal-footer">
+                    <!-- 用form来获取数据 -->
+                    <form action="/intern_delete" method="POST">
+                        <input type="hidden" name="internId" value="{{ internship.Id }}">
+                        <input type="hidden" name="from_url" value="xSumScore">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        1
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-    </div>
 
     <div class="page-`er">
-    {% if current_user.roleId==0 %}
-        <h1>我的实习评分
-    {% else %}
-        <h1>{{ student.stuName }}的实习评分
-    {% endif %}
+        {% if current_user.roleId==0 %}
+            <h1>我的实习评分
+        {% else %}
+            <h1>{{ student.stuName }}的实习评分
+        {% endif %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                    data-toggle="dropdown">编辑<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#">修改成绩</a></li>
+                <li><a href="#">上传成绩表</a></li>
+            </ul>
+        </div>
     </div><br>
 
 
