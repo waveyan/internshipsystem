@@ -56,7 +56,6 @@
                 data-toggle="dropdown">编辑<span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
-            </li>
             {% if current_user.can(Permission.STU_INTERN_CHECK) %}
                 <li><a href="{{ url_for('.update_intern_filter',flag=7) }}">批量审核</a></li>
                 <li><a href="{{ url_for('.update_intern_filter',flag=8) }}">批量删除</a></li>

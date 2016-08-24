@@ -1146,22 +1146,6 @@ def stuJournalList():
     page = request.args.get('page', 1, type=int)
     if current_user.roleId == 0:
         stuId = current_user.stuId
-# <<<<<<< HEAD
-#         internship = InternshipInfor.query.filter_by(stuId=stuId).count()
-#         pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal,
-#                                                                                                         InternshipInfor.Id == Journal.internId).join(
-#             Student, InternshipInfor.stuId == Student.stuId) \
-#             .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId,
-#                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
-#                          InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-#             .filter(InternshipInfor.stuId == stuId, InternshipInfor.internCheck == 2).group_by(
-#             InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page,
-#                                                                                                      per_page=8,
-#                                                                                                      error_out=False)
-#         internlist = pagination.items
-#         return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
-#                                pagination=pagination, grade=grade, major=major, classes=classes)
-# =======
         if session['message']['1']==1:
             try:
                 db.session.execute('update Student set jourCheck=0 where stuId=%s'%stuId)
@@ -3055,6 +3039,7 @@ def stuSumList():
     now = datetime.now().date()
     if current_user.roleId == 0:
         stuId = current_user.stuId
+        # 消除消息提示
         if session['message']['2']==1:
             try:
                 db.session.execute('update Student set sumCheck=0 where stuId=%s'%stuId)
@@ -3220,14 +3205,20 @@ def xSum_comfirm():
         try:
             if sumCheckOpinion:
                 db.session.execute('update Summary set sumCheck=%s, sumCheckOpinion="%s", sumCheckTeaId=%s, sumCheckTime="%s" where internId=%s' % (sumCheck, sumCheckOpinion, CheckTeaId, CheckTime, internId))
+                # 作消息提示
+                db.session.execute('update Student set internCheck=1 where stuId=%s' % stuId)
             else:
                 db.session.execute('update Summary set sumCheck=%s, sumCheckTeaId=%s, sumCheckTime="%s" where internId=%s' % (sumCheck, CheckTeaId, CheckTime, internId))
+                # 作消息提示
+                db.session.execute('update Student set internCheck=1 where stuId=%s' % stuId)
             # 若所选企业或实习信息未被审核通过,且用户有审核权限,自动审核通过企业和实习信息
             if com.comCheck != 2:
                 if current_user.can(Permission.COM_INFOR_CHECK):
                     db.session.execute('update ComInfor set comCheck=2 where comId=%s' % comId)
                     if current_user.can(Permission.STU_INTERN_CHECK):
                         db.session.execute('update InternshipInfor set internCheck=2, icheckTime="%s", icheckTeaId=%s where Id = %s' % (checkTime, checkTeaId, internId))
+                        # 作消息提示
+                        db.session.execute('update Student set internCheck=1 where stuId=%s' % stuId)
         except Exception as e:
             db.session.rollback()
             print(datetime.now(), ":", current_user.get_id(), "审核实习总结失败", e)
