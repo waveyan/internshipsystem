@@ -2,6 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
 {% import "_intern_filter.html" as filter %}
+{% import "_search.html" as search %}
 
 {% block title %}学生实习成果与总结{% endblock %}
 {% block head %}
@@ -58,32 +59,17 @@
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
-                        <li><a href="{{ url_for('.update_intern_filter',flag=5) }}">批量审核</a></li>
-                        <li><a href="{{ url_for('.update_intern_filter',flag=6) }}">批量删除</a></li>
+                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                        <li><a href="{{ url_for('.update_intern_filter',flag=7) }}">批量审核</a></li>
+                        <li><a href="{{ url_for('.update_intern_filter',flag=8) }}">批量删除</a></li>
                     {% endif %}
                 </ul>
             </div>
         {% endif %}
-        <div style="float:right;width:300px"><!--长度-->
-            <form role="form" method="POST" action="/interncompany">
-                <div class="row head">
-                    <div class="col-lg-10"><!--位置-->
-                        <div class="input-group ">
-                            {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
-                        <span class="input-group-btn">
-                            <button class="btn btn-info" type="button" id="rearch"><span
-                                    class="glyphicon glyphicon-search"></span></button>
-                        </span>
-                        </div>
-                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
-                    </div>
-                </div>
-            </form>
-        </div>
+        {{ search.search(url_for('.sum_search',sum='sum'),form) }}
     </h1>
     {#    筛选项#}
-    {{ filter.intern_filter('.stuSum_allDelete',6,grade,major,classes) }}
+    {{ filter.intern_filter('.stuSum_allDelete',8,grade,major,classes) }}
     <table class="table" id="t">
         <thead>
         <tr>
@@ -99,26 +85,26 @@
         </thead>
         <tbody>
         <form method="POST">
-        {% for intern in internlist %}
-        <tr>
-            <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
-            <td>
-                <a href="{{ url_for('.xSum',stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}</a>
-            </td>
-            <td>{{ intern.stuId }}</td>
-            <td>{{ intern.comName }}</td>
-            <td>{{ intern.sumScore }}</td>
-            <td>{{ intern.start }}</td>
-            <td>{{ intern.end }}</td>
-            {% if intern.sumCheck==2 %}
-                <td>已审核</td>
-            {% elif intern.sumCheck==1 %}
-                <td>被退回</td>
-            {% else %}
-                <td>未审核</td>
-            {% endif %}
-        </tr>
-        {% endfor %}
+            {% for intern in internlist %}
+                <tr>
+                    <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
+                    <td>
+                        <a href="{{ url_for('.xSum',stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}</a>
+                    </td>
+                    <td>{{ intern.stuId }}</td>
+                    <td>{{ intern.comName }}</td>
+                    <td>{{ intern.sumScore }}</td>
+                    <td>{{ intern.start }}</td>
+                    <td>{{ intern.end }}</td>
+                    {% if intern.sumCheck==2 %}
+                        <td>已审核</td>
+                    {% elif intern.sumCheck==1 %}
+                        <td>被退回</td>
+                    {% else %}
+                        <td>未审核</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
     <span class="label label-warning">注意: 删除标注为"已审核"的实习信息,会清空其有关实习日志,实习信息</span><br><br>

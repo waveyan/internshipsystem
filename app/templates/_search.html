@@ -1,0 +1,18 @@
+{% macro search(endpoint,form) %}
+    <div style="float:right;width:350px">
+            <form role="form" method="POST" action={{ endpoint }}>
+                <div class="row head">
+                    <div class="col-lg-12">
+                        <div class="input-group ">
+                            {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='2') }}
+                            <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" id="rearch"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                        </div>
+                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
+                    </div>
+                </div>
+            </form>
+    </div>
+{% endmacro %}

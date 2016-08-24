@@ -21,6 +21,7 @@ def not_student_login(func):
         elif current_user.roleId == 0:
             return redirect('/')
         return func(*args, **kwargs)
+
     return decorated_view
 
 
@@ -29,10 +30,11 @@ def update_intern_internStatus(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
         now = datetime.now().date()
-        db.session.execute('update InternshipInfor set internStatus=0 where start > "%s"'% now)
-        db.session.execute('update InternshipInfor set internStatus=1 where start < "%s" and end > "%s"'% (now, now))
-        db.session.execute('update InternshipInfor set internStatus=2 where end < "%s"'% now)
+        db.session.execute('update InternshipInfor set internStatus=0 where start > "%s"' % now)
+        db.session.execute('update InternshipInfor set internStatus=1 where start < "%s" and end > "%s"' % (now, now))
+        db.session.execute('update InternshipInfor set internStatus=2 where end < "%s"' % now)
         return func(*args, **kwargs)
+
     return decorated_view
 
 
@@ -41,11 +43,13 @@ def update_intern_jourCheck(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
         now = datetime.now().date()
-        is_not_checked = db.session.execute('select distinct internId from Journal where jourCheck=0 and workEnd < "%s"'% now)
+        is_not_checked = db.session.execute(
+            'select distinct internId from Journal where jourCheck=0 and workEnd < "%s"' % now)
         if is_not_checked:
             for x in is_not_checked:
-                db.session.execute('update InternshipInfor set jourCheck=0 where Id=%s'% x.internId)
+                db.session.execute('update InternshipInfor set jourCheck=0 where Id=%s' % x.internId)
         return func(*args, **kwargs)
+
     return decorated_view
 
 
@@ -125,9 +129,9 @@ class Student(db.Model, UserMixin):
     grade = db.Column(db.String(10))
     sex = db.Column(db.String(2))
     classes = db.Column(db.String(10))
-    inforCheck = db.Column(db.Integer, default=0)
-    jourCheck = db.Column(db.Integer)
-    sumCheck = db.Column(db.Integer)
+    internCheck = db.Column(db.Integer, default=0)
+    jourCheck = db.Column(db.Integer, default=0)
+    sumCheck = db.Column(db.Integer, default=0)
     roleId = db.Column(db.Integer, db.ForeignKey('Role.roleId'), default=0)
     password = db.Column(db.String(10))
 
@@ -272,7 +276,7 @@ class ComDirTea(db.Model):
 
 class Summary(db.Model):
     __tablename__ = 'Summary'
-    internId = db.Column(db.Integer,  primary_key=True)
+    internId = db.Column(db.Integer, primary_key=True)
     sumCheck = db.Column(db.Integer)
     sumCheckTeaId = db.Column(db.String(10))
     sumCheckTime = db.Column(db.DATETIME)
@@ -280,6 +284,7 @@ class Summary(db.Model):
     comScore = db.Column(db.Integer)
     schScore = db.Column(db.Integer)
     sumScore = db.Column(db.Integer)
+
 
 class Journal(db.Model):
     __tablename__ = 'Journal'
@@ -300,7 +305,7 @@ class Journal(db.Model):
     jourCheck = db.Column(db.Integer, default=0)
     jcheckTime = db.Column(db.DATETIME)
     internId = db.Column(db.Integer, db.ForeignKey('InternshipInfor.Id'))
-    opinion = db.Column(db.String(500),default='')
+    opinion = db.Column(db.String(500), default='')
     isoweek = db.Column(db.Integer)
     isoyear = db.Column(db.Integer)
 
@@ -360,3 +365,5 @@ class Permission:
     TEA_INFOR_IMPORT = 0X0400000
     # 权限管理
     PERMIS_MANAGE = 0X0800000
+
+

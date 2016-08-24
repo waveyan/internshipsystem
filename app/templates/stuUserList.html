@@ -2,6 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
 {% import "_stu_filter.html" as filter %}
+{% import "_search.html"as search %}
 
 {% block title %}实习学生{% endblock %}
 {% block head %}
@@ -71,22 +72,7 @@
                         </div>
                     {% endif %}
         {% endif %}
-        <div style="float:right;width:350px"><!--长度-->
-            <form role="form" method="POST" action="/search">
-                <div class="row head">
-                    <div class="col-lg-10"><!--位置-->
-                        <div class="input-group ">
-                            {{ form.key(type="text",class="form-control",placeholder="请先输入关键字",required='') }}
-                        <span class="input-group-btn">
-                            <button class="btn btn-info" type="button" id="rearch"><span
-                                    class="glyphicon glyphicon-search"></span></button>
-                        </span>
-                        </div>
-                        {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
-                    </div>
-                </div>
-            </form>
-        </div>
+{{ search.search(url_for('.user_search'),form) }}
     </h1>
 
 

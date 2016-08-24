@@ -2,6 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html"as macros %}
 {% import "_intern_filter.html"as filter %}
+{% import "_search.html" as search %}
 
 {% block title %}实习日志{% endblock %}
 {% block head %}
@@ -11,7 +12,13 @@
     <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
     <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
-
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#rearch").click(function () {
+                $(".rearchSubmit").click();
+            });
+        });
+    </script>
     <!-- 全选企业  -->
     <script type="text/javascript">
         function select_all() {
@@ -57,22 +64,7 @@
                         </ul>
                         </div>
                     {% endif %}
-            <div style="float:right;width:300px"><!--长度-->
-                <form role="form" method="POST" action="/interncompany">
-                    <div class="row head">
-                        <div class="col-lg-10"><!--位置-->
-                            <div class="input-group ">
-                                {{ form.key(type="text",class="form-control",placeholder="请输入关键字",required='') }}
-                        <span class="input-group-btn">
-                            <button class="btn btn-info" type="button" id="rearch"><span
-                                    class="glyphicon glyphicon-search"></span></button>
-                        </span>
-                            </div>
-                            {{ form.submit(class="rearchSubmit btn btn-default",type="submit", style="display:none") }}
-                        </div>
-                    </div>
-                </form>
-            </div>
+{{ search.search(url_for('.journal_search',journal='journal'),form) }}
         {% endif %}
     </h1>
     {#    筛选项#}
@@ -88,16 +80,13 @@
             <th>结束时间</th>
             <th>日志状态</th>
             <th>实习状态</th>
-            <!--
-            <th>操作</th>
-            -->
         </tr>
         </thead>
         <tbody>
         <form method="POST">
             {% for intern in internlist %}
                 <tr>
-                    <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
+                    <td>22<input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
                     <td>
                         <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}在{{ intern.comName }}的日子</a>
                     </td>
@@ -118,10 +107,6 @@
                     {% elif intern.internStatus == 2 %}
                         <td>实习结束</td>
                     {% endif %}
-
-                    <!--
-                    <td><a>审核</a>|<a>删除</a></td>
-                    -->
                 </tr>
             {% endfor %}
         </tbody>
