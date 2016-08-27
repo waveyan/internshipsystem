@@ -189,7 +189,7 @@
                     <input type="hidden" name="summary_doc_download" value="{{ summary }}">
                 </form>
                 {% if summary.find('.doc')!=-1 %}
-                    <td><a href="{{ url_for('.xSum',summary=summary,internId=internId,stuId=student.stuId) }}" data-toggle="tooltip"
+                    <td><a href="{{ url_for('.xSum',summary=summary,internId=internship.Id,stuId=student.stuId) }}" data-toggle="tooltip"
                            title="点击进行在线阅览">{{ summary }}</a></td>
                 {% else %}
                     <td>{{ summary }}</td>
@@ -222,7 +222,7 @@
                     <input type="hidden" name="attachment_download" value="{{ attach }}">
                 </form>
                 {% if attach.find('.doc')!=-1 %}
-                    <td><a href="{{ url_for('.xSum',attach=attach,internId=internId,stuId=student.stuId) }}" data-toggle="tooltip"
+                    <td><a href="{{ url_for('.xSum',attach=attach,internId=internship.Id,stuId=student.stuId) }}" data-toggle="tooltip"
                            title="点击进行在线阅览">{{ attach }}</a></td>
                 {% else %}
                     <td>{{ attach }}</td>

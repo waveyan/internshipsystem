@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField, TextAreaField, DateTimeField, SelectField, BooleanField, DateField, \
-    validators
+    validators,FileField
 from wtforms.validators import Required, URL, Email
 
 # datepicker failed
@@ -150,3 +150,10 @@ class permissionForm(Form):
     TEA_INFOR_IMPORT = BooleanField('老师信息导入', default=False, description='0X0400000')
     PERMIS_MANAGE = BooleanField('权限管理', default=False, description='0X0800000')
     submit = SubmitField('提交')
+
+class xSumScoreForm(Form):
+    comScore=StringField('企业实习评分',validators=[Required(message='此项不能为空')])
+    schScore=StringField('校内指导老师评分',validators=[Required(message='此项不能为空')])
+    comfile=FileField('企业实习评分表')
+    schfile=FileField('校内评分表')
+    submit = SubmitField('保存')
