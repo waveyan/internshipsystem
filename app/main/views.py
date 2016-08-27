@@ -2741,16 +2741,16 @@ def excel_export(template, data):
                 ws.write(row + 1, cols_list.index('cteaEmail'), multiComTea[xdata.stuId]['cteaEmail'])
     # 每个模板最多保存100份导出临时文件
     if template == excel_export_intern:
-        file_name = 'internlist_%s.xls' % random.randint(1, 100)
+        file_name = 'internlist_export_%s.xls' % random.randint(1, 100)
         file_attachname = '实习信息导出表_%s.xls' % datetime.now().date()
     elif template == excel_export_com:
-        file_name = 'comlist_%s.xls' % random.randint(1, 100)
+        file_name = 'comlist_export_%s.xls' % random.randint(1, 100)
         file_attachname = '企业信息导出表_%s.xls' % datetime.now().date()
     elif template == excel_export_stuUser:
-        file_name = 'stuUserList_%s.xls' % random.randint(1, 100)
+        file_name = 'stuUserList_export_%s.xls' % random.randint(1,100)
         file_attachname = '学生用户信息导出表_%s.xls' % datetime.now().date()
     elif template == excel_export_teaUser:
-        file_name = 'teaUserList_%s.xls' % random.randint(1, 100)
+        file_name = 'teaUserList_export_%s.xls' % random.randint(1,100)
         file_attachname = '教师用户信息导出表_%s.xls' % datetime.now().date()
     wb.save((os.path.join(EXPORT_FOLDER, file_name)))
     # attachment_finaname为下载时,提供的默认文件名
@@ -2832,7 +2832,7 @@ def excel_importpage():
             flash('No selected file')
             return redirect('/')
         if file and allowed_file(file.filename, ['xls', 'xlsx']):
-            filename = file.filename
+            filename = '%s_import_%s.xls' % (from_url, random.randint(1,100))
             file.save(os.path.join(IMPORT_FOLDER, filename))
             # 上传成功,开始导入
             try:
@@ -2874,6 +2874,8 @@ def excel_importpage():
                             # 这里还应该有很多需要添加的
                         )
                         db.session.add(internship)
+                        # 增加企业实习人数
+                        db.session.execute('update ComInfor set students=students+1 where comId=%s' % str(intern['comId'])[:-2])
                 elif from_url == 'interncompany':
                     comlist = excel_import(os.path.join(IMPORT_FOLDER, filename), excel_import_com)
                     # 检查数据是否完整或出错
@@ -2965,14 +2967,14 @@ def storage_list(internId, dest):
         # 文件大小h.join(file_path, f))/1024
         if fsize < 1024:
             fsize = '0.1KB'
-        elif fsize >= 1024:
+        elif fsize >= 1024 and fsize < 1024*1024:
             fsize = '%s' % (fsize / 1024)
             # 仅保留一位小数
             integer = fsize.split('.')[0]
             decimal = fsize.split('.')[1][0]
             fsize = '%s.%sKB' % (integer, decimal)
         elif fsize >= 1024 * 1024:
-            fsize = '%s' % fsize / 1024 / 1024
+            fsize = '%s' % (fsize / 1024 / 1024)
             # 仅保留一位小数
             integer = fsize.split('.')[0]
             decimal = fsize.split('.')[1][0]
@@ -3154,6 +3156,10 @@ def xSum():
         else:
             flash("实习申请需审核后,才能查看总结和成果")
             return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
+    else:
+        flash('实习尚未结束, 请待实习结束后再查看实习总结和成果')
+        from_url = request.args.get('from_url')
+        return redirect(url_for('.%s' % from_url, internId=internId, stuId=student.stuId))
 
 
 # 学生个人实习总结与成果的"文件管理"!

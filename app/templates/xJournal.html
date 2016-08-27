@@ -67,7 +67,7 @@
                     <li><a onClick="ComfirmDelete()">删除</a></li>
                     <li class="divider"></li>
                     <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
-                    <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId) }}">实习总结与成果</a></li>
+                    <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId, from_url='xJournal') }}">实习总结与成果</a></li>
                 </ul>
             </div>
         </h1>

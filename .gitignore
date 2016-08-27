@@ -3,6 +3,7 @@
 config.py
 .idea/
 storage/
+*.swf
 
 __pycache__/
 *.py[cod]
