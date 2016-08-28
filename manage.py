@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import Teacher, Role, Student, ComInfor, Journal, InternshipInfor, ComDirTea, SchDirTea
+from app.models import Teacher, Role, Student, ComInfor, Journal, InternshipInfor, ComDirTea, SchDirTea, Summary
 from flask.ext.script import Manager, Shell, Server
 from flask.ext.migrate import Migrate, MigrateCommand
 
@@ -12,7 +12,8 @@ migrate = Migrate(app, db)
 
 def make_shell_context():
     return dict(app=app, db=db, Teacher=Teacher, Role=Role, Student=Student, ComInfor=ComInfor,
-                InternshipInfor=InternshipInfor, Journal=Journal, ComDirTea=ComDirTea, SchDirTea=SchDirTea)
+                InternshipInfor=InternshipInfor, Journal=Journal, ComDirTea=ComDirTea, SchDirTea=SchDirTea,
+                Summary=Summary)
 
 
 manager.add_command("shell", Shell(make_context=make_shell_context))
@@ -26,8 +27,8 @@ def test():
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
-manager.add_command("runserver", Server(host = '0.0.0.0') )
 
+manager.add_command("runserver", Server(host='0.0.0.0'))
 
 if __name__ == '__main__':
     manager.run()

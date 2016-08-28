@@ -85,17 +85,21 @@
         <tr>
             {% if 'comscore' in file_path.keys() %}
                 <th><a href="javascript:{}"
-                              onclick="document.getElementById('comscore_download').submit();">校外实习评分表<span
-                        class="glyphicon glyphicon-save" data-toggle="tooltip"
-                        title="下载"></span></a>
+                       onclick="document.getElementById('comscore_download').submit();">
+                    <button type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-floppy-save"></span> 校外评分表
+                    </button>
+                </a>
                 </th>
             {% endif %}
             <th></th>
             {% if 'schscore' in file_path.keys() %}
                 <th><a href="javascript:{}"
-                              onclick="document.getElementById('schscore_download').submit();">校内实习评分表<span
-                        class="glyphicon glyphicon-save" data-toggle="tooltip"
-                        title="下载"></span></a>
+                       onclick="document.getElementById('schscore_download').submit();">
+                    <button type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-floppy-save"></span> Floppy-save
+                    </button>
+                </a>
                 </th>
             {% endif %}
         </tr>

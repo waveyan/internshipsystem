@@ -3028,6 +3028,7 @@ def readOnline(summary, attach, internId):
     if not os.path.exists(direction):
         os.makedirs(direction)
     pdf_name = file_name.split('.')[0] + '.pdf'
+    print('pdf_name:',pdf_name)
     pdf_path = os.path.join(file_path, 'pdf')
     if not os.path.exists(pdf_path):
         os.makedirs(pdf_path)
@@ -3049,6 +3050,7 @@ def readOnline(summary, attach, internId):
         #         os.system('pdf2swf ' + file + ' -o ' + swf)
         #         swf = swf[swf.find('/static'):]
         #     return swf
+        print('file:',file)
         os.system('unoconv -f pdf ' + file)
         source_pdf = file.split('.')[0] + '.pdf'
         os.system('mv ' + source_pdf + ' ' + pdf)
@@ -3099,12 +3101,11 @@ def stuSumList():
                                    student=student, pagination=pagination, form=form,
                                    grade=grade, major=major, classes=classes)
     elif current_user.can(Permission.STU_SUM_SEARCH):
-        # 函数返回的intern已经join了Student
+        # 函数返回的intern已经join了Student,Summary
         intern = create_intern_filter(grade, major, classes, 2)
         pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(Teacher,
                                                                                               Teacher.teaId == InternshipInfor.icheckTeaId).outerjoin(
-            SchDirTea, SchDirTea.stuId == InternshipInfor.stuId).outerjoin(Summary,
-                                                                           Summary.internId == InternshipInfor.Id) \
+            SchDirTea, SchDirTea.stuId == InternshipInfor.stuId) \
             .filter(InternshipInfor.end < now, InternshipInfor.internCheck == 2) \
             .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
