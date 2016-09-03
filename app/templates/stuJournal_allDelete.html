@@ -53,13 +53,13 @@
 
 {% block page_content %}
     <h1>学生实习日志
-        {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+        {% if current_user.can(Permission.STU_JOUR_EDIT) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                    {% if current_user.can(Permission.STU_JOUR_CHECK) %}
                         <li><a href="{{ url_for('.update_intern_filter',flag=3) }}">批量审核</a></li>
                         <li><a href="{{ url_for('.update_intern_filter',flag=4) }}">批量删除</a></li>
                         </ul>

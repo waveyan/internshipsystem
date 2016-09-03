@@ -30,102 +30,103 @@
 {% block title %}实习评分{% endblock %}
 
 {% block page_content %}
-
-    <div class="page-`er">
-        {% if current_user.roleId==0 %}
-            <h1>我的实习评分
-        {% else %}
-            <h1>{{ student.stuName }}的实习评分
-        {% endif %}
-        <div class="btn-group">
-            <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
-                <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
-            </a>
-        </div>
-    </div><br>
-
-    <table align="center" border="2" class="table-bordered">
-        <tr>
-            <th width="200">学号</th>
-            <td width="400" height="50">{{ student.stuId }}</td>
-            <th width="200">专业班级</th>
-            <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
-        </tr>
-        <tr>
-            <th width="200">姓名</th>
-            <td width="400" height="50">{{ student.stuName }}</td>
-            <th width="200">实习单位</th>
-            <td width="400" height="50">{{ comInfor.comName }}</td>
-        </tr>
-        <tr>
-            <th width="200">实习期间</th>
-            <td width="400" height="50">{{ internship.start }} 至 {{ internship.end }} </td>
-            <th width="200">评分成绩</th>
-            <td width="400" height="50">{{ summary.sumScore }} </td>
-        </tr>
-    </table>
-    <br>
-
-
-    <h3><b>总分计算</b></h3>
-    <table align="center" border="2" class="table-bordered">
-        <tr>
-            <th width="200">企业实习评分</th>
-            <td width="400" height="50">{{ summary.comScore }}</td>
-            <th width="200">校内指导老师评分</th>
-            <td width="400" height="50">{{ summary.schScore }}</td>
-        </tr>
-        <tr>
-            <th width="200">合计总分</th>
-            <td width="400" height="50">{{ summary.sumScore }}</td>
-        </tr>
-    </table>
-    <p>*&nbsp&nbsp总分 = 企业总分*70% + 校内指导老师评分*30%
-    <table>
-        <tr>
-            {% if 'comscore' in file_path.keys() %}
-                <th><a href="javascript:{}"
-                       onclick="document.getElementById('comscore_download').submit();">
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-floppy-save"></span> 校外评分表
-                    </button>
+    {% if current_user.roleId==0 or current_user.can(Permission.STU_SUM_SEARCH) %}
+        <div class="page-`er">
+            {% if current_user.roleId==0 %}
+                <h1>我的实习评分
+            {% else %}
+                <h1>{{ student.stuName }}的实习评分
+            {% endif %}
+            <div class="btn-group">
+                <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
+                    <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
                 </a>
-                </th>
-            {% endif %}
-            <th></th>
-            {% if 'schscore' in file_path.keys() %}
-                <th><a href="javascript:{}"
-                       onclick="document.getElementById('schscore_download').submit();">
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-floppy-save"></span> Floppy-save
-                    </button>
-                </a>
-                </th>
-            {% endif %}
-        </tr>
-        <tr>
-            <h3><b>照片核实</b></h3>
-            {% if 'comscore' in file_path.keys() %}
-                <td>
-                    <img id='img' class="min" src="{{ file_path['comscore'] }}" data-toggle="tooltip"
-                         title="点击我进行放大">
-                </td>
-            {% endif %}
-            <td width="10"></td>
-            {% if 'schscore' in file_path.keys() %}
-                <td>
-                    <img id='img' class="min" src="{{ file_path['schscore'] }}" data-toggle="tooltip"
-                         title="点击我进行放大">
-                </td>
-            {% endif %}
-        </tr>
-    </table>
-    <br><br><br>
-    <!-- 提供下载的form -->
-    <form id="schscore_download" method="post">
-        <input type="hidden" name="file_path" value="{{ file_path['schscore'] }}">
-    </form>
-    <form id="comscore_download" method="post">
-        <input type="hidden" name="file_path" value="{{ file_path['comscore'] }}">
-    </form>
+            </div>
+        </div><br>
+
+        <table align="center" border="2" class="table-bordered">
+            <tr>
+                <th width="200">学号</th>
+                <td width="400" height="50">{{ student.stuId }}</td>
+                <th width="200">专业班级</th>
+                <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
+            </tr>
+            <tr>
+                <th width="200">姓名</th>
+                <td width="400" height="50">{{ student.stuName }}</td>
+                <th width="200">实习单位</th>
+                <td width="400" height="50">{{ comInfor.comName }}</td>
+            </tr>
+            <tr>
+                <th width="200">实习期间</th>
+                <td width="400" height="50">{{ internship.start }} 至 {{ internship.end }} </td>
+                <th width="200">评分成绩</th>
+                <td width="400" height="50">{{ summary.sumScore }} </td>
+            </tr>
+        </table>
+        <br>
+
+
+        <h3><b>总分计算</b></h3>
+        <table align="center" border="2" class="table-bordered">
+            <tr>
+                <th width="200">企业实习评分</th>
+                <td width="400" height="50">{{ summary.comScore }}</td>
+                <th width="200">校内指导老师评分</th>
+                <td width="400" height="50">{{ summary.schScore }}</td>
+            </tr>
+            <tr>
+                <th width="200">合计总分</th>
+                <td width="400" height="50">{{ summary.sumScore }}</td>
+            </tr>
+        </table>
+        <p>*&nbsp&nbsp总分 = 企业总分*70% + 校内指导老师评分*30%
+        <table>
+            <tr>
+                {% if 'comscore' in file_path.keys() %}
+                    <th><a href="javascript:{}"
+                           onclick="document.getElementById('comscore_download').submit();">
+                        <button type="button" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-floppy-save"></span> 校外评分表
+                        </button>
+                    </a>
+                    </th>
+                {% endif %}
+                <th></th>
+                {% if 'schscore' in file_path.keys() %}
+                    <th><a href="javascript:{}"
+                           onclick="document.getElementById('schscore_download').submit();">
+                        <button type="button" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-floppy-save"></span> Floppy-save
+                        </button>
+                    </a>
+                    </th>
+                {% endif %}
+            </tr>
+            <tr>
+                <h3><b>照片核实</b></h3>
+                {% if 'comscore' in file_path.keys() %}
+                    <td>
+                        <img id='img' class="min" src="{{ file_path['comscore'] }}" data-toggle="tooltip"
+                             title="点击我进行放大">
+                    </td>
+                {% endif %}
+                <td width="10"></td>
+                {% if 'schscore' in file_path.keys() %}
+                    <td>
+                        <img id='img' class="min" src="{{ file_path['schscore'] }}" data-toggle="tooltip"
+                             title="点击我进行放大">
+                    </td>
+                {% endif %}
+            </tr>
+        </table>
+        <br><br><br>
+        <!-- 提供下载的form -->
+        <form id="schscore_download" method="post">
+            <input type="hidden" name="file_path" value="{{ file_path['schscore'] }}">
+        </form>
+        <form id="comscore_download" method="post">
+            <input type="hidden" name="file_path" value="{{ file_path['comscore'] }}">
+        </form>
+    {% endif %}
 {% endblock %}

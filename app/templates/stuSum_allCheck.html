@@ -54,20 +54,18 @@
 
 {% block page_content %}
     <h1>学生实习总结成果
-        {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+        {% if current_user.can(Permission.STU_SUM_EDIT) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
-                        {% if current_user.can(Permission.STU_INTERN_CHECK) %}
-                            <li><a href="{{ url_for('.update_intern_filter',flag=7) }}">批量审核</a></li>
-                            <li><a href="{{ url_for('.update_intern_filter',flag=8) }}">批量删除</a></li>
-                        {% endif %}
-                        </ul>
-                        </div>
+                    {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
+                        <li><a href="{{ url_for('.update_intern_filter',flag=7) }}">批量审核</a></li>
+                        <li><a href="{{ url_for('.update_intern_filter',flag=8) }}">批量删除</a></li>
                     {% endif %}
+                </ul>
+            </div>
             {{ search.search(url_for('.sum_search',sum='sum'),form) }}
         {% endif %}
     </h1>
@@ -105,7 +103,7 @@
                     {% elif intern.sumCheck==1 %}
                         <td>被退回</td>
                     {% else %}
-                        <td>未审核</td>
+                        <td>待审核</td>
                     {% endif %}
                 </tr>
             {% endfor %}

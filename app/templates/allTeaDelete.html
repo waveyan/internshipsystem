@@ -39,72 +39,70 @@
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
-    <h1>教师用户
-        {% if current_user.can(Permission.COM_INFOR_EDIT) %}
+    {% if current_user.can(Permission.TEA_INFOR_MANAGE) %}
+        <h1>教师用户
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                        <li><a href="{{ url_for('.addTeacher') }}">添加</a></li>
-                        <li><a href="#">批量添加</a></li>
-                        <li><a href="{{ url_for('.allTeaSet') }}">批量设置角色</a></li>
-                        <li><a href="">批量删除</a></li>
-                        </ul>
-                        </div>
-                    {% endif %}
-        {% endif %}
-{{ search.search(url_for('.user_search',tea='tea'),form) }}
-    </h1>
-    <table class="table" id="t">
-        <thead>
-        <tr>
-            <th></th>
-            {% if session.get('way')=='0' %}
-                <th><a href="{{ url_for('.allTeaSet',way=1) }}" data-toggle="tooltip" title="按拼音首字母降序排列">姓名<span
-                        class="glyphicon glyphicon-arrow-down"></span></a></th>
-            {% else %}
-                <th><a href="{{ url_for('.allTeaSet',way=0) }}" data-toggle="tooltip" title="按拼音首字母升序排列">姓名<span
-                        class="glyphicon glyphicon-arrow-up"></span></a></th>
-            {% endif %}
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-            <th>性别</th>
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-            <th>教工号</th>
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-            <th>系统角色</th>
-        </tr>
-        </thead>
-        <tbody>
-        <form method="post">
-            {% for tea in teacher %}
-                <tr>
-                    <th><input type="checkbox" name='tea[]' value={{ tea.teaId }}></th>
-                    <td>{{ tea.teaName }}</td>
-                    <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                    <td>{{ tea.teaSex }}</td>
-                    <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                    <td>{{ tea.teaId }}</td>
-                    <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                    <td>{{ tea.role.roleName }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div>
-        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
-        <button type="submit" class="btn btn-danger">删除</button>
-        <!--
-        <button type="button" class="btn btn-primary" id="back">取消</button>
-        -->
-    </div>
-    </form>
+                    <li><a href="{{ url_for('.addTeacher') }}">添加</a></li>
+                    <li><a href="#">批量添加</a></li>
+                    <li><a href="{{ url_for('.allTeaSet') }}">批量设置角色</a></li>
+                    <li><a href="">批量删除</a></li>
+                </ul>
+            </div>
 
-    {% if pagination %}
-        <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.allTeaSet') }}
+            {{ search.search(url_for('.user_search',tea='tea'),form) }}
+        </h1>
+        <table class="table" id="t">
+            <thead>
+            <tr>
+                <th></th>
+                {% if session.get('way')=='0' %}
+                    <th><a href="{{ url_for('.allTeaSet',way=1) }}" data-toggle="tooltip" title="按拼音首字母降序排列">姓名<span
+                            class="glyphicon glyphicon-arrow-down"></span></a></th>
+                {% else %}
+                    <th><a href="{{ url_for('.allTeaSet',way=0) }}" data-toggle="tooltip" title="按拼音首字母升序排列">姓名<span
+                            class="glyphicon glyphicon-arrow-up"></span></a></th>
+                {% endif %}
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>性别</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>教工号</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>系统角色</th>
+            </tr>
+            </thead>
+            <tbody>
+            <form method="post">
+                {% for tea in teacher %}
+                    <tr>
+                        <th><input type="checkbox" name='tea[]' value={{ tea.teaId }}></th>
+                        <td>{{ tea.teaName }}</td>
+                        <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        <td>{{ tea.teaSex }}</td>
+                        <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        <td>{{ tea.teaId }}</td>
+                        <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        <td>{{ tea.role.roleName }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div>
+            <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
+            <button type="submit" class="btn btn-danger">删除</button>
+            <!--
+            <button type="button" class="btn btn-primary" id="back">取消</button>
+            -->
         </div>
-    {% endif %}
+        </form>
 
+        {% if pagination %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination,'.allTeaSet') }}
+            </div>
+        {% endif %}
+    {% endif %}
 {% endblock %}

@@ -41,84 +41,86 @@
 {% block title %}实习总结与成果{% endblock %}
 
 {% block page_content %}
-    <div class="page-`er">
-        {% if current_user.roleId==0 %}
-            <h1>我的实习评分
-        {% else %}
-            <h1>{{ student.stuName }}的实习评分
-        {% endif %}
-    </div><br>
+    {% if current_user.roleId==0 or current_user.can(Permission.STU_SUM_EDIT) %}
+        <div class="page-`er">
+            {% if current_user.roleId==0 %}
+                <h1>我的实习评分
+            {% else %}
+                <h1>{{ student.stuName }}的实习评分
+            {% endif %}
+        </div><br>
 
 
-    <table align="center" border="2" class="table-bordered">
-        <tr>
-            <th width="200">学号</th>
-            <td width="400" height="50">{{ student.stuId }}</td>
-            <th width="200">专业班级</th>
-            <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
-        </tr>
-        <tr>
-            <th width="200">姓名</th>
-            <td width="400" height="50">{{ student.stuName }}</td>
-            <th width="200">实习单位</th>
-            <td width="400" height="50">{{ comInfor.comName }}</td>
-        </tr>
-        <tr>
-            <th width="200">实习期间</th>
-            <td width="400" height="50">{{ internship.start }} 至 {{ internship.end }} </td>
-        </tr>
-    </table>
-    <br>
-
-    <form id="sb" action="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}" method="POST"
-          enctype=multipart/form-data>
-        {{ form.hidden_tag() }}
-        <input type="hidden" name="action" value="upload">
-        <h3><b>总分录入</b></h3>
         <table align="center" border="2" class="table-bordered">
             <tr>
-                <th width="200">
-                    {{ form.comScore.label }}</th>
-                <td width="400"
-                    height="50">{{ form.comScore(class="form-control",request='',value=summary.comScore) }}</td>
-                <th width="200"> {{ form.schScore.label }}</th>
-                <td width="400"
-                    height="50">{{ form.schScore(class="form-control",request='',value=summary.schScore) }}</td>
+                <th width="200">学号</th>
+                <td width="400" height="50">{{ student.stuId }}</td>
+                <th width="200">专业班级</th>
+                <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
             </tr>
             <tr>
-                <th width="200">企业实习评分表</th>
-                <td width="400"
-                    height="50">
-                    {% if 'comscore' in file_path.keys() %}
-                        {{ file_path['comscore'] }}&nbsp;&nbsp;&nbsp;<a href="javascript:{}"
-                                                                        onclick="document.getElementById('comscore_delete').submit();">删除</a>
-                    {% else %}
-                        {{ form.comfile() }}
-                    {% endif %}
-                </td>
-                <th width="200">校内评分表</th>
-                <td width="400"
-                    height="50">
-                    {% if 'schscore' in file_path.keys() %}
-                        {{ file_path['schscore'] }}&nbsp;&nbsp;&nbsp;<a href="javascript:{}"
-                                                                        onclick="document.getElementById('schscore_delete').submit();">删除</a>
-                    {% else %}
-                        {{ form.schfile() }}
-                    {% endif %}
-                </td>
+                <th width="200">姓名</th>
+                <td width="400" height="50">{{ student.stuName }}</td>
+                <th width="200">实习单位</th>
+                <td width="400" height="50">{{ comInfor.comName }}</td>
+            </tr>
+            <tr>
+                <th width="200">实习期间</th>
+                <td width="400" height="50">{{ internship.start }} 至 {{ internship.end }} </td>
             </tr>
         </table>
         <br>
-        {{ form.submit(class="btn btn-primary") }}
-    </form>
-    {#    #delete score of company#}
-    <form id="schscore_delete" method="post">
-        <input type="hidden" name="action" value="schscore_delete">
-        <input type="hidden" name="filename" value="schscore/{{ file_path['schscore'] }}">
-    </form>
-    {#    #delete score of school#}
-    <form id="comscore_delete" method="post">
-        <input type="hidden" name="action" value="comscore_delete">
-        <input type="hidden" name="filename" value="comscore/{{ file_path['comscore'] }}">
-    </form>
+
+        <form id="sb" action="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}" method="POST"
+              enctype=multipart/form-data>
+            {{ form.hidden_tag() }}
+            <input type="hidden" name="action" value="upload">
+            <h3><b>总分录入</b></h3>
+            <table align="center" border="2" class="table-bordered">
+                <tr>
+                    <th width="200">
+                        {{ form.comScore.label }}</th>
+                    <td width="400"
+                        height="50">{{ form.comScore(class="form-control",request='',value=summary.comScore) }}</td>
+                    <th width="200"> {{ form.schScore.label }}</th>
+                    <td width="400"
+                        height="50">{{ form.schScore(class="form-control",request='',value=summary.schScore) }}</td>
+                </tr>
+                <tr>
+                    <th width="200">企业实习评分表</th>
+                    <td width="400"
+                        height="50">
+                        {% if 'comscore' in file_path.keys() %}
+                            {{ file_path['comscore'] }}&nbsp;&nbsp;&nbsp;<a href="javascript:{}"
+                                                                            onclick="document.getElementById('comscore_delete').submit();">删除</a>
+                        {% else %}
+                            {{ form.comfile() }}
+                        {% endif %}
+                    </td>
+                    <th width="200">校内评分表</th>
+                    <td width="400"
+                        height="50">
+                        {% if 'schscore' in file_path.keys() %}
+                            {{ file_path['schscore'] }}&nbsp;&nbsp;&nbsp;<a href="javascript:{}"
+                                                                            onclick="document.getElementById('schscore_delete').submit();">删除</a>
+                        {% else %}
+                            {{ form.schfile() }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+            <br>
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+        {#    #delete score of company#}
+        <form id="schscore_delete" method="post">
+            <input type="hidden" name="action" value="schscore_delete">
+            <input type="hidden" name="filename" value="schscore/{{ file_path['schscore'] }}">
+        </form>
+        {#    #delete score of school#}
+        <form id="comscore_delete" method="post">
+            <input type="hidden" name="action" value="comscore_delete">
+            <input type="hidden" name="filename" value="comscore/{{ file_path['comscore'] }}">
+        </form>
+    {% endif %}
 {% endblock %}

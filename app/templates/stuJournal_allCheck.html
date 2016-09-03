@@ -52,19 +52,19 @@
 
 {% block page_content %}
     <h1>学生实习日志
-        {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+        {% if current_user.can(Permission.STU_JOUR_EDIT) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                    {% if current_user.can(Permission.STU_JOUR_CHECK) %}
                         <li><a href="{{ url_for('.update_intern_filter',flag=3) }}">批量审核</a></li>
                         <li><a href="{{ url_for('.update_intern_filter',flag=4) }}">批量删除</a></li>
                         </ul>
                         </div>
                     {% endif %}
-{{ search.search(url_for('.journal_search',journal='journal'),form) }}
+            {{ search.search(url_for('.journal_search',journal='journal'),form) }}
         {% endif %}
     </h1>
     {#    筛选项#}
@@ -86,7 +86,7 @@
         <form method="POST">
             {% for intern in internlist %}
                 <tr>
-                    <td>22<input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
+                    <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
                     <td>
                         <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}在{{ intern.comName }}的日子</a>
                     </td>
@@ -96,7 +96,7 @@
 
                     <!-- 日志状态 -->
                     {% if intern.jourCheck == 0 %}
-                        <td>未审核</td>
+                        <td>待审核</td>
                     {% elif intern.jourCheck == 1 %}
                         <td>已审核</td>
                     {% endif %}

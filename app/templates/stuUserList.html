@@ -49,96 +49,94 @@
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
-    <h1>学生用户
-        {% if current_user.can(Permission.ADMIN) %}
+    {% if current_user.can(Permission.STU_INTERN_MANAGE) %}
+        <h1>学生用户
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                        <!--Excel导出-->
-                        <form id="export_form" method="post">
-                            <input type="hidden" name="isexport" value="1">
-                        </form>
+                    <!--Excel导出-->
+                    <form id="export_form" method="post">
+                        <input type="hidden" name="isexport" value="1">
+                    </form>
 
-                        <li><a href="{{ url_for('.addStudent') }}">添加</a></li>
-                        <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出</a>
-                        <li><a href="{{ url_for('.excel_importpage', from_url='stuUserList') }}">批量导入</a></li>
-                        <li><a href="{{ url_for('.update_stu_filter',flag=1) }}">批量设置角色</a></li>
-                        <li><a href="{{ url_for('.update_stu_filter',flag=0) }}">批量删除</a></li>
-                        </ul>
-                        </div>
-                    {% endif %}
-        {% endif %}
-{{ search.search(url_for('.user_search'),form) }}
-    </h1>
+                    <li><a href="{{ url_for('.addStudent') }}">添加</a></li>
+                    <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出</a>
+                    <li><a href="{{ url_for('.excel_importpage', from_url='stuUserList') }}">批量导入</a></li>
+                    <li><a href="{{ url_for('.update_stu_filter',flag=1) }}">批量设置角色</a></li>
+                    <li><a href="{{ url_for('.update_stu_filter',flag=0) }}">批量删除</a></li>
+                </ul>
+            </div>
+            {{ search.search(url_for('.user_search'),form) }}
+        </h1>
 
 
-    {#筛选项#}
-    {{ filter.stu_filter('.stuUserList',2,grade,major,classes) }}
-    <table class="table" id="t">
-        <thead>
-        <tr>
-            <th>姓名</th>
-            <th>学号</th>
-            <th>性别</th>
-            <th>年级</th>
-            <th>专业班级</th>
-            <th>系统角色</th>
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        {% for stu in student %}
+        {#筛选项#}
+        {{ filter.stu_filter('.stuUserList',2,grade,major,classes) }}
+        <table class="table" id="t">
+            <thead>
             <tr>
-                <td>{{ stu.stuName }}</td>
-                <td>{{ stu.stuId }}</td>
-                <td>{{ stu.sex }}</td>
-                <td>{{ stu.grade }}</td>
-                <td>{{ stu.major }}{{ stu.classes }}班</td>
-                <td>{{ stu.role.roleName }}</td>
-                <td><a href="{{ url_for('.editStudent',stuId=stu.stuId) }}">修改</a>|<a
-                        href="{{ url_for('.selectRole',stuId=stu.stuId,name=stu.stuName) }}">设置角色</a>|<a
-                        onclick="ComfirmDelete({{ stu.stuId }})" href="#">删除</a></td>
+                <th>姓名</th>
+                <th>学号</th>
+                <th>性别</th>
+                <th>年级</th>
+                <th>专业班级</th>
+                <th>系统角色</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作</th>
             </tr>
-        {% endfor %}
+            </thead>
+            <tbody>
 
-        </tbody>
-    </table>
-    {% if pagination %}
-        <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.stuUserList') }}
+            {% for stu in student %}
+                <tr>
+                    <td>{{ stu.stuName }}</td>
+                    <td>{{ stu.stuId }}</td>
+                    <td>{{ stu.sex }}</td>
+                    <td>{{ stu.grade }}</td>
+                    <td>{{ stu.major }}{{ stu.classes }}班</td>
+                    <td>{{ stu.role.roleName }}</td>
+                    <td><a href="{{ url_for('.editStudent',stuId=stu.stuId) }}">修改</a>|<a
+                            href="{{ url_for('.selectRole',stuId=stu.stuId,name=stu.stuName) }}">设置角色</a>|<a
+                            onclick="ComfirmDelete({{ stu.stuId }})" href="#">删除</a></td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+        {% if pagination %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination,'.stuUserList') }}
+            </div>
+        {% endif %}
+
+        <!--确认弹窗-->
+        <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
+             aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close"
+                                data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            提示：
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否仍要删除？</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="/student_delete" method="POST">
+                            <input type="hidden" id="stuId" name="stuId">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">删除</button>
+                        </form>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
         </div>
     {% endif %}
-
-    <!--确认弹窗-->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
-         aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close"
-                            data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">
-                        提示：
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否仍要删除？</h4>
-                </div>
-                <div class="modal-footer">
-                    <form action="/student_delete" method="POST">
-                        <input type="hidden" id="stuId" name="stuId">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-primary">删除</button>
-                    </form>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
-    </div>
 
 {% endblock %}
