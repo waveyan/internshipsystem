@@ -62,28 +62,6 @@
         </div>
     </div>
 
-    <!-- 在线阅读 -->
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width"/>
-    <style type="text/css" media="screen">
-        html, body {
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: auto;
-        }
-
-        #flashContent {
-            display: none;
-        }
-    </style>
-    <link rel="stylesheet" type="text/css" href="/static/Flexpaper/css/flexpaper.css"/>
-    <script type="text/javascript" src="/static/Flexpaper/js/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/Flexpaper/js/flexpaper.js"></script>
-    <script type="text/javascript" src="/static/Flexpaper/js/flexpaper_handlers.js"></script>
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
@@ -151,6 +129,21 @@
 
         <table align="center" border="2" class="table-bordered">
             <tr>
+<<<<<<< HEAD
+                <!-- 提供下载的form -->
+                <form id="{{ summary }}" method="post">
+                    <input type="hidden" name="summary_doc_download" value="{{ summary }}">
+                </form>
+                {% if summary.find('.doc')!=-1 %}
+                    <td><a href="{{ url_for('.xSum',summary=summary,internId=internship.Id,stuId=student.stuId) }}" data-toggle="tooltip"
+                           title="点击进行在线阅览">{{ summary }}</a></td>
+                {% else %}
+                    <!-- <td>{{ summary }}</td> -->
+                {% endif %}
+                <td>{{ summary_doc[summary]['fsize'] }}</td>
+                <td>{{ summary_doc[summary]['mtime'] }}</td>
+                <td><a href="javascript:{}" onclick="document.getElementById('{{ summary }}').submit();">下载</a></td>
+=======
                 <th width="200">学号</th>
                 <td width="400" height="50">{{ student.stuId }}</td>
                 <th width="200">专业班级</th>
@@ -161,6 +154,7 @@
                 <td width="400" height="50">{{ student.stuName }}</td>
                 <th width="200">实习单位</th>
                 <td width="400" height="50">{{ comInfor.comName }}</td>
+>>>>>>> origin/master
             </tr>
             <tr>
                 <th width="200">实习期间</th>
@@ -171,6 +165,21 @@
                             class="label label-info">详情<span></a>
                 </td>
             </tr>
+<<<<<<< HEAD
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if path %}
+    <!-- 提供下载的form -->
+                <form id="pdf" method="post">
+                    <input type="hidden" name="pdf_download" value="{{ path }}">
+                </form>
+        <div id="pdf">
+          <object width="400" height="500" type="application/pdf" data="{{ path }}" id="pdf_content">
+            <p>你的浏览器不支持在线阅览, 请更换浏览器, 或点击&nbsp<a href="javascript:{}" onclick="document.getElementById('pdf').submit();">这里</a>&nbsp下载离线阅览</p>
+          </object>
+        </div>
+=======
         </table>
         <br>
 
@@ -281,5 +290,6 @@
             </table>
             <br><br>
         {% endif %}
+>>>>>>> origin/master
     {% endif %}
 {% endblock %}

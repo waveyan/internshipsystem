@@ -3,6 +3,8 @@
 config.py
 .idea/
 storage/
+app/static/storage
+onlinePDF/
 *.swf
 
 __pycache__/

@@ -85,7 +85,7 @@
                         {% if current_user.can(Permission.INTERNCOMPANY_LIST) %}
                             <li><a href="{{ url_for('main.update_filter') }}">企业实习情况</a></li>
                         {% endif %}
-                        <li><a href="{{ url_for('main.statistics2') }}">统计</a></li>
+                        <li><a href="{{ url_for('main.statistics_area_visual') }}">统计</a></li>
                         {% if current_user.roleId==0 %}
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="">个人信息<span

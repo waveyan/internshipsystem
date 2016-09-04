@@ -67,6 +67,69 @@
         <br>
 
 
+<<<<<<< HEAD
+    <h3><b>总分计算</b></h3>
+    <table align="center" border="2" class="table-bordered">
+        <tr>
+            <th width="200">企业实习评分</th>
+            <td width="400" height="50">{{ summary.comScore }}</td>
+            <th width="200">校内指导老师评分</th>
+            <td width="400" height="50">{{ summary.schScore }}</td>
+        </tr>
+        <tr>
+            <th width="200">合计总分</th>
+            <td width="400" height="50">{{ summary.sumScore }}</td>
+        </tr>
+    </table>
+    <p>*&nbsp&nbsp总分 = 企业总分*70% + 校内指导老师评分*30%
+    <table>
+        <tr>
+            {% if 'comscore' in file_path.keys() %}
+                <th><a href="javascript:{}"
+                       onclick="document.getElementById('comscore_download').submit();">
+                    <button type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-floppy-save"></span> 企业评分表
+                    </button>
+                </a>
+                </th>
+            {% endif %}
+            <th></th>
+            {% if 'schscore' in file_path.keys() %}
+                <th><a href="javascript:{}"
+                       onclick="document.getElementById('schscore_download').submit();">
+                    <button type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-floppy-save"></span> 校内评分表
+                    </button>
+                </a>
+                </th>
+            {% endif %}
+        </tr>
+        <tr>
+            <h3><b>照片核实</b></h3>
+            {% if 'comscore' in file_path.keys() %}
+                <td>
+                    <img id='img' class="min" src="{{ file_path['comscore'] }}" data-toggle="tooltip"
+                         title="点击我进行放大">
+                </td>
+            {% endif %}
+            <td width="10"></td>
+            {% if 'schscore' in file_path.keys() %}
+                <td>
+                    <img id='img' class="min" src="{{ file_path['schscore'] }}" data-toggle="tooltip"
+                         title="点击我进行放大">
+                </td>
+            {% endif %}
+        </tr>
+    </table>
+    <br><br><br>
+    <!-- 提供下载的form -->
+    <form id="schscore_download" method="post">
+        <input type="hidden" name="file_path" value="{{ file_path['schscore'] }}">
+    </form>
+    <form id="comscore_download" method="post">
+        <input type="hidden" name="file_path" value="{{ file_path['comscore'] }}">
+    </form>
+=======
         <h3><b>总分计算</b></h3>
         <table align="center" border="2" class="table-bordered">
             <tr>
@@ -129,4 +192,5 @@
             <input type="hidden" name="file_path" value="{{ file_path['comscore'] }}">
         </form>
     {% endif %}
+>>>>>>> origin/master
 {% endblock %}

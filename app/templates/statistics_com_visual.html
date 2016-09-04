@@ -13,13 +13,14 @@
 {% block page_content %}
     <h1>实习企业情况统计</h1>
     <ul class="nav nav-tabs">
-        <li><a href="{{ url_for('main.statistics2') }}">地域统计图</a></li>
-        <li class="active"><a href="{{ url_for('main.statistics3') }}">企业统计图</a></li>
-        <li><a href="{{ url_for('main.statistics') }}">企业排行</a></li>
-        <li><a href="{{ url_for('main.statistics1') }}">地域排行</a></li>
+        <li><a href="{{ url_for('main.statistics_area_visual') }}">地域统计图</a></li>
+        <li class="active"><a href="{{ url_for('main.statistics_com_visual') }}">企业统计图</a></li>
+        <li><a href="{{ url_for('main.statistics_com_rank') }}">企业排行</a></li>
+        <li><a href="{{ url_for('main.statistics_area_rank') }}">地域排行</a></li>
     </ul>
     <div>
-        {% set sum = 0 %}
+
+<!--         {% set sum = 0 %}
         {% for com in comInfor %}
             {% set name = com.comName %}
             <div style="display:none" id="ten{{ loop.index0 }}">  {{ name }}</div>
@@ -30,7 +31,8 @@
             {% else %}
                 <div style="display:none" id="other"> {{ sum+students }} </div>
             {% endif %}
-        {% endfor %}
+        {% endfor %} -->
+
         <br><br>
         <script src="/static/JS/echarts.common.min.js"></script>
         <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
@@ -45,13 +47,15 @@
                 },
                 tooltip: {},
                 xAxis: {
-                    data: [ten0.innerHTML, ten1.innerHTML, ten2.innerHTML, ten3.innerHTML, ten4.innerHTML, ten5.innerHTML, "其他"]
+                    // data: [ten0.innerHTML, ten1.innerHTML, ten2.innerHTML, ten3.innerHTML, ten4.innerHTML, ten5.innerHTML, "其他"]
+                    data: ["{{ comlist[0]['comName'] }}", "{{ comlist[1]['comName'] }}", "{{ comlist[2]['comName'] }}", "{{ comlist[3]['comName'] }}", "{{ comlist[4]['comName'] }}", "{{ comlist[5]['comName'] }}", "{{ comlist[6]['comName'] }}"]
                 },
                 yAxis: {},
                 series: [{
                     name: '累计人数',
                     type: 'bar',
-                    data: [ten10.innerHTML, ten11.innerHTML, ten12.innerHTML, ten13.innerHTML, ten14.innerHTML, ten15.innerHTML, other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML]
+                    // data: [ten10.innerHTML, ten11.innerHTML, ten12.innerHTML, ten13.innerHTML, ten14.innerHTML, ten15.innerHTML, other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML]
+                    data: ["{{ comlist[0]['students'] }}", "{{ comlist[1]['students'] }}", "{{ comlist[2]['students'] }}", "{{ comlist[3]['students'] }}", "{{ comlist[4]['students'] }}", "{{ comlist[5]['students'] }}", "{{ comlist[6]['students'] }}"]
                 }]
             };
 
@@ -62,6 +66,9 @@
         <div style="height: 100%; margin: 0">
             <div id="container" style="height: 700%"></div>
             <script type="text/javascript">
+                // function com_detail(comId){
+                //     window.location = "http://www.baidu.com";
+                // {
                 var dom = document.getElementById("container");
                 var myChart = echarts.init(dom);
                 var app = {};
@@ -76,16 +83,23 @@
                             type: 'pie',
                             radius: '65%',
                             data: [
-                                {value: ten10.innerHTML, name: ten0.innerHTML},
-                                {value: ten11.innerHTML, name: ten1.innerHTML},
-                                {value: ten12.innerHTML, name: ten2.innerHTML},
-                                {value: ten13.innerHTML, name: ten3.innerHTML},
-                                {value: ten14.innerHTML, name: ten4.innerHTML},
-                                {value: ten15.innerHTML, name: ten5.innerHTML},
-                                {
-                                    value: other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML,
-                                    name: "其他"
-                                },
+                                // {value: ten10.innerHTML, name: ten0.innerHTML},
+                                // {value: ten11.innerHTML, name: ten1.innerHTML},
+                                // {value: ten12.innerHTML, name: ten2.innerHTML},
+                                // {value: ten13.innerHTML, name: ten3.innerHTML},
+                                // {value: ten14.innerHTML, name: ten4.innerHTML},
+                                // {value: ten15.innerHTML, name: ten5.innerHTML},
+                                // {
+                                //     value: other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML,
+                                //     name: "其他"
+                                // }
+                                {name:"{{ comlist[0]['comName'] }}", value:"{{ comlist[0]['students'] }}"},
+                                {name:"{{ comlist[1]['comName'] }}", value:"{{ comlist[1]['students'] }}"},
+                                {name:"{{ comlist[2]['comName'] }}", value:"{{ comlist[2]['students'] }}"},
+                                {name:"{{ comlist[3]['comName'] }}", value:"{{ comlist[3]['students'] }}"},
+                                {name:"{{ comlist[4]['comName'] }}", value:"{{ comlist[4]['students'] }}"},
+                                {name:"{{ comlist[5]['comName'] }}", value:"{{ comlist[5]['students'] }}"},
+                                {name:"{{ comlist[6]['comName'] }}", value:"{{ comlist[6]['students'] }}"}
                             ],
                             roseType: 'angle',
                             itemStyle: {
@@ -99,7 +113,9 @@
                 };
                 ;
                 if (option && typeof option === "object") {
+                    // var ecConfig1 = require('echarts/config');
                     myChart.setOption(option, true);
+                    // myChart.on(ecConfig1.EVENT.CLICK, com_detail);
                 }
             </script>
         </div>

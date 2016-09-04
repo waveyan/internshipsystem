@@ -65,49 +65,68 @@ def score():
     return render_template('score.html', Permission=Permission)
 
 
-# ------------------------------------------------------------------------
-# 统计
-# 统计实习企业列表
-@main.route('/statistics', methods=['GET', 'POST'])
+# -----------------------------统计----------------------------------------
+# 统计--地域统计图
+@main.route('/statistics_area_visual')
+def statistics_area_visual():
+    comlist = []
+    index = 0
+    cominfor = db.session.execute('select comAddress, sum(students) from ComInfor group by comAddress order by sum(students) desc')
+    for com in cominfor:
+        if index < 6:
+            # com[1] 为学生人数
+            comlist.append({'comAddress': com.comAddress, 'students': com[1]})
+            index = index + 1
+            if index == 6:
+                comlist.append({'comAddress': '其他', 'students': 0})
+        else:
+            comlist[6]['students'] = comlist[6]['students'] + com[1]
+    return render_template('statistics_area_visual.html', Permission=Permission, comlist=comlist)
+
+
+# 统计--企业统计图
+@main.route('/statistics_com_visual')
+def statistics_com_visual():
+    comlist = []
+    index = 0
+    cominfor = db.session.execute('select comId, comName, students from ComInfor order by students desc')
+    for com in cominfor:
+        if index < 6:
+            comlist.append({'comId': com.comId, 'comName': com.comName, 'students': com.students})
+            index = index + 1
+            if index == 6:
+                comlist.append({'comName': '其他', 'students': 0})
+        else:
+            comlist[6]['students'] = comlist[6]['students'] + com.students
+    return render_template('statistics_com_visual.html', Permission=Permission, comlist=comlist)
+
+
+# 统计--企业排行
+@main.route('/statistics_com_rank', methods=['GET', 'POST'])
 @login_required
-def statistics():
+def statistics_com_rank():
     form = searchForm()
     page = request.args.get('page', 1, type=int)
     pagination = ComInfor.query.filter(ComInfor.students != 0).order_by(ComInfor.students.desc()).paginate(page,
                                                                                                            per_page=8,
                                                                                                            error_out=False)
     comInfor = pagination.items
-    return render_template('statistics.html', form=form, Permission=Permission, pagination=pagination,
+    return render_template('statistics_com_rank.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor)
 
 
-# 统计实习企业列表2
-@main.route('/statistics1', methods=['GET', 'POST'])
+# 统计--地域排行
+@main.route('/statistics_area_rank', methods=['GET', 'POST'])
 @login_required
-def statistics1():
+def statistics_area_rank():
     form = searchForm()
     page = request.args.get('page', 1, type=int)
     pagination = ComInfor.query.filter(ComInfor.students != 0).order_by(ComInfor.students.desc()).paginate(page,
                                                                                                            per_page=8,
                                                                                                            error_out=False)
     comInfor = pagination.items
-    return render_template('statistics1.html', form=form, Permission=Permission, pagination=pagination,
+    return render_template('statistics_area_rank.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor)
-
-
-# 统计实习企业列表3
-@main.route('/statistics2')
-def statistics2():
-    comInfor = ComInfor.query.filter(ComInfor.students != 0).order_by(ComInfor.students.desc())
-    return render_template('statistics2.html', Permission=Permission, comInfor=comInfor)
-
-
-# 统计实习企业列表4
-@main.route('/statistics3')
-def statistics3():
-    comInfor = ComInfor.query.filter(ComInfor.students != 0).order_by(ComInfor.students.desc())
-    return render_template('statistics3.html', Permission=Permission, comInfor=comInfor)
-
 
 # --------------------------------------------------------------------
 # 首页
@@ -326,7 +345,9 @@ def addInternship():
             subprocess.call('mkdir %s/%s' % (STORAGE_FOLDER, internId), shell=True)
             subprocess.call('mkdir %s/%s/attachment' % (STORAGE_FOLDER, internId), shell=True)
             subprocess.call('mkdir %s/%s/summary_doc' % (STORAGE_FOLDER, internId), shell=True)
-            subprocess.call('mkdir %s/%s/score' % (STORAGE_FOLDER, internId), shell=True)
+            subprocess.call('mkdir %s/%s/score_img' % (STORAGE_FOLDER, internId), shell=True)
+            subprocess.call('mkdir %s/%s/score_img/comscore' % (STORAGE_FOLDER, internId), shell=True)
+            subprocess.call('mkdir %s/%s/score_img/schscore' % (STORAGE_FOLDER, internId), shell=True)
             if cominfor.students:
                 cominfor.students = int(cominfor.students) + 1
             else:
@@ -335,6 +356,8 @@ def addInternship():
             db.session.commit()
             flash('提交实习信息成功！')
             return redirect(url_for('.stuInternList'))
+            # 初始化Summary表
+            db.session.execute('insert into Sumamry set internId=%s' % internId)
     except Exception as e:
         print("实习信息：", e)
         db.session.rollback
@@ -968,12 +991,15 @@ def stuIntern_allCheck():
     classes = {}
     major = {}
     intern = create_intern_filter(grade, major, classes, 0)
-    pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
+    pagination_part = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
                      InternshipInfor.internCheck) \
-        .filter(InternshipInfor.internCheck != 2).order_by(InternshipInfor.internStatus).paginate(page, per_page=8,
-                                                                                                  error_out=False)
+        .filter(InternshipInfor.internCheck != 2).order_by(InternshipInfor.internStatus)
+    if current_user.can(Permission.COM_INFOR_CHECK):
+        pagination = pagination_part.paginate(page, per_page=8, error_out=False)
+    else:
+        pagination = pagination_part.filter(ComInfor.comCheck == 2).paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
     # 确定实习审核通过
     if request.method == "POST":
@@ -991,7 +1017,7 @@ def stuIntern_allCheck():
                 # 若所选企业未被审核通过,且用户有审核权限,自动审核通过企业
                 comId = InternshipInfor.query.filter_by(Id=x).first().comId
                 com = ComInfor.query.filter_by(comId=comId).first()
-                if com.comCheck != 2 and current_user.can(Permission.COM_INFOR_CHECK):
+                if com.comCheck != 2:
                     db.session.execute('update ComInfor set comCheck=2 where comId=%s' % comId)
         except Exception as e:
             db.session.rollback()
@@ -2953,12 +2979,20 @@ def excel_importpage():
 # ---------------实习总结与成果---------------------------------------
 
 STORAGE_FOLDER = os.path.join(os.path.abspath('.'), 'storage')
+PDF_FOLDER = os.path.join(os.path.abspath('.'), 'app/static/onlinePDF')
 
 
-# 返回想对应的存储路径
+# 返回相对应的存储路径
 def storage_cwd(internId, dest):
-    if dest in ['score', 'summary_doc', 'attachment']:
+    if dest in ['score_img', 'summary_doc', 'attachment']:
         file_path = os.path.join(STORAGE_FOLDER, internId, dest)
+        return file_path
+
+
+# 返回相对应的PDF路径
+def pdf_cwd(internId, dest):
+    if dest in ['summary_doc', 'attachment']:
+        file_path = os.path.join(PDF_FOLDER, internId, dest)
         return file_path
 
 
@@ -3025,49 +3059,28 @@ def storage_upload(internId):
                 return False
 
 
-# threading
-def readOnline(summary, attach, internId):
-    if summary:
-        file_name = summary
-        file_path = storage_cwd(internId, 'summary_doc')
-        direction = os.path.join(os.path.abspath('.'), 'app/static/onlineFile', internId, 'summary_doc')
-    elif attach:
-        file_name = attach
-        file_path = storage_cwd(internId, 'attachment')
-        direction = os.path.join(os.path.abspath('.'), 'app/static/onlineFile', internId, 'attachment')
-    # 先判断是否存在该目录
-    if not os.path.exists(direction):
-        os.makedirs(direction)
-    pdf_name = file_name.split('.')[0] + '.pdf'
-    print('pdf_name:', pdf_name)
-    pdf_path = os.path.join(file_path, 'pdf')
-    if not os.path.exists(pdf_path):
-        os.makedirs(pdf_path)
-    pdf = os.path.join(pdf_path, pdf_name)
-    swf_name = file_name.split('.')[0] + '.swf'
-    swf = os.path.join(direction, swf_name)
-    file = os.path.join(file_path, file_name)
-    if os.path.exists(pdf):
-        if os.path.exists(swf):
-            swf = swf[swf.find('/static'):]
-            return swf
-        else:
-            os.system('pdf2swf -t ' + pdf + ' -s flashversion=9  -o ' + swf)
-            swf = swf[swf.find('/static'):]
-            return swf
-    else:
-        # if file.find('.pdf')!=-1:
-        #     if not os.path.exists(swf):
-        #         os.system('pdf2swf ' + file + ' -o ' + swf)
-        #         swf = swf[swf.find('/static'):]
-        #     return swf
-        print('file:', file)
-        os.system('unoconv -f pdf ' + file)
-        source_pdf = file.split('.')[0] + '.pdf'
-        os.system('mv ' + source_pdf + ' ' + pdf)
-        os.system('pdf2swf ' + pdf + ' -o ' + swf)
-        swf = swf[swf.find('/static'):]
-        return swf
+# 修改文件后缀名为pdf
+# 考虑到文件名前缀带有'.'
+def pdf_postfix(file_name):
+    index = file_name[::-1].find('.')
+    index = -index
+    pdf_name = file_name[:index] + 'pdf'
+    return pdf_name
+
+
+# file为初始文件名, 非pdf
+def onlinePDF(internId, dest, file):
+    if dest in ['summary_doc', 'attachment']:
+        if file.split('.')[1] in ['xls', 'doc', 'ppt', 'txt','docs','xlsx', 'jpg', 'jpeg', 'png']:
+            pdf_file = pdf_postfix(file)
+            storage_path = os.path.join(storage_cwd(internId, dest), file)
+            pdf_path = os.path.join(pdf_cwd(internId, dest), pdf_file)
+            if os.path.exists(pdf_path):
+                pdf_path = pdf_path[pdf_path.find('/static'):]
+            else:
+                os.system('unoconv -f pdf -o %s %s' % (pdf_path, storage_path))
+                pdf_path = pdf_path[pdf_path.find('/static'):]
+            return pdf_path
 
 
 # 学生实习总结与成果列表
@@ -3140,8 +3153,13 @@ def xSum():
     summary = request.args.get('summary')
     attach = request.args.get('attach')
     path = None
-    if summary or attach:
-        path = readOnline(summary, attach, internId)
+    # if summary or attach:
+        # path = readOnline(summary, attach, internId)
+    if summary:
+        path = onlinePDF(internId,'summary_doc', summary)
+    elif attach:
+        path = onlinePDF(internId,'attachment', attach)
+    print (path)
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     now = datetime.now().date()
@@ -3207,9 +3225,11 @@ def xSum_fileManager():
                     action = request.form.get('action')
                     file_name = request.form.get('file_name')
                     dest_path = request.form.get('dest_path')
-                    file_path = storage_cwd(internId, dest_path)
+                    storage_path = os.path.join(storage_cwd(internId, dest_path), file_name)
+                    pdf_path = os.path.join(pdf_cwd(internId, dest_path), pdf_postfix(file_name))
                     if action == 'delete':
-                        os.remove(os.path.join(file_path, file_name))
+                        os.remove(pdf_path)
+                        os.remove(storage_path)
                         flash('删除成功！')
                     elif action == 'rename_begin':
                         rename = file_name
@@ -3220,12 +3240,14 @@ def xSum_fileManager():
                     # 确认重命名
                     elif action == 'rename_comfirm':
                         new_name = request.form.get('new_name')
-                        os.rename(os.path.join(file_path, file_name), os.path.join(file_path, new_name))
+                        os.rename(pdf_path, os.path.join(pdf_cwd(internId, dest_path), pdf_postfix(new_name)))
+                        os.rename(storage_path, os.path.join(storage_cwd(internId, dest_path), new_name))
                         flash('重命名成功！')
             return redirect(url_for('.xSum_fileManager', stuId=stuId, internId=internId))
 
         return render_template('xSum_fileManager.html', Permission=Permission, comInfor=comInfor, internship=internship,
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc)
+
 
 
 # 实习评分详情
@@ -3239,7 +3261,7 @@ def xSumScore():
     internId = request.args.get('internId')
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
-    path = os.path.join(os.path.abspath('.'), 'app/static/score_img', internId)
+    path = os.path.join(os.path.abspath('.'), 'app/static/storage', internId, 'score_img')
     sumScore = Summary.query.filter_by(internId=internId).first().sumScore
     if not sumScore:
         flash('请先完善实习成绩信息！')
@@ -3274,6 +3296,8 @@ def xSum_comfirm():
         sumCheck = request.form.get('sumCheck')
         stuId = request.form.get('stuId')
         sumCheckOpinion = request.form.get('sumCheckOpinion')
+        comId = InternshipInfor.query.filter_by(Id=internId).first().comId
+        com = ComInfor.query.filter(comId==comId).first()
         checkTime = datetime.now().date()
         checkTeaId = current_user.get_id()
         try:
@@ -3428,7 +3452,8 @@ def xSumScoreEdit():
     internId = request.args.get('internId')
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
-    path = os.path.join(os.path.abspath('.'), 'app/static/score_img', internId)
+    # path = os.path.join(os.path.abspath('.'), 'app/static/storage', internId, 'score_img')
+    path = storage_cwd(internId, 'score_img')
     file_path = {}
     if os.path.exists(path):
         file = os.listdir(path + '/comscore')
@@ -3448,7 +3473,8 @@ def xSumScoreEdit():
             summary.sumScore = float(form.comScore.data) * 0.7 + float(form.schScore.data) * 0.3
             db.session.add(summary)
             paths = []
-            paths.append(os.path.join(os.path.abspath('.'), 'app/static/score_img', internId, 'comscore'))
+            # paths.append(os.path.join(os.path.abspath('.'), 'app/static/score_img', internId, 'comscore'))
+            paths.append(os.path.join(storage_cwd(internId, 'score_img'), 'comscore'))
             paths.append(paths[0].replace('comscore', 'schscore'))
             # mkdir
             for path in paths:
