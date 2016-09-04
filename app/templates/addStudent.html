@@ -18,6 +18,7 @@
                 $(".teaForm .form-control").eq(i + i + i + i + i + 4).attr({name: "teaEmail" + i});
                 if (i > 1) {
                     $("#delTea").show();
+                    // $("#addTea").hide();
                 }
             });
             $("#delTea").click(function () {
@@ -87,5 +88,7 @@
                 </br></br>
                 {{ stuform.submit(class="btn btn-success",type="submit",id='finish') }}
             </form>
-            <br><br><br>
+        </div>
+    </div>
+    <br><br><br>
 {% endblock %}

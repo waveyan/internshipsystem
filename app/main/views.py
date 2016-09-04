@@ -1486,6 +1486,7 @@ def addStudent():
 @login_required
 def editStudent():
     form = stuForm()
+    schdirteaform=schdirteaForm()
     stuId = request.args.get('stuId')
     stu = Student.query.filter_by(stuId=stuId).first()
     schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
@@ -1504,15 +1505,32 @@ def editStudent():
             i = 0
             while True:
                 i = i + 1
-                teaValue = request.form.get('teaId%s' % i)
-                if teaValue:
-                    schdirtea = SchDirTea(
-                        teaId=teaValue,
+                teaId = request.form.get('nteaId%s' % i)
+                if teaId:
+                    nschdirtea = SchDirTea(
+                        teaId=teaId,
                         stuId=form.stuId.data,
-                        steaName=request.form.get('teaName%s' % i),
-                        steaDuty=request.form.get('teaDuty%s' % i),
-                        steaPhone=request.form.get('teaPhone%s' % i),
-                        steaEmail=request.form.get('teaEmail%s' % i)
+                        steaName=request.form.get('nteaName%s' % i),
+                        steaDuty=request.form.get('nteaDuty%s' % i),
+                        steaPhone=request.form.get('nteaPhone%s' % i),
+                        steaEmail=request.form.get('nteaEmail%s' % i)
+                    )
+                    db.session.add(nschdirtea)
+                else:
+                    break
+             # 添加新老师       
+            j=0
+            while True:
+                j = j + 1
+                teaId = request.form.get('teaId%s' % j)
+                if teaId:
+                    schdirtea = SchDirTea(
+                        teaId=teaId,
+                        stuId=form.stuId.data,
+                        steaName=request.form.get('teaName%s' % j),
+                        steaDuty=request.form.get('teaDuty%s' % j),
+                        steaPhone=request.form.get('teaPhone%s' % j),
+                        steaEmail=request.form.get('teaEmail%s' % j)
                     )
                     db.session.add(schdirtea)
                 else:
@@ -1525,7 +1543,7 @@ def editStudent():
             db.session.rollback()
             flash('修改失败，请重试！')
             return redirect(url_for('.editStudent', stuId=stuId))
-    return render_template('editStudent.html', Permission=Permission, form=form, stu=stu, schdirtea=schdirtea)
+    return render_template('editStudent.html', Permission=Permission, form=form, stu=stu, schdirtea=schdirtea,schdirteaform=schdirteaform)
 
 
 # 单条删除学生用户信息
@@ -1536,7 +1554,22 @@ def student_delete():
         stuId = request.form.get('stuId')
         print('stuId=', stuId)
         stu = Student.query.filter_by(stuId=stuId).first()
+        journal=Journal.query.filter_by(stuId=stuId).all()
+        intern=InternshipInfor.query.filter_by(stuId=stuId).all()
+        stea=SchDirTea.query.filter_by(stuId=stuId).all()
+        ctea=ComDirTea.query.filter_by(stuId=stuId).all()
         try:
+            for tea in ctea:
+                db.session.delete(tea)
+            for tea in stea:
+                db.session.delete(tea)
+            for jour in journal:
+                db.session.delete(jour)
+            for i in intern:
+                summary=Summary.query.filter_by(internId=i.Id).all()
+                for sum in summary:
+                    db.session.delete(sum)
+                db.session.delete(i)
             db.session.delete(stu)
             db.session.commit()
             flash('删除成功')

@@ -38,6 +38,10 @@
             });
         });
     </script>
+    <!-- bootstrap日期选择器 -->
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
 {% endblock %}
 {% block page_content %}
     <div class="progress progress-striped active">
@@ -100,4 +104,18 @@
             {{ iform.submit(class="btn btn-success",type="submit",id='finish') }}
         </form>
         <br><br>
+
+        <!-- bootstrap日期选择器 -->
+        <script type="text/javascript">
+            $('.datetimepicker').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                pickDate: true,
+                inputMask: true,
+                autoclose: true,
+                todayBtn: 'linked',
+                todayHighlight: true,
+                minView: "month"
+            });
+        </script>
 {% endblock %}
