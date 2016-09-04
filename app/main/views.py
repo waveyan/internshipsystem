@@ -3038,7 +3038,7 @@ def pdf_postfix(file_name):
 # file为初始文件名, 非pdf
 def onlinePDF(internId, dest, file):
     if dest in ['summary_doc', 'attachment']:
-        if file.split('.')[1] in ['xls', 'doc', 'ppt', 'txt','docs','xlsx', 'jpg', 'jpeg', 'png']:
+        if file.split('.')[-1] in ['xls', 'doc', 'ppt', 'txt','docs','xlsx', 'jpg', 'jpeg', 'png']:
             pdf_file = pdf_postfix(file)
             storage_path = os.path.join(storage_cwd(internId, dest), file)
             pdf_path = os.path.join(pdf_cwd(internId, dest), pdf_file)
