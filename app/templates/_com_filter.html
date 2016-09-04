@@ -1,3 +1,4 @@
+{#筛选项 flags=0批量删除 ，1批量审核，其他企业信息#}
 {% macro com_filter(endpoint,flags,citys,current_user,Permission) %}
     <div>
         <ol class="breadcrumb">
@@ -79,7 +80,7 @@
                             <td width="400"><a href="{{ url_for(endpoint,students='desc') }}">按人数降序排列</a></td>
                         </tr>
                     {% endif %}
-                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                    {% if current_user.can(Permission.COM_INFOR_EDIT) %}
                         <tr>
                             <td>&nbsp;</td>
                         </tr>

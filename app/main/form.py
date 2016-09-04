@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField, TextAreaField, DateTimeField, SelectField, BooleanField, DateField, \
-    validators,FileField
+    validators, FileField
 from wtforms.validators import Required, URL, Email
 
 # datepicker failed
@@ -72,7 +72,6 @@ class schdirteaForm(Form):
     steaDuty = StringField('职称')
     steaPhone = StringField('联系电话')
     steaEmail = StringField('邮箱')
-    submit = SubmitField('提交')
 
 
 class comdirteaForm(Form):
@@ -102,14 +101,6 @@ class stuForm(Form):
     sex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='男')
     institutes = StringField('学院', default='计算机学院', validators=[Required(message='此项不能为空')])
     grade = StringField('年级', validators=[Required(message='此项不能为空')])
-
-    # 新增专业
-    # major = SelectField('专业', choices=[('计算机科学与技术', '计算机科学与技术'),
-    #                                    ('网络工程', '网络工程'),
-    #                                    ('软件工程', '软件工程'),
-    #                                    ('信息科学与技术', '信息科学与技术')],
-    #                     default='计算机科学与技术', validators=[Required(message='此项不能为空')])
-
     major = StringField('专业', validators=[Required(message='此项不能为空')])
     classes = StringField('班级', validators=[Required(message='此项不能为空')])
     submit = SubmitField('提交')
@@ -125,35 +116,29 @@ class teaForm(Form):
 class permissionForm(Form):
     roleName = StringField('角色名称', validators=[Required(message='此项不能为空')])
     roleDescribe = TextAreaField('角色描述')
-    COM_INFOR_SEARCH = BooleanField('企业信息查看', default=False, description='0X0000001', false_values='0x11')
-    COM_INFOR_EDIT = BooleanField('企业信息编辑', default=False, description='0X0000002')
-    COM_INFOR_CHECK = BooleanField('企业信息审核', default=False, description='0X0000004')
-    INTERNSHIP_LIST = BooleanField('实习企业信息列表', default=False, description='0X0000008')
+    COM_INFOR_SEARCH = BooleanField('企业信息查看', default=False, description='0X0000009', false_values='0x11')
+    COM_INFOR_EDIT = BooleanField('企业信息编辑', default=False, description='0X000000B')
+    COM_INFOR_CHECK = BooleanField('企业信息审核', default=False, description='0X000000F')
+    INTERNCOMPANY_LIST = BooleanField('实习企业信息列表', default=False, description='0X0000008')
     STU_INTERN_LIST = BooleanField('学生实习信息列表', default=False, description='0X0000010')
-    STU_INTERN_SEARCH = BooleanField('学生实习信息查看', default=False, description='0X0000020')
-    STU_INTERN_EDIT = BooleanField('学生实习信息编辑', default=False, description='0X0000040')
-    STU_INTERN_CHECK = BooleanField('学生实习信息审核', default=False, description='0X0000080')
-    STU_INTERN_EXPORT = BooleanField('学生实习信息导出', default=False, description='0X0000100')
-    STU_JOUR_SEARCH = BooleanField('学生实习日志查看', default=False, description='0X0000200')
-    STU_JOUR_EDIT = BooleanField('学生实习日志编辑', default=False, description='0X0000400')
-    STU_JOUR_CHECK = BooleanField('学生实习日志审核', default=False, description='0X0000800')
-    STU_JOUR_EXPORT = BooleanField('学生实习日志导出', default=False, description='0X0001000')
-    STU_SUM_SEARCH = BooleanField('学生实习总结查看', default=False, description='0X0002000')
-    STU_SUM_EDIT = BooleanField('学生实习总结编辑', default=False, description='0X0004000')
-    STU_SUM_EXPORT = BooleanField('学生实习总结导出', default=False, description='0X0008000')
-    STU_SUM_SCO_CHECK = BooleanField('学生实习总结和成果审核', default=False, description='0X0010000')
-    STU_SCO_SEARCH = BooleanField('学生实习成果查看', default=False, description='0X0020000')
-    STU_SCO_EDIT = BooleanField('学生实习成果编辑', default=False, description='0X0040000')
-    STU_SCO_EXPORT = BooleanField('学生实习成果导出', default=False, description='0X0080000')
-    ADMIN = BooleanField('管理', default=False, description='0x0100000')
-    STU_INTERN_IMPORT = BooleanField('学生信息导入', default=False, description='0X0200000')
-    TEA_INFOR_IMPORT = BooleanField('老师信息导入', default=False, description='0X0400000')
-    PERMIS_MANAGE = BooleanField('权限管理', default=False, description='0X0800000')
+    STU_INTERN_SEARCH = BooleanField('学生实习信息查看', default=False, description='0X0000030')
+    STU_INTERN_EDIT = BooleanField('学生实习信息编辑', default=False, description='0X0000070')
+    STU_INTERN_CHECK = BooleanField('学生实习信息审核', default=False, description='0X00000F0')
+    STU_JOUR_SEARCH = BooleanField('学生实习日志查看', default=False, description='0X0000210')
+    STU_JOUR_EDIT = BooleanField('学生实习日志编辑', default=False, description='0X0000610')
+    STU_JOUR_CHECK = BooleanField('学生实习日志审核', default=False, description='0X0000E10')
+    STU_SUM_SEARCH = BooleanField('学生实习总结与成果查看', default=False, description='0X0001010')
+    STU_SUM_EDIT = BooleanField('学生实习总结与成果编辑', default=False, description='0X0003010')
+    STU_SUM_SCO_CHECK = BooleanField('学生实习总结和成果审核', default=False, description='0X0007010')
+    STU_INTERN_MANAGE = BooleanField('学生信息管理', default=False, description='0X0010000')
+    TEA_INFOR_MANAGE = BooleanField('老师信息管理', default=False, description='0X0020000')
+    PERMIS_MANAGE = BooleanField('权限管理', default=False, description='0X0040000')
     submit = SubmitField('提交')
 
+
 class xSumScoreForm(Form):
-    comScore=StringField('企业实习评分',validators=[Required(message='此项不能为空')])
-    schScore=StringField('校内指导老师评分',validators=[Required(message='此项不能为空')])
-    comfile=FileField('企业实习评分表')
-    schfile=FileField('校内评分表')
+    comScore = StringField('企业实习评分', validators=[Required(message='此项不能为空')])
+    schScore = StringField('校内指导老师评分', validators=[Required(message='此项不能为空')])
+    comfile = FileField('企业实习评分表')
+    schfile = FileField('校内评分表')
     submit = SubmitField('保存')

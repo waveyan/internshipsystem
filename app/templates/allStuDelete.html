@@ -59,66 +59,64 @@
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
-    <h1>学生用户
-        {% if current_user.can(Permission.COM_INFOR_EDIT) %}
+    {% if current_user.can(Permission.STU_INTERN_MANAGE) %}
+        <h1>学生用户
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                        <li><a href="{{ url_for('.addStudent') }}">添加</a></li>
-                        <li><a href="#">批量添加</a></li>
-                        <li><a href="{{ url_for('.update_stu_filter',flag=1) }}">批量设置角色</a></li>
-                        <li><a href="#">批量删除</a></li>
-                        </ul>
-                        </div>
-                    {% endif %}
-        {% endif %}
-{{ search.search(url_for('.user_search'),form) }}
-    </h1>
-    {#筛选项#}
-    {{ filter.stu_filter('.allStuDelete',0,grade,major,classes) }}
+                    <li><a href="{{ url_for('.addStudent') }}">添加</a></li>
+                    <li><a href="#">批量添加</a></li>
+                    <li><a href="{{ url_for('.update_stu_filter',flag=1) }}">批量设置角色</a></li>
+                    <li><a href="#">批量删除</a></li>
+                </ul>
+            </div>
 
-    <table class="table" id="t">
-        <thead>
-        <tr>
-            <th></th>
-            <th>姓名</th>
-            <th>学号</th>
-            <th>性别</th>
-            <th>年级</th>
-            <th>专业班级</th>
-            <th>系统角色</th>
-        </tr>
-        </thead>
-        <tbody>
-        <form method="post">
-            {% for stu in student %}
-                <tr>
-                    <th><input type="checkbox" name='stu[]' value={{ stu.stuId }}></th>
-                    <td>{{ stu.stuName }}</td>
-                    <td>{{ stu.stuId }}</td>
-                    <td>{{ stu.sex }}</td>
-                    <td>{{ stu.grade }}</td>
-                    <td>{{ stu.major }}{{ stu.classes }}班</td>
-                    <td>{{ stu.role.roleName }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div>
-        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
-        <button type="submit" class="btn btn-danger">删除</button>
-        <!--
-        <button type="button" class="btn btn-primary" id="back">取消</button>
-        -->
-    </div>
-    </form>
-    {% if pagination %}
-        <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.allStuDelete') }}
+            {{ search.search(url_for('.user_search'),form) }}
+        </h1>
+        {#筛选项#}
+        {{ filter.stu_filter('.allStuDelete',0,grade,major,classes) }}
+
+        <table class="table" id="t">
+            <thead>
+            <tr>
+                <th></th>
+                <th>姓名</th>
+                <th>学号</th>
+                <th>性别</th>
+                <th>年级</th>
+                <th>专业班级</th>
+                <th>系统角色</th>
+            </tr>
+            </thead>
+            <tbody>
+            <form method="post">
+                {% for stu in student %}
+                    <tr>
+                        <th><input type="checkbox" name='stu[]' value={{ stu.stuId }}></th>
+                        <td>{{ stu.stuName }}</td>
+                        <td>{{ stu.stuId }}</td>
+                        <td>{{ stu.sex }}</td>
+                        <td>{{ stu.grade }}</td>
+                        <td>{{ stu.major }}{{ stu.classes }}班</td>
+                        <td>{{ stu.role.roleName }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div>
+            <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
+            <button type="submit" class="btn btn-danger">删除</button>
+            <!--
+            <button type="button" class="btn btn-primary" id="back">取消</button>
+            -->
         </div>
+        </form>
+        {% if pagination %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination,'.allStuDelete') }}
+            </div>
+        {% endif %}
     {% endif %}
-
 {% endblock %}

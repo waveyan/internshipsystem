@@ -5,7 +5,9 @@
 {% block head %}
     {{ super() }}
     <style type="text/css">
-    p {white-space: pre-line;}
+        p {
+            white-space: pre-line;
+        }
     </style>
 
 
@@ -24,88 +26,97 @@
 
     <!-- 换行显示 -->
     <style type="text/css">
-    p {white-space: pre-line;}
+        p {
+            white-space: pre-line;
+        }
     </style>
 
     <!-- 删除确认窗口 -->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="text-align:center;">
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="text-align:center;">
                     <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-            </div>
-            <div class="modal-bodyr" >
-                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">删除操作将无法撤回,是否仍要删除?</h4>
-            </div>
-            <div class="modal-footer">
-                <!-- 用form来获取数据 -->
-                <form action="/intern_delete" method="POST">
-                <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                <input type="hidden" name="internId" value="{{ internship.Id }}">
-                <input type="hidden" name="from_url" value="xIntern">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="submit" class="btn btn-primary" >删除</button>
-                </form>
+                </div>
+                <div class="modal-bodyr">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">删除操作将无法撤回,是否仍要删除?</h4>
+                </div>
+                <div class="modal-footer">
+                    <!-- 用form来获取数据 -->
+                    <form action="/intern_delete" method="POST">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                        <input type="hidden" name="internId" value="{{ internship.Id }}">
+                        <input type="hidden" name="from_url" value="xIntern">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <!-- 审核操作窗口 -->
-    <div class="modal fade" id="checkToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="text-align:center;">
+    <div class="modal fade" id="checkToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="text-align:center;">
                     <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-            </div>
-            <div class="modal-body">
-                {% if internship.internCheck != 2 %}
-                    <h4 class="modal-body" style="color:black;" id="deleteModalLabel">请对该实习做出审核</h4>
-                {% else %}
-                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习申请已审核通过,是否仍要继续?</h4>
-                {% endif %}
-            </div>
-            <div class="modal-footer">
-                <!-- 用form来获取数据 -->
-                <form name="xIntern_comfirm_form" action="/xIntern_comfirm" method="POST">
-                <input type="hidden" name="stuId" value="{{ student.stuId }}" />
-                <input type="hidden" name="internId" value="{{ internship.Id }}" />
-                {% if internship.opinion %}
-                    <div style="text-align:center;">审核意见</div><textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空">{{ internship.opinion }}</textarea><br><br>
-                {% else %}
-                    <div style="text-align:center;">审核意见</div><textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空"></textarea><br><br>
-                {% endif %}
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="submit" name="internCheck" value="2" class="btn btn-success" >审核通过</button>
-                <button type="submit" name="internCheck" value="1" class="btn btn-primary" >退回修改</button>
-                </form>
+                </div>
+                <div class="modal-body">
+                    {% if internship.internCheck != 2 %}
+                        <h4 class="modal-body" style="color:black;" id="deleteModalLabel">请对该实习做出审核</h4>
+                    {% else %}
+                        <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习申请已审核通过,是否仍要继续?</h4>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <!-- 用form来获取数据 -->
+                    <form name="xIntern_comfirm_form" action="/xIntern_comfirm" method="POST">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}"/>
+                        <input type="hidden" name="internId" value="{{ internship.Id }}"/>
+                        {% if internship.opinion %}
+                            <div style="text-align:center;">审核意见</div><textarea name="opinion" cols="70" rows="5"
+                                                                                placeholder="若审核通过,意见可为空">{{ internship.opinion }}</textarea>
+                            <br><br>
+                        {% else %}
+                            <div style="text-align:center;">审核意见</div>
+                            <textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空"></textarea><br><br>
+                        {% endif %}
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" name="internCheck" value="2" class="btn btn-success">审核通过</button>
+                        <button type="submit" name="internCheck" value="1" class="btn btn-primary">退回修改</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <!-- 已审核状态下,老师确认修改窗口 -->
-    <div class="modal fade" id="editToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="text-align:center;">
+    <div class="modal fade" id="editToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="text-align:center;">
                     <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-            </div>
-            <div class="modal-body">
-                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习申请已审核通过,修改实习时间有可能清空部分实习日志,是否仍要继续?</h4>
-            </div>
-            <div class="modal-footer">
-                <!-- 用form来获取数据 -->
-                <form action="/xInternEdit" method="POST">
-                <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                <input type="hidden" name="internId" value="{{ internship.Id }}">
-                <input type="hidden" name="comId" value="{{ comInfor.comId }}">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="submit" class="btn btn-danger" >继续</button>
-                </form>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
+                        该实习申请已审核通过,修改实习时间有可能清空部分实习日志,是否仍要继续?</h4>
+                </div>
+                <div class="modal-footer">
+                    <!-- 用form来获取数据 -->
+                    <form action="/xInternEdit" method="POST">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                        <input type="hidden" name="internId" value="{{ internship.Id }}">
+                        <input type="hidden" name="comId" value="{{ comInfor.comId }}">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-danger">继续</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
 {% endblock %}<!--先执行父模板-->
@@ -118,31 +129,46 @@
     <table align="center" border="2" class="table-bordered">
         <caption>
             <h1>
-                {% if current_user.roleId>0 %}
+                {% if current_user.can(Permission.STU_INTERN_SEARCH) %}
                     {{ student.stuName }}的实习信息
                 {% else %}
                     我的实习信息
                 {% endif %}
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                            data-toggle="dropdown">更多<span class="caret"></span>
+                {% if current_user.can(Permission.STU_INTERN_SEARCH) and not current_user.can(Permission.STU_INTERN_EDIT) %}
+                    <button type="button" class="btn btn-default"
+                            onclick="document.getElementById('export_form').submit();">导出
                     </button>
-                    <ul class="dropdown-menu" role="menu">
-                        {% if current_user.can(Permission.STU_INTERN_CHECK) %}
-                            <li><a onClick="ComfirmCheck()">审核</a></li>
-                        {% endif %}
-                        <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">导出到Excel</a></li>
-                        {% if internship.internCheck != 2 %}
-                            <li><a href="{{ url_for('main.xInternEdit',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">修改</a></li>
-                        {% elif internship.internCheck == 2 and current_user.roleId ==3 %}
-                            <li><a onClick="Admin_ComfirmEdit()">修改</a></li>
-                        {% endif %}
-                        <li><a onClick="ComfirmDelete()">删除</a></li>
-                        <li class="divider"></li>
-                        <li><a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a></li>
-                        <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId, from_url='xIntern') }}">实习总结与成果</a></li>
-                    </ul>
-                </div>
+                {% endif %}
+                {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                                data-toggle="dropdown">编辑<span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            {% if current_user.can(Permission.STU_INTERN_CHECK) %}
+                                <li><a onClick="ComfirmCheck()">审核</a></li>
+                            {% endif %}
+                            <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">导出到Excel</a>
+                            </li>
+                            {% if internship.internCheck != 2 %}
+                                <li>
+                                    <a href="{{ url_for('main.xInternEdit',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">修改</a>
+                                </li>
+                                <li><a onClick="ComfirmDelete()">删除</a></li>
+                            {% elif internship.internCheck == 2 and current_user.can(Permission.STU_INTERN_CHECK) %}
+                                <li><a onClick="Admin_ComfirmEdit()">修改</a></li>
+                                <li><a onClick="ComfirmDelete()">删除</a></li>
+                            {% endif %}
+                            <li class="divider"></li>
+                            <li>
+                                <a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId, from_url='xIntern') }}">实习总结与成果</a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
             </h1>
             {% if internship.internCheck == 0 %}
                 <span class="label label-warning">待审核</span>
@@ -265,6 +291,8 @@
         </table>
     </table>
     <br>
-    <br><a href="{{ url_for('.stuInternList') }}"><div class="btn btn-primary">返回</div></a>
+    <br><a href="{{ url_for('.stuInternList') }}">
+    <div class="btn btn-primary">返回</div>
+</a>
 {% endblock %}
 

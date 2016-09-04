@@ -16,9 +16,25 @@
             });
         });
     </script>
+    <!-- 确认删除窗口 ,传递参数-->
+    <script type="text/javascript">
+        function teaComfirmDelete(str) {
+            $('#teadeleteToggle').modal();
+            var obj = document.getElementById("teaId");
+            obj.value = str
+        }
+    </script>
+    <!-- 确认删除窗口 ,传递参数-->
+    <script type="text/javascript">
+        function stuComfirmDelete(str) {
+            $('#studeleteToggle').modal();
+            var obj = document.getElementById("stuId");
+            obj.value = str
+        }
+    </script>
 {% endblock %}<!--先执行父模板-->
 {% block page_content %}
-    {% if tea==None %}
+    {% if tea==None and current_user.can(Permission.STU_INTERN_MANAGE) %}
         <h2>{{ key }} 的搜索结果,共搜到 {{ snum }} 位学生用户：
             {{ search.search(url_for('.user_search'),form) }}
         </h2>
@@ -45,12 +61,12 @@
                     <td>{{ stu.role.roleName }}</td>
                     <td><a href="{{ url_for('.editStudent',stuId=stu.stuId) }}">修改</a>|<a
                             href="{{ url_for('.selectRole',stuId=stu.stuId,name=stu.stuName) }}">设置角色</a>|<a
-                            onclick="ComfirmDelete({{ stu.stuId }})" href="#">删除</a></td>
+                            onclick="stuComfirmDelete({{ stu.stuId }})" href="#">删除</a></td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
-    {% else %}
+    {% elif current_user.can(Permission.TEA_INFOR_MANAGE) %}
         <h2>{{ key }} 的搜索结果,共搜到 {{ tnum }} 位教师用户：
             {{ search.search(url_for('.user_search',tea='tea'),form) }}
         </h2>
@@ -80,11 +96,66 @@
                     <td>{{ tea.role.roleName }}</td>
                     <td><a href="{{ url_for('.editTeacher',teaId=tea.teaId) }}">修改</a>|<a
                             href="{{ url_for('.selectRole',teaId=tea.teaId,name=tea.teaName) }}">设置角色</a>|<a href="#"
-                                                                                                             onclick="ComfirmDelete({{ tea.teaId }})">删除</a>
+                                                                                                             onclick="teaComfirmDelete({{ tea.teaId }})">删除</a>
                     </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     {% endif %}
+    <!--确认弹窗-->
+    <div class="modal fade" id="teadeleteToggle" tabindex="-1" role="dialog"
+         aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        提示：
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否仍要删除？</h4>
+                </div>
+                <div class="modal-footer">
+                    <form action="/teacher_delete" method="POST">
+                        <input type="hidden" id="teaId" name="teaId">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+    <!--确认弹窗-->
+    <div class="modal fade" id="studeleteToggle" tabindex="-1" role="dialog"
+         aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        提示：
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否仍要删除？</h4>
+                </div>
+                <div class="modal-footer">
+                    <form action="/student_delete" method="POST">
+                        <input type="hidden" id="stuId" name="stuId">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
 {% endblock %}

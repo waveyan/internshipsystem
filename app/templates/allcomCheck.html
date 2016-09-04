@@ -59,8 +59,8 @@
     </style>
 {% endblock %}
 {% block page_content %}
-    <h1>实习企业信息
-        {% if current_user.can(Permission.COM_INFOR_EDIT) %}
+    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+        <h1>实习企业信息
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
@@ -70,77 +70,74 @@
                     <li><a href="{{ url_for('.excel_importpage', from_url='interncompany') }}">批量导入</a></li>
                     <li><a href="javascript:{}"
                            onclick="document.getElementById('export_form').submit();">批量导出</a></li>
-                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                        <li><a href="{{ url_for('.update_filter',flag=1) }}">批量审核</a></li>
-                        <li><a href="{{ url_for('.update_filter',flag=0) }}">批量删除</a></li>
-                    {% endif %}
+                    <li><a href="{{ url_for('.update_filter',flag=1) }}">批量审核</a></li>
+                    <li><a href="{{ url_for('.update_filter',flag=0) }}">批量删除</a></li>
                 </ul>
             </div>
-        {% endif %}
-        {{ search.search(url_for('.com_search'),form) }}
-    </h1>
-    {#筛选项#}
-    {{ filter.com_filter('.allcomCheck',1,city,current_user,Permission) }}
-    <div>
-        <table class="table">
-            <thead>
-            <tr>
-                <th></th>
-                <th>企业名称</th>
-                <th>所在城市</th>
-                <th>企业网址</th>
-                <th>联系电话</th>
-                <th>累计实习人次</th>
-                {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+            {{ search.search(url_for('.com_search'),form) }}
+        </h1>
+
+        {{ filter.com_filter('.allcomCheck',1,city,current_user,Permission) }}
+        <div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>企业名称</th>
+                    <th>所在城市</th>
+                    <th>企业网址</th>
+                    <th>联系电话</th>
+                    <th>累计实习人次</th>
                     <th>审核状态</th>
-                {% endif %}
-            </tr>
-            </thead>
-            <tbody>
-            <div id="div">
-                <form method="post">
-                    {% for com in comInfor %}
+                </tr>
+                </thead>
+                <tbody>
+                <div id="div">
+                    <form method="post">
+                        {% for com in comInfor %}
+                            <tr>
+                                <th><input type="checkbox" name='approve[]' value={{ com.comId }}></th>
+                                {% if current_user.can(Permission.COM_INFOR_SEARCH) %}
+                                    <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
+                                {% else %}
+                                    <td>{{ com.comName }}</td>
+                                {% endif %}
+                                <td>{{ com.comAddress }}</td>
+                                <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
+                                <td>{{ com.comPhone }}</td>
 
-                        <tr>
-                            <th><input type="checkbox" name='approve[]' value={{ com.comId }}></th>
-                            <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
-                            <td>{{ com.comAddress }}</td>
-                            <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
-                            <td>{{ com.comPhone }}</td>
-
-                            <!-- 若将整个页面设置为仅审核老师以上才能访问,此判断就可以省去 -->
-                            {% if current_user.roleId==0 %}
-                                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}</td>
-                            {% else %}
-                                <td><a href="{{ url_for('.studentList',comId=com.comId) }}">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}</a></td>
-                            {% endif %}
-                            {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                                <!-- 若将整个页面设置为仅审核老师以上才能访问 -->
+                                {% if current_user.can(Permission.STU_INTERN_LIST) %}
+                                    <td><a href="{{ url_for('.studentList',comId=com.comId) }}">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</a>
+                                    </td>
+                                {% else %}
+                                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
+                                {% endif %}
                                 {% if com.comCheck==0 %}
                                     <td>待审核</td>
                                 {% elif com.comCheck==1 %}
                                     <td>被退回</td>
                                 {% endif %}
-                            {% endif %}
-
-                        </tr>
-                    {% endfor %}
+                            </tr>
+                        {% endfor %}
+                </div>
+                </tbody>
+            </table>
+            <div>
+                <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
+                <button type="submit" class="btn btn-success">审核通过</button>
+                <!--
+                <button type="button" class="btn btn-primary" id="back">取消</button>
+                -->
+                </form>
             </div>
-            </tbody>
-        </table>
-        <div>
-            <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
-            <button type="submit" class="btn btn-success">审核通过</button>
-            <!--
-            <button type="button" class="btn btn-primary" id="back">取消</button>
-            -->
-            </form>
+            {% if pagination %}
+                <div class="pagination">
+                    {{ macros.pagination_widget(pagination,'.allcomCheck') }}
+                </div>
+            {% endif %}
+            <br>
         </div>
-        {% if pagination %}
-            <div class="pagination">
-                {{ macros.pagination_widget(pagination,'.allcomCheck') }}
-            </div>
-        {% endif %}
-        <br>
-    </div>
+    {% endif %}
 {% endblock %}

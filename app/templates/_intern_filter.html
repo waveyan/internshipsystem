@@ -1,3 +1,4 @@
+<!-- #flags=2日志 -->
 {% macro intern_filter(endpoint,flags,grades,majors,classess) %}
     <div>
         <ol class="breadcrumb">
@@ -25,7 +26,13 @@
                     <li><a href="{{ url_for('.update_intern_filter',internStatus='1',flag=flags) }}">实习结束</a></li>
                 {% endif %}
             {% endif %}
-            {% if session['checkStatus']!=None %}
+            {% if session['checkStatus']!=None and flags==2 %}
+                {% if session['checkStatus']=='0' %}
+                    <li><a href="#">待审核</a></li>
+                {% elif session['checkStatus']=='1' %}
+                    <li><a href="#">审核通过</a></li>
+                {% endif %}
+            {% elif session['checkStatus']!=None %}
                 {% if session['checkStatus']=='0' %}
                     <li><a href="#">待审核</a></li>
                 {% elif session['checkStatus']=='1' %}
@@ -142,19 +149,23 @@
                             </td>
                         </tr>
                     {% endif %}
-                    <tr>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <th width="150">审核状态：</th>
-                        <td width="150"><a href="{{ url_for(endpoint,checkStatus=0) }}">待审核</a></td>
-                        {% if flags>1 and flags<5 %}
-                            <td width="150"><a href="{{ url_for(endpoint,checkStatus=1) }}">审核通过</a></td>
-                        {% else %}
-                            <td width="150"><a href="{{ url_for(endpoint,checkStatus=1) }}">被退回</a></td>
-                            <td width="150"><a href="{{ url_for(endpoint,checkStatus=2) }}">审核通过</a></td>
-                        {% endif %}
-                    </tr>
+                    {% if flags!=3 %}
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <th width="150">审核状态：</th>
+                            <td width="150"><a href="{{ url_for(endpoint,checkStatus=0) }}">待审核</a></td>
+                            {% if flags>1 and flags<5 %}
+                                <td width="150"><a href="{{ url_for(endpoint,checkStatus=1) }}">审核通过</a></td>
+                            {% else %}
+                                <td width="150"><a href="{{ url_for(endpoint,checkStatus=1) }}">被退回</a></td>
+                                {% if flags!=7 %}
+                                    <td width="150"><a href="{{ url_for(endpoint,checkStatus=2) }}">审核通过</a></td>
+                                {% endif %}
+                            {% endif %}
+                        </tr>
+                    {% endif %}
                 </table>
             </div>
         </div>

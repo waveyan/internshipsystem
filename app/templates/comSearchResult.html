@@ -39,7 +39,7 @@
                 <th>联系电话</th>
                 {% if selectCom==None %}
                     <th>累计实习人次</th>
-                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                    {% if current_user.can(Permission.COM_INFOR_EDIT) %}
                         <th>审核状态</th>
                         <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 操作</th>
                     {% endif %}
@@ -49,18 +49,22 @@
             <tbody>
             {% for com in comInfor %}
                 <tr>
-                    <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
+                    {% if current_user.can(Permission.COM_INFOR_SEARCH) %}
+                        <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
+                    {% else %}
+                        <td>{{ com.comName }}</td>
+                    {% endif %}
                     <td>{{ com.comAddress }}</td>
                     <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
                     <td>{{ com.comPhone }}</td>
-                {% if selectCom==None %}
-                    {% if current_user.roleId==0 %}
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
-                    {% else %}
-                        <td><a href="{{ url_for('.studentList',comId=com.comId) }}">
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</a></td>
-                    {% endif %}
-                        {% if current_user.can(Permission.COM_INFOR_CHECK) %}
+                    {% if selectCom==None %}
+                        {% if current_user.can(Permission.STU_INTERN_LIST) %}
+                            <td><a href="{{ url_for('.studentList',comId=com.comId) }}">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</a></td>
+                        {% else %}
+                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
+                        {% endif %}
+                        {% if current_user.can(Permission.COM_INFOR_EDIT) %}
                             {% if com.comCheck==0 %}
                                 <td>待审核</td>
                             {% elif com.comCheck==1 %}
@@ -68,13 +72,16 @@
                             {% else %}
                                 <td>已审核</td>
                             {% endif %}
-                            {% if com.comCheck==2 %}
-                                <td><a onclick="ComfirmDelete({{ com.comId }})" href="#">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    &nbsp;&nbsp;删除</a>
+                            {% if com.comCheck==2 and current_user.can(Permission.COM_INFOR_CHECK) %}
+                                <td><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a>|<a
+                                        onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a>
                                 </td>
-                            {% else %}
+                            {% elif com.comCheck!=2 and current_user.can(Permission.COM_INFOR_CHECK) %}
                                 <td><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a>|<a
                                         href="{{ url_for('main.cominfor',id=com.comId) }}">审核</a>|<a
+                                        onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></td>
+                            {% elif com.comCheck!=2 and current_user.can(Permission.COM_INFOR_EDIT) %}
+                                <td><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a>|<a
                                         onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></td>
                             {% endif %}
                         {% endif %}

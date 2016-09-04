@@ -65,37 +65,39 @@
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
-    <!-- 删除确认窗口 -->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-         aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="text-align:center;">
-                <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-            </div>
-            <div class="modal-body">
-                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
-            </div>
-            <div class="modal-footer">
-                <!-- 用form来获取数据 -->
-                <form action="/intern_delete" method="POST">
-                    <input type="hidden" name="internId" value="{{ internship.Id }}">
-                    <input type="hidden" name="from_url" value="xSum">
-                    <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                    <button type="submit" class="btn btn-primary">删除</button>
-                </form>
+    {% if current_user.roleId==0 or current_user.can(Permission.STU_SUM_SEARCH) %}
+        <!-- 删除确认窗口 -->
+        <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="text-align:center;">
+                        <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
+                            日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- 用form来获取数据 -->
+                        <form action="/intern_delete" method="POST">
+                            <input type="hidden" name="internId" value="{{ internship.Id }}">
+                            <input type="hidden" name="from_url" value="xSum">
+                            <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">删除</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    </div>
 
-    <div class="page-`er">
-    {% if current_user.roleId==0 %}
-        <h1>我的实习总结与成果
-    {% else %}
-        <h1>{{ student.stuName }}的实习总结与成果
-    {% endif %}
+        <div class="page-`er">
+            {% if current_user.roleId==0 %}
+                <h1>我的实习总结与成果
+            {% else %}
+                <h1>{{ student.stuName }}的实习总结与成果
+            {% endif %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">更多<span class="caret"></span>
@@ -105,63 +107,29 @@
                         <li><a onClick="ComfirmCheck()">审核</a></li>
                     {% endif %}
                     <li><a onClick="ComfirmDelete()">删除</a></li>
-                    <li><a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a></li>
+                    <li>
+                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a>
+                    </li>
                     <li class="divider"></li>
                     <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
                     <li><a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a></li>
                 </ul>
             </div>
-        </h1>
+            </h1>
 
-        <!-- 审核情况 -->
-        {% if summary.sumCheck == 2 %}
-            <span class="label label-info">已审核</span>
-        {% else %}
-            <span class="label label-warning">待审核...</span>
-        {% endif %}
-        <br><br>
+            <!-- 审核情况 -->
+            {% if summary.sumCheck == 2 %}
+                <span class="label label-info">已审核</span>
+            {% else %}
+                <span class="label label-warning">待审核...</span>
+            {% endif %}
+            <br><br>
 
-    </div>
+        </div>
 
-    <table align="center" border="2" class="table-bordered">
-        <tr>
-            <th width="200">学号</th>
-            <td width="400" height="50">{{ student.stuId }}</td>
-            <th width="200">专业班级</th>
-            <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
-        </tr>
-        <tr>
-            <th width="200">姓名</th>
-            <td width="400" height="50">{{ student.stuName }}</td>
-            <th width="200">实习单位</th>
-            <td width="400" height="50">{{ comInfor.comName }}</td>
-        </tr>
-        <tr>
-            <th width="200">实习期间</th>
-            <td width="400" height="50">{{ internship.start }} 至 {{ internship.end }} </td>
-            <th width="200">评分成绩</th>
-            <td width="400" height="50">{{ summary.sumScore }}
-                <a href='{{ url_for('.xSumScore', stuId=student.stuId, internId=internship.Id) }}'><span
-                        class="label label-info">详情<span></a>
-            </td>
-        </tr>
-    </table>
-    <br>
-
-    <h2>附件</h2>
-    <table class="table" id="t">
-        <thead>
-        <tr>
-            <th>文件名</th>
-            <th>大小</th>
-            <th>修改时间</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- 总结文档 -->
-        {% for summary in summary_doc %}
+        <table align="center" border="2" class="table-bordered">
             <tr>
+<<<<<<< HEAD
                 <!-- 提供下载的form -->
                 <form id="{{ summary }}" method="post">
                     <input type="hidden" name="summary_doc_download" value="{{ summary }}">
@@ -175,40 +143,29 @@
                 <td>{{ summary_doc[summary]['fsize'] }}</td>
                 <td>{{ summary_doc[summary]['mtime'] }}</td>
                 <td><a href="javascript:{}" onclick="document.getElementById('{{ summary }}').submit();">下载</a></td>
+=======
+                <th width="200">学号</th>
+                <td width="400" height="50">{{ student.stuId }}</td>
+                <th width="200">专业班级</th>
+                <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
             </tr>
-        {% endfor %}
-
-        {#        <!-- 总结文档 -->#}
-        {#        {% if summary_doc %}#}
-        {#        <tr>#}
-        {#            {% for file_name in summary_doc %}#}
-        {#                <!-- 提供下载的form -->#}
-        {#                <form id="summary_download_form" method="post">#}
-        {#                    <input type="hidden" name="summary_doc_download" value="{{ file_name }}" >#}
-        {#                </form>#}
-        {#                <td><a href="javascript:{}" onclick="document.getElementById('summary_download_form').submit();">{{ file_name }}</a></td>#}
-        {#                <td>{{ summary_doc[file_name]['fsize'] }}</td>#}
-        {#                <td>{{ summary_doc[file_name]['mtime'] }}</td>#}
-        {#        </tr>#}
-        {#            {% endfor %}#}
-        {#        {% endif %}#}
-
-        {% for attach in attachment %}
             <tr>
-                <!-- 提供下载的form -->
-                <form id="{{ attach }}" method="post">
-                    <input type="hidden" name="attachment_download" value="{{ attach }}">
-                </form>
-                {% if attach.find('.doc')!=-1 %}
-                    <td><a href="{{ url_for('.xSum',attach=attach,internId=internship.Id,stuId=student.stuId) }}" data-toggle="tooltip"
-                           title="点击进行在线阅览">{{ attach }}</a></td>
-                {% else %}
-                    <td>{{ attach }}</td>
-                {% endif %}
-                <td>{{ attachment[attach]['fsize'] }}</td>
-                <td>{{ attachment[attach]['mtime'] }}</td>
-                <td><a href="javascript:{}" onclick="document.getElementById('{{ attach }}').submit();">下载</a></td>
+                <th width="200">姓名</th>
+                <td width="400" height="50">{{ student.stuName }}</td>
+                <th width="200">实习单位</th>
+                <td width="400" height="50">{{ comInfor.comName }}</td>
+>>>>>>> origin/master
             </tr>
+            <tr>
+                <th width="200">实习期间</th>
+                <td width="400" height="50">{{ internship.start }} 至 {{ internship.end }} </td>
+                <th width="200">评分成绩</th>
+                <td width="400" height="50">{{ summary.sumScore }}
+                    <a href='{{ url_for('.xSumScore', stuId=student.stuId, internId=internship.Id) }}'><span
+                            class="label label-info">详情<span></a>
+                </td>
+            </tr>
+<<<<<<< HEAD
         {% endfor %}
         </tbody>
     </table>
@@ -222,5 +179,117 @@
             <p>你的浏览器不支持在线阅览, 请更换浏览器, 或点击&nbsp<a href="javascript:{}" onclick="document.getElementById('pdf').submit();">这里</a>&nbsp下载离线阅览</p>
           </object>
         </div>
+=======
+        </table>
+        <br>
+
+        <h2>附件</h2>
+        <table class="table" id="t">
+            <thead>
+            <tr>
+                <th>文件名</th>
+                <th>大小</th>
+                <th>修改时间</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 总结文档 -->
+            {% for summary in summary_doc %}
+                <tr>
+                    <!-- 提供下载的form -->
+                    <form id="{{ summary }}" method="post">
+                        <input type="hidden" name="summary_doc_download" value="{{ summary }}">
+                    </form>
+                    {% if summary.find('.doc')!=-1 %}
+                        <td><a href="{{ url_for('.xSum',summary=summary,internId=internship.Id,stuId=student.stuId) }}"
+                               data-toggle="tooltip"
+                               title="点击进行在线阅览">{{ summary }}</a></td>
+                    {% else %}
+                        <td>{{ summary }}</td>
+                    {% endif %}
+                    <td>{{ summary_doc[summary]['fsize'] }}</td>
+                    <td>{{ summary_doc[summary]['mtime'] }}</td>
+                    <td><a href="javascript:{}" onclick="document.getElementById('{{ summary }}').submit();">下载</a></td>
+                </tr>
+            {% endfor %}
+
+            {% for attach in attachment %}
+                <tr>
+                    <!-- 提供下载的form -->
+                    <form id="{{ attach }}" method="post">
+                        <input type="hidden" name="attachment_download" value="{{ attach }}">
+                    </form>
+                    {% if attach.find('.doc')!=-1 %}
+                        <td><a href="{{ url_for('.xSum',attach=attach,internId=internship.Id,stuId=student.stuId) }}"
+                               data-toggle="tooltip"
+                               title="点击进行在线阅览">{{ attach }}</a></td>
+                    {% else %}
+                        <td>{{ attach }}</td>
+                    {% endif %}
+                    <td>{{ attachment[attach]['fsize'] }}</td>
+                    <td>{{ attachment[attach]['mtime'] }}</td>
+                    <td><a href="javascript:{}" onclick="document.getElementById('{{ attach }}').submit();">下载</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% if path %}
+            <table>
+                <thead>
+                <h2>在线阅览</h2>
+                </thead>
+                <tbody>
+                <tr>
+                    <div>
+                        <input type='hidden' id='route' name='provSelect1' runat='server' value='{{ path }}'/>
+                        <!--参数swf文件路径-->
+                        <div>
+                            <div id="documentViewer" class="flexpaper_viewer" style="width:1000px;height:600px"></div>
+                        </div>
+                        <script type="text/javascript">
+                            var route = $("#route").val();
+                            <!--swf文件路径-->
+                            $('#documentViewer').FlexPaperViewer(
+                                    {
+                                        config: {
+
+                                            SWFFile: route, <!--swf文件路径-->
+                                            jsDirectory: '/static/Flexpaper/FlexPaperViewer.swf', <!--FlexPaperViewer.swf所在文件夹-->
+                                            expressInstall: '/static/Flexpaper/js/expressInstall.swf', <!--文件expressInstall.swf所在路径-->
+
+                                            Scale: 0.9, <!--缩放比例-->
+                                            ZoomTransition: 'easeOut', <!--缩放样式-->
+                                            ZoomTime: 0.5,
+                                            ZoomInterval: 0.2,
+                                            FitPageOnLoad: true,
+                                            FitWidthOnLoad: false,
+                                            FullScreenAsMaxWindow: false,
+                                            ProgressiveLoading: false,
+                                            MinZoomSize: 0.2,
+                                            MaxZoomSize: 5,
+                                            SearchMatchAll: false,
+                                            InitViewMode: 'Portrait',
+                                            RenderingOrder: 'flash',
+                                            StartAtPage: '1',
+                                            ViewModeToolsVisible: true,
+                                            ZoomToolsVisible: true,
+                                            NavToolsVisible: true,
+                                            CursorToolsVisible: true,
+                                            SearchToolsVisible: true,
+                                            WMode: 'window',
+                                            localeChain: 'en_US'
+                                        }
+                                    }
+                            )
+                            ;
+                        </script>
+                    </div>
+                </tr>
+                </tbody>
+            </table>
+            <br><br>
+        {% endif %}
+>>>>>>> origin/master
     {% endif %}
 {% endblock %}

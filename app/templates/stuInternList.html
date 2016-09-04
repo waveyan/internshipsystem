@@ -50,7 +50,7 @@
     {% else %}
         <h1>学生实习信息
     {% endif %}
-{% if current_user.roleId == 0 %}
+{% if current_user.roleId==0 %}
     <a href="{{ url_for('.addcominfor', from_url='stuInternList') }}" class="btn btn-info btn-xs">
         <span class="glyphicon glyphicon-plus"></span> 添加
     </a>
@@ -67,18 +67,18 @@
             </li>
             {% if current_user.can(Permission.STU_INTERN_CHECK) %}
                 <li><a href="{{ url_for('.update_intern_filter',flag=0) }}">批量审核</a></li>
+                <li><a href="{{ url_for('.update_intern_filter',flag=1) }}">批量删除</a></li>
             {% endif %}
-            <li><a href="{{ url_for('.update_intern_filter',flag=1) }}">批量删除</a></li>
         </ul>
     </div>
+    {{ search.search(url_for('.intern_search'),form) }}
 {% endif %}
-{{ search.search(url_for('.intern_search'),form) }}
 </h1>
 <!--Excel导出-->
 <form id="export_form" method="post">
     <input type="hidden" name="isexport" value="1">
 </form>
-{% if current_user.role.roleId!=0 %}
+{% if current_user.can(Permission.STU_INTERN_LIST) %}
     {#    筛选项#}
     {{ filter.intern_filter('.stuInternList',5,grade,major,classes) }}
 {% endif %}
@@ -86,7 +86,7 @@
 <table class="table" id="t">
     <thead>
     <tr>
-        {% if current_user.roleId!=0 %}
+        {% if not current_user.roleId==0 %}
             <th>姓名</th>
             <th>学号</th>
         {% endif %}
@@ -95,17 +95,18 @@
         <th>结束时间</th>
         <th>审核状态</th>
         <th>实习状态</th>
-        <!--   {% if current_user.can(Permission.STU_INTERN_EDIT) %}
-                <th>操作</th>
-            {% endif %} -->
     </tr>
     </thead>
     <tbody>
     {% for intern in internlist %}
         <tr>
-            {% if current_user.roleId!=0 %}
+            {% if current_user.can(Permission.STU_INTERN_LIST) %}
                 <td>
-                    <a href="{{ url_for('.xIntern',stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}</a>
+                    {% if current_user.can(Permission.STU_INTERN_SEARCH) %}
+                        <a href="{{ url_for('.xIntern',stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}</a>
+                    {% else %}
+                        {{ intern.stuName }}
+                    {% endif %}
                 </td>
                 <td>{{ intern.stuId }}</td>
                 <td>{{ intern.comName }}</td>
@@ -132,20 +133,6 @@
             {% else %}
                 <td>实习结束</td>
             {% endif %}
-            <!--          {% if current_user.can(Permission.STU_INTERN_EDIT) %}
-                    <td>
-                        <a href="
-                    {{ url_for('.xInternEdit', stuId=intern.stuId, internId=intern.Id, comId=intern.comId) }}">修改</a>
-                        {% if current_user.can(Permission.STU_INTERN_CHECK) %}
-                            {% if intern.internCheck != 2 %}
-                                | <a onClick="ComfirmCheck()">审核</a>
-                            {% elif intern.internCheck == 2 %}
-                                | <a onClick="Admin_ComfirmEdit()">审核</a>
-                            {% endif %}
-                        {% endif %}
-                        | <a onClick="ComfirmDelete()">删除</a>
-                    </td>
-                {% endif %} -->
         </tr>
     {% endfor %}
     </tbody>

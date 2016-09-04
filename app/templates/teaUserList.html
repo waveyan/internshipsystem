@@ -28,104 +28,102 @@
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
-    <!--Excel导出-->
-    <form id="export_form" method="post">
-        <input type="hidden" name="isexport" value="1">
-    </form>
+    {% if current_user.can(Permission.TEA_INFOR_MANAGE) %}
 
-    <h1>教师用户
-        {% if current_user.can(Permission.COM_INFOR_EDIT) %}
+        <!--Excel导出-->
+        <form id="export_form" method="post">
+            <input type="hidden" name="isexport" value="1">
+        </form>
+
+        <h1>教师用户
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">编辑<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.COM_INFOR_CHECK) %}
-                        <li><a href="{{ url_for('.addTeacher') }}">添加</a></li>
-                        <li><a href="{{ url_for('.excel_importpage', from_url='teaUserList') }}">批量导入</a></li>
-                        <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出</a>
-                        <li><a href="{{ url_for('.allTeaSet') }}">批量设置角色</a></li>
-                        <li><a href="{{ url_for('.allTeaDelete') }}">批量删除</a></li>
-                        </ul>
-                        </div>
-                    {% endif %}
-        {% endif %}
-{{ search.search(url_for('.user_search',tea='tea'),form) }}
-    </h1>
-    <p></p>
-    <table class="table" id="t">
-        <thead>
-        <tr>
-            {% if session.get('way')=='1' %}
-                <th><a href="{{ url_for('.teaUserList',way=0) }}" data-toggle="tooltip" title="按拼音首字母升序排列">姓名<span
-                        class="glyphicon glyphicon-arrow-up"></span></a></th>
-
-            {% else %}
-                <th><a href="{{ url_for('.teaUserList',way=1) }}" data-toggle="tooltip" title="按拼音首字母降序排列">姓名<span
-                        class="glyphicon glyphicon-arrow-down"></span></a></th>
-
-            {% endif %}
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-            <th>性别</th>
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-            <th>教工号</th>
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-            <th>系统角色</th>
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        {% for tea in teacher %}
+                    <li><a href="{{ url_for('.addTeacher') }}">添加</a></li>
+                    <li><a href="{{ url_for('.excel_importpage', from_url='teaUserList') }}">批量导入</a></li>
+                    <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出</a>
+                    <li><a href="{{ url_for('.allTeaSet') }}">批量设置角色</a></li>
+                    <li><a href="{{ url_for('.allTeaDelete') }}">批量删除</a></li>
+                </ul>
+            </div>
+            {{ search.search(url_for('.user_search',tea='tea'),form) }}
+        </h1>
+        <p></p>
+        <table class="table" id="t">
+            <thead>
             <tr>
-                <td>{{ tea.teaName }}</td>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>{{ tea.teaSex }}</td>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>{{ tea.teaId }}</td>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>{{ tea.role.roleName }}</td>
-                <td><a href="{{ url_for('.editTeacher',teaId=tea.teaId) }}">修改</a>|<a
-                        href="{{ url_for('.selectRole',teaId=tea.teaId,name=tea.teaName) }}">设置角色</a>|<a href="#"
-                                                                                                         onclick="ComfirmDelete({{ tea.teaId }})">删除</a>
-                </td>
-            </tr>
-        {% endfor %}
+                {% if session.get('way')=='1' %}
+                    <th><a href="{{ url_for('.teaUserList',way=0) }}" data-toggle="tooltip" title="按拼音首字母升序排列">姓名<span
+                            class="glyphicon glyphicon-arrow-up"></span></a></th>
 
-        </tbody>
-    </table>
-    {% if pagination %}
-        <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.teaUserList',comId=comId) }}
+                {% else %}
+                    <th><a href="{{ url_for('.teaUserList',way=1) }}" data-toggle="tooltip" title="按拼音首字母降序排列">姓名<span
+                            class="glyphicon glyphicon-arrow-down"></span></a></th>
+
+                {% endif %}
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>性别</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>教工号</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>系统角色</th>
+                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for tea in teacher %}
+                <tr>
+                    <td>{{ tea.teaName }}</td>
+                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{ tea.teaSex }}</td>
+                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{ tea.teaId }}</td>
+                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{ tea.role.roleName }}</td>
+                    <td><a href="{{ url_for('.editTeacher',teaId=tea.teaId) }}">修改</a>|<a
+                            href="{{ url_for('.selectRole',teaId=tea.teaId,name=tea.teaName) }}">设置角色</a>|<a href="#"
+                                                                                                             onclick="ComfirmDelete({{ tea.teaId }})">删除</a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+        {% if pagination %}
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination,'.teaUserList',comId=comId) }}
+            </div>
+        {% endif %}
+
+        <!--确认弹窗-->
+        <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
+             aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close"
+                                data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            提示：
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否仍要删除？</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="/teacher_delete" method="POST">
+                            <input type="hidden" id="teaId" name="teaId">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">删除</button>
+                        </form>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
         </div>
     {% endif %}
-
-    <!--确认弹窗-->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
-         aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close"
-                            data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">
-                        提示：
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否仍要删除？</h4>
-                </div>
-                <div class="modal-footer">
-                    <form action="/teacher_delete" method="POST">
-                        <input type="hidden" id="teaId" name="teaId">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-primary">删除</button>
-                    </form>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
-    </div>
-
 {% endblock %}

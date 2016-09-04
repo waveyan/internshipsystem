@@ -26,6 +26,12 @@
     <table align="center" border="2" class="table-bordered">
         <caption>
             <h1>企业信息
+                {% if not current_user.can(Permission.COM_INFOR_EDIT) and current_user.can(Permission.COM_INFOR_SEARCH) %}
+                    <button type="button" class="btn btn-default"
+                            onclick="document.getElementById('export_form').submit();"
+                    >导出
+                    </button>
+                {% endif %}
                 {% if current_user.can(Permission.COM_INFOR_EDIT) %}
                     <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggled btn-sm"
@@ -39,7 +45,7 @@
                                 <li><a href="{{ url_for('.editcominfor',comId=com.comId,cominfor='1') }}">修改</a></li>
                             {% endif %}
                             <li><a href="javascript:{}"
-                           onclick="document.getElementById('export_form').submit();">导出</a></li>
+                                   onclick="document.getElementById('export_form').submit();">导出</a></li>
                             <li><a onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></li>
                         </ul>
                     </div>

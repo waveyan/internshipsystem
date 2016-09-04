@@ -37,8 +37,29 @@
         {{ form.major.label }}{{ form.major(class="form-control",request='',value=stu.major) }}
         {{ form.grade.label }}{{ form.grade(class="form-control",request='',value=stu.grade) }}
         {{ form.classes.label }}{{ form.classes(class="form-control",class="form-control",request='',value=stu.classes) }}
-        <p></p>
-        <p></p>
+        {% set i=0 %}
+        <br>
+        <h3>校内指导老师</h3>
+        {% for tea in schdirtea %}
+            {% if tea.steaName %}
+                {% set i=i+1 %}
+                <b>校内教师工号<b><br>
+                <input type="text" name="teaId{{ i }}" value="{{ tea.teaId }}" class="form-control">
+                <b>姓名<b><br>
+                <input type="text" name="teaName{{ i }}" value="{{ tea.steaName }}" class="form-control">
+                <b>任务<b><br>
+                <input type="text" name="teaDuty{{ i }}" value="{{ tea.steaDuty }}" class="form-control">
+                <b>电话<b><br>
+                <input type="text" name="teaPhone{{ i }}" value="{{ tea.steaPhone }}" class="form-control">
+                <b>邮箱<b><br>
+                <input type="text" name="teaEmail{{ i }}" value="{{ tea.steaEmail }}" class="form-control">
+                <br><br><br>
+            {% endif %}
+        {% endfor %}
+        <p><br><span class="label label-danger">注意</span>
+            <br>*&nbsp&nbsp若要添加校内指导老师，请先删除原来学生用户信息，重新添加该学生用户信息。
+            <br>*&nbsp&nbsp若要删除校内指导老师，把需要删除的指导老师的信息表单清空后，点击提交键即可。
+        </p>
         <button class="btn btn-primary" onclick="save({{ stu.stuId }})">提交</button>
         <button class="btn btn-default" onclick="back()">返回
         </button>

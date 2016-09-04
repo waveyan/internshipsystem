@@ -235,21 +235,21 @@ class InternshipInfor(db.Model):
     jourCheck = db.Column(db.Integer, default=0)
 
 
-# can be delete
-class DirctTea(db.Model):
-    __tablename__ = 'DirctTea'
-    Id = db.Column(db.Integer, primary_key=True)
-    teaId = db.Column(db.String(10))
-    teaName = db.Column(db.String(10))
-    teaDuty = db.Column(db.String(20))
-    teaPhone = db.Column(db.String(15))
-    teaEmail = db.Column(db.String(20))
-    cteaName = db.Column(db.String(10))
-    cteaDuty = db.Column(db.String(20))
-    cteaPhone = db.Column(db.String(15))
-    cteaEmail = db.Column(db.String(20))
-    comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
-    stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
+# # can be delete
+# class DirctTea(db.Model):
+#     __tablename__ = 'DirctTea'
+#     Id = db.Column(db.Integer, primary_key=True)
+#     teaId = db.Column(db.String(10))
+#     teaName = db.Column(db.String(10))
+#     teaDuty = db.Column(db.String(20))
+#     teaPhone = db.Column(db.String(15))
+#     teaEmail = db.Column(db.String(20))
+#     cteaName = db.Column(db.String(10))
+#     cteaDuty = db.Column(db.String(20))
+#     cteaPhone = db.Column(db.String(15))
+#     cteaEmail = db.Column(db.String(20))
+#     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
+#     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
 
 
 class SchDirTea(db.Model):
@@ -312,58 +312,41 @@ class Journal(db.Model):
 
 class Permission:
     # 企业信息查询
-    COM_INFOR_SEARCH = 0X0000001
+    COM_INFOR_SEARCH = 0X0000009
     # 企业信息编辑
-    COM_INFOR_EDIT = 0X0000002
+    COM_INFOR_EDIT = 0X000000B
     # 企业信息审核
-    COM_INFOR_CHECK = 0X0000004
+    COM_INFOR_CHECK = 0X000000F
 
     # 实习企业信息列表
-    INTERNSHIP_LIST = 0X0000008
+    INTERNCOMPANY_LIST = 0X0000008
     # 学生实习信息列表
     STU_INTERN_LIST = 0X0000010
 
     # 学生实习信息查看
-    STU_INTERN_SEARCH = 0X0000020
+    STU_INTERN_SEARCH = 0X0000030
     # 学生实习信息编辑
-    STU_INTERN_EDIT = 0X0000040
+    STU_INTERN_EDIT = 0X0000070
     # 学生实习信息审核
-    STU_INTERN_CHECK = 0X0000080
-    # 学生实习信息导出
-    STU_INTERN_EXPORT = 0X0000100
+    STU_INTERN_CHECK = 0X00000F0
 
     # 学生实习日志查询
-    STU_JOUR_SEARCH = 0X0000200
+    STU_JOUR_SEARCH = 0X0000210
     # 学生实习日志编辑
-    STU_JOUR_EDIT = 0X0000400
+    STU_JOUR_EDIT = 0X0000610
     # 学生实习日志审核
-    STU_JOUR_CHECK = 0X0000800
-    # 学生实习日志导出
-    STU_JOUR_EXPORT = 0X0001000
+    STU_JOUR_CHECK = 0X0000E10
 
     # 学生实习总结查看
-    STU_SUM_SEARCH = 0X0002000
+    STU_SUM_SEARCH = 0X0001010
     # 学生实习总结编辑
-    STU_SUM_EDIT = 0X0004000
-    # 学生实习总结导出
-    STU_SUM_EXPORT = 0X0008000
+    STU_SUM_EDIT = 0X0003010
     # 学生实习总结和成果审核
-    STU_SUM_SCO_CHECK = 0X0010000
+    STU_SUM_SCO_CHECK = 0X0007010
 
-    # 学生实习成果查看
-    STU_SCO_SEARCH = 0X0020000
-    # 学生实习成果编辑
-    STU_SCO_EDIT = 0X0040000
-    # 学生实习成果导出
-    STU_SCO_EXPORT = 0X0080000
-
-    # 管理
-    ADMIN = 0X0100000
-    # 学生信息导入
-    STU_INTERN_IMPORT = 0X0200000
-    # 老师信息导入
-    TEA_INFOR_IMPORT = 0X0400000
+    # 学生信息管理
+    STU_INTERN_MANAGE = 0X0010000
+    # 老师信息管理
+    TEA_INFOR_MANAGE = 0X0020000
     # 权限管理
-    PERMIS_MANAGE = 0X0800000
-
-
+    PERMIS_MANAGE = 0X0040000
