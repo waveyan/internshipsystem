@@ -2,17 +2,19 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}个人实习信息{% endblock %}
-{% block head %}{{ super() }}
+{% block head %}
+    {{ super() }}
+    <!-- bootstrap日期选择器 -->
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
     <style type="text/css">
         #task {
             height: 200px;
         }
     </style>
-    <!-- bootstrap日期选择器 -->
-    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
-    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
-    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
-{% endblock %}<!--先执行父模板-->
+
+{% endblock %}
 
 {% block page_content %}
 
@@ -77,9 +79,10 @@
             <tr>
                 <th>实习期间</th>
                 <td width="400" height="50" colspan="5">
-                    {{ internform.start(required='', value=internship.start,class=" datetimepicker") }}至
-                    {{ internform.end(required='', value=internship.end, class="datetimepicker") }}</td>
-                </td>
+                    <div class="form-inline">
+                        {{ internform.start(required='', value=internship.start,class="form-control datetimepicker") }}至
+                    {{ internform.end(required='', value=internship.end, class="form-control datetimepicker") }}</td>
+                <div>
             </tr>
             <tr>
                 <th>工作任务</th>

@@ -71,7 +71,8 @@ def score():
 def statistics_area_visual():
     comlist = []
     index = 0
-    cominfor = db.session.execute('select comAddress, sum(students) from ComInfor group by comAddress order by sum(students) desc')
+    cominfor = db.session.execute(
+        'select comAddress, sum(students) from ComInfor group by comAddress order by sum(students) desc')
     for com in cominfor:
         if index < 6:
             # com[1] 为学生人数
@@ -127,6 +128,7 @@ def statistics_area_rank():
     comInfor = pagination.items
     return render_template('statistics_area_rank.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor)
+
 
 # --------------------------------------------------------------------
 # 首页
@@ -1512,7 +1514,7 @@ def addStudent():
 @login_required
 def editStudent():
     form = stuForm()
-    schdirteaform=schdirteaForm()
+    schdirteaform = schdirteaForm()
     stuId = request.args.get('stuId')
     stu = Student.query.filter_by(stuId=stuId).first()
     schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
@@ -1544,8 +1546,8 @@ def editStudent():
                     db.session.add(nschdirtea)
                 else:
                     break
-             # 添加新老师       
-            j=0
+                    # 添加新老师
+            j = 0
             while True:
                 j = j + 1
                 teaId = request.form.get('teaId%s' % j)
@@ -1569,7 +1571,8 @@ def editStudent():
             db.session.rollback()
             flash('修改失败，请重试！')
             return redirect(url_for('.editStudent', stuId=stuId))
-    return render_template('editStudent.html', Permission=Permission, form=form, stu=stu, schdirtea=schdirtea,schdirteaform=schdirteaform)
+    return render_template('editStudent.html', Permission=Permission, form=form, stu=stu, schdirtea=schdirtea,
+                           schdirteaform=schdirteaform)
 
 
 # 单条删除学生用户信息
@@ -1580,10 +1583,10 @@ def student_delete():
         stuId = request.form.get('stuId')
         print('stuId=', stuId)
         stu = Student.query.filter_by(stuId=stuId).first()
-        journal=Journal.query.filter_by(stuId=stuId).all()
-        intern=InternshipInfor.query.filter_by(stuId=stuId).all()
-        stea=SchDirTea.query.filter_by(stuId=stuId).all()
-        ctea=ComDirTea.query.filter_by(stuId=stuId).all()
+        journal = Journal.query.filter_by(stuId=stuId).all()
+        intern = InternshipInfor.query.filter_by(stuId=stuId).all()
+        stea = SchDirTea.query.filter_by(stuId=stuId).all()
+        ctea = ComDirTea.query.filter_by(stuId=stuId).all()
         try:
             for tea in ctea:
                 db.session.delete(tea)
@@ -1592,7 +1595,7 @@ def student_delete():
             for jour in journal:
                 db.session.delete(jour)
             for i in intern:
-                summary=Summary.query.filter_by(internId=i.Id).all()
+                summary = Summary.query.filter_by(internId=i.Id).all()
                 for sum in summary:
                     db.session.delete(sum)
                 db.session.delete(i)
@@ -1650,7 +1653,6 @@ def selectRole():
             return redirect(url_for('.stuUserList'))
         # 教师
         elif session.get('tea'):
-            print('教师啊')
             for teaId in session['tea']:
                 tea = Teacher.query.filter_by(teaId=teaId).first()
                 tea.roleId = roleId
@@ -1882,7 +1884,7 @@ def roleList():
     if not current_user.can(Permission.PERMIS_MANAGE):
         return redirect('/')
     page = request.args.get('page', 1, type=int)
-    pagination = Role.query.order_by(Role.permission).paginate(page, per_page=8, error_out=False)
+    pagination = Role.query.paginate(page, per_page=8, error_out=False)
     role = pagination.items
     return render_template('roleList.html', Permission=Permission, role=role, pagination=pagination)
 
@@ -3071,7 +3073,7 @@ def pdf_postfix(file_name):
 # file为初始文件名, 非pdf
 def onlinePDF(internId, dest, file):
     if dest in ['summary_doc', 'attachment']:
-        if file.split('.')[-1] in ['xls', 'doc', 'ppt', 'txt','docs','xlsx', 'jpg', 'jpeg', 'png']:
+        if file.split('.')[-1] in ['xls', 'doc', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png']:
             pdf_file = pdf_postfix(file)
             storage_path = os.path.join(storage_cwd(internId, dest), file)
             pdf_path = os.path.join(pdf_cwd(internId, dest), pdf_file)
@@ -3154,12 +3156,12 @@ def xSum():
     attach = request.args.get('attach')
     path = None
     # if summary or attach:
-        # path = readOnline(summary, attach, internId)
+    # path = readOnline(summary, attach, internId)
     if summary:
-        path = onlinePDF(internId,'summary_doc', summary)
+        path = onlinePDF(internId, 'summary_doc', summary)
     elif attach:
-        path = onlinePDF(internId,'attachment', attach)
-    print (path)
+        path = onlinePDF(internId, 'attachment', attach)
+    print(path)
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     now = datetime.now().date()
@@ -3249,7 +3251,6 @@ def xSum_fileManager():
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc)
 
 
-
 # 实习评分详情
 @main.route('/xSumScore', methods=['GET', 'POST'])
 @login_required
@@ -3265,7 +3266,7 @@ def xSumScore():
     sumScore = Summary.query.filter_by(internId=internId).first().sumScore
     if not sumScore:
         flash('请先完善实习成绩信息！')
-        return redirect(url_for('.xSumScoreEdit', internId=internId))
+        return redirect(url_for('.xSumScoreEdit', internId=internId, stuId=stuId))
     file_path = {}
     if os.path.exists(path):
         file = os.listdir(path + '/comscore')
@@ -3297,7 +3298,7 @@ def xSum_comfirm():
         stuId = request.form.get('stuId')
         sumCheckOpinion = request.form.get('sumCheckOpinion')
         comId = InternshipInfor.query.filter_by(Id=internId).first().comId
-        com = ComInfor.query.filter(comId==comId).first()
+        com = ComInfor.query.filter(comId == comId).first()
         checkTime = datetime.now().date()
         checkTeaId = current_user.get_id()
         try:
