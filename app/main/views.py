@@ -368,6 +368,8 @@ def addInternship():
             db.session.commit()
             flash('提交实习信息成功！')
             return redirect(url_for('.stuInternList'))
+            # 初始化Summary表
+            db.session.execute('insert into Sumamry set internId=%s' % internId)
     except Exception as e:
         print("实习信息：", e)
         db.session.rollback
