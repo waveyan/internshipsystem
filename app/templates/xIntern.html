@@ -139,7 +139,7 @@
                             onclick="document.getElementById('export_form').submit();">导出
                     </button>
                 {% endif %}
-                {% if current_user.can(Permission.STU_INTERN_EDIT) %}
+                {% if current_user.can(Permission.STU_INTERN_EDIT) or current_user.roleId==0 %}
                     <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                                 data-toggle="dropdown">编辑<span class="caret"></span>

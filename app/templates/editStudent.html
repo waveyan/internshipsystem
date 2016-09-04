@@ -15,8 +15,60 @@
             form.submit();
         }
     </script>
+     <script>
+        $(document).ready(function () {
+            var i = 1;
+            $("#addTea").click(function () {
+                $(".teaForm:first").clone(true).insertAfter(".teaForm:last");
+                $(".teaForm:last").slideDown();
+                i++;
+                $(".teaForm .form-control").eq(i + i + i + i + i).attr({name: "teaId" + i});
+                $(".teaForm .form-control").eq(i + i + i + i + i + 1).attr({name: "teaName" + i});
+                $(".teaForm .form-control").eq(i + i + i + i + i + 2).attr({name: "teaDuty" + i});
+                $(".teaForm .form-control").eq(i + i + i + i + i + 3).attr({name: "teaPhone" + i});
+                $(".teaForm .form-control").eq(i + i + i + i + i + 4).attr({name: "teaEmail" + i});
+                if (i > 1) {
+                    $("#delTea").show();
+                }
+                $("#addTea").hide();
+            });
+            $("#delTea").click(function () {
+                i--;
+                $(".teaForm:last").remove();
+                if (i == 1) {
+                    $("#delTea").slideUp();
+                    $("#addTea").show();
+                }
+            });
+            $("#finish").click(function () {
+                $(".teaForm .form-control").eq(5).attr({name: "teaId" + 1});
+                $(".teaForm .form-control").eq(6).attr({name: "teaName" + 1});
+                $(".teaForm .form-control").eq(7).attr({name: "teaDuty" + 1});
+                $(".teaForm .form-control").eq(8).attr({name: "teaPhone" + 1});
+                $(".teaForm .form-control").eq(9).attr({name: "teaEmail" + 1});
+
+                $(".buttonStd").click();
+                $(".buttonTea").click();
+            });
+        });
+    </script>
 {% endblock %}
 {% block page_content %}
+ <div class="panel">
+        <div class="panel-body">
+            <div class="teaForm" style="display: None">
+                {{ schdirteaform.hidden_tag() }}
+                {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="",
+            pattern="[0-9]{6}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
+                {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="",
+            pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
+                {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="",
+            oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",required='',placeholder="") }}
+                {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control",required='',placeholder="") }}
+                </br></br>
+            </div>
+
     <form method="post" class="form-horizontal" id="comform">
         <h1>学生基本信息</h1>
         {{ form.hidden_tag() }}
@@ -41,29 +93,35 @@
         <br>
         <h3>校内指导老师</h3>
         {% for tea in schdirtea %}
-            {% if tea.steaName %}
+            {% if tea.teaId %}
                 {% set i=i+1 %}
-                <b>校内教师工号<b><br>
-                <input type="text" name="teaId{{ i }}" value="{{ tea.teaId }}" class="form-control">
+                <b>{{ i }}、校内教师工号<b><br>
+                <input type="text" name="nteaId{{ i }}" value="{{ tea.teaId }}" class="form-control">
                 <b>姓名<b><br>
-                <input type="text" name="teaName{{ i }}" value="{{ tea.steaName }}" class="form-control">
+                <input type="text" name="nteaName{{ i }}" value="{{ tea.steaName }}" class="form-control">
                 <b>任务<b><br>
-                <input type="text" name="teaDuty{{ i }}" value="{{ tea.steaDuty }}" class="form-control">
+                <input type="text" name="nteaDuty{{ i }}" value="{{ tea.steaDuty }}" class="form-control">
                 <b>电话<b><br>
-                <input type="text" name="teaPhone{{ i }}" value="{{ tea.steaPhone }}" class="form-control">
+                <input type="text" name="nteaPhone{{ i }}" value="{{ tea.steaPhone }}" class="form-control">
                 <b>邮箱<b><br>
-                <input type="text" name="teaEmail{{ i }}" value="{{ tea.steaEmail }}" class="form-control">
+                <input type="text" name="nteaEmail{{ i }}" value="{{ tea.steaEmail }}" class="form-control">
                 <br><br><br>
             {% endif %}
         {% endfor %}
+        <div class="teaForm">
+        </div>
+        <input type="button" id="addTea" class="btn" value="添加校内指导老师">
+        <input type="button" id="delTea" class="btn" value="删除校内指导老师" style="display: none">
+        <br><br><br>
         <p><br><span class="label label-danger">注意</span>
-            <br>*&nbsp&nbsp若要添加校内指导老师，请先删除原来学生用户信息，重新添加该学生用户信息。
-            <br>*&nbsp&nbsp若要删除校内指导老师，把需要删除的指导老师的信息表单清空后，点击提交键即可。
+        <br>*&nbsp;每次只能添加一位校内指导老师师。
+            <br>*&nbsp;若要删除校内指导老师，把需要删除的指导老师的信息表单清空后，点击提交键即可。
         </p>
-        <button class="btn btn-primary" onclick="save({{ stu.stuId }})">提交</button>
+        <button class="btn btn-primary" onclick="save({{ stu.stuId }})" id='finish'>提交</button>
         <button class="btn btn-default" onclick="back()">返回
         </button>
     </form>
-
+    </div>
+    </div>
     <br><br><br><br>
 {% endblock %}

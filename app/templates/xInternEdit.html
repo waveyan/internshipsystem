@@ -2,14 +2,19 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}个人实习信息{% endblock %}
-{% block head %}{{ super() }}
+{% block head %}
+    {{ super() }}
+    <!-- bootstrap日期选择器 -->
+    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
     <style type="text/css">
         #task {
             height: 200px;
         }
     </style>
 
-{% endblock %}<!--先执行父模板-->
+{% endblock %}
 
 {% block page_content %}
 
@@ -74,9 +79,10 @@
             <tr>
                 <th>实习期间</th>
                 <td width="400" height="50" colspan="5">
-                    {{ internform.start(required='', value=internship.start,class="form-inline") }}至
-                    {{ internform.end(required='', value=internship.end,class="form-inline") }}</td>
-                </td>
+                    <div class="form-inline">
+                        {{ internform.start(required='', value=internship.start,class="form-control datetimepicker") }}至
+                    {{ internform.end(required='', value=internship.end, class="form-control datetimepicker") }}</td>
+                <div>
             </tr>
             <tr>
                 <th>工作任务</th>
@@ -169,6 +175,18 @@
     <td><a href="{{ url_for('.xIntern',internId=internship.Id, comId=comInfor.comId, stuId=student.stuId) }}">
     <button class="btn btn-primary">返回</button>
 </a>
-
+    <!-- bootstrap日期选择器 -->
+    <script type="text/javascript">
+        $('.datetimepicker').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+            pickDate: true,
+            inputMask: true,
+            autoclose: true,
+            todayBtn: 'linked',
+            todayHighlight: true,
+            minView: "month"
+        });
+    </script>
 
 {% endblock %}

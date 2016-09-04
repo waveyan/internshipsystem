@@ -68,49 +68,57 @@
     <!-- 删除确认窗口 -->
     <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
          aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="text-align:center;">
-                <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-            </div>
-            <div class="modal-body">
-                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
-            </div>
-            <div class="modal-footer">
-                <!-- 用form来获取数据 -->
-                <form action="/intern_delete" method="POST">
-                    <input type="hidden" name="internId" value="{{ internship.Id }}">
-                    <input type="hidden" name="from_url" value="xSum">
-                    <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                    <button type="submit" class="btn btn-primary">删除</button>
-                </form>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="text-align:center;">
+                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
+                        日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
+                </div>
+                <div class="modal-footer">
+                    <!-- 用form来获取数据 -->
+                    <form action="/intern_delete" method="POST">
+                        <input type="hidden" name="internId" value="{{ internship.Id }}">
+                        <input type="hidden" name="from_url" value="xSum">
+                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-    </div>
 
     <div class="page-`er">
-    {% if current_user.roleId==0 %}
-        <h1>我的实习总结与成果
-    {% else %}
-        <h1>{{ student.stuName }}的实习总结与成果
-    {% endif %}
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                        data-toggle="dropdown">更多<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
-                        <li><a onClick="ComfirmCheck()">审核</a></li>
-                    {% endif %}
+        {% if current_user.roleId==0 %}
+            <h1>我的实习总结与成果
+        {% else %}
+            <h1>{{ student.stuName }}的实习总结与成果
+        {% endif %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                    data-toggle="dropdown">更多<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
+                    <li><a onClick="ComfirmCheck()">审核</a></li>
                     <li><a onClick="ComfirmDelete()">删除</a></li>
-                    <li><a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a></li>
+                    <li>
+                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a>
+                    </li>
+                {% elif current_user.can(Permission.STU_SUM_EDIT) and summary.sumCheck!=2 %}
+                    <li><a onClick="ComfirmDelete()">删除</a></li>
+                    <li>
+                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a>
+                    </li>
                     <li class="divider"></li>
-                    <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
-                    <li><a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a></li>
-                </ul>
-            </div>
+                {% endif %}
+                <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
+                <li><a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a></li>
+            </ul>
+        </div>
         </h1>
 
         <!-- 审核情况 -->
@@ -167,7 +175,8 @@
                     <input type="hidden" name="summary_doc_download" value="{{ summary }}">
                 </form>
                 {% if summary.find('.doc')!=-1 %}
-                    <td><a href="{{ url_for('.xSum',summary=summary,internId=internship.Id,stuId=student.stuId) }}" data-toggle="tooltip"
+                    <td><a href="{{ url_for('.xSum',summary=summary,internId=internship.Id,stuId=student.stuId) }}"
+                           data-toggle="tooltip"
                            title="点击进行在线阅览">{{ summary }}</a></td>
                 {% else %}
                     <!-- <td>{{ summary }}</td> -->
@@ -177,22 +186,6 @@
                 <td><a href="javascript:{}" onclick="document.getElementById('{{ summary }}').submit();">下载</a></td>
             </tr>
         {% endfor %}
-
-        {#        <!-- 总结文档 -->#}
-        {#        {% if summary_doc %}#}
-        {#        <tr>#}
-        {#            {% for file_name in summary_doc %}#}
-        {#                <!-- 提供下载的form -->#}
-        {#                <form id="summary_download_form" method="post">#}
-        {#                    <input type="hidden" name="summary_doc_download" value="{{ file_name }}" >#}
-        {#                </form>#}
-        {#                <td><a href="javascript:{}" onclick="document.getElementById('summary_download_form').submit();">{{ file_name }}</a></td>#}
-        {#                <td>{{ summary_doc[file_name]['fsize'] }}</td>#}
-        {#                <td>{{ summary_doc[file_name]['mtime'] }}</td>#}
-        {#        </tr>#}
-        {#            {% endfor %}#}
-        {#        {% endif %}#}
-
         {% for attach in attachment %}
             <tr>
                 <!-- 提供下载的form -->
@@ -200,7 +193,8 @@
                     <input type="hidden" name="attachment_download" value="{{ attach }}">
                 </form>
                 {% if attach.find('.doc')!=-1 %}
-                    <td><a href="{{ url_for('.xSum',attach=attach,internId=internship.Id,stuId=student.stuId) }}" data-toggle="tooltip"
+                    <td><a href="{{ url_for('.xSum',attach=attach,internId=internship.Id,stuId=student.stuId) }}"
+                           data-toggle="tooltip"
                            title="点击进行在线阅览">{{ attach }}</a></td>
                 {% else %}
                     <td>{{ attach }}</td>
@@ -213,14 +207,16 @@
         </tbody>
     </table>
     {% if path %}
-    <!-- 提供下载的form -->
-                <form id="pdf" method="post">
-                    <input type="hidden" name="pdf_download" value="{{ path }}">
-                </form>
+        <!-- 提供下载的form -->
+        <form id="pdf" method="post">
+            <input type="hidden" name="pdf_download" value="{{ path }}">
+        </form>
         <div id="pdf">
-          <object width="400" height="500" type="application/pdf" data="{{ path }}" id="pdf_content">
-            <p>你的浏览器不支持在线阅览, 请更换浏览器, 或点击&nbsp<a href="javascript:{}" onclick="document.getElementById('pdf').submit();">这里</a>&nbsp下载离线阅览</p>
-          </object>
+            <object width="400" height="500" type="application/pdf" data="{{ path }}" id="pdf_content">
+                <p>你的浏览器不支持在线阅览, 请更换浏览器, 或点击&nbsp<a href="javascript:{}"
+                                                    onclick="document.getElementById('pdf').submit();">这里</a>&nbsp下载离线阅览
+                </p>
+            </object>
         </div>
     {% endif %}
 {% endblock %}
