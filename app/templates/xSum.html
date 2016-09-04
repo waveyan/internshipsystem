@@ -62,28 +62,6 @@
         </div>
     </div>
 
-    <!-- 在线阅读 -->
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width"/>
-    <style type="text/css" media="screen">
-        html, body {
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: auto;
-        }
-
-        #flashContent {
-            display: none;
-        }
-    </style>
-    <link rel="stylesheet" type="text/css" href="/static/Flexpaper/css/flexpaper.css"/>
-    <script type="text/javascript" src="/static/Flexpaper/js/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/Flexpaper/js/flexpaper.js"></script>
-    <script type="text/javascript" src="/static/Flexpaper/js/flexpaper_handlers.js"></script>
 {% endblock %}<!--先执行父模板-->
 
 {% block page_content %}
@@ -192,7 +170,7 @@
                     <td><a href="{{ url_for('.xSum',summary=summary,internId=internship.Id,stuId=student.stuId) }}" data-toggle="tooltip"
                            title="点击进行在线阅览">{{ summary }}</a></td>
                 {% else %}
-                    <td>{{ summary }}</td>
+                    <!-- <td>{{ summary }}</td> -->
                 {% endif %}
                 <td>{{ summary_doc[summary]['fsize'] }}</td>
                 <td>{{ summary_doc[summary]['mtime'] }}</td>
@@ -235,59 +213,14 @@
         </tbody>
     </table>
     {% if path %}
-        <table>
-            <thead>
-            <h2>在线阅览</h2>
-            </thead>
-            <tbody>
-            <tr>
-                <div>
-                    <input type='hidden' id='route' name='provSelect1' runat='server' value='{{ path }}'/>
-                    <!--参数swf文件路径-->
-                    <div>
-                        <div id="documentViewer" class="flexpaper_viewer" style="width:1000px;height:600px"></div>
-                    </div>
-                    <script type="text/javascript">
-                        var route = $("#route").val();
-                        <!--swf文件路径-->
-                        $('#documentViewer').FlexPaperViewer(
-                                {
-                                    config: {
-
-                                        SWFFile: route, <!--swf文件路径-->
-                                        jsDirectory: '/static/Flexpaper/FlexPaperViewer.swf', <!--FlexPaperViewer.swf所在文件夹-->
-                                        expressInstall: '/static/Flexpaper/js/expressInstall.swf', <!--文件expressInstall.swf所在路径-->
-
-                                        Scale: 0.9, <!--缩放比例-->
-                                        ZoomTransition: 'easeOut', <!--缩放样式-->
-                                        ZoomTime: 0.5,
-                                        ZoomInterval: 0.2,
-                                        FitPageOnLoad: true,
-                                        FitWidthOnLoad: false,
-                                        FullScreenAsMaxWindow: false,
-                                        ProgressiveLoading: false,
-                                        MinZoomSize: 0.2,
-                                        MaxZoomSize: 5,
-                                        SearchMatchAll: false,
-                                        InitViewMode: 'Portrait',
-                                        RenderingOrder: 'flash',
-                                        StartAtPage: '1',
-                                        ViewModeToolsVisible: true,
-                                        ZoomToolsVisible: true,
-                                        NavToolsVisible: true,
-                                        CursorToolsVisible: true,
-                                        SearchToolsVisible: true,
-                                        WMode: 'window',
-                                        localeChain: 'en_US'
-                                    }
-                                }
-                        )
-                        ;
-                    </script>
-                </div>
-            </tr>
-            </tbody>
-        </table>
-        <br><br>
+    <!-- 提供下载的form -->
+                <form id="pdf" method="post">
+                    <input type="hidden" name="pdf_download" value="{{ path }}">
+                </form>
+        <div id="pdf">
+          <object width="400" height="500" type="application/pdf" data="{{ path }}" id="pdf_content">
+            <p>你的浏览器不支持在线阅览, 请更换浏览器, 或点击&nbsp<a href="javascript:{}" onclick="document.getElementById('pdf').submit();">这里</a>&nbsp下载离线阅览</p>
+          </object>
+        </div>
     {% endif %}
 {% endblock %}
