@@ -1088,7 +1088,7 @@ def stuJournal_allCheck():
         .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id,
                      InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
                      InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-        .filter(InternshipInfor.internStatus != 0,
+        .filter(InternshipInfor.internCheck == 2, InternshipInfor.internStatus != 0,
                 InternshipInfor.jourCheck == 0).group_by(InternshipInfor.Id).order_by(
         func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
@@ -1190,14 +1190,14 @@ def stuJournalList():
             internlist = pagination.items
             return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
                                    pagination=pagination, grade=grade, major=major, classes=classes)
-    elif current_user.can(Permission.STU_INTERN_LIST):
+    elif current_user.can(Permission.STU_JOUR_SEARCH):
         intern = create_intern_filter(grade, major, classes, flag=1)
         pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
             .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id,
                          InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
                          InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-            .filter(InternshipInfor.internStatus != 0).group_by(InternshipInfor.Id).order_by(
-            func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
+            .filter(InternshipInfor.internStatus == 2, InternshipInfor.internStatus != 0).group_by(InternshipInfor.Id).order_by(
+            func.field(InternshipInfor.internStatus, 1, 2)).paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
         return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
                                pagination=pagination, grade=grade, major=major, classes=classes)
@@ -1385,19 +1385,6 @@ def update_intern_filter():
     else:
         return redirect(url_for('.stuSum_allDelete'))
 
-
-'''
-# 学生日志详情
-@main.route('/stuJour', methods=['GET'])
-@not_student_login
-def stuJour():
-    comId = request.args.get('comId')
-    stuId = request.args.get('stuId')
-    student = Student.query.filter_by(stuId=stuId).first()
-    com = ComInfor.query.filter_by(comId=comId).first()
-    journal = db.session.execute('select * from Journal where stuId=%s and comId=%s' % (stuId, comId))
-    return render_template('myjournal.html', Permission=Permission, journal=journal, student=student, com=com)
-'''
 
 
 # -------------管理-----------------------------------------------------------------------------------
@@ -3053,7 +3040,6 @@ def onlinePDF(internId, dest, file):
 # 学生实习总结与成果列表
 @main.route('/stuSumList', methods=['GET', 'POST'])
 @login_required
-@update_intern_jourCheck
 @update_intern_internStatus
 def stuSumList():
     form = searchForm()
@@ -3085,7 +3071,7 @@ def stuSumList():
                 .add_columns(ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start,
                              InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck,
                              Summary.sumScore, Summary.sumCheck) \
-                .filter(InternshipInfor.stuId == stuId, InternshipInfor.end < now).order_by(
+                .filter(InternshipInfor.stuId == stuId).order_by(
                 func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
             internlist = pagination.items
             return render_template('stuSumList.html', internlist=internlist, Permission=Permission,
@@ -3095,11 +3081,11 @@ def stuSumList():
         # 函数返回的intern已经join了Student,Summary
         intern = create_intern_filter(grade, major, classes, 2)
         pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-            .filter(InternshipInfor.end < now, InternshipInfor.internCheck == 2) \
+            .filter(InternshipInfor.internCheck == 2) \
             .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                          InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
-            .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
+            .order_by(InternshipInfor.end.desc(), InternshipInfor.internStatus.desc()).paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
         return render_template('stuSumList.html', internlist=internlist, Permission=Permission,
                                pagination=pagination, form=form, grade=grade, classes=classes, major=major)
@@ -3304,12 +3290,13 @@ def xSum_comfirm():
 # 批量审核总结和成果
 @main.route('/stuSum_allCheck', methods=['GET', 'POST'])
 @not_student_login
+@update_intern_internStatus
 def stuSum_allCheck():
     if not current_user.can(Permission.STU_SUM_SCO_CHECK):
         flash("非法操作")
         return redirect('/')
     page = request.args.get('page', 1, type=int)
-    now = datetime.now().date()
+    # now = datetime.now().date()
     checkTime = datetime.now().date()
     checkTeaId = current_user.get_id()
     form = searchForm()
@@ -3317,17 +3304,22 @@ def stuSum_allCheck():
     classes = {}
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
-    pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(Teacher,
-                                                                                          Teacher.teaId == InternshipInfor.icheckTeaId).outerjoin(
-        SchDirTea, SchDirTea.stuId == InternshipInfor.stuId) \
-        .filter(InternshipInfor.end < now) \
-        .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
-                     InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
-                     InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
-                     InternshipInfor.opinion, InternshipInfor.icheckTime, SchDirTea.steaName, SchDirTea.steaDuty,
-                     SchDirTea.steaPhone, SchDirTea.steaEmail, Summary.sumScore, Summary.sumCheck).filter(
-        Summary.sumCheck != 2) \
-        .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
+    # pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(Teacher,
+        #                                                                                   Teacher.teaId == InternshipInfor.icheckTeaId).outerjoin(
+        # SchDirTea, SchDirTea.stuId == InternshipInfor.stuId) \
+        # .filter(InternshipInfor.internCheck == 2, InternshipInfor.end < now, Summary.sumCheck != 2) \
+        # .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
+        #              InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
+        #              InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
+        #              InternshipInfor.opinion, InternshipInfor.icheckTime, SchDirTea.steaName, SchDirTea.steaDuty,
+        #              SchDirTea.steaPhone, SchDirTea.steaEmail, Summary.sumScore, Summary.sumCheck) \
+        # .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
+    pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
+        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, Summary.sumCheck != 2) \
+        .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
+                     InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
+                     InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
+        .paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
     # 确定实习审核通过
     if request.method == "POST":
@@ -3335,22 +3327,22 @@ def stuSum_allCheck():
             internId = request.form.getlist('approve[]')
             for x in internId:
                 db.session.execute(
-                    'update Summary set sumCheck=%s, sumCheckTeaId=%s, sumCheckTime="%s" where internId=%s' % (
-                        sumCheck, CheckTeaId, CheckTime, x))
+                    'update Summary set sumCheck=1, sumCheckTeaId=%s, sumCheckTime="%s" where internId=%s' % (
+                        CheckTeaId, CheckTime, x))
                 # 作消息提示
                 stuId = InternshipInfor.query.filter(Id=x).first().stuId
                 db.session.execute('update Student set sumCheck=1 where stuId=%s' % stuId)
-                # 若所选企业或实习信息未被审核通过,且用户有审核权限,自动审核通过企业和实习信息
-                comId = InternshipInfor.query.filter_by(Id=x).first().comId
-                com = ComInfor.query.filter_by(comId=comId).first()
-                if com.comCheck != 2:
-                    if current_user.can(Permission.COM_INFOR_CHECK):
-                        db.session.execute('update ComInfor set comCheck=2 where comId=%s' % comId)
-                        if current_user.can(Permission.STU_INTERN_CHECK):
-                            db.session.execute('update InternshipInfor set internCheck=2 where Id = %s' % x)
-                            # 作消息提示
-                            stuId = InternshipInfor.query.filter(Id=x).first().stuId
-                            db.session.execute('update Student set sumCheck=1 where stuId=%s' % stuId)
+                # # 若所选企业或实习信息未被审核通过,且用户有审核权限,自动审核通过企业和实习信息
+                # comId = InternshipInfor.query.filter_by(Id=x).first().comId
+                # com = ComInfor.query.filter_by(comId=comId).first()
+                # if com.comCheck != 2:
+                #     if current_user.can(Permission.COM_INFOR_CHECK):
+                #         db.session.execute('update ComInfor set comCheck=2 where comId=%s' % comId)
+                #         if current_user.can(Permission.STU_INTERN_CHECK):
+                #             db.session.execute('update InternshipInfor set internCheck=2 where Id = %s' % x)
+                #             # 作消息提示
+                #             stuId = InternshipInfor.query.filter(Id=x).first().stuId
+                #             db.session.execute('update Student set sumCheck=1 where stuId=%s' % stuId)
         except Exception as e:
             db.session.rollback()
             print(datetime.now(), ":", current_user.get_id(), "审核实习总结失败", e)
@@ -3376,35 +3368,44 @@ def stuSum_allDelete():
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
     now = datetime.now().date()
-    pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(Teacher,
-                                                                                          Teacher.teaId == InternshipInfor.icheckTeaId).outerjoin(
-        SchDirTea, SchDirTea.stuId == InternshipInfor.stuId) \
-        .filter(InternshipInfor.end < now) \
+    # pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(Teacher,
+    #                                                                                       Teacher.teaId == InternshipInfor.icheckTeaId).outerjoin(
+    #     SchDirTea, SchDirTea.stuId == InternshipInfor.stuId) \
+    #     .filter(InternshipInfor.end < now) \
+    #     .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
+    #                  InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
+    #                  InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
+    #                  InternshipInfor.opinion, InternshipInfor.icheckTime, SchDirTea.steaName, SchDirTea.steaDuty,
+    #                  SchDirTea.steaPhone, SchDirTea.steaEmail, Summary.sumScore, Summary.sumCheck) \
+    #     .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
+    pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
+        .filter(InternshipInfor.internCheck ==2 ) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
-                     InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
-                     InternshipInfor.opinion, InternshipInfor.icheckTime, SchDirTea.steaName, SchDirTea.steaDuty,
-                     SchDirTea.steaPhone, SchDirTea.steaEmail, Summary.sumScore, Summary.sumCheck) \
-        .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
+                     InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task,
+                     InternshipInfor.opinion, InternshipInfor.icheckTime, Summary.sumScore, Summary.sumCheck) \
+        .order_by(Summary.sumCheck, InternshipInfor.end.desc()).paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
     # 确定删除实习
     if request.method == "POST":
-        internId = request.form.getlist('approve[]')
-        for x in internId:
-            # 企业指导老师,日志,实习一同删除
-            temp_intern = InternshipInfor.query.filter_by(Id=x).first()
-            temp_comId = temp_intern.comId
-            temp_stuId = temp_intern.stuId
-            db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s' % (temp_stuId, temp_comId))
-            db.session.execute('delete from Summary where internId=%s' % x)
-            db.session.execute('delete from Journal where internId=%s' % x)
-            db.session.execute('delete from InternshipInfor where Id=%s' % x)
-            # 企业累计实习人数减一
-            db.session.execute('update ComInfor set students = students -1 where comId=%s' % temp_comId)
-        flash('删除成功')
-        return redirect(url_for('.stuSum_allDelete', page=pagination.page))
+        # 还需有[实习,日志] 删除权限
+        if True:
+            internId = request.form.getlist('approve[]')
+            for x in internId:
+                # 企业指导老师,日志,实习一同删除
+                temp_intern = InternshipInfor.query.filter_by(Id=x).first()
+                temp_comId = temp_intern.comId
+                temp_stuId = temp_intern.stuId
+                db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s' % (temp_stuId, temp_comId))
+                db.session.execute('delete from Summary where internId=%s' % x)
+                db.session.execute('delete from Journal where internId=%s' % x)
+                db.session.execute('delete from InternshipInfor where Id=%s' % x)
+                # 企业累计实习人数减一
+                db.session.execute('update ComInfor set students = students -1 where comId=%s' % temp_comId)
+            flash('删除成功')
+            return redirect(url_for('.stuSum_allDelete', page=pagination.page))
     return render_template('stuSum_allDelete.html', Permission=Permission, internlist=internlist,
-                           pagination=pagination, grade=grade, classes=classes, major=major, form=form)
+                               pagination=pagination, grade=grade, classes=classes, major=major, form=form)
 
 
 # 编辑实习分数
@@ -3419,7 +3420,6 @@ def xSumScoreEdit():
     internId = request.args.get('internId')
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
-    # path = os.path.join(os.path.abspath('.'), 'app/static/storage', internId, 'score_img')
     path = storage_cwd(internId, 'score_img')
     file_path = {}
     if os.path.exists(path):
