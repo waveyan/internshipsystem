@@ -50,16 +50,14 @@
     {% else %}
         <h1>学生实习总结与成果
     {% endif %}
-{% if current_user.can(Permission.STU_SUM_EDIT) %}
+                {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
     <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                 data-toggle="dropdown">编辑<span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
-            {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
                 <li><a href="{{ url_for('.update_intern_filter',flag=7) }}">批量审核</a></li>
                 <li><a href="{{ url_for('.update_intern_filter',flag=8) }}">批量删除</a></li>
-            {% endif %}
         </ul>
     </div>
 {% endif %}
