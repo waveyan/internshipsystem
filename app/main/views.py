@@ -67,7 +67,7 @@ def score():
 
 # -----------------------------统计----------------------------------------
 # 统计--地域统计图
-@main.route('/statistics_area_visual')
+@main.route('/statistics_area_visual', methods=['GET', 'POST'])
 def statistics_area_visual():
     comlist = []
     index = 0
@@ -86,7 +86,7 @@ def statistics_area_visual():
 
 
 # 统计--企业统计图
-@main.route('/statistics_com_visual')
+@main.route('/statistics_com_visual', methods=['GET', 'POST'])
 def statistics_com_visual():
     comlist = []
     index = 0
@@ -134,6 +134,7 @@ def statistics_area_rank():
 # 首页
 @main.route('/', methods=['GET', 'POST'])
 def index():
+    # return export_all()
     return render_template('index.html', Permission=Permission)
 
 
@@ -190,7 +191,8 @@ def stuInternList():
         if request.method == "POST" and current_user.can(Permission.STU_INTERN_EDIT):
             isexport = request.form.get('isexport')
             if isexport:
-                return excel_export(excel_export_intern, intern_org)
+                file_path = excel_export(excel_export_intern, intern_org)
+                return export_download(file_path)
         return render_template('stuInternList.html', internlist=internlist, Permission=Permission,
                                pagination=pagination, form=form, grade=grade, classes=classes, major=major)
     else:
@@ -397,7 +399,8 @@ def xIntern():
         if current_user.roleId == 0 or current_user.can(Permission.STU_INTERN_SEARCH):
             isexport = request.form.get('isexport')
             if isexport:
-                return excel_export(excel_export_intern, intern_excel)
+                file_path = excel_export(excel_export_intern, intern_excel)
+                return export_download(file_path)
     return render_template('xIntern.html', Permission=Permission, comInfor=comInfor,
                            schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student)
 
@@ -620,7 +623,8 @@ def interncompany():
     if request.method == "POST":
         isexport = request.form.get('isexport')
         if isexport:
-            return excel_export(excel_export_com, com.all())
+            file_path = excel_export(excel_export_com, com.all())
+            return export_download(file_path)
     return render_template('interncompany.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor, city=city)
 
@@ -1014,7 +1018,7 @@ def stuIntern_allCheck():
                     'update InternshipInfor set internCheck=2, icheckTime="%s", icheckTeaId="%s" where Id = %s' % (
                         checkTime, checkTeaId, x))
                 # 作消息提示
-                stuId = InternshipInfor.query.filter(Id=internId).first().stuId
+                stuId = InternshipInfor.query.filter_by(Id=x).first().stuId
                 db.session.execute('update Student set internCheck=1 where stuId=%s' % stuId)
                 # 若所选企业未被审核通过,且用户有审核权限,自动审核通过企业
                 comId = InternshipInfor.query.filter_by(Id=x).first().comId
@@ -1201,6 +1205,16 @@ def stuJournalList():
             .filter(InternshipInfor.internStatus == 2, InternshipInfor.internStatus != 0).group_by(InternshipInfor.Id).order_by(
             func.field(InternshipInfor.internStatus, 1, 2)).paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
+        # 批量导出实习excel表
+        if request.method == "POST" and current_user.can(Permission.STU_JOUR_EDIT):
+            isexport = request.form.get('isexport')
+            print ('1111', isexport)
+            if isexport:
+                internIdList = []
+                for x in internlist:
+                    internIdList.append(x.Id)
+                file_path = journal_export(internIdList)
+                return export_download(file_path)
         return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
                                pagination=pagination, grade=grade, major=major, classes=classes)
 
@@ -1230,6 +1244,13 @@ def xJournal():
     # journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
     comInfor = db.session.execute('select * from ComInfor where comId in( \
         select comId from InternshipInfor where Id=%s)' % internId).first()
+    # 导出日志
+    if request.method == "POST":
+        if current_user.roleId == 0 or current_user.can(Permission.STU_JOUR_SEARCH):
+            isexport = request.form.get('isexport')
+            if isexport:
+                file_path = journal_export([internId])
+                return export_download(file_path)
     if current_user.roleId == 0:
         return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
                                student=student, comInfor=comInfor, pagination=pagination, page=page, now=now)
@@ -1409,7 +1430,8 @@ def stuUserList():
     if request.method == "POST" and current_user.can(Permission.STU_INTERN_MANAGE):
         isexport = request.form.get('isexport')
         if isexport:
-            return excel_export(excel_export_stuUser, student)
+            file_path = excel_export(excel_export_stuUser, student)
+            return export_download(file_path)
     return render_template('stuUserList.html', pagination=pagination, form=form, Permission=Permission, student=student,
                            grade=grade, major=major, classes=classes)
 
@@ -1735,7 +1757,8 @@ def teaUserList():
     if request.method == "POST" and current_user.can(Permission.TEA_INFOR_MANAGE):
         isexport = request.form.get('isexport')
         if isexport:
-            return excel_export(excel_export_teaUser, teacher)
+            file_path = excel_export(excel_export_teaUser, teacher)
+            return export_download(file_path)
     return render_template('teaUserList.html', pagination=pagination, form=form, Permission=Permission,
                            teacher=teacher)
 
@@ -2632,6 +2655,13 @@ excel_import_com = {'企业名称': 'comName', '企业简介': 'comBrief', '地�
                     '联系人': 'comContact', '录入时间': 'comDate', '企业项目': 'comProject', '员工人数': 'comStaff', '电话': 'comPhone',
                     '邮箱': 'comEmail', '传真': 'comFax'}
 
+# 日志表
+# 实习详情
+excel_export_journal_internDetail =  OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comName', '企业名称'),('major','专业班级'), ('start','实习期间')))
+# 日志详情
+excel_export_journal_log =  OrderedDict((('weekNo','第N周'), ('workStart','工作时间'), ('mon','周一'), ('tue','周二'), ('wed','周三'), ('thu','周四'), ('fri','周五'), ('sat','周六'), ('sun','周日')))
+
+
 # 学生用户列表
 excel_export_stuUser = OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('sex', '性别'), ('institutes', '院系'),
                                     ('grade', '年级'), ('major', '专业'), ('classes', '班级')))
@@ -2646,6 +2676,7 @@ excel_import_teaUser = {'教工号': 'teaId', '姓名': 'teaName', '性别': 'te
 
 IMPORT_FOLDER = os.path.abspath('file_cache/xls_import')
 EXPORT_FOLDER = os.path.abspath('file_cache/xls_export')
+EXPORT_ALL_FOLDER = os.path.join(os.path.abspath('.'), 'file_cache/all_export')
 
 
 # 可加上成果的上传文件格式限制
@@ -2654,6 +2685,67 @@ EXPORT_FOLDER = os.path.abspath('file_cache/xls_export')
 
 def allowed_file(filename, secure_postfix):
     return '.' in filename and filename.rsplit('.', 1)[1] in secure_postfix
+
+# 下载导出文件
+def export_download(file_path):
+    template_dict = {'internlist':'实习信息导出表', 'comlist':'企业信息导出表', 'stuUserList':'学生用户信息导出表', 'teaUserList':'教师用户信息导出表', 'journalList':'日志记录导出表'}
+    file_name = os.path.basename(file_path)
+    index = file_name.split('_')[0]
+    if index in template_dict.keys():
+        file_attachname = template_dict[index] + '_%s.xls' % datetime.now().date()
+    # attachment_finaname为下载时,提供的默认文件名
+    return send_file(file_path, as_attachment=True, attachment_filename=file_attachname.encode('utf-8')) 
+
+
+# 导出日志表
+def journal_export(internIdList):
+    template_A = excel_export_journal_internDetail
+    template_B = excel_export_journal_log
+    wb = xlwt.Workbook()
+    ws = wb.add_sheet('Sheet 1', cell_overwrite_ok=True)
+    row = 0
+    for internId in internIdList:
+        intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(ComInfor, ComInfor.comId == InternshipInfor.comId).add_columns(InternshipInfor.stuId, InternshipInfor.start, InternshipInfor.end, Student.stuName, Student.major, Student.classes, ComInfor.comName).filter(InternshipInfor.Id == internId).first()
+        journal = Journal.query.filter(Journal.internId == internId).all()
+        # 实习详情, 一次写两行
+        for col, colname in zip(range(len(template_A)), template_A):
+            ws.write(row, col, template_A.get(colname))
+            if colname in ['stuId']:
+                ws.write(row+1, col, int(getattr(intern, colname)))
+            elif colname in ['stuName', 'comName']:
+                ws.write(row+1, col, str(getattr(intern, colname)))
+            elif colname in ['major']:
+                ws.write(row+1, col, ((getattr(intern, colname) + str(getattr(intern,'classes')) + '班')))
+            elif colname in ['start']:
+                ws.write(row+1, col, (str(getattr(intern, colname)) + ' 至 ' + str(getattr(intern,'end')) ))
+        # 空一行
+        row = row + 3
+        # 日志记录
+        for col, colname in zip(range(len(template_B)), template_B):
+            ws.write(row, col, template_B.get(colname))
+        for journal_temp in journal:
+            row = row + 1
+            for col, colname in zip(range(len(template_B)), template_B):
+                if colname in ['weekNo']:
+                    ws.write(row, col, int(getattr(journal_temp, colname)))
+                elif colname in ['workStart']:
+                    ws.write(row, col, (str(getattr(journal_temp, colname)) + ' 至 ' + str(getattr(journal_temp, 'workEnd'))))
+                else:
+                    ws.write(row, col, str(getattr(journal_temp, colname)))
+            # for journal_temp in journal:
+            #     row = row + 1
+            #     if colname in ['weekNo']:
+            #         ws.write(row, col, int(getattr(journal_temp, colname)))
+            #     elif colname in ['workStart']:
+            #         ws.write(row, col, (str(getattr(journal_temp, colname)) + ' 至 ' + str(getattr(journal_temp, 'workEnd'))))
+            #     else:
+            #         ws.write(row, col, str(getattr(journal_temp, colname)))
+        # 空两行
+        row = row + 3
+    file_name = 'journalList_export_%s' % random.randint(1,100)
+    file_path = os.path.join(EXPORT_FOLDER, file_name)
+    wb.save(file_path)
+    return file_path 
 
 
 # 导出Excel, 多个指导老师合并在一个单元格上
@@ -2698,6 +2790,7 @@ def multiDirTea_dict(tb_name):
                         'cteaPhone': multiDirTea_dict[x.stuId]['cteaPhone'] + '/%s' % x.cteaPhone \
                         }
         return multiDirTea_dict
+
 
 
 # 导出Excel
@@ -2768,21 +2861,79 @@ def excel_export(template, data):
                 ws.write(row + 1, cols_list.index('cteaEmail'), multiComTea[xdata.stuId]['cteaEmail'])
     # 每个模板最多保存100份导出临时文件
     if template == excel_export_intern:
-        file_name = 'internlist_export_%s.xls' % random.randint(1, 100)
-        file_attachname = '实习信息导出表_%s.xls' % datetime.now().date()
+        file_name = 'internlist_export_%s.xls' % random.randint(1, 99)
     elif template == excel_export_com:
-        file_name = 'comlist_export_%s.xls' % random.randint(1, 100)
-        file_attachname = '企业信息导出表_%s.xls' % datetime.now().date()
+        file_name = 'comlist_export_%s.xls' % random.randint(1, 99)
     elif template == excel_export_stuUser:
-        file_name = 'stuUserList_export_%s.xls' % random.randint(1, 100)
-        file_attachname = '学生用户信息导出表_%s.xls' % datetime.now().date()
+        file_name = 'stuUserList_export_%s.xls' % random.randint(1, 99)
     elif template == excel_export_teaUser:
-        file_name = 'teaUserList_export_%s.xls' % random.randint(1, 100)
-        file_attachname = '教师用户信息导出表_%s.xls' % datetime.now().date()
-    wb.save((os.path.join(EXPORT_FOLDER, file_name)))
-    # attachment_finaname为下载时,提供的默认文件名
-    return send_file(os.path.join(EXPORT_FOLDER, file_name), as_attachment=True,
-                     attachment_filename=file_attachname.encode('utf-8'))
+        file_name = 'teaUserList_export_%s.xls' % random.randint(1, 99)
+    file_path = os.path.join(EXPORT_FOLDER, file_name)
+    wb.save(file_path)
+    return file_path
+
+
+# 导出所有实习资料
+@update_intern_internStatus
+def export_all():
+    # 根目录
+    root_path = os.path.join(EXPORT_ALL_FOLDER, str(datetime.now().timestamp()))
+    root_path_2 = os.path.join(root_path, '实习管理系统批量导出_%s' % datetime.now().date())
+    file_list = []
+    intern_org = InternshipInfor.query.join(Student, Student.stuId==InternshipInfor.stuId) \
+        .join(ComInfor, ComInfor.comId==InternshipInfor.comId) \
+        .outerjoin(Teacher, Teacher.teaId==InternshipInfor.icheckTeaId) \
+        .filter(InternshipInfor.internStatus==2, InternshipInfor.internCheck==2) \
+        .add_columns(InternshipInfor.Id, InternshipInfor.stuId, InternshipInfor.internCheck, InternshipInfor.internStatus, InternshipInfor.start, InternshipInfor.end, InternshipInfor.task, InternshipInfor.opinion, InternshipInfor.icheckTime, Student.stuName, Student.grade, Student.major, ComInfor.comName, InternshipInfor.address, Teacher.teaName)
+    internlist = intern_org.all()
+    for intern in internlist:
+        x_grade = intern.grade
+        x_major = intern.major
+        x_stuName = intern.stuName
+        x_stuId = intern.stuId
+        x_comName = intern.comName
+        intern_path = excel_export(excel_export_intern, intern_org.filter(InternshipInfor.Id==intern.Id))
+        journal_path = journal_export([intern.Id])
+        storage_path = os.path.join(STORAGE_FOLDER, str(intern.Id))
+        path_group = {
+            'grade': str(x_grade),
+            'major': x_major,
+            'stuName': x_stuName,
+            'stuId': x_stuId,
+            'comName': x_comName,
+            'intern_path': intern_path,
+            'journal_path': journal_path,
+            'storage_path': storage_path
+        }
+        file_list.append(path_group)
+    # 建立文件
+    for x in file_list:
+        root_path_3 = os.path.join(root_path_2, x['grade'], x['major'], x['stuId']+'_'+x['stuName'], x['comName'])
+        print (root_path_3)
+        os.system('mkdir -p %s' % root_path_3)
+        os.system('cp -r %s/* %s %s %s' % (x['storage_path'], x['intern_path'], x['journal_path'], root_path_3))
+        # 更改中文名
+        os.system('mv %s/summary_doc %s/总结文档' % (root_path_3, root_path_3))
+        os.system('mv %s/attachment %s/附件' % (root_path_3, root_path_3))
+        os.system('mv %s/score_img/comscore %s/score_img/企业评分' % (root_path_3, root_path_3))
+        os.system('mv %s/score_img/schscore %s/score_img/校内评分' % (root_path_3, root_path_3))
+        os.system('mv %s/score_img %s/评分' % (root_path_3, root_path_3))
+        os.system('mv %s/internlist* %s/%s_实习信息.xls' % (root_path_3, root_path_3, x['comName']))
+        os.system('mv %s/journalList* %s/%s_实习日志.xls' % (root_path_3, root_path_3, x['comName']))
+    # 打包zip文件
+    zip_folder = os.path.basename(root_path_2)
+    zip_file = '%s.zip' % zip_folder
+    zip_path = os.path.join(root_path, zip_file)
+    os.system('cd %s; zip -0r %s %s' %(root_path, zip_file, zip_folder))
+    # return zip_path
+    file_attachname = os.path.basename(root_path_2)+'.zip'
+    return send_file(zip_path, as_attachment=True, attachment_filename=file_attachname.encode('utf-8')) 
+
+@main.route('/export_all_page', methods=['GET', 'POST'])
+def export_all_page():
+    if current_user.can(Permission.STU_INTERN_SEARCH) and current_user.can(Permission.STU_JOUR_SEARCH) and current_user.can(Permission.STU_SUM_SEARCH):
+        return export_all()
+
 
 
 # 导入Excel
@@ -2857,7 +3008,7 @@ def excel_importpage():
             flash('No selected file')
             return redirect('/')
         if file and allowed_file(file.filename, ['xls', 'xlsx']):
-            filename = '%s_import_%s.xls' % (from_url, random.randint(1, 100))
+            filename = '%s_import_%s.xls' % (from_url, random.randint(1, 99))
             file.save(os.path.join(IMPORT_FOLDER, filename))
             # 上传成功,开始导入
             try:
@@ -3060,7 +3211,7 @@ def pdf_postfix(file_name):
 # file为初始文件名, 非pdf
 def onlinePDF(internId, dest, file):
     if dest in ['summary_doc', 'attachment']:
-        if file.split('.')[-1] in ['xls', 'doc', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png']:
+        if file.split('.')[-1] in ['xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png']:
             pdf_file = pdf_postfix(file)
             storage_path = os.path.join(storage_cwd(internId, dest), file)
             pdf_path = os.path.join(pdf_cwd(internId, dest), pdf_file)

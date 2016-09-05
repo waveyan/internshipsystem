@@ -3,6 +3,7 @@
 
 {% block head %}
     {{ super() }}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link href="/static/CSS/bootstrap.min.css" rel="stylesheet">
@@ -125,6 +126,10 @@
                                     <li><a href="{{ url_for('main.update_intern_filter',flag=2) }}">实习工作日志</a></li>
                                     <li class="divider"></li>
                                     <li><a href="{{ url_for('main.update_intern_filter',flag=6) }}">工作总结和成果</a></li>
+                                    {% if current_user.can(Permission.STU_INTERN_SEARCH) and current_user.can(Permission.STU_JOUR_SEARCH) and current_user.can(Permission.STU_SUM_SEARCH) %}
+                                        <li class="divider"></li>
+                                        <li><a href="{{ url_for('main.export_all_page') }}">实习总资料批量导出</a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
                         {% endif %}

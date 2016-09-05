@@ -6,6 +6,7 @@ storage/
 app/static/storage
 onlinePDF/
 *.swf
+file_cache
 
 __pycache__/
 *.py[cod]

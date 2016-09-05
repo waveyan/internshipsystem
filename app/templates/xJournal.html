@@ -41,6 +41,10 @@
         </div>
     </div>
     </div>
+ <!--Excel导出-->
+    <form id="export_form" method="post">
+        <input type="hidden" name="isexport" value="1">
+    </form>
 
     <div class="page-`er">
     {% if current_user.roleId==0 %}
@@ -48,6 +52,7 @@
     {% else %}
         <h1>{{ student.stuName }}的实习日志
     {% endif %}
+
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                         data-toggle="dropdown">更多<span class="caret"></span>
@@ -59,6 +64,7 @@
                             <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
                             <li class="divider" />
                         {% endif %}
+                        <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">导出到Excel</a>
                         {% if current_user.roleId == 3 %}
                             <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
                             <li class="divider" />

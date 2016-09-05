@@ -30,6 +30,7 @@
     </script>
 {% endblock %}<!--先执行父模板-->
 
+
 {% block page_content %}
     {% if current_user.roleId == 0 %}
         <h1>{{ internlist[0].stuName }}的实习日志
@@ -45,12 +46,17 @@
                         <li><a href="{{ url_for('.update_intern_filter',flag=3) }}">批量审核</a></li>
                         <li><a href="{{ url_for('.update_intern_filter',flag=4) }}">批量删除</a></li>
                     {% endif %}
+                    <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出</a>
                 </ul>
             </div>
         {% endif %}
     {% endif %}
 {{ search.search(url_for('.journal_search',journal='journal'),form) }}
 </h1>
+<!--Excel导出-->
+<form id="export_form" method="post">
+    <input type="hidden" name="isexport" value="1">
+</form>
 {% if current_user.role.roleId!=0 %}
     {#    筛选项#}
     {{ filter.intern_filter('.stuJournalList',2,grade,major,classes) }}
