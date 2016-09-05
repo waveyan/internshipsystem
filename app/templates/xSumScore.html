@@ -30,16 +30,31 @@
 {% block page_content %}
 
     <div class="page-`er">
-        {% if current_user.roleId==0 %}
+        {% if current_user.roleId==0 and summary.sumCheck!=2%}
             <h1>我的实习评分
-        {% else %}
-            <h1>{{ student.stuName }}的实习评分
-        {% endif %}
-        <div class="btn-group">
+                  <div class="btn-group">
             <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
             </a>
         </div>
+        {% elif current_user.can(Permission.STU_SUM_EDIT) and summary.sumCheck!=2 %}
+            <h1>{{ student.stuName }}的实习评分
+                              <div class="btn-group">
+            <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
+            </a>
+            </div>
+        {% elif current_user.can(Permission.STU_SUM_SCO_CHECK)%}
+        <h1>{{ student.stuName }}的实习评分
+                              <div class="btn-group">
+            <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
+                <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
+            </a>
+            </div>
+        {% endif %}
+
+
+  </h1>
     </div><br>
 
     <table align="center" border="2" class="table-bordered">

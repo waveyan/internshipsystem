@@ -1534,26 +1534,31 @@ def editStudent():
             stu.stuId = form.stuId.data
             stu.stuName = form.stuName.data
             stu.sex = request.form.get('sex')
-            print(request.form)
+            i = 0
+            for name in request.form:
+                print(name)
+                if name.find('nteaId')!=-1:
+                    i=i+1
+            i=i+1
             stu.major = form.major.data
             stu.grade = form.grade.data
             stu.classes = form.classes.data
             db.session.add(stu)
-            i = 0
+            x=0
             while True:
-                i = i + 1
-                teaId = request.form.get('nteaId%s' % i)
+                x=x+1
+                teaId = request.form.get('nteaId%s' % x)
                 if teaId:
                     nschdirtea = SchDirTea(
                         teaId=teaId,
                         stuId=form.stuId.data,
-                        steaName=request.form.get('nteaName%s' % i),
-                        steaDuty=request.form.get('nteaDuty%s' % i),
-                        steaPhone=request.form.get('nteaPhone%s' % i),
-                        steaEmail=request.form.get('nteaEmail%s' % i)
+                        steaName=request.form.get('nteaName%s' % x),
+                        steaDuty=request.form.get('nteaDuty%s' % x),
+                        steaPhone=request.form.get('nteaPhone%s' % x),
+                        steaEmail=request.form.get('nteaEmail%s' % x)
                     )
                     db.session.add(nschdirtea)
-                else:
+                elif x==i:
                     break
                     # 添加新老师
             j = 0
