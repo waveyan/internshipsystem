@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}添加企业信息{% endblock %}
+{% block title %}添加学生信息{% endblock %}
 {% block head %}
     {{ super() }}
     <script>
@@ -66,7 +66,8 @@
                     {{ stuform.stuId.label }}{{ stuform.stuId(class="form-control",required='',placeholder="", pattern="[0-9]{12}",oninvalid="setCustomValidity('请输入正确的学号')",oninput="setCustomValidity('')") }}
                     {{ stuform.stuName.label }}{{ stuform.stuName(class="form-control",required='',placeholder="", pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
                     {{ stuform.sex.label }}{{ stuform.sex(class='form-control',default='男') }}
-                    {{ stuform.institutes.label }}{{ stuform.institutes(class='form-control',default='计算机学院') }}
+                    {{ stuform.institutes.label }}{{ stuform.institutes(class='form-control',default='计算机学院') }}        
+                    
                     {{ stuform.grade.label }}{{ stuform.grade(class="form-control",required='') }}
                     {{ stuform.major.label }}{{ stuform.major(class='form-control',required='') }}
                     {{ stuform.classes.label }}{{ stuform.classes(class='form-control',required='') }}

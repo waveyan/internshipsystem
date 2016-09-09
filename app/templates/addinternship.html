@@ -39,9 +39,10 @@
         });
     </script>
     <!-- bootstrap日期选择器 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
     <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
     <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
-    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+    
 {% endblock %}
 {% block page_content %}
     <div class="progress progress-striped active">
@@ -80,10 +81,8 @@
                         oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                 {{ iform.task.label }}{{ iform.task(class="form-control",required='',placeholder="请输入实习任务",
                         oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='',
-                        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
-                {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='',
-                        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
+                {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='') }}
+                {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='') }}
             </div>
             <br>
             <h3>企业指导老师信息</h3>
@@ -98,9 +97,6 @@
             <input type="button" id="addcTea" class="btn" value="添加老师">
             <input type="button" id="delcTea" class="btn" value="删除老师" style="display: none">
             </br></br></br>
-            <!--
-            <button type="submit" />
-            -->
             {{ iform.submit(class="btn btn-success",type="submit",id='finish') }}
         </form>
         <br><br>
@@ -115,7 +111,8 @@
                 autoclose: true,
                 todayBtn: 'linked',
                 todayHighlight: true,
-                minView: "month"
+                minView: "month",
+                position:'absoulte'
             });
         </script>
 {% endblock %}

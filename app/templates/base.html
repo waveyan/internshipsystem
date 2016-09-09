@@ -7,9 +7,10 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link href="/static/CSS/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/JS/bootstrap.min.js" rel="stylesheet">
-    <script src="/static/JS/jquery-2.1.4.min.js"></script>
-    <script src="/static/JS/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/JS/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/JS/bootstrap.min.js"></script>
+
+
     <style type="text/css">
         .dropdown-submenu {
             position: relative;
@@ -64,8 +65,6 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="/static/JS/bootstrap-datepicker.min.js"></script>
-    <script src="/static/JS/bootstrap-datepicker.zh-CN.min.js"></script>
 {% endblock %}
 
 {% block navbar %}
@@ -158,6 +157,8 @@
                                     {% if current_user.can(Permission.PERMIS_MANAGE) %}
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('main.roleList') }}">权限管理</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="{{ url_for('main.selectManage') }}">下拉框管理</a></li>
                                     {% endif %}
                                 </ul>
                             </li>

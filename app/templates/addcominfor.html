@@ -2,7 +2,27 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}添加企业信息{% endblock %}
-{% block head %}{{ super() }}{% endblock %}
+{% block head %}
+{{ super() }}
+<!-- 地区选择期 -->
+<link rel="stylesheet" rev="stylesheet" href="/static/CSS/jock-citypicker-2.0.min.css" type="text/css" />
+<script type="text/javascript" src="/static/JS/jock-citypicker-2.0.min.js"></script>
+<script type="text/javascript">
+window.onload = function(){
+    var a = document.getElementById("province");
+    a.onclick = function(){
+        citypicker.show({left: 75, top : 380}, function(data){
+            a.value = data;
+        });
+    };
+    // t.onclick=function(){
+    //     citypicker.close()
+
+    // };
+    
+}
+</script>
+{% endblock %}
 {% block page_content %}
     <div class="progress progress-striped active">
         <div class="progress-bar progress-bar-success" role="progressbar"
@@ -19,7 +39,8 @@
         <a href="{{ url_for('.selectCom') }}"><span class="label label-primary">从已有的企业信息中选择</span></a><br><br>
         {{ form.hidden_tag() }}
         {{ form.comName.label }} {{ form.comName(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comAddress.label }} {{ form.comAddress(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comProvince.label }} {{ form.comProvince(class="form-control", required="", placeholder="",id='province') }} <br>
+        {{ form.comAddress.label }} {{ form.comAddress(class="form-control", required="", placeholder="",id='test') }} <br>
         {{ form.comUrl.label }} {{ form.comUrl(class="form-control", required="", placeholder="") }} <br>
         {{ form.comBrief.label }} {{ form.comBrief(class="form-control", required="", placeholder="") }} <br>
         {{ form.comProject.label }} {{ form.comProject(class="form-control", required="", placeholder="") }} <br>

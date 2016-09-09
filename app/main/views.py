@@ -5,7 +5,7 @@ from .form import searchForm, comForm, internshipForm, journalForm, stuForm, tea
     comdirteaForm, xSumScoreForm
 from . import main
 from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, \
-    not_student_login, update_intern_internStatus, update_intern_jourCheck, Summary
+    not_student_login, update_intern_internStatus, update_intern_jourCheck, Summary,Major,Grade,Classes,update_grade_major_classes
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func, desc, and_, distinct
@@ -232,14 +232,14 @@ def addcominfor():
                                     comUrl=form.comUrl.data, comMon=form.comMon.data, comContact=form.comContact.data,
                                     comProject=form.comProject.data, comStaff=form.comStaff.data,
                                     comPhone=form.comPhone.data,
-                                    comEmail=form.comEmail.data, comFax=form.comFax.data, comCheck=2)
+                                    comEmail=form.comEmail.data, comProvince=form.comProvince.data,comFax=form.comFax.data, comCheck=2)
             else:
                 comInfor = ComInfor(comName=form.comName.data, comBrief=form.comBrief.data,
                                     comAddress=form.comAddress.data,
                                     comUrl=form.comUrl.data, comMon=form.comMon.data, comContact=form.comContact.data,
                                     comProject=form.comProject.data, comStaff=form.comStaff.data,
                                     comPhone=form.comPhone.data,
-                                    comEmail=form.comEmail.data, comFax=form.comFax.data)
+                                    comEmail=form.comEmail.data, comProvince=form.comProvince.data,comFax=form.comFax.data)
             print('true')
             db.session.add(comInfor)
             db.session.commit()
@@ -1109,7 +1109,7 @@ def stuJournal_allCheck():
                 'update Journal set jourCheck=1, jcheckTime="%s", jcheckTeaId=%s where internId=%s and workEnd<"%s"' % (
                     checkTime, checkTeaId, x, now))
             # 作消息提示
-            stuId = InternshipInfor.query.filter(Id=internId).first().stuId
+            stuId = InternshipInfor.query.filter_by(Id=x).first().stuId
             db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
         flash('日志审核成功')
         return redirect(url_for('.stuJournal_allCheck', page=pagination.page))
@@ -1477,7 +1477,9 @@ def addStudent():
     # 非管理员,不能进入
     if not current_user.can(Permission.STU_INTERN_MANAGE):
         return redirect('/')
+    # user=Teacher.query.filter_by(teaId=current_user.teaId).first()
     stuform = stuForm()
+    print('stuform',stuform.institutes)
     schdirteaform = schdirteaForm()
     if request.method == 'POST':
         stu = Student(
@@ -2081,7 +2083,7 @@ def create_com_filter(city, flag=True):
     try:
         if session.get('city') is not None:
             print('city:', session['city'])
-            com = ComInfor.query.filter_by(comAddress=session['city'])
+            com = ComInfor.query.filter_by(comProvince=session['city'])
 
             if session.get('name') is not None:
                 if session['name'] == 'desc':
@@ -2116,10 +2118,10 @@ def create_com_filter(city, flag=True):
                         print('status')
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
                 else:
                     com = com.filter_by(comCheck=2)
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
         elif session.get('name') is not None:
             if session['name'] == 'desc':
                 com = ComInfor.query.order_by(ComInfor.comName.desc())
@@ -2144,14 +2146,14 @@ def create_com_filter(city, flag=True):
                         com = com.filter_by(comCheck=0)
                         print('status')
             if session.get('city') is not None:
-                com = com.filter_by(comAddress=session['city'])
+                com = com.filter_by(comProvince=session['city'])
 
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
                 else:
                     com = com.filter_by(comCheck=2)
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
         elif session.get('students') is not None:
             if session['students'] == 'desc':
                 com = ComInfor.query.order_by(ComInfor.students.desc())
@@ -2176,14 +2178,14 @@ def create_com_filter(city, flag=True):
                         com = com.filter_by(comCheck=0)
                         print('status')
             if session.get('city') is not None:
-                com = com.filter_by(comAddress=session['city'])
+                com = com.filter_by(comProvince=session['city'])
 
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
                 else:
                     com = com.filter_by(comCheck=2)
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
         elif session.get('status') is not None:
             if flag:
                 if session['status'] == '2':
@@ -2209,34 +2211,34 @@ def create_com_filter(city, flag=True):
                 else:
                     com = com.order_by(ComInfor.students.asc())
             if session.get('city') is not None:
-                com = com.filter_by(comAddress=session['city'])
+                com = com.filter_by(comProvince=session['city'])
 
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
                 else:
                     com = com.filter_by(comCheck=2)
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
         else:
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
                     com = ComInfor.query.order_by(ComInfor.comDate.desc())
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
                     print('hi')
                 else:
                     com = ComInfor.query.filter_by(comCheck=2).order_by(ComInfor.comDate.desc())
-                    citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
             else:
                 com = ComInfor.query.filter(ComInfor.comCheck != 2).order_by(ComInfor.comDate.desc())
-                citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck!=2')
+                citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck!=2')
         if not flag:
             com = com.filter(ComInfor.comCheck != 2)
-            citys = db.session.execute('select DISTINCT comAddress from ComInfor WHERE comCheck!=2')
+            citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck!=2')
     except Exception as e:
         print('组合筛选：', e)
     # 生成筛选项
     for c in citys:
-        city[i] = c.comAddress
+        city[i] = c.comProvince
         i = i + 1
     return com
 
@@ -2400,11 +2402,11 @@ def create_intern_filter(grade, major, classes, flag):
         print('组合筛选：', e)
     # 生成筛选项
     grades = db.session.execute(
-        'select DISTINCT grade from Student s,InternshipInfor i where s.stuId=i.stuId order by grade')
+        'select DISTINCT grade from Grade order by grade desc')
     majors = db.session.execute(
-        'select DISTINCT major from Student s,InternshipInfor i where s.stuId=i.stuId order by classes')
+        'select DISTINCT major from Major')
     classess = db.session.execute(
-        'select DISTINCT classes from Student s,InternshipInfor i where s.stuId=i.stuId ORDER BY classes')
+        'select DISTINCT classes from Classes ORDER BY classes')
     for g in grades:
         grade[i] = g.grade
         i = i + 1
@@ -2614,9 +2616,9 @@ def create_stu_filter(grade, major, classes):
         else:
             stu = Student.query.order_by(Student.grade.asc())
 
-        grades = db.session.execute('select DISTINCT grade from Student')
-        majors = db.session.execute('select DISTINCT major from Student')
-        classess = db.session.execute('select DISTINCT classes from Student ORDER BY classes')
+        grades = db.session.execute('select DISTINCT grade from Grade order by grade desc')
+        majors = db.session.execute('select DISTINCT major from Major')
+        classess = db.session.execute('select DISTINCT classes from Classes ORDER BY classes')
     except Exception as e:
         print('组合筛选：', e)
     # 生成筛选项
@@ -3297,13 +3299,10 @@ def xSum():
     summary = request.args.get('summary')
     attach = request.args.get('attach')
     path = None
-    # if summary or attach:
-    # path = readOnline(summary, attach, internId)
     if summary:
         path = onlinePDF(internId, 'summary_doc', summary)
     elif attach:
         path = onlinePDF(internId, 'attachment', attach)
-    print(path)
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     now = datetime.now().date()
@@ -3600,7 +3599,7 @@ def stuSum_allDelete():
 
 # 编辑实习分数
 @main.route('/xSumScoreEdit', methods=['GET', 'POST'])
-# @not_student_login
+@not_student_login
 def xSumScoreEdit():
     form = xSumScoreForm()
     if current_user.roleId == 0:
@@ -3630,7 +3629,6 @@ def xSumScoreEdit():
             summary.sumScore = float(form.comScore.data) * 0.7 + float(form.schScore.data) * 0.3
             db.session.add(summary)
             paths = []
-            # paths.append(os.path.join(os.path.abspath('.'), 'app/static/score_img', internId, 'comscore'))
             paths.append(os.path.join(storage_cwd(internId, 'score_img'), 'comscore'))
             paths.append(paths[0].replace('comscore', 'schscore'))
             # mkdir
@@ -3657,3 +3655,58 @@ def xSumScoreEdit():
             return redirect(url_for('.xSumScoreEdit', internId=internId, stuId=stuId))
     return render_template('xSumScoreEdit.html', Permission=Permission, form=form, student=student,
                            internship=internship, comInfor=comInfor, summary=summary, file_path=file_path)
+# 下拉框管理
+@main.route('/selectManage',methods=['GET','POST'])
+@login_required
+@update_grade_major_classes
+def selectManage():
+    majors=Major.query.order_by(Major.major).all()
+    grades=Grade.query.order_by(Grade.grade).all()
+    classess=Classes.query.order_by(Classes.classes).all()
+    major=request.args.get('major')
+    classes=request.args.get('classes')
+    grade=request.args.get('grade')
+    try:
+        if major:
+            db.session.execute('delete from Major where major=%s'%major)
+            flash('删除专业成功！')
+            return redirect(url_for('.selectManage'))
+        if classes:
+            db.session.execute('delete from Classes where classes=%s'%classes)
+            flash('删除班级成功！')
+            return redirect(url_for('.selectManage'))
+        if grade:
+            db.session.execute('delete from Grade where grade=%s'%grade)
+            flash('删除年级成功！')            
+            return redirect(url_for('.selectManage'))
+    except Exception as e:
+        flash('删除失败,请重试')
+        print('删除年级，专业，班级：',e)
+        db.session.rollback()
+        return redirect(url_for('.selectManage'))
+    if request.method=='POST':
+        for x in request.form:
+            try:
+                if x=='major':
+                    major=Major(major=request.form.get('major'))
+                    db.session.add(major)
+                    db.session.commit()
+                    flash('添加专业成功！')
+                    return redirect(url_for('.selectManage'))
+                elif x=='grade':
+                    grade=Grade(grade=request.form.get('grade'))
+                    db.session.add(grade)
+                    db.session.commit()
+                    flash('添加年级成功！')
+                    return redirect(url_for('.selectManage'))
+                elif x=='classes':
+                    classes=Classes(classes=request.form.get('classes'))
+                    db.session.add(classes)
+                    db.session.commit()
+                    flash('添加班级成功！')
+                    return redirect(url_for('.selectManage'))
+            except Exception as e:
+                flash('添加失败，请重试！')
+                return redirect(url_for('.selectManage'))
+    return render_template('selectManage.html',Permission=Permission,majors=majors,grades=grades,classess=classess)
+
