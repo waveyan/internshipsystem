@@ -345,13 +345,19 @@ def addInternship():
             journal_init(internId)
             # 更新累计实习人数
             cominfor = ComInfor.query.filter_by(comId=comId).first()
-            # 初始化总结成果文件目录
+            # 初始化总结成果文件目录（会覆盖原有文件吗？）
+            print(STORAGE_FOLDER)
             subprocess.call('mkdir %s/%s' % (STORAGE_FOLDER, internId), shell=True)
+            subprocess.call('mkdir %s/%s/agreement' % (STORAGE_FOLDER, internId), shell=True)
             subprocess.call('mkdir %s/%s/attachment' % (STORAGE_FOLDER, internId), shell=True)
             subprocess.call('mkdir %s/%s/summary_doc' % (STORAGE_FOLDER, internId), shell=True)
             subprocess.call('mkdir %s/%s/score_img' % (STORAGE_FOLDER, internId), shell=True)
             subprocess.call('mkdir %s/%s/score_img/comscore' % (STORAGE_FOLDER, internId), shell=True)
             subprocess.call('mkdir %s/%s/score_img/schscore' % (STORAGE_FOLDER, internId), shell=True)
+            #上传协议书
+            if request.files.getlist('image'):
+                for i in request.files.getlist('image'):
+                    i.save('%s/%s/agreement/%s' % (STORAGE_FOLDER, internId,i.filename))
             if cominfor.students:
                 cominfor.students = int(cominfor.students) + 1
             else:
@@ -359,7 +365,7 @@ def addInternship():
             db.session.add(cominfor)
             db.session.commit()
             flash('提交实习信息成功！')
-            return redirect(url_for('.stuInternList'))
+            return redirect(url_for('.update_intern_filter',flag=5))
             # 初始化Summary表
             db.session.execute('insert into Sumamry set internId=%s' % internId)
     except Exception as e:
@@ -386,6 +392,12 @@ def xIntern():
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
     comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
+    #实习协议图片路径
+    path=[]
+    p=os.path.join(os.path.abspath('.'),"app/static/storage/%s/agreement"%internId)
+    if os.path.exists(p):
+        for x in os.listdir(p):
+            path.append(os.path.join(p[p.find('/static'):],x))
     # 导出实习excel表
     intern_excel = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(ComInfor,
                                                                                                     InternshipInfor.comId == ComInfor.comId).outerjoin(
@@ -402,7 +414,7 @@ def xIntern():
                 file_path = excel_export(excel_export_intern, intern_excel)
                 return export_download(file_path)
     return render_template('xIntern.html', Permission=Permission, comInfor=comInfor,
-                           schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student)
+                           schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student,path=path)
 
 
 # 审核通过实习信息
@@ -468,10 +480,33 @@ def xInternEdit():
     internform = internshipForm()
     schdirteaform = schdirteaForm()
     comdirteaform = comdirteaForm()
+    #图片路径
+    filePath=[]
+    imageName=[]
+    p=os.path.join(os.path.abspath('.'),"app/static/storage/%s/agreement"%internId)
+    if os.path.exists(p):
+        for x in os.listdir(p):
+            imageName.append(x)
+            filePath.append(os.path.join(p,x))
+    filename=request.args.get('filename')
+    #协议书删除
+    if filename:
+        for file in filePath:
+            if file.find(filename)!=-1:
+                os.remove(file)
+                flash('删除成功！')
+                return redirect(url_for('.xInternEdit',stuId=stuId,internId=internId))
+    if request.method=='POST':
+        #上传协议书
+        if request.files.getlist('image'):
+            for i in request.files.getlist('image'):
+                i.save('%s/%s/agreement/%s' % (STORAGE_FOLDER, internId,i.filename))
+        flash('上传成功！')
+        return redirect(url_for('.xInternEdit',stuId=stuId,internId=internId))
     return render_template('xInternEdit.html', Permission=Permission, comInfor=comInfor, schdirtea=schdirtea, \
                            comdirtea=comdirtea, internship=internship, student=student, stuform=stuform, \
                            comform=comform, \
-                           internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform)
+                           internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,imageName=imageName)
 
 
 # 修改实习信息 个人实习信息--实习岗位信息
@@ -961,6 +996,7 @@ def editcominfor():
     if request.method == 'POST':
         print(comform.comName.data)
         com.comName = comform.comName.data
+        com.comProvince=comform.comProvince.data
         com.comAddress = comform.comAddress.data
         com.comUrl = comform.comUrl.data
         com.comBrief = request.form.get('text')
@@ -1202,7 +1238,7 @@ def stuJournalList():
             .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id,
                          InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
                          InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-            .filter(InternshipInfor.internStatus == 2, InternshipInfor.internStatus != 0).group_by(InternshipInfor.Id).order_by(
+            .filter(InternshipInfor.internCheck == 2, InternshipInfor.internStatus != 0).group_by(InternshipInfor.Id).order_by(
             func.field(InternshipInfor.internStatus, 1, 2)).paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
         # 批量导出实习excel表
@@ -3327,8 +3363,10 @@ def xSum():
             return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
     else:
         flash('实习尚未结束, 请待实习结束后再查看实习总结和成果')
-        from_url = request.args.get('from_url')
-        return redirect(url_for('.%s' % from_url, internId=internId, stuId=student.stuId))
+        # from_url = request.args.get('from_url')
+        # return redirect(url_for('.%s' % from_url, internId=internId, stuId=student.stuId))
+        return redirect(url_for('.index'))
+
 
 
 # 学生个人实习总结与成果的"文件管理"!
@@ -3668,7 +3706,7 @@ def selectManage():
     grade=request.args.get('grade')
     try:
         if major:
-            db.session.execute('delete from Major where major=%s'%major)
+            db.session.execute("delete from Major where major='%s'"%major)
             flash('删除专业成功！')
             return redirect(url_for('.selectManage'))
         if classes:

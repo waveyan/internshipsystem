@@ -4,25 +4,15 @@
 
 {% block head %}
     {{ super() }}
-    {#    点击我进行放大#}
+    <!-- 图片预览 -->
+    <link rel="stylesheet" href="/static/CSS/bootstrap-grid.min.css">
+<link rel="stylesheet" href="/static/CSS/zoomify.min.css">
     <style>
-        .max {
-            width: 100%;
-            height: auto;
-        }
         .min {
             width: 200px;
             height: auto;
         }
     </style>
-    <script type="text/javascript">
-        $(function () {
-            $('img').click(function () {
-                $(this).toggleClass('min');
-                $(this).toggleClass('max');
-            });
-        });
-    </script>
 {% endblock %}<!--先执行父模板-->
 
 {% block title %}实习评分{% endblock %}
@@ -95,42 +85,32 @@
     </table>
     <p>*&nbsp&nbsp总分 = 企业总分*70% + 校内指导老师评分*30%
     <table>
-        <tr>
-            {% if 'comscore' in file_path.keys() %}
-                <th><a href="javascript:{}"
-                       onclick="document.getElementById('comscore_download').submit();">
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-floppy-save"></span> 企业评分表
-                    </button>
-                </a>
-                </th>
-            {% endif %}
-            <th></th>
-            {% if 'schscore' in file_path.keys() %}
-                <th><a href="javascript:{}"
+         <h3><b>照片核实</b>
+                     {% if 'schscore' in file_path.keys() %}
+                     <a href="javascript:{}"
                        onclick="document.getElementById('schscore_download').submit();">
-                    <button type="button" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-floppy-save"></span> 校内评分表
+                    <button type="button" class="btn btn-success btn-sm">
+                        <span class="glyphicon glyphicon-floppy-save"></span> 校内评分表下载
                     </button>
                 </a>
-                </th>
             {% endif %}
-        </tr>
-        <tr>
-            <h3><b>照片核实</b></h3>
+                        {% if 'comscore' in file_path.keys() %}<a href="javascript:{}"
+                       onclick="document.getElementById('comscore_download').submit();">
+                    <button type="button" class="btn btn-success btn-sm">
+                        <span class="glyphicon glyphicon-floppy-save"></span> 企业评分表下载
+                    </button>
+                </a>
+            {% endif %}</h3>
+        <div class="container row">
+        <div class="example">
             {% if 'comscore' in file_path.keys() %}
-                <td>
-                    <img id='img' class="min" src="{{ file_path['comscore'] }}" data-toggle="tooltip"
-                         title="点击我进行放大">
-                </td>
+                    <img id='img' class="img-rounded min" src="{{ file_path['comscore'] }}" >
             {% endif %}
-            <td width="10"></td>
-            {% if 'schscore' in file_path.keys() %}
-                <td>
-                    <img id='img' class="min" src="{{ file_path['schscore'] }}" data-toggle="tooltip"
-                         title="点击我进行放大">
-                </td>
+                    {% if 'schscore' in file_path.keys() %}
+                    <img id='img' class="img-rounded min" src="{{ file_path['schscore'] }}">
             {% endif %}
+        </div>
+        </div>
         </tr>
     </table>
     <br><br><br>
@@ -141,4 +121,9 @@
     <form id="comscore_download" method="post">
         <input type="hidden" name="file_path" value="{{ file_path['comscore'] }}">
     </form>
+    <!-- 图片展示 -->
+<script src="/static/JS/zoomify.min.js"></script>
+<script type="text/javascript">
+    $('.example img').zoomify();
+</script>
 {% endblock %}

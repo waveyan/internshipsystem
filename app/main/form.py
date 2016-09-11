@@ -50,6 +50,7 @@ class internshipForm(Form):
     address = StringField('实习地址', validators=[Required(message='此项不能为空')])
     start = DateTimeField('开始时间', format='%Y-%m-%d', validators=[Required()])
     end = DateTimeField('结束时间', format='%Y-%m-%d', validators=[Required(message='请按 年-月-日 的格式输入正确的日期')])
+    image = FileField()
     submit = SubmitField('提交')
 
 

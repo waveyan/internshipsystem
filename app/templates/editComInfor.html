@@ -15,6 +15,24 @@
             form.submit();
         }
     </script>
+    <!-- 地区选择期 -->
+<link rel="stylesheet" rev="stylesheet" href="/static/CSS/jock-citypicker-2.0.min.css" type="text/css" />
+<script type="text/javascript" src="/static/JS/jock-citypicker-2.0.min.js"></script>
+<script type="text/javascript">
+window.onload = function(){
+    var a = document.getElementById("province");
+    a.onclick = function(){
+        citypicker.show({left: 295, top : 220}, function(data){
+            a.value = data;
+        });
+    };
+    // t.onclick=function(){
+    //     citypicker.close()
+
+    // };
+    
+}
+</script>
 {% endblock %}
 {% block page_content %}
     <form method="post" class="form-horizontal" id="comform">
@@ -42,6 +60,11 @@
                 <th width="200">公司名称</th>
                 <td width="400" height="50"
                     colspan="3">{{ comform.comName( class="form-control",request='',value=com.comName) }}</td>
+            </tr>
+                        <tr>
+                <th>公司地址</th>
+                <td width="400" height="50"
+                    colspan="3">{{ comform.comProvince(class="form-control",request='',value=com.comProvince,id='province') }}</td>
             </tr>
             <tr>
                 <th>公司地址</th>

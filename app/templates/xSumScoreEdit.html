@@ -4,38 +4,6 @@
 
 {% block head %}
     {{ super() }}
-    <style type="text/css">
-        p {
-            white-space: pre-line;
-        }
-    </style>
-    {#    点击我进行放大#}
-    <style type="text/css">
-        p {
-            white-space: pre-line;
-        }
-    </style>
-    <style>
-        .max {
-            width: 100%;
-            height: auto;
-        }
-
-        .min {
-            width: 400px;
-            height: auto;
-        }
-    </style>
-    <script>
-        $(function () {
-            $('#img').click(function () {
-
-                $(this).toggleClass('min');
-                $(this).toggleClass('max');
-            });
-        });
-    </script>
-
 {% endblock %}<!--先执行父模板-->
 
 {% block title %}实习总结与成果{% endblock %}
@@ -124,5 +92,6 @@
         </form>
     {% endif %}
     <br><span class="label label-danger">注意</span>
+    <br>*&nbsp&nbsp校内外实习评分表只允许各上传一份，若要重新上传，请先删除原评分表
     <br>*&nbsp&nbsp请在纸质评分表上签名, 并拍照上传
 {% endblock %}
