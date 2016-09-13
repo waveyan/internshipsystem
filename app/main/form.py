@@ -2,6 +2,7 @@ from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField, TextAreaField, DateTimeField, SelectField, BooleanField, DateField, \
     validators, FileField
 from wtforms.validators import Required, URL, Email
+from .. import db
 
 # datepicker failed
 '''
@@ -30,7 +31,8 @@ class searchForm(Form):
 
 class comForm(Form):
     comName = StringField('公司名称', validators=[Required(message='此项不能为空')], id='task')
-    comAddress = StringField('公司地址', validators=[Required(message='此项不能为空')])
+    comProvince=StringField('公司所在城市',validators=[Required(message='此项不能为空')])
+    comAddress = StringField('公司详细地址', validators=[Required(message='此项不能为空')])
     comUrl = StringField('公司网址', validators=[Required(message='此项不能为空'), URL(message='请输入正确的URL')])
     comBrief = TextAreaField('公司简介')
     comProject = TextAreaField('营业项目', validators=[Required(message='此项不能为空')])
@@ -48,6 +50,7 @@ class internshipForm(Form):
     address = StringField('实习地址', validators=[Required(message='此项不能为空')])
     start = DateTimeField('开始时间', format='%Y-%m-%d', validators=[Required()])
     end = DateTimeField('结束时间', format='%Y-%m-%d', validators=[Required(message='请按 年-月-日 的格式输入正确的日期')])
+    image = FileField()
     submit = SubmitField('提交')
 
 
@@ -100,11 +103,18 @@ class stuForm(Form):
     stuName = StringField('姓名', validators=[Required(message='此项不能为空')])
     sex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='男')
     institutes = StringField('学院', default='计算机与网络安全学院', validators=[Required(message='此项不能为空')])
-    # institutes = StringField('学院', default='计算机学院', validators=[Required(message='此项不能为空')])
-    grade = StringField('年级', validators=[Required(message='此项不能为空')])
-    major = StringField('专业', validators=[Required(message='此项不能为空')])
-    classes = StringField('班级', validators=[Required(message='此项不能为空')])
+    grade = SelectField('年级', coerce=str)
+    major = SelectField('专业', coerce=str)
+    classes = SelectField('班级', coerce=str)
     submit = SubmitField('提交')
+
+    #初始化下拉框
+    def __init__(self):
+        super(stuForm,self).__init__()
+        self.grade.choices=[(x.grade,x.grade)for x in db.session.execute('Select distinct grade from Grade order by grade desc')]
+        self.major.choices=[(x.major,x.major)for x in db.session.execute('Select distinct major from Major')]
+        self.classes.choices=[(x.classes,x.classes)for x in db.session.execute('Select distinct classes from Classes order by classes')]
+        # self.user=user
 
 
 class teaForm(Form):

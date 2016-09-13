@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}添加学生实习信息{% endblock %}
 {% block head %}
@@ -39,9 +38,13 @@
         });
     </script>
     <!-- bootstrap日期选择器 -->
-    <script type="text/javascript" src="/static/JS/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
-    <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/datetimepicker.min.js" charset="UTF-8"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+     <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <!-- 文件上传 -->
+        <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
+    <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
+<!--     <script type="text/javascript" src="/static/JS/locales/fileinput_locale_zh.js"></script> -->
 {% endblock %}
 {% block page_content %}
     <div class="progress progress-striped active">
@@ -65,7 +68,7 @@
             </br></br>
         </div>
 
-        <form method="POST" role="form" id="S1">
+        <form method="POST" role="form" id="S1" enctype="multipart/form-data" >
             {% if current_user.roleId != 0 %}
                 <h3>学生信息</h3>
                 <div>
@@ -80,10 +83,8 @@
                         oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                 {{ iform.task.label }}{{ iform.task(class="form-control",required='',placeholder="请输入实习任务",
                         oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='',
-                        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
-                {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='',
-                        pattern="^\d{4}-\d{1,2}-\d{1,2}$",oninvalid="setCustomValidity('请输入正确的时间')",oninput="setCustomValidity('')") }}
+                {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='',placeholder="请输入开始时间，如：2016-10-10") }}
+                {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='', placeholder="请输入结束时间，如：2016-11-11") }}
             </div>
             <br>
             <h3>企业指导老师信息</h3>
@@ -97,14 +98,16 @@
             </div>
             <input type="button" id="addcTea" class="btn" value="添加老师">
             <input type="button" id="delcTea" class="btn" value="删除老师" style="display: none">
-            </br></br></br>
-            <!--
-            <button type="submit" />
-            -->
+            </br></br>
+            <h3>实践协议书</h3>
+            <input id="file-1" type="file" class="file" multiple=""  name="image" data-overwrite-initial="false" data-min-file-count="1"><h5><small>仅支持jpe、png、gif格式图片上传</small></h5>
+            </br></br>
             {{ iform.submit(class="btn btn-success",type="submit",id='finish') }}
         </form>
-        <br><br>
 
+        <br><br>
+{% endblock %}
+{% block scripts %}
         <!-- bootstrap日期选择器 -->
         <script type="text/javascript">
             $('.datetimepicker').datetimepicker({
@@ -115,7 +118,17 @@
                 autoclose: true,
                 todayBtn: 'linked',
                 todayHighlight: true,
-                minView: "month"
+                minView: "month",
             });
         </script>
+            <script type="text/javascript">
+            $('#uploadImage').fileinput({
+                language: 'en', //设置语言
+                allowedFileExtensions : ['jpg', 'png','gif'],//接收的文件后缀,
+                maxFileCount: 100,
+                showUpload: false, //是否显示上传按钮
+                showCaption: false,//是否显示标题
+                browseClass: "btn btn-primary", //按钮样式             
+            });
+</script>
 {% endblock %}

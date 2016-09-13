@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}实习总结与成果{% endblock %}
+
+{% block head %}
+{{  super() }}
+<style> 
+    /* Custom Styles */ 
+    ul.nav-tabs{ 
+        width: 140px; 
+        margin-top: 20px; 
+        border-radius: 4px; 
+        border: 1px solid #ddd; 
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067); 
+    } 
+    ul.nav-tabs li{ 
+        margin: 0; 
+        border-top: 1px solid #ddd; 
+    } 
+    ul.nav-tabs li:first-child{ 
+        border-top: none; 
+    } 
+    ul.nav-tabs li a{ 
+        margin: 0; 
+        padding: 8px 16px; 
+        border-radius: 0; 
+    } 
+    ul.nav-tabs li.active a, ul.nav-tabs li.active a:hover{ 
+        color: #fff; 
+        background: #0088cc; 
+        border: 1px solid #0088cc; 
+    } 
+    ul.nav-tabs li:first-child a{ 
+        border-radius: 4px 4px 0 0; 
+    } 
+    ul.nav-tabs li:last-child a{ 
+        border-radius: 0 0 4px 4px; 
+    } 
+    ul.nav-tabs.affix{ 
+        top: 30px; /* Set the top position of pinned element */ 
+    } 
+</style> 
+{% endblock %}
+
+{% block page_content %}
+<body data-spy="scroll" data-target="#myScrollspy"> 
+<div class="container"> 
+<div class="page-header"> 
+        <h1>欢迎你！在这里你可以设置专业、年级、班级。</h1> 
+    </div> 
+    <div class="row"> 
+        <div class="col-xs-3" id="myScrollspy"> 
+            <ul class="nav nav-tabs nav-stacked" data-spy="affix" data-offset-top="125"> 
+                <li class="active"><a href="#section-1">年级设置</a></li> 
+                <li><a href="#section-2">专业设置</a></li> 
+                <li><a href="#section-3">班级设置</a></li> 
+                </ul> 
+        </div>
+        <div class="col-xs-9">  
+
+<div class="col-xs-9">  
+<table class="table"> 
+    <h3 id="section-1">现有年级：</h3>
+    <thead> 
+        <tr> 
+            <th>年级</th> 
+            <th>操作</th> 
+        </tr> 
+    </thead> 
+    <tbody> 
+    {% for grade in grades %}
+        <tr> 
+            <td>{{ grade.grade }}级</td> 
+            <td><a href="{{ url_for('.selectManage',grade=grade.grade) }}">删除</a></td> 
+        </tr>
+{% endfor %}
+    </tbody> 
+</table>
+</div>
+	<form class="bs-example bs-example-form" role="form" action="/selectManage" method="POST">
+			<div class="col-lg-6">
+				<div class="input-group">
+				<!-- button不能用 -->
+					<input name="grade" type="text" class="form-control" placeholder="请输入年级，如：2014" required="">
+					<span class="input-group-btn">
+						<input class="rearchSubmit btn btn-primary" type="submit" value="添加年级">
+					</span>
+				</div><!-- /input-group -->
+			</div><!-- /.col-lg-6 -->
+	</form>
+	        
+
+
+
+<hr>
+<!-- <div class="col-xs-9">   -->
+<div class="col-xs-9">
+<table class="table"> 
+<h4>&nbsp;</h4>
+<h4>&nbsp;</h4>
+    <h3 id="section-2">现有专业：</h3>
+    <thead> 
+        <tr> 
+            <th>专业</th> 
+            <th>操作</th> 
+        </tr> 
+    </thead> 
+    <tbody> 
+    {% for major in majors %}
+        <tr> 
+            <td>{{ major.major }}</td> 
+            <td><a href="{{ url_for('.selectManage',major=major.major) }}">删除</a></td> 
+        </tr>
+{% endfor %}
+
+    </tbody> 
+</table>
+</div>
+	<form class="bs-example bs-example-form" role="form" action="/selectManage" method="POST">
+			<div class="col-lg-6">
+				<div class="input-group">
+					<input name="major" type="text" class="form-control" placeholder="请输入专业，如：计算机科学与技术" required="">
+					<span class="input-group-btn">
+						<input class="rearchSubmit btn btn-primary" type="submit" value="添加专业">
+					</span>
+				</div><!-- /input-group -->
+			</div><!-- /.col-lg-6 -->
+		<!-- </div>/.row -->
+	</form>
+	<!-- </div> -->
+	<h2 id="section-2"></h2>
+
+<hr>
+ <!-- <div class="col-xs-9"> -->
+        <div class="col-xs-9">
+<table class="table"> 
+<h4>&nbsp;</h4>
+<h4>&nbsp;</h4>
+    <h3 id="section-3">现有班级：</h3>
+    <thead> 
+        <tr> 
+            <th>班级</th> 
+            <th>操作</th> 
+        </tr> 
+    </thead> 
+    <tbody> 
+    {% for classes in classess %}
+        <tr> 
+            <td>{{ classes.classes }}班</td> 
+            <td><a href="{{ url_for('.selectManage',classes=classes.classes) }}">删除</a></td> 
+        </tr>
+{% endfor %}
+
+    </tbody> 
+</table>
+</div>
+<!--         /*<div style="padding: 100px 100px 10px;">*/ -->
+	<form class="bs-example bs-example-form" role="form" action="/selectManage" method="POST">
+			<div class="col-lg-6">
+				<div class="input-group">
+					<input name="classes" type="text" class="form-control" placeholder="请输入班级，如：1" required="">
+					<span class="input-group-btn">
+						<input class="rearchSubmit btn btn-primary" type="submit" value="添加班级">
+					</span>
+				</div><!-- /input-group -->
+
+			</div><!-- /.col-lg-6 -->
+	</form>
+	<h2 id="section-3"></h2>
+
+</div>
+</div>
+</div>
+<br>
+<br>
+</body>
+{% endblock %}

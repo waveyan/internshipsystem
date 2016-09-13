@@ -3,6 +3,7 @@ from flask.ext.login import UserMixin
 from . import login_manager
 from datetime import datetime
 
+
 # 装饰器not_student_login 所需要的模块
 from functools import wraps
 from flask import _request_ctx_stack, abort, current_app, flash, redirect, request, session, url_for, \
@@ -51,6 +52,33 @@ def update_intern_jourCheck(func):
         return func(*args, **kwargs)
 
     return decorated_view
+
+#装饰器：更新grade，major，classes表
+def update_grade_major_classes(func):
+    @wraps(func)
+    def decorator(*args,**kwargs):
+        grades=db.session.execute('Select distinct grade from Student')
+        majors=db.session.execute('Select distinct major from Student')
+        classess=db.session.execute('Select distinct classes from Student')
+        try:
+            for grade in grades:
+                if Grade.query.filter_by(grade=grade.grade).count()==0:
+                    g=Grade(grade=grade.grade)
+                    db.session.add(g)
+            for classes in classess:
+                if Classes.query.filter_by(classes=classes.classes).count()==0:
+                    c=Classes(classes=classes.classes)
+                    db.session.add(c)
+            for major in majors:
+                if Major.query.filter_by(major=major.major).count()==0:
+                    m=Major(major=major.major)
+                    db.session.add(m)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print('更新年级，班级，专业：',e)
+        return func(*args, **kwargs)
+    return decorator
 
 
 @login_manager.user_loader
@@ -179,6 +207,7 @@ class ComInfor(db.Model):
     comId = db.Column(db.Integer, primary_key=True)
     comName = db.Column(db.String(20))
     comBrief = db.Column(db.String(200))
+    comProvince=db.Column(db.String(20))
     comAddress = db.Column(db.String(100))
     comUrl = db.Column(db.String(50))
     comMon = db.Column(db.String(10))
@@ -310,6 +339,18 @@ class Journal(db.Model):
     isoweek = db.Column(db.Integer)
     isoyear = db.Column(db.Integer)
 
+class Grade(db.Model):
+    __tablename__='Grade'
+    grade=db.Column(db.Integer,primary_key=True)
+
+class Major(db.Model):
+    __tablename__='Major'
+    major=db.Column(db.String(20),primary_key=True)
+
+class Classes(db.Model):
+    __tablename__='Classes'
+    classes=db.Column(db.Integer,primary_key=True)
+
 
 class Permission:
     # 企业信息查询
@@ -351,3 +392,4 @@ class Permission:
     TEA_INFOR_MANAGE = 0X0020000
     # 权限管理
     PERMIS_MANAGE = 0X0040000
+

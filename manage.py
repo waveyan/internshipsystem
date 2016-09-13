@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import Teacher, Role, Student, ComInfor, Journal, InternshipInfor, ComDirTea, SchDirTea, Summary
+from app.models import Teacher, Role, Student, ComInfor, Journal, InternshipInfor, ComDirTea, SchDirTea, Summary,Major
 from flask.ext.script import Manager, Shell, Server
 from flask.ext.migrate import Migrate, MigrateCommand
 
@@ -13,7 +13,7 @@ migrate = Migrate(app, db)
 def make_shell_context():
     return dict(app=app, db=db, Teacher=Teacher, Role=Role, Student=Student, ComInfor=ComInfor,
                 InternshipInfor=InternshipInfor, Journal=Journal, ComDirTea=ComDirTea, SchDirTea=SchDirTea,
-                Summary=Summary)
+                Summary=Summary,Major=Major)
 
 
 manager.add_command("shell", Shell(make_context=make_shell_context))

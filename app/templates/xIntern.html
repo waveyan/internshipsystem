@@ -4,13 +4,20 @@
 {% block title %}个人实习信息{% endblock %}
 {% block head %}
     {{ super() }}
+    <!-- 图片预览 -->
+    <link rel="stylesheet" href="/static/CSS/bootstrap-grid.min.css">
+<link rel="stylesheet" href="/static/CSS/zoomify.min.css">
+    <style>
+        .min {
+            width: 200px;
+            height: auto;
+        }
+    </style>
     <style type="text/css">
         p {
             white-space: pre-line;
         }
     </style>
-
-
     <!-- 确认请求窗口 -->
     <script type="text/javascript">
         function ComfirmDelete() {
@@ -242,6 +249,7 @@
         <tr>
             <td width="200" colspan="6" height="50">四、实习指导老师</td>
         </tr>
+        </table>
         <table align="center" border="2" class="table-bordered">
             <tr>
                 <th height="50" colspan="6">企业老师</th>
@@ -285,12 +293,30 @@
                     </tr>
                 {% endif %}
             {% endfor %}
+            {% if path %}        
+        <tr>
+            <td width="200" colspan="6" height="50">四、实习协议书</td>
+        </tr>
+        {%endif%}
+        </table>
+        <table align="center" border="2" class="table-bordered">
+        <tr>
+        <div class="container row">
+        <div class="example">
+       {% for p in path %}       
+                <img src="{{p}}" class="img-rounded min" alt="">
+        {% endfor %}
+        </div>
+        </div>
+    </tr>
+        </table>
+        <table align="center" border="2" class="table-bordered">
             <tr>
                 <td width="200" colspan="6" height="50">五、审核意见</td>
             </tr>
             <tr>
                 <th width="200">专业意见</th>
-                <td height="200" colspan="5">
+                <td height="200" width="1000">
                     {% if internship.opinion %}
                         <p>{{ internship.opinion }}</p>
                     {% else %}
@@ -299,10 +325,14 @@
                 </td>
             </tr>
         </table>
-    </table>
     <br>
     <br><a href="{{ url_for('.stuInternList') }}">
     <div class="btn btn-primary">返回</div>
 </a>
+<!-- 图片展示 -->
+<script src="/static/JS/zoomify.min.js"></script>
+<script type="text/javascript">
+    $('.example img').zoomify();
+</script>
 {% endblock %}
 
