@@ -159,7 +159,8 @@ class Student(db.Model, UserMixin):
             student = Student(
                 stuId=randint(201300000000, 201600000000),
                 stuName=forgery_py.internet.user_name(True),
-                institutes='计算机学院',
+                institutes='计算机与网络安全学院',
+                # institutes='计算机学院',
                 major=choice(['计算机科学与技术', '网络工程', '软件工程', '信息科学与技术']),
                 grade=choice([2013, 2014, 2015, 2016]),
                 classes=randint(1, 10),

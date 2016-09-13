@@ -8,5 +8,11 @@
       <p><input type=file name=file value="选择文件"><br>
          <input type=submit value="上传">
     </form>
+
+    <!-- 提供下载的form -->
+    <form id="temp" method="post">
+        <input type="hidden" name="import_template_download" value="1">
+    </form>
+    <br><a href="javascript:{}" onclick="document.getElementById('temp').submit();">模板下载</a>
 {% endblock %}
 

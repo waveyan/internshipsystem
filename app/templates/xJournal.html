@@ -10,6 +10,12 @@
             $('#deleteToggle').modal();
         }
     </script>
+    <!-- 确认导入窗口 -->
+    <script type="text/javascript">
+        function ComfirmImport() {
+            $('#importToggle').modal();
+        }
+    </script>
     <style type="text/css">
     p {white-space: pre-line;}
     </style>
@@ -41,6 +47,23 @@
         </div>
     </div>
     </div>
+      <!-- 导入确认窗口 -->
+    <div class="modal fade" id="importToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-body">
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">将要导入当前日期及其之前的日志, 部分日志可能会被覆盖, 是否仍要继续</h4>
+            </div>
+            <div class="modal-footer">
+                <a href="{{ url_for('.excel_importpage', from_url='xJournal', internId=internship.Id) }}"><button class="btn btn-primary">继续</button></a>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+    </div>
  <!--Excel导出-->
     <form id="export_form" method="post">
         <input type="hidden" name="isexport" value="1">
@@ -61,8 +84,11 @@
                     {% for jour in journal %}
                         <!-- 最多只能编辑当前周的日志 -->
                         {% if current_user.roleId == 0 and jour.jourCheck == 0 and jour.workStart <= now %}
-                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
-                            <li class="divider" />
+                            <li><a onClick="ComfirmImport()">导入</a></li>
+                            {% if jour.workStart <= now %}
+                                <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
+                                <li class="divider" />
+                            {% endif %}
                         {% endif %}
                         <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">导出到Excel</a>
                         {% if current_user.roleId == 3 %}
@@ -75,8 +101,8 @@
                     <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
                     <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId, from_url='xJournal') }}">实习总结与成果</a></li>
                 </ul>
-            </div>
-        </h1>
+            </div
+>        </h1>
 
     <!-- 日志总体审核情况 -->
     {% if internship.jourCheck == 0 %}

@@ -4,8 +4,10 @@
 {% block head %}
     {{ super() }}
     <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+<!--     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"> -->
     <link href="/static/CSS/bootstrap.min.css" rel="stylesheet">
     <link href="/static/JS/bootstrap.min.js" rel="stylesheet">
     <script src="/static/JS/jquery-2.1.4.min.js"></script>
@@ -84,7 +86,7 @@
                 <ul class="nav navbar-nav">
                     {% if current_user.is_authenticated %}
                         {% if current_user.can(Permission.INTERNCOMPANY_LIST) %}
-                            <li><a href="{{ url_for('main.update_filter') }}">企业实习情况</a></li>
+                            <li><a href="{{ url_for('main.update_filter') }}">实习企业情况</a></li>
                         {% endif %}
                         <li><a href="{{ url_for('main.statistics_area_visual') }}">统计</a></li>
                         {% if current_user.roleId==0 %}
