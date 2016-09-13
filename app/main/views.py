@@ -2492,6 +2492,7 @@ def summary_init(internId):
     os.system('mkdir %s/%s/attachment' % (STORAGE_FOLDER, internId))
     os.system('mkdir %s/%s/summary_doc' % (STORAGE_FOLDER, internId))
     os.system('mkdir %s/%s/score_img' % (STORAGE_FOLDER, internId))
+    os.system('mkdir %s/%s/agreement' % (STORAGE_FOLDER, internId))
     os.system('mkdir %s/%s/score_img/comscore' % (STORAGE_FOLDER, internId))
     os.system('mkdir %s/%s/score_img/schscore' % (STORAGE_FOLDER, internId))
     return 1
