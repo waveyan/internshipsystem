@@ -5,64 +5,15 @@ from .form import searchForm, comForm, internshipForm, journalForm, stuForm, tea
     comdirteaForm, xSumScoreForm
 from . import main
 from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, \
-    not_student_login, update_intern_internStatus, update_intern_jourCheck, Summary,Major,Grade,Classes,update_grade_major_classes
+    not_student_login, update_intern_internStatus, update_intern_jourCheck, Summary,Major,Grade,Classes,update_grade_major_classes,Visit,Visit_Intern
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func, desc, and_, distinct
 from datetime import datetime, timedelta, date
-import xlwt, xlrd, os, random, subprocess, re
+import xlwt, xlrd, os, random, subprocess, re,shutil
 from collections import OrderedDict
 from werkzeug.utils import secure_filename
 
-# datepicker failed
-'''
-from flask_wtf import Form
-
-@main.route('/test', methods=['GET','POST'] )
-def hello_world():
-    form = ExampleForm()
-    if form.validate_on_submit():
-        return form.dt.data.strftime('%Y-%m-%d')
-    return render_template('example.html')
-'''
-
-
-# @main.route('/search', methods=['GET', 'POST'])
-# def search():
-#     form = searchForm()
-#     if form.validate_on_submit():
-#         print('assa')
-#     print(form.key.data)
-#     return render_template('index.html', form=form, Permission=Permission)
-
-
-@main.route('/students', methods=['GET', 'POST'])
-def students():
-    form = searchForm()
-    return render_template('students.html', form=form, Permission=Permission)
-
-
-# 实习提交表
-@main.route('/stuinfor', methods=['GET', 'POST'])
-def stuinfor():
-    return render_template('stuinfor.html', Permission=Permission)
-
-
-@main.route('/journal', methods=['GET', 'POST'])
-def journal():
-    return render_template('journal.html', Permission=Permission)
-
-
-@main.route('/summary', methods=['GET', 'POST'])
-def summary():
-    p = '/static/Flexpaper/docs/22.swf'
-    return render_template('summary.html', Permission=Permission, p=p)
-
-
-# 评分表
-@main.route('/score', methods=['GET', 'POST'])
-def score():
-    return render_template('score.html', Permission=Permission)
 
 
 # -----------------------------统计----------------------------------------
@@ -402,6 +353,7 @@ def xIntern():
     if os.path.exists(p):
         for x in os.listdir(p):
             path.append(os.path.join(p[p.find('/static'):],x))
+    print('33333333333333333',x)
     # 导出实习excel表
     intern_excel = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(ComInfor,
                                                                                                     InternshipInfor.comId == ComInfor.comId).outerjoin(
@@ -1505,6 +1457,7 @@ def stuUserList():
 
 
 # 学生用户信息的筛选项操作,对所选筛选项进行删除,flag=1批量设置
+#flag=0批量删除，flag=2学生基本信息，else列表探访记录选择学生
 @main.route('/update_stu_filter', methods=['GET', 'POST'])
 @login_required
 def update_stu_filter():
@@ -1534,8 +1487,10 @@ def update_stu_filter():
         return redirect(url_for('.allStuSet'))
     elif flag == '0':
         return redirect(url_for('.allStuDelete'))
-    else:
+    elif flag=='2':
         return redirect(url_for('.stuUserList'))
+    else:
+        return redirect(url_for('.selectStudent'))
 
 
 # 添加学生用户
@@ -2020,6 +1975,10 @@ def addRole():
             a = eval(form.TEA_INFOR_MANAGE.description) | a
         if form.PERMIS_MANAGE.data:
             a = eval(form.PERMIS_MANAGE.description) | a
+        if form.SELECT_MANAGE.data:
+            a = eval(form.SELECT_MANAGE.description) | a
+        if form.UPLOAD_VISIT.data:
+            a = eval(form.UPLOAD_VISIT.description) | a
         per = hex(a)
         # print(per)
         # describe = ''.join(p)
@@ -2103,6 +2062,10 @@ def editRole():
             a = eval(form.TEA_INFOR_MANAGE.description) | a
         if form.PERMIS_MANAGE.data:
             a = eval(form.PERMIS_MANAGE.description) | a
+        if form.SELECT_MANAGE.data:
+            a = eval(form.SELECT_MANAGE.description) | a
+        if form.UPLOAD_VISIT.data:
+            a = eval(form.UPLOAD_VISIT.description) | a
         per = hex(a)
         role.roleName = form.roleName.data
         role.roleDescribe = request.form.get('roleDescribe')
@@ -2489,6 +2452,7 @@ def summary_init(internId):
     db.session.execute('insert into Summary set internId=%s' % internId)
     # 初始化总结成果文件目录
     os.system('mkdir %s/%s' % (STORAGE_FOLDER, internId))
+    os.system('mkdir %s/visit' % (STORAGE_FOLDER))
     os.system('mkdir %s/%s/attachment' % (STORAGE_FOLDER, internId))
     os.system('mkdir %s/%s/summary_doc' % (STORAGE_FOLDER, internId))
     os.system('mkdir %s/%s/score_img' % (STORAGE_FOLDER, internId))
@@ -3354,6 +3318,7 @@ def excel_importpage():
 # ---------------实习总结与成果---------------------------------------
 
 STORAGE_FOLDER = os.path.join(os.path.abspath('.'), 'storage')
+STATIC_STORAGE='/static/storage'
 PDF_FOLDER = os.path.join(os.path.abspath('.'), 'app/static/onlinePDF')
 
 
@@ -3507,12 +3472,6 @@ def stuSumList():
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                          InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
             .order_by(InternshipInfor.end.desc(), InternshipInfor.internStatus.desc()).paginate(page, per_page=8, error_out=False)
-        # pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-        #     .filter(InternshipInfor.internCheck == 2) \
-        #     .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
-        #                  InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
-        #                  InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
-        #     .order_by(InternshipInfor.end.desc(), InternshipInfor.internStatus.desc()).paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
         return render_template('stuSumList.html', internlist=internlist, Permission=Permission,
                                pagination=pagination, form=form, grade=grade, classes=classes, major=major)
@@ -3790,16 +3749,6 @@ def stuSum_allCheck():
     classes = {}
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
-    # pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(Teacher,
-        #                                                                                   Teacher.teaId == InternshipInfor.icheckTeaId).outerjoin(
-        # SchDirTea, SchDirTea.stuId == InternshipInfor.stuId) \
-        # .filter(InternshipInfor.internCheck == 2, InternshipInfor.end < now, Summary.sumCheck != 2) \
-        # .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
-        #              InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
-        #              InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
-        #              InternshipInfor.opinion, InternshipInfor.icheckTime, SchDirTea.steaName, SchDirTea.steaDuty,
-        #              SchDirTea.steaPhone, SchDirTea.steaEmail, Summary.sumScore, Summary.sumCheck) \
-        # .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
     pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
         .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, Summary.sumCheck != 2) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
@@ -3854,16 +3803,6 @@ def stuSum_allDelete():
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
     now = datetime.now().date()
-    # pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(Teacher,
-    #                                                                                       Teacher.teaId == InternshipInfor.icheckTeaId).outerjoin(
-    #     SchDirTea, SchDirTea.stuId == InternshipInfor.stuId) \
-    #     .filter(InternshipInfor.end < now) \
-    #     .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
-    #                  InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
-    #                  InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
-    #                  InternshipInfor.opinion, InternshipInfor.icheckTime, SchDirTea.steaName, SchDirTea.steaDuty,
-    #                  SchDirTea.steaPhone, SchDirTea.steaEmail, Summary.sumScore, Summary.sumCheck) \
-    #     .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
     pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
         .filter(InternshipInfor.internCheck ==2 ) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
@@ -3899,6 +3838,9 @@ def stuSum_allDelete():
 @login_required
 @update_grade_major_classes
 def selectManage():
+    if not current_user.can(Permission.SELECT_MANAGE):
+        flash('非法操作！')
+        return redirect('/')
     majors=Major.query.order_by(Major.major).all()
     grades=Grade.query.order_by(Grade.grade).all()
     classess=Classes.query.order_by(Classes.classes).all()
@@ -3949,3 +3891,96 @@ def selectManage():
                 return redirect(url_for('.selectManage'))
     return render_template('selectManage.html',Permission=Permission,majors=majors,grades=grades,classess=classess)
 
+#上传探访记录
+@main.route('/upload_Visit',methods=['GET','POST'])
+@login_required
+def upload_Visit():
+    path=None
+    files=[]
+    filename=request.args.get('filename')
+    userId=None
+    url='%s/visit/%s'%(STORAGE_FOLDER,current_user.teaId)
+    if os.path.exists(url):
+        files=os.listdir(url)
+        userId=current_user.teaId
+    if filename:
+        path=os.path.join(STATIC_STORAGE,'visit',userId,filename)
+    if request.method=='POST':
+        try:
+            if 'delete' in request.form:
+                os.remove(os.path.join(STORAGE_FOLDER,'visit',userId,request.form.get('delete')))
+                flash('删除成功！')
+                return redirect(url_for('.upload_Visit'))
+            if 'download' in request.form:
+                file_name=request.form.get('download')
+                return send_file(os.path.join(STORAGE_FOLDER,'visit',userId,file_name), as_attachment=True,
+                             attachment_filename=file_name.encode('utf-8'))
+            file=request.files.get('.upload_Visit')
+            if file:
+                if not os.path.exists('%s/visit/%s'%(STORAGE_FOLDER,userId)):
+                    os.system('mkdir %s/visit/%s' % (STORAGE_FOLDER,userId))
+                file.save('%s/visit/%s/%s'%(STORAGE_FOLDER,userId,file.filename))
+                flash('上传成功！')
+                return redirect(url_for('.selectStudent',filename=file.filename))
+        except Exception as e:
+            flash('操作失败，请重试！')
+            print('探访记录：',e)
+            return redirect(url_for('.upload_Visit'))
+    return render_template('visit.html',Permission=Permission,path=path,files=files)
+
+#选择探访学生
+@main.route('/selectStudent',methods=['GET','POST'])
+@login_required
+def selectStudent():
+    grade={}
+    major={}
+    classes={}
+    page = request.args.get('page', 1, type=int)
+    pagination=create_stu_filter(grade, major, classes).join(InternshipInfor,InternshipInfor.stuId==Student.stuId).join(ComInfor,ComInfor.comId==InternshipInfor.comId)\
+    .add_columns(ComInfor.comName,Student.stuName,InternshipInfor.Id,Student.stuId,InternshipInfor.start,InternshipInfor.end).paginate(page, per_page=8, error_out=False)
+    internlist = pagination.items
+    form=searchForm()
+    userId=None
+    userId=current_user.teaId
+    if request.method=='POST':
+        filename=request.args.get('filename')
+        for x in request.form.getlist('approve[]'):
+            source='%s/visit/%s/%s'%(STORAGE_FOLDER,userId,filename)
+            direction='%s/%s/visit'%(STORAGE_FOLDER,x)
+            if not os.path.exists(direction):
+                os.mkdir(direction)
+            shutil.copyfile(source,os.path.join(direction,filename))
+        flash('操作成功！')
+        return redirect(url_for('.visit'))
+    return render_template('selectStudent.html',Permission=Permission,form=form,internlist=internlist,grade=grade,classes=classes,major=major,pagination=pagination)
+
+#学生的被探访记录
+@main.route('/visit',methods=['GET','POST'])
+@login_required
+def visit():
+    internId=request.args.get('internId')
+    url='%s/%s/visit'%(STORAGE_FOLDER,internId)
+    file=None
+    print(url)
+    if os.path.exists(url):
+        file=os.listdir(url)
+    path=None
+    filename=request.args.get('filename')
+    if filename:
+        path='%s/%s/visit/%s'%(STATIC_STORAGE,internId,filename)
+    if request.method=='POST':
+        try:
+            if 'delete' in request.form:
+                os.remove(os.path.join(url,request.form.get('delete')))
+                flash('删除成功！')
+                return redirect(url_for('.visit',internId=internId))
+            if 'download' in request.form:
+                file_name=request.form.get('download')
+                return send_file(os.path.join(url,file_name), as_attachment=True,
+                             attachment_filename=file_name.encode('utf-8'))
+            flash('操作成功！')
+            return redirect(url_for('.visit',internId=internId))
+        except Exception as e:
+            flash('操作失败！请重试！')
+            return redirect(url_for('.visit',internId=internId))
+    return render_template('visit.html',Permission=Permission,path=path,file=file,internId=internId)

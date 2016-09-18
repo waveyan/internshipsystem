@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}上传探访记录{% endblock %}
+{% block head %}
+    {{ super() }}
+        <!-- 文件上传 -->
+        <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
+    <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
+    {% endblock %}
+
+  {% block page_content %}
+   {% if current_user.can(Permission.UPLOAD_VISIT) %}
+    <form method="POST" enctype="multipart/form-data">
+    <h3>上传我的探访记录</h3>
+    	<input id="file-1" type="file" class="file" name="visit" data-overwrite-initial="false" data-min-file-count="1"><h5><small>单文件上传，仅支持pdf格式文件上传</small></h5>
+    </form>
+    <br>
+   {% endif %}
+    <table class="table">
+    	<h3>探访历史</h3>
+    	<tr>
+    		<th>名称</th>
+    		<th></th>
+    		<th></th>
+    		<th></th>
+    		<th>操作</th>
+    	</tr>
+    	<!-- 上传页面信息 -->
+    	{% for x in files %}
+    	<tr>
+    		<td><a data-toggle="tooltip" title="点击进行在线阅览" href="{{ url_for('.upload_Visit',filename=x) }}">{{ x }}</a></td>
+    	    <td></td>
+    		<td></td>
+    		<td></td>
+    		<td><a href="javascript:{}"
+                       onclick="document.getElementById('{{x}}_download').submit();">下载</a>|<a href="javascript:{}"
+                       onclick="document.getElementById('{{x}}_delete').submit();">删除</a></td>
+    	</tr>
+    <!-- 提供删除的form -->
+    <form id="{{x}}_delete" method="post">
+        <input type="hidden" name="delete" value="{{ x }}">
+    </form>
+    <!-- 提供下载的form -->
+    <form id="{{x}}_download" method="post">
+        <input type="hidden" name="download" value="{{ x }}">
+    </form>
+    	{% endfor %}
+    	<!-- 学生的被探访记录 -->
+       {% for x in file %}
+    	<tr>
+    		<td><a data-toggle="tooltip" title="点击进行在线阅览" href="{{ url_for('.visit',filename=x,internId=internId) }}">{{ x }}</a></td>
+    	    <td></td>
+    		<td></td>
+    		<td></td>
+    		<td><a href="javascript:{}"
+                       onclick="document.getElementById('{{x}}_download').submit();">下载</a>|<a href="javascript:{}"
+                       onclick="document.getElementById('{{x}}_delete').submit();">删除</a></td>
+    	</tr>
+    <!-- 提供删除的form -->
+    <form id="{{x}}_delete" method="post">
+        <input type="hidden" name="delete" value="{{ x }}">
+    </form>
+    <!-- 提供下载的form -->
+    <form id="{{x}}_download" method="post">
+        <input type="hidden" name="download" value="{{ x }}">
+    </form>
+    	{% endfor %}
+    </table>
+    {% if path %}
+    <h3>在线阅览</h3>
+            <div id="pdf">
+            <object width="1000" height="1100" type="application/pdf" data="{{ path }}" id="pdf_content">
+                <p>你的浏览器不支持在线阅览, 请更换浏览器, 或点击&nbsp<a href="javascript:{}"
+                                                    onclick="document.getElementById('pdf').submit();">这里</a>&nbsp下载离线阅览
+                </p>
+            </object>
+        </div>
+        {% endif %}
+  {% endblock %}
+
+  {% block scripts %}
+            <script type="text/javascript">
+            $('#uploadImage').fileinput({
+                language: 'en', //设置语言
+                allowedFileExtensions : ['pdf'],//接收的文件后缀,
+                maxFileCount: 100,
+                showUpload: false, //是否显示上传按钮
+                showCaption: false,//是否显示标题
+                browseClass: "btn btn-primary", //按钮样式             
+            });
+</script>
+{% endblock %}

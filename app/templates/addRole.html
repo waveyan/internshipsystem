@@ -18,6 +18,7 @@
                 <th width="200" height="60">学生总结与成果：</th>
                 <th width="200" height="60">列表：</th>
                 <th width="200" height="60">管理：</th>
+                <th width="200" height="60">其它：</th>
             </tr>
             <tr>
                 <td height="50">
@@ -60,6 +61,13 @@
                     <div class="checkbox-inline">
                         <label style="font-size:12px;">
                             {{ form.STU_INTERN_MANAGE(type="checkbox") }}{{ form.STU_INTERN_MANAGE.label }}
+                        </label>
+                    </div>
+                </td>
+                                <td>
+                    <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {{ form.UPLOAD_VISIT(type="checkbox") }}{{ form.UPLOAD_VISIT.label }}
                         </label>
                     </div>
                 </td>
@@ -143,6 +151,21 @@
                     <div class="checkbox-inline">
                         <label style="font-size:12px;">
                             {{ form.PERMIS_MANAGE(type="checkbox") }}{{ form.PERMIS_MANAGE.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td height="50">
+                                        <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                                {{ form.SELECT_MANAGE(type="checkbox") }}
+                            {{ form.SELECT_MANAGE.label }}
                         </label>
                     </div>
                 </td>

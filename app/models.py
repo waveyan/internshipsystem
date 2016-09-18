@@ -351,6 +351,16 @@ class Classes(db.Model):
     __tablename__='Classes'
     classes=db.Column(db.Integer,primary_key=True)
 
+class Visit(db.Model):
+    __tablename__='Visit'
+    visitId=db.Column(db.Integer,primary_key=True)
+    userId=db.Column(db.String(20))
+    url=db.Column(db.String(20))
+
+class Visit_Intern(db.Model):
+    __tablename__='Visit_Intern'
+    visitId=db.Column(db.Integer,primary_key=True)
+    internId=db.Column(db.String(20),primary_key=True) 
 
 class Permission:
     # 企业信息查询
@@ -392,4 +402,7 @@ class Permission:
     TEA_INFOR_MANAGE = 0X0020000
     # 权限管理
     PERMIS_MANAGE = 0X0040000
-
+    #下拉框管理
+    SELECT_MANAGE=0X0080000
+    #上传探访记录
+    UPLOAD_VISIT= 0X0100030

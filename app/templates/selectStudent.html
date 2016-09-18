@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% import "_macros.html"as macros %}
-{% import "_intern_filter.html"as filter %}
-{% import "_search.html" as search %}
+{% import "_stu_filter.html" as filter %}
+{% import "_search.html"as search %}
 
-{% block title %}实习日志{% endblock %}
+{% block title %}上传探访记录{% endblock %}
 {% block head %}
     {{ super() }}
     <script type="text/javascript">
@@ -51,38 +51,26 @@
             display: block;
         }
     </style>
-{% endblock %}
+ {% endblock %}
 
-{% block page_content %}
-    <h1>学生实习日志
-        {% if current_user.can(Permission.STU_JOUR_EDIT) %}
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                        data-toggle="dropdown">编辑<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    {% if current_user.can(Permission.STU_JOUR_CHECK) %}
-                        <li><a href="{{ url_for('.update_intern_filter',flag=3) }}">批量审核</a></li>
-                        <li><a href="{{ url_for('.update_intern_filter',flag=4) }}">批量删除</a></li>
-                        </ul>
-                        </div>
-                    {% endif %}
-            {{ search.search(url_for('.journal_search',journal='journal'),form) }}
-        {% endif %}
-    </h1>
-    {#    筛选项#}
-    {{ filter.intern_filter('.stuJournal_allCheck',3,grade,major,classes) }}
+ {% block page_content %}
+    <div class="page-header">
+        <h1>请填写选择该次探访的相关学生。
+            {{ search.search(url_for('.user_search'),form) }}
+        </h1>
 
-    <table class="table" id="t">
+
+        {#筛选项#}
+        {{ filter.stu_filter('.selectStudent',3,grade,major,classes) }}
+        <table class="table" id="t">
         <thead>
         <tr>
             <th></th>
-            <th>日志名称</th>
+            <th>姓名</th>
+            <th>实习公司</th>
             <th>学号</th>
             <th>开始时间</th>
             <th>结束时间</th>
-            <th>日志状态</th>
-            <th>实习状态</th>
         </tr>
         </thead>
         <tbody>
@@ -91,41 +79,26 @@
                 <tr>
                     <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
                     <td>
-                        <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}在{{ intern.comName }}的日子</a>
+                        <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}</a>
                     </td>
+                    <td>{{ intern.comName }}</td>
                     <td>{{ intern.stuId }}</td>
                     <td>{{ intern.start }}</td>
                     <td>{{ intern.end }}</td>
-
-                    <!-- 日志状态 -->
-                    {% if intern.jourCheck == 0 %}
-                        <td>待审核</td>
-                    {% elif intern.jourCheck == 1 %}
-                        <td>已审核</td>
-                    {% endif %}
-
-                    <!-- 实习状态 -->
-                    {% if intern.internStatus == 1 %}
-                        <td>实习中</td>
-                    {% elif intern.internStatus == 2 %}
-                        <td>实习结束</td>
-                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
     </table>
     <div>
-        <input type="hidden" name="page" value="{{ pagination.page }}">
+        <!-- <input type="hidden" name="page" value="{{ pagination.page }}"> -->
         <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
-        <button type="submit" class="btn btn-success">审核通过</button>
+        <button type="submit" class="btn btn-success">选择</button>
         </form>
-        <a href="{{ url_for('.stuJournalList') }}">
-            <button class="btn btn-primary">返回</button>
-        </a>
+        <a href="{{ url_for('.visit') }}"><button type="submit" class="btn btn-default">跳过此步</button></a>
     </div>
     {% if pagination %}
         <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.stuJournal_allCheck') }}
+            {{ macros.pagination_widget(pagination,'.selectStudent') }}
         </div>
     {% endif %}
-{% endblock %}1
+    {% endblock %}
