@@ -5,7 +5,7 @@ from .form import searchForm, comForm, internshipForm, journalForm, stuForm, tea
     comdirteaForm, xSumScoreForm
 from . import main
 from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, \
-    not_student_login, update_intern_internStatus, update_intern_jourCheck, Summary,Major,Grade,Classes,update_grade_major_classes,Visit,Visit_Intern
+    not_student_login, update_intern_internStatus, update_intern_jourCheck, Summary,Major,Grade,Classes,update_grade_major_classes
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func, desc, and_, distinct
@@ -17,23 +17,113 @@ from werkzeug.utils import secure_filename
 
 
 # -----------------------------统计----------------------------------------
+#地域统计筛选
+def update_area_filter():
+    major=request.args.get('major')
+    grade=request.args.get('grade')
+    m=request.args.get('m')
+    g=request.args.get('g')
+    if m:
+        session['major']=None
+    if g:
+        session['grade']=None
+    #为了在统计页面上与major数据类型一致
+    if grade:
+        grade=int(grade)
+    if major:
+        session['major']=major
+    elif grade:
+        session['grade']=grade
+    elif not m and not g:
+        session['major']=None
+        session['grade']=None
+    if session['major']:
+        print(session['major'])
+        sql="select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' group by comAddress order by count(i.comId) desc"%session['major']
+        # cominfor=db.session.query(ComInfor.comAddress,func.sum(InternshipInfor.comId)).outerjoin(InternshipInfor,InternshipInfor.comId==ComInfor.comId)\
+        # .outerjoin(Student,Student.stuId==InternshipInfor.stuId).group_by(ComInfor.comAddress).order_by(func.sum(ComInfor.comId).desc()).filter(Student.major==session['major'])
+        if session['grade']:
+            print(session['grade'])
+            sql="select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' and grade=%s group by comAddress order by count(i.comId) desc"%(session['major'],session['grade'])
+            # cominfor=cominfor.filter(Student.grade==session['grade'])
+
+    if session['grade']:
+        print(session['grade'])
+        sql="select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and grade='%s' group by comAddress order by count(i.comId) desc"%session['grade']
+        # cominfor=db.session.query(ComInfor.comAddress,func.sum(ComInfor.students)).outerjoin(InternshipInfor,InternshipInfor.comId==ComInfor.comId)\
+        # .outerjoin(Student,Student.stuId==InternshipInfor.stuId).group_by(ComInfor.comAddress).order_by(func.sum(ComInfor.students).desc()).filter(Student.grade==session['grade'])
+        if session['major']:
+            print(session['major'])
+            sql="select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' and grade=%s group by comAddress order by count(i.comId) desc"%(session['major'],session['grade'])
+            # cominfor=cominfor.filter(Student.major==session['major'])
+
+    if not session['major'] and not session['grade']:
+        print('ok')
+        sql='select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId group by comAddress order by count(i.comId) desc'
+        # cominfor=db.session.query(ComInfor.comAddress,func.sum(ComInfor.students)).outerjoin(InternshipInfor,InternshipInfor.comId==ComInfor.comId)\
+        # .outerjoin(Student,Student.stuId==InternshipInfor.stuId).group_by(ComInfor.comAddress).order_by(func.sum(ComInfor.students).desc())
+    return sql
+
+#企业统计筛选
+def update_company_filter():
+    major=request.args.get('major')
+    grade=request.args.get('grade')
+    m=request.args.get('m')
+    g=request.args.get('g')
+    if m:
+        session['major']=None
+    if g:
+        session['grade']=None
+    #为了在统计页面上与major数据类型一致
+    if grade:
+        grade=int(grade)
+    if major:
+        session['major']=major
+    elif grade:
+        session['grade']=grade
+    elif not m and not g:
+        session['major']=None
+        session['grade']=None
+    if session['major']:
+        print(session['major'])
+        sql="select comName,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' group by i.comId,comName order by count(i.comId) desc"%session['major']
+        if session['grade']:
+            print(session['grade'])
+            sql="select comName,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' and grade=%s group by i.comId,comName order by count(i.comId) desc"%(session['major'],session['grade'])
+    if session['grade']:
+        print(session['grade'])
+        sql="select comName,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and grade='%s' group by i.comId,comName order by count(i.comId) desc"%session['grade']
+        if session['major']:
+            print(session['major'])
+            sql="select comName,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' and grade=%s group by i.comId,comName  order by count(i.comId) desc"%(session['major'],session['grade'])
+    if not session['major'] and not session['grade']:
+        print('ok')
+        sql='select comName,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId group by i.comId,comName order by count(i.comId) desc'
+    return sql
+
+
 # 统计--地域统计图
 @main.route('/statistics_area_visual', methods=['GET', 'POST'])
 def statistics_area_visual():
     comlist = []
     index = 0
-    cominfor = db.session.execute(
-        'select comAddress, sum(students) from ComInfor group by comAddress order by sum(students) desc')
+    major=Major.query.all()
+    grade=Grade.query.all()
+    sql=update_area_filter()
+    cominfor=db.session.execute(sql)
+    #初始化，防止数据不够时抛错
+    for i in range(7):
+        comlist.append(None)
     for com in cominfor:
         if index < 6:
             # com[1] 为学生人数
-            comlist.append({'comAddress': com.comAddress, 'students': com[1]})
+            comlist[index]={'comAddress': com[0], 'students': com[1]}
             index = index + 1
             if index == 6:
-                comlist.append({'comAddress': '其他', 'students': 0})
+                comlist[index]={'comAddress': '其他', 'students': 0}
         else:
             comlist[6]['students'] = comlist[6]['students'] + com[1]
-    return render_template('statistics_area_visual.html', Permission=Permission, comlist=comlist)
+    return render_template('statistics_area_visual.html', Permission=Permission, comlist=comlist,major=major,grade=grade)
 
 
 # 统计--企业统计图
@@ -41,16 +131,23 @@ def statistics_area_visual():
 def statistics_com_visual():
     comlist = []
     index = 0
-    cominfor = db.session.execute('select comId, comName, students from ComInfor order by students desc')
+    major=Major.query.all()
+    grade=Grade.query.all()
+    sql=update_company_filter()
+    cominfor=db.session.execute(sql)
+    #初始化，防止数据不够时抛错
+    for i in range(7):
+        comlist.append(None)
     for com in cominfor:
+        print('com',com[0],com[1])
         if index < 6:
-            comlist.append({'comId': com.comId, 'comName': com.comName, 'students': com.students})
+            comlist[index]={'comName': com[0], 'students': com[1]}
             index = index + 1
             if index == 6:
-                comlist.append({'comName': '其他', 'students': 0})
+                comlist[index]={'comName': '其他', 'students': 0}
         else:
-            comlist[6]['students'] = comlist[6]['students'] + com.students
-    return render_template('statistics_com_visual.html', Permission=Permission, comlist=comlist)
+            comlist[6]['students'] = comlist[6]['students'] + com[1]
+    return render_template('statistics_com_visual.html', Permission=Permission, comlist=comlist,grade=grade,major=major)
 
 
 # 统计--企业排行
@@ -303,9 +400,9 @@ def addInternship():
             # 更新累计实习人数
             cominfor = ComInfor.query.filter_by(comId=comId).first()
             if cominfor.students:
-                db.session.execute('update ComInfor set students=students+1')
+                db.session.execute('update ComInfor set students=students+1 where comId=%s'%comId)
             else:
-                db.session.execute('update ComInfor set students=1')
+                db.session.execute('update ComInfor set students=1 where comId=%s'%comId)
 
             #上传协议书
             if request.files.getlist('image'):

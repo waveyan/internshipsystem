@@ -351,16 +351,6 @@ class Classes(db.Model):
     __tablename__='Classes'
     classes=db.Column(db.Integer,primary_key=True)
 
-class Visit(db.Model):
-    __tablename__='Visit'
-    visitId=db.Column(db.Integer,primary_key=True)
-    userId=db.Column(db.String(20))
-    url=db.Column(db.String(20))
-
-class Visit_Intern(db.Model):
-    __tablename__='Visit_Intern'
-    visitId=db.Column(db.Integer,primary_key=True)
-    internId=db.Column(db.String(20),primary_key=True) 
 
 class Permission:
     # 企业信息查询
