@@ -1587,7 +1587,7 @@ def update_stu_filter():
     elif flag=='2':
         return redirect(url_for('.stuUserList'))
     else:
-        return redirect(url_for('.selectStudent'))
+        return redirect(url_for('.selectStudent',filename=request.args.get('filename')))
 
 
 # 添加学生用户
@@ -4012,13 +4012,13 @@ def upload_Visit():
                 file_name=request.form.get('download')
                 return send_file(os.path.join(STORAGE_FOLDER,'visit',userId,file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
-            file=request.files.get('.upload_Visit')
+            file=request.files.get('visit')
             if file:
                 if not os.path.exists('%s/visit/%s'%(STORAGE_FOLDER,userId)):
                     os.system('mkdir %s/visit/%s' % (STORAGE_FOLDER,userId))
                 file.save('%s/visit/%s/%s'%(STORAGE_FOLDER,userId,file.filename))
                 flash('上传成功！')
-                return redirect(url_for('.selectStudent',filename=file.filename))
+                return redirect(url_for('.update_stu_filter',flag=3,filename=file.filename))
         except Exception as e:
             flash('操作失败，请重试！')
             print('探访记录：',e)
@@ -4037,18 +4037,18 @@ def selectStudent():
     .add_columns(ComInfor.comName,Student.stuName,InternshipInfor.Id,Student.stuId,InternshipInfor.start,InternshipInfor.end).paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
     form=searchForm()
-    userId=None
     userId=current_user.teaId
+    if request.args.get('filename'):
+        session['filename']=request.args.get('filename')
     if request.method=='POST':
-        filename=request.args.get('filename')
         for x in request.form.getlist('approve[]'):
-            source='%s/visit/%s/%s'%(STORAGE_FOLDER,userId,filename)
+            source='%s/visit/%s/%s'%(STORAGE_FOLDER,userId,session['filename'])
             direction='%s/%s/visit'%(STORAGE_FOLDER,x)
             if not os.path.exists(direction):
                 os.mkdir(direction)
-            shutil.copyfile(source,os.path.join(direction,filename))
+            shutil.copyfile(source,os.path.join(direction,session['filename']))
         flash('操作成功！')
-        return redirect(url_for('.visit'))
+        return redirect(url_for('.upload_Visit'))
     return render_template('selectStudent.html',Permission=Permission,form=form,internlist=internlist,grade=grade,classes=classes,major=major,pagination=pagination)
 
 #学生的被探访记录
