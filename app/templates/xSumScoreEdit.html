@@ -4,6 +4,10 @@
 
 {% block head %}
     {{ super() }}
+                <!-- 文件上传 -->
+        <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
+    <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
+    <script src="/static/JS/locales/fileinput_locale_zh.js" charset="utf-8"></script>
 {% endblock %}<!--先执行父模板-->
 
 {% block title %}实习总结与成果{% endblock %}
@@ -62,7 +66,9 @@
                             {{ file_path['comscore'] }}&nbsp;&nbsp;&nbsp;<a href="javascript:{}"
                                                                             onclick="document.getElementById('comscore_delete').submit();">删除</a>
                         {% else %}
-                            {{ form.comfile() }}
+                        <h5><small>
+                            {{ form.comfile(class='file') }}
+                            仅支持jpe、png、gif格式图片上传</small></h5>
                         {% endif %}
                     </td>
                     <th width="200">校内评分表</th>
@@ -72,7 +78,7 @@
                             {{ file_path['schscore'] }}&nbsp;&nbsp;&nbsp;<a href="javascript:{}"
                                                                             onclick="document.getElementById('schscore_delete').submit();">删除</a>
                         {% else %}
-                            {{ form.schfile() }}
+                            <h5><small>{{ form.schfile(class='file') }}仅支持jpe、png、gif格式图片上传</small></h5>
                         {% endif %}
                     </td>
                 </tr>
@@ -94,4 +100,16 @@
     <br><span class="label label-danger">注意</span>
     <br>*&nbsp&nbsp校内外实习评分表只允许各上传一份，若要重新上传，请先删除原评分表
     <br>*&nbsp&nbsp请在纸质评分表上签名, 并拍照上传
+{% endblock %}
+  {% block scripts %}
+            <script type="text/javascript">
+            $('.file').fileinput({
+                language: 'zh', //设置语言
+                maxFileCount: 100,
+                allowedFileExtensions : ['jpg', 'png','gif'],//接收的文件后缀,
+                showUpload: false, //是否显示上传按钮
+                showCaption: false,//是否显示标题
+                browseClass: "btn btn-default", //按钮样式             
+            });
+</script>
 {% endblock %}

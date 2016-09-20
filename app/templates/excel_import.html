@@ -1,17 +1,35 @@
 {% extends "base.html" %}
 {% block title %}批量导入{% endblock %}
-{% block head %}{{ super() }}{% endblock %}
+{% block head %}
+{{ super() }}
+        <!-- 文件上传 -->
+        <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
+    <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
+        <script src="/static/JS/locales/fileinput_locale_zh.js" charset="utf-8"></script>
+{% endblock %}
 {% block page_content %}
     <h1>批量导入</h1>
     <form action="" method=post enctype=multipart/form-data>
-      <p><input type=file name=file value="选择文件"><br>
-         <input type=submit value="上传">
+      <p><input id="file-1" type="file" class="file" name="file" data-overwrite-initial="false" data-min-file-count="1"><br>
     </form>
 
     <!-- 提供下载的form -->
     <form id="temp" method="post">
         <input type="hidden" name="import_template_download" value="1">
     </form>
-    <br><a href="javascript:{}" onclick="document.getElementById('temp').submit();">模板下载</a>
+    <a href="javascript:{}" onclick="document.getElementById('temp').submit();">模板下载</a>
+{% endblock %}
+
+  {% block scripts %}
+            <script type="text/javascript">
+            $('.file').fileinput({
+                language: 'zh', //设置语言
+               //接收的文件后缀,
+                maxFileCount: 100,
+                showUpload: true, //是否显示上传按钮
+                showCaption: true,//是否显示标题
+                browseClass: "btn btn-primary", //按钮样式             
+            });
+</script>
 {% endblock %}
 

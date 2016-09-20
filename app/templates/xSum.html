@@ -105,12 +105,12 @@
                     <li><a onClick="ComfirmCheck()">审核</a></li>
                     <li><a onClick="ComfirmDelete()">删除</a></li>
                     <li>
-                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a>
+                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">上传文件</a>
                     </li>
                 {% elif current_user.can(Permission.STU_SUM_EDIT) and summary.sumCheck!=2 %}
                     <li><a onClick="ComfirmDelete()">删除</a></li>
                     <li>
-                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a>
+                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">上传文件</a>
                     </li>
                     <li class="divider"></li>
                 {% endif %}
@@ -154,8 +154,7 @@
         </tr>
     </table>
     <br>
-
-    <h2>附件</h2>
+ <h2>实习总结</h2>
     <table class="table" id="t">
         <thead>
         <tr>
@@ -185,6 +184,20 @@
                 <td><a href="javascript:{}" onclick="document.getElementById('{{ summary }}').submit();">下载</a></td>
             </tr>
         {% endfor %}
+        </tbody>
+        </table>
+        <br>
+    <h2>附件</h2>
+    <table class="table" id="t">
+        <thead>
+        <tr>
+            <th>文件名</th>
+            <th>大小</th>
+            <th>修改时间</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
         {% for attach in attachment %}
             <tr>
                 <!-- 提供下载的form -->
