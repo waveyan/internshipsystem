@@ -392,4 +392,7 @@ class Permission:
     TEA_INFOR_MANAGE = 0X0020000
     # 权限管理
     PERMIS_MANAGE = 0X0040000
-
+    #下拉框管理
+    SELECT_MANAGE=0X0080000
+    #上传探访记录
+    UPLOAD_VISIT= 0X0100030

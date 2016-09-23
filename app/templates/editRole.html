@@ -20,6 +20,7 @@
                 <th width="200" height="60">学生总结与成果：</th>
                 <th width="200" height="60">列表：</th>
                 <th width="200" height="60">管理：</th>
+                <th width="200" height="60">其它：</th>
             </tr>
             <tr>
                 <td height="50">
@@ -92,6 +93,18 @@
                                 {{ form.STU_INTERN_MANAGE(type="checkbox") }}
                             {% endif %}
                             {{ form.STU_INTERN_MANAGE.label }}
+                        </label>
+                    </div>
+                </td>
+                <td>
+                                        <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.UPLOAD_VISIT) %}
+                                {{ form.UPLOAD_VISIT(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.UPLOAD_VISIT(type="checkbox") }}
+                            {% endif %}
+                            {{ form.UPLOAD_VISIT.label }}
                         </label>
                     </div>
                 </td>
@@ -231,6 +244,25 @@
                                 {{ form.PERMIS_MANAGE(type="checkbox") }}
                             {% endif %}
                             {{ form.PERMIS_MANAGE.label }}
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td height="50">
+                                        <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                            {% if role.can(role,Permission.SELECT_MANAGE) %}
+                                {{ form.SELECT_MANAGE(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.SELECT_MANAGE(type="checkbox") }}
+                            {% endif %}
+                            {{ form.SELECT_MANAGE.label }}
                         </label>
                     </div>
                 </td>

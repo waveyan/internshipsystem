@@ -31,6 +31,7 @@
         <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
     <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
     <script type="text/javascript" src="/static/JS/locales/fileinput_locale_zh.js"></script>
+        <script src="/static/JS/locales/fileinput_locale_zh.js" charset="utf-8"></script>
 {% endblock %}
 
 {% block page_content %}
@@ -222,12 +223,12 @@
         });
     </script>
            <script type="text/javascript">
-            $('#uploadImage').fileinput({
-                language: 'en', //设置语言
+            $('.file').fileinput({
+                language: 'zh', //设置语言
                 allowedFileExtensions : ['jpg', 'png','gif'],//接收的文件后缀,
                 maxFileCount: 100,
-                showUpload: false, //是否显示上传按钮
-                showCaption: false,//是否显示标题
+                showUpload: true, //是否显示上传按钮
+                showCaption: true,//是否显示标题
                 browseClass: "btn btn-primary", //按钮样式             
             });
 </script>

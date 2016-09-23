@@ -144,6 +144,8 @@ class permissionForm(Form):
     STU_INTERN_MANAGE = BooleanField('学生信息管理', default=False, description='0X0010000')
     TEA_INFOR_MANAGE = BooleanField('老师信息管理', default=False, description='0X0020000')
     PERMIS_MANAGE = BooleanField('权限管理', default=False, description='0X0040000')
+    SELECT_MANAGE=BooleanField('下拉框管理',default=False,description='0X0080000')
+    UPLOAD_VISIT= BooleanField('上传探访记录',default=False,description='0X0100030')
     submit = SubmitField('提交')
 
 

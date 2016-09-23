@@ -130,7 +130,10 @@
                                 </ul>
                             </li>
                         {% endif %}
-                        {% if current_user.can(Permission.STU_INTERN_MANAGE) or current_user.can(Permission.PERMIS_MANAGE) or current_user.can(Permission.TEA_INFOR_MANAGE) %}
+                        {% if current_user.can(Permission.UPLOAD_VISIT) %}
+                        <li><a href="{{ url_for('.upload_Visit') }}">教师探访记录</a></li>
+                        {% endif %}
+                        {% if current_user.can(Permission.STU_INTERN_MANAGE) or current_user.can(Permission.PERMIS_MANAGE) or current_user.can(Permission.TEA_INFOR_MANAGE) or current_user.can(Permission.SELECT_MANAGE) %}
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                     管理 <span class="caret"></span>
@@ -142,7 +145,7 @@
                                             <ul class="dropdown-menu">
                                                 {% if current_user.can(Permission.STU_INTERN_MANAGE) %}
                                                     <li><a tabindex="-1"
-                                                           href="{{ url_for('main.update_stu_filter') }}">学生用户</a></li>
+                                                           href="{{ url_for('main.update_stu_filter',flag=2) }}">学生用户</a></li>
                                                 {% endif %}
                                                 {% if current_user.can(Permission.TEA_INFOR_MANAGE) %}
                                                     <li><a tabindex="-1"
@@ -155,6 +158,8 @@
                                     {% if current_user.can(Permission.PERMIS_MANAGE) %}
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('main.roleList') }}">权限管理</a></li>
+                                    {% endif %}
+                                    {% if current_user.can(Permission.SELECT_MANAGE) %}
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('main.selectManage') }}">下拉框管理</a></li>
                                     {% endif %}

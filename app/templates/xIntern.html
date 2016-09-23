@@ -142,7 +142,6 @@
                     我的实习信息
                 {% endif %}
 
-
                 <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                                 data-toggle="dropdown">更多<span class="caret"></span>
@@ -178,6 +177,9 @@
                         </li>
                         <li>
                             <a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId, from_url='xIntern') }}">实习总结与成果</a>
+                        </li>
+                                                <li>
+                            <a href="{{ url_for('.visit', internId=internship.Id) }}">教师探访记录</a>
                         </li>
 
                     </ul>
