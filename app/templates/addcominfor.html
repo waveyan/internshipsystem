@@ -30,7 +30,9 @@ window.onload = function(){
 
 
     <form method="POST" role="form" id="S1">
-        <a href="{{ url_for('.selectCom') }}"><span class="label label-primary">从已有的企业信息中选择</span></a><br><br>
+        {% if from_url == 'stuInternList' %}
+            <a href="{{ url_for('.selectCom') }}"><span class="label label-primary">从已有的企业信息中选择</span></a><br><br>
+        {% endif %}
         {{ form.hidden_tag() }}
         {{ form.comName.label }} {{ form.comName(class="form-control", required="", placeholder="") }} <br>
         {{ form.comProvince.label }} {{ form.comProvince(class="form-control", required="", placeholder="",id='province') }} <br>
@@ -43,7 +45,7 @@ window.onload = function(){
         {{ form.comContact.label }} {{ form.comContact(class="form-control", required="", placeholder="") }} <br>
         {{ form.comPhone.label }} {{ form.comPhone(class="form-control", required="", placeholder="") }} <br>
         {{ form.comEmail.label }} {{ form.comEmail(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comFax.label }} {{ form.comFax(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comFax.label }} {{ form.comFax(class="form-control", placeholder="") }} <br>
         {{ form.csrf_token }}
         <!-- 若是从 .stuInternList 添加实习信息跳转至此,则现在跳转到 .addinternship,继续完善实习信息添加 -->
         {% if from_url == "stuInternList" %}

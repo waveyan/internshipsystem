@@ -92,6 +92,9 @@
                         <td>
                             <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ current_user.stuName }}</a>
                         </td>
+                        <td>
+                            {{ intern.comName }}
+                        </td>
                     {% else %}
                         <td>
                             {% if current_user.can(Permission.STU_JOUR_SEARCH) %}

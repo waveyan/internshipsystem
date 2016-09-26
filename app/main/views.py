@@ -273,22 +273,54 @@ def addcominfor():
         else:
             max_comId = max_comId + 1
         try:
+            comName = form.comName.data
+            comBrief = form.comBrief.data
+            comAddress = form.comAddress.data
+            comUrl = form.comUrl.data
+            comMon = form.comMon.data
+            comContact = form.comContact.data
+            comProject = form.comProject.data
+            comStaff = form.comStaff.data
+            comPhone = form.comPhone.data
+            comEmail = form.comEmail.data
+            comProvince = form.comProvince.data
+            comFax = form.comFax.data
+            # 通过企业名称, 城市, 地址来判断是否属于同一个公司
+            is_exist = ComInfor.query.filter_by(comName=comName, comAddress=comAddress, comProvince=comProvince).all()
+            if is_exist:
+                flash('企业已存在')
+                return redirect(url_for('.interncompany'))
             # 如果有企业信息审核权限的用户添加企业信息自动通过审核
             if current_user.can(Permission.COM_INFOR_CHECK):
-                comInfor = ComInfor(comName=form.comName.data, comBrief=form.comBrief.data,
-                                    comAddress=form.comAddress.data,
-                                    comUrl=form.comUrl.data, comMon=form.comMon.data, comContact=form.comContact.data,
-                                    comProject=form.comProject.data, comStaff=form.comStaff.data,
-                                    comPhone=form.comPhone.data,
-                                    comEmail=form.comEmail.data, comProvince=form.comProvince.data,comFax=form.comFax.data, comCheck=2)
+                comInfor = ComInfor(
+                    comName = comName,
+                    comBrief = comBrief,
+                    comAddress = comAddress,
+                    comUrl = comUrl,
+                    comMon = comMon,
+                    comContact = comContact,
+                    comProject = comProject,
+                    comStaff = comStaff,
+                    comPhone = comPhone,
+                    comEmail = comEmail,
+                    comProvince = comProvince,
+                    comFax = comFax,
+                    comCheck = 2)
             else:
-                comInfor = ComInfor(comName=form.comName.data, comBrief=form.comBrief.data,
-                                    comAddress=form.comAddress.data,
-                                    comUrl=form.comUrl.data, comMon=form.comMon.data, comContact=form.comContact.data,
-                                    comProject=form.comProject.data, comStaff=form.comStaff.data,
-                                    comPhone=form.comPhone.data,
-                                    comEmail=form.comEmail.data, comProvince=form.comProvince.data,comFax=form.comFax.data)
-            print('true')
+                comInfor = ComInfor(
+                    comName = comName,
+                    comBrief = comBrief,
+                    comAddress = comAddress,
+                    comUrl = comUrl,
+                    comMon = comMon,
+                    comContact = comContact,
+                    comProject = comProject,
+                    comStaff = comStaff,
+                    comPhone = comPhone,
+                    comEmail = comEmail,
+                    comProvince = comProvince,
+                    comFax = comFax)
+
             db.session.add(comInfor)
             db.session.commit()
             flash('实习企业信息添加成功！')
@@ -450,7 +482,6 @@ def xIntern():
     if os.path.exists(p):
         for x in os.listdir(p):
             path.append(os.path.join(p[p.find('/static'):],x))
-    print('33333333333333333',x)
     # 导出实习excel表
     intern_excel = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(ComInfor,
                                                                                                     InternshipInfor.comId == ComInfor.comId).outerjoin(
@@ -659,9 +690,12 @@ def xInternEdit_comdirtea():
 def comfirmDeletreJournal_Intern():
     internId = request.form.get('internId')
     from_url = request.form.get('from_url')
-    if current_user.roleId == 0:
-        stuId = current_user.stuId
-        permission = True
+    internship = InternshipInfor.query.filter_by(Id=internId).first()
+    permission = False
+    if current_user.roleId == 0 :
+        if internship.internCheck!=2:
+            stuId = current_user.stuId
+            permission = True
     else:
         stuId = request.form.get('stuId')
         if from_url == 'xSum':
@@ -1296,16 +1330,13 @@ def stuJournalList():
             flash('目前还没有通过审核的实习信息,请完善相关实习信息,或耐心等待审核通过')
             return redirect('/')
         else:
-            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal,
-                                                                                                            InternshipInfor.Id == Journal.internId).join(
+            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal, InternshipInfor.Id == Journal.internId).join(
                 Student, InternshipInfor.stuId == Student.stuId) \
                 .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId,
                              InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                              InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
                 .filter(InternshipInfor.stuId == stuId, InternshipInfor.internCheck == 2).group_by(
-                InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page,
-                                                                                                         per_page=8,
-                                                                                                         error_out=False)
+                InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8,  error_out=False)
             internlist = pagination.items
             return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
                                    pagination=pagination, grade=grade, major=major, classes=classes)
@@ -2783,7 +2814,7 @@ def getMaxComId():
 
 # Excel文档列名的模板. 导入和导出
 # 实习信息表
-excel_export_intern = OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comName', '企业名称'), ('address', '地址'),
+excel_export_intern = OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comProvince', '城市'), ('comName', '企业名称'), ('address', '地址'),
                                    ('internCheck', '审核状态'), ('internStatus', '实习状态'), ('start', '开始日期'),
                                    ('end', '结束日期'), ('task', '任务'), ('teaName', '审核教师'), ('opinion', '审核意见'),
                                    ('icheckTime', '审核时间'), ('steaName', '校内指导老师姓名'), ('steaDuty', '校内指导老师职务'),
@@ -2792,11 +2823,11 @@ excel_export_intern = OrderedDict((('stuId', '学号'), ('stuName', '姓名'), (
 excel_import_intern = {'学号': 'stuId', '姓名': 'stuName', '企业编号': 'comId', '地址': 'address', '开始日期': 'start', '结束日期': 'end',
                        '任务': 'task', '企业指导老师姓名': 'cteaName', '企业指导老师职务': 'cteaDuty', '企业指导老师电话': 'cteaPhone', '企业指导老师邮箱': 'cteaEmail'}
 # 企业信息表
-excel_export_com = OrderedDict((('comId', '企业编号'), ('comName', '企业名称'), ('comBrief', '企业简介'), ('comAddress', '地址'),
+excel_export_com = OrderedDict((('comId', '企业编号'), ('comName', '企业名称'), ('comProvince', '城市'), ('comBrief', '企业简介'), ('comAddress', '地址'),
                                 ('comUrl', '网站'), ('comMon', '营业额'), ('comContact', '联系人'), ('comDate', '录入时间'),
                                 ('comProject', '企业项目'), ('comStaff', '员工人数'), ('comPhone', '电话'), ('comEmail', '邮箱'),
                                 ('comFax', '传真'), ('comCheck', '审核状态'), ('students', '实习学生人数')))
-excel_import_com = {'企业名称': 'comName', '企业简介': 'comBrief', '地址': 'comAddress', '网站': 'comUrl', '营业额': 'comMon',
+excel_import_com = {'企业名称': 'comName', '企业简介': 'comBrief', '城市': 'comProvince', '地址': 'comAddress', '网站': 'comUrl', '营业额': 'comMon',
                     '联系人': 'comContact', '录入时间': 'comDate', '企业项目': 'comProject', '员工人数': 'comStaff', '电话': 'comPhone',
                     '邮箱': 'comEmail', '传真': 'comFax'}
 
@@ -3057,12 +3088,13 @@ def export_all():
     # 建立文件
     for x in file_list:
         root_path_3 = os.path.join(root_path_2, x['grade'], x['major'], x['stuId']+'_'+x['stuName'], x['comName'])
-        print (root_path_3)
         os.system('mkdir -p %s' % root_path_3)
         os.system('cp -r %s/* %s %s %s' % (x['storage_path'], x['intern_path'], x['journal_path'], root_path_3))
         # 更改中文名
         os.system('mv %s/summary_doc %s/总结文档' % (root_path_3, root_path_3))
         os.system('mv %s/attachment %s/附件' % (root_path_3, root_path_3))
+        os.system('mv %s/agreement %s/实习协议书' % (root_path_3, root_path_3))
+        os.system('mv %s/visit %s/探访记录' % (root_path_3, root_path_3))
         os.system('mv %s/score_img/comscore %s/score_img/企业评分' % (root_path_3, root_path_3))
         os.system('mv %s/score_img/schscore %s/score_img/校内评分' % (root_path_3, root_path_3))
         os.system('mv %s/score_img %s/评分' % (root_path_3, root_path_3))
@@ -3085,7 +3117,7 @@ def export_all_page():
 
 # 导入excel表, 检查数据是否完整或出错
 EXCEL_IMPORT_CHECK_STUINTERNLIST = ['stuId', 'stuName', 'comId', 'start', 'end']
-EXCEL_IMPORT_CHECK_INTERNCOMPANY = ['comName', 'comAddress', 'comProject', 'comPhone', 'comEmail']
+EXCEL_IMPORT_CHECK_INTERNCOMPANY = ['comName', 'comAddress', 'comProject', 'comPhone', 'comEmail', 'comProvince']
 EXCEL_IMPORT_CHECK_STUUSERLIST = ['stuId', 'stuName', 'grade', 'classes', 'major', 'sex']
 EXCEL_IMPORT_CHECK_JOURNAL = ['weekNo']
 # 教师工号可为空
@@ -3143,25 +3175,6 @@ def excel_import(file, template, check_template):
             data.append(data_row)
     return data
 
-
-# 已合并到excel_import()
-def excel_import_check(data, template):
-    if template in [EXCEL_IMPORT_CHECK_STUINTERNLIST, EXCEL_IMPORT_CHECK_INTERNCOMPANY, EXCEL_IMPORT_CHECK_STUUSERLIST, EXCEL_IMPORT_CHECK_JOURNAL, EXCEL_IMPORT_CHECK_TEAUSERLIST]:
-        # 判断属性是否齐全
-        for x in template:
-            if x not in data[0].keys():
-                flash('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
-                print('导入失败: 部分必需信息缺失,请使用提供的模板来写入数据')
-                return redirect('/')
-        for xdata, col in zip(data, range(len(data))):
-            # 判断必需数据是否完整
-            for x in template:
-                if xdata[x] is None:
-                # if str(xdata[x]) is (None or ''):
-                    # 第几行这里有误
-                    flash('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col + 1)
-                    print('导入失败:第%s行有不完整或格式不对的数据,请修改后再导入' % col + 1)
-                    return redirect('/')
 
 # 导入的Excel中, 统一将长串的float类型改为str
 # 适用于学号,电话号码
@@ -3325,37 +3338,39 @@ def excel_importpage():
                     for com, col in zip(comlist, range(len(comlist))):
                         if current_user.can(Permission.COM_INFOR_CHECK):
                              cominfor = ComInfor(
-                                comName=com['comName'],
-                                comBrief=com['comBrief'],
-                                comAddress=com['comAddress'],
-                                comUrl=com['comUrl'],
+                                comName = com['comName'],
+                                comProvince = com['comProvince'],
+                                comBrief = com['comBrief'],
+                                comAddress = com['comAddress'],
+                                comUrl = com['comUrl'],
                                 # 使Excel生成的保留一位小数数字,变成保留到个位
-                                comMon=str(com['comMon'])[:-2],
-                                comContact=com['comContact'],
+                                comMon = str(com['comMon'])[:-2],
+                                comContact = com['comContact'],
                                 comDate = now,
-                                comProject=com['comProject'],
-                                comStaff=com['comStaff'],
-                                comPhone=com['comPhone'],
-                                comEmail=com['comEmail'],
-                                comFax=com['comFax'],
-                                comCheck=2
+                                comProject = com['comProject'],
+                                comStaff = com['comStaff'],
+                                comPhone = com['comPhone'],
+                                comEmail = com['comEmail'],
+                                comFax = com['comFax'],
+                                comCheck = 2
                             )
                         else:
                             cominfor = ComInfor(
-                                comName=com['comName'],
-                                comBrief=com['comBrief'],
-                                comAddress=com['comAddress'],
-                                comUrl=com['comUrl'],
+                                comName = com['comName'],
+                                comProvince = com['comProvince'],
+                                comBrief = com['comBrief'],
+                                comAddress = com['comAddress'],
+                                comUrl = com['comUrl'],
                                 # 使Excel生成的保留一位小数数字,变成保留到个位
-                                comMon=str(com['comMon'])[:-2],
-                                comContact=com['comContact'],
+                                comMon = str(com['comMon'])[:-2],
+                                comContact = com['comContact'],
                                 comDate = now,
-                                comProject=com['comProject'],
-                                comStaff=com['comStaff'],
-                                comPhone=com['comPhone'],
-                                comEmail=com['comEmail'],
-                                comFax=com['comFax'],
-                                comCheck =0
+                                comProject = com['comProject'],
+                                comStaff = com['comStaff'],
+                                comPhone = com['comPhone'],
+                                comEmail = com['comEmail'],
+                                comFax = com['comFax'],
+                                comCheck = 0
                             )
                         db.session.add(cominfor)
 
@@ -3551,7 +3566,7 @@ def stuSumList():
         else:
             pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(
                 Summary, Summary.internId == InternshipInfor.Id) \
-                .add_columns(ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start,
+                .add_columns(ComInfor.comName, InternshipInfor.comId, InternshipInfor.stuId, InternshipInfor.Id, InternshipInfor.start,
                              InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck,
                              Summary.sumScore, Summary.sumCheck) \
                 .filter(InternshipInfor.stuId == stuId).order_by(
@@ -3697,6 +3712,9 @@ def xSumScore():
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     path = os.path.join(os.path.abspath('.'), 'app/static/storage', internId, 'score_img')
     sumScore = Summary.query.filter_by(internId=internId).first().sumScore
+    if internship.internStatus != 2:
+        flash('实习结束后方可提交成绩')
+        return redirect(url_for('.xSum', internId=internId, stuId=stuId))
     if not sumScore:
         flash('请先完善实习成绩信息！')
         return redirect(url_for('.xSumScoreEdit', internId=internId, stuId=stuId))
@@ -3992,14 +4010,17 @@ def selectManage():
 @main.route('/upload_Visit',methods=['GET','POST'])
 @login_required
 def upload_Visit():
+    permission = current_user.can(Permission.UPLOAD_VISIT)
+    if not permission:
+        flash('非法操作')
+        return redirect('/')
+    userId=current_user.get_id()
     path=None
     files=[]
     filename=request.args.get('filename')
-    userId=None
-    url='%s/visit/%s'%(STORAGE_FOLDER,current_user.teaId)
+    url='%s/visit/%s'%(STORAGE_FOLDER, userId)
     if os.path.exists(url):
         files=os.listdir(url)
-        userId=current_user.teaId
     if filename:
         path=os.path.join(STATIC_STORAGE,'visit',userId,filename)
     if request.method=='POST':

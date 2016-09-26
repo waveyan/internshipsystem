@@ -107,6 +107,7 @@
                     <li>
                         <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">上传文件</a>
                     </li>
+                    <li class="divider"></li>
                 {% elif current_user.can(Permission.STU_SUM_EDIT) and summary.sumCheck!=2 %}
                     <li><a onClick="ComfirmDelete()">删除</a></li>
                     <li>
@@ -116,6 +117,9 @@
                 {% endif %}
                 <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
                 <li><a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a></li>
+                <li>
+                    <a href="{{ url_for('.visit', internId=internship.Id) }}">教师探访记录</a>
+                </li>
             </ul>
         </div>
         </h1>

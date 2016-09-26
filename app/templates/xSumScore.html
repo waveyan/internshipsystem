@@ -20,13 +20,15 @@
 {% block page_content %}
 
     <div class="page-`er">
-        {% if current_user.roleId==0 and summary.sumCheck!=2%}
+        {% if current_user.roleId==0 %}
             <h1>我的实习评分
-                  <div class="btn-group">
-            <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
-                <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
-            </a>
-        </div>
+            {% if summary.sumCheck!=2 %}
+                <div class="btn-group">
+                <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
+                    <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
+                </a>
+                </div>
+            {% endif %}
         {% elif current_user.can(Permission.STU_SUM_EDIT) and summary.sumCheck!=2 %}
             <h1>{{ student.stuName }}的实习评分
                               <div class="btn-group">
