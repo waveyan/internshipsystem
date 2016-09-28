@@ -215,7 +215,7 @@ def stuInternList():
             return redirect(url_for('.addcominfor', from_url='stuInternList'))
         else:
             pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-                .add_columns(ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start,
+                .add_columns(ComInfor.comName, ComInfor.comProvince,InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start,
                              InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck) \
                 .filter(InternshipInfor.stuId == stuId).order_by(
                 func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
@@ -228,7 +228,7 @@ def stuInternList():
         intern = create_intern_filter(grade, major, classes, 0)
         intern_org = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(
             Teacher, Teacher.teaId == InternshipInfor.icheckTeaId) \
-            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId,
+            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId, ComInfor.comProvince,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
                          InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
                          InternshipInfor.opinion, InternshipInfor.icheckTime) \
@@ -2833,7 +2833,7 @@ excel_import_com = {'企业名称': 'comName', '企业简介': 'comBrief', '城�
 
 # 日志表
 # 实习详情
-excel_export_journal_internDetail =  OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comName', '企业名称'),('major','专业班级'), ('start','实习期间')))
+excel_export_journal_internDetail =  OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comName', '企业名称'), ('comProvince', '企业城市'), ('major','专业班级'), ('start','实习期间')))
 # 日志详情
 excel_export_journal_log =  OrderedDict((('weekNo','第N周'), ('workStart','工作时间'), ('mon','周一'), ('tue','周二'), ('wed','周三'), ('thu','周四'), ('fri','周五'), ('sat','周六'), ('sun','周日')))
 
@@ -2884,7 +2884,7 @@ def journal_export(internIdList):
     ws = wb.add_sheet('Sheet 1', cell_overwrite_ok=True)
     row = 0
     for internId in internIdList:
-        intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(ComInfor, ComInfor.comId == InternshipInfor.comId).add_columns(InternshipInfor.stuId, InternshipInfor.start, InternshipInfor.end, Student.stuName, Student.major, Student.classes, ComInfor.comName).filter(InternshipInfor.Id == internId).first()
+        intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(ComInfor, ComInfor.comId == InternshipInfor.comId).add_columns(InternshipInfor.stuId, InternshipInfor.start, InternshipInfor.end, Student.stuName, Student.major, Student.classes, ComInfor.comName, ComInfor.comProvince).filter(InternshipInfor.Id == internId).first()
         journal = Journal.query.filter(Journal.internId == internId).all()
         # 实习详情, 一次写两行
         for col, colname in zip(range(len(template_A)), template_A):
@@ -2897,6 +2897,8 @@ def journal_export(internIdList):
                 ws.write(row+1, col, ((getattr(intern, colname) + str(getattr(intern,'classes')) + '班')))
             elif colname in ['start']:
                 ws.write(row+1, col, (str(getattr(intern, colname)) + ' 至 ' + str(getattr(intern,'end')) ))
+            else:
+                ws.write(row+1, col, (str(getattr(intern, colname))) )
         # 空一行
         row = row + 3
         # 日志记录
@@ -3063,7 +3065,7 @@ def export_all():
         .join(ComInfor, ComInfor.comId==InternshipInfor.comId) \
         .outerjoin(Teacher, Teacher.teaId==InternshipInfor.icheckTeaId) \
         .filter(InternshipInfor.internStatus==2, InternshipInfor.internCheck==2) \
-        .add_columns(InternshipInfor.Id, InternshipInfor.stuId, InternshipInfor.internCheck, InternshipInfor.internStatus, InternshipInfor.start, InternshipInfor.end, InternshipInfor.task, InternshipInfor.opinion, InternshipInfor.icheckTime, Student.stuName, Student.grade, Student.major, ComInfor.comName, InternshipInfor.address, Teacher.teaName)
+        .add_columns(InternshipInfor.Id, InternshipInfor.stuId, InternshipInfor.internCheck, InternshipInfor.internStatus, InternshipInfor.start, InternshipInfor.end, InternshipInfor.task, InternshipInfor.opinion, InternshipInfor.icheckTime, Student.stuName, Student.grade, Student.major, ComInfor.comName, ComInfor.comProvince, InternshipInfor.address, Teacher.teaName)
     internlist = intern_org.all()
     for intern in internlist:
         x_grade = intern.grade
