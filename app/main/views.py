@@ -181,6 +181,7 @@ def statistics_area_rank():
 # --------------------------------------------------------------------
 # 首页
 @main.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
     return render_template('index.html', Permission=Permission)
 
@@ -465,11 +466,14 @@ def is_schdirtea(stuId):
 @main.route('/xIntern', methods=['GET', 'POST'])
 @login_required
 def xIntern():
+    internId = request.args.get('internId')
     if current_user.roleId == 0:
         stuId = current_user.stuId
+        if stuId!=InternshipInfor.query.filter_by(Id=internId).first().stuId:
+            flash('非法操作！')
+            return redirect('/')
     else:
         stuId = request.args.get('stuId')
-    internId = request.args.get('internId')
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     student = Student.query.filter_by(stuId=stuId).first()
     internship = InternshipInfor.query.filter_by(Id=internId).first()
@@ -1371,11 +1375,15 @@ def stuJournalList():
 @main.route('/xJournal', methods=['GET', 'POST'])
 @login_required
 def xJournal():
+    internId = request.args.get('internId')
+    #防sql注入
     if current_user.roleId == 0:
         stuId = current_user.stuId
+        if stuId!=InternshipInfor.query.filter_by(Id=internId).first().stuId:
+            flash('非法操作！')
+            return redirect('/')
     else:
         stuId = request.args.get('stuId')
-    internId = request.args.get('internId')
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     student = Student.query.filter_by(stuId=stuId).first()
     # 获得当前时间对应的页码
@@ -3596,11 +3604,15 @@ def stuSumList():
 @main.route('/xSum', methods=['GET', 'POST'])
 @login_required
 def xSum():
+    internId = request.args.get('internId')
+    #防sql注入
     if current_user.roleId == 0:
         stuId = current_user.stuId
+        if stuId!=InternshipInfor.query.filter_by(Id=internId).first().stuId:
+            flash('非法操作！')
+            return redirect('/')
     else:
         stuId = request.args.get('stuId')
-    internId = request.args.get('internId')
     summary = request.args.get('summary')
     attach = request.args.get('attach')
     path = None
@@ -4027,7 +4039,7 @@ def upload_Visit():
         try:
             if 'delete' in request.form:
                 os.remove(os.path.join(STORAGE_FOLDER,'visit',userId,request.form.get('delete')))
-                flash('删除成功！')
+                flash('删除成功！仅删除教师文件夹内的探访记录，而已选学生中的探访记录需到各个学生实习信息中删除!')
                 return redirect(url_for('.upload_Visit'))
             if 'download' in request.form:
                 file_name=request.form.get('download')
@@ -4077,6 +4089,12 @@ def selectStudent():
 @login_required
 def visit():
     internId=request.args.get('internId')
+    #防止sql注入
+    if current_user.roleId==0:
+        stuId=InternshipInfor.query.filter_by(Id=internId).first().stuId
+        if current_user.stuId!=stuId:
+            flash('非法操作！')
+            return redirect('/')
     url='%s/%s/visit'%(STORAGE_FOLDER,internId)
     file=None
     print(url)
