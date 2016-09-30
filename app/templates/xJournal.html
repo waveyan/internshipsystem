@@ -131,7 +131,8 @@
             <th width="200">姓名</th>
             <td width="400" height="50">{{ student.stuName }}</td>
             <th width="200">实习单位</th>
-            <td width="400" height="50">{{ comInfor.comName }}</td>
+            <!-- <td width="400" height="50">{{ comInfor.comName }}</td> -->
+            <td height="50" width="400" colspan="5"><a href="{{ url_for('.cominfor', id=comInfor.comId) }}">{{ comInfor.comName }}</a></td>
         </tr>
         <tr>
             <th width="200">实习期间</th>
