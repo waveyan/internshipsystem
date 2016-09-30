@@ -13,7 +13,12 @@
    {% if current_user.can(Permission.UPLOAD_VISIT) %}
     <form method="POST" enctype="multipart/form-data">
     <h3>上传我的探访记录</h3>
-    	<input id="file-1" type="file" class="file" name="visit" data-overwrite-initial="false" data-min-file-count="1"><h5><small>单文件上传，仅支持pdf格式文件上传</small></h5>
+    	<input id="file-1" type="file" class="file" name="visit" data-overwrite-initial="false" data-min-file-count="1"><h5><small>
+    <span class="label label-danger">注意</span>
+    <br>
+    *&nbsp&nbsp单文件上传，仅支持pdf格式文件上传
+    <br>*&nbsp&nbsp
+    探访记录文件不可重名，若重名，新的探访记录将会覆盖原有探访记录.</small></h5>
     </form>
     <br>
    {% endif %}
@@ -81,6 +86,7 @@
             </object>
         </div>
         {% endif %}
+
   {% endblock %}
 
   {% block scripts %}
