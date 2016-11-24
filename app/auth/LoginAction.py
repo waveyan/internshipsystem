@@ -1,7 +1,7 @@
 import os
 import requests
 from flask import redirect, session, request, url_for
-from flask.ext.login import login_user
+from flask.ext.login import login_user, logout_user
 from ..models import Teacher,Student
 from .. import db
 
@@ -9,25 +9,28 @@ from .. import db
 class LoginAction(object):
     def __init__(self):
         # 设置应用系统的AppID，每个应用都不同，到网络中心注册
-        self._appId = "待填"
+        self._appId = "swss"
         # 中央认证服务器地址配置，登陆账号密码，获取Token
         self._casLoginUrl = "https://cas.dgut.edu.cn/?appid=%s"%self._appId
         self._casCheckTokenUrl = "http://cas-#.dgut.edu.cn/ssoapi/checktoken"
         # 本应用地址
-        self._successUrl = os.environ.get('local_ip')
+        # self._successUrl = os.environ.get('local_ip')
+        self._successUrl = url_for('auth.lg')
+
 
     def service(self, token=None):
 
         # 没有Token，把用户重定向到中央认证登陆页
         if token is None:
-            print('没有token')
-            return redirect(self._casLoginUrl)
+            print('there is no token')
+            return self._casLoginUrl
             #输入账号密码，获取Token并返回应用
         else:
+            print('Login success')
             # 调用中央认证验证token接口，验证Token的有效性
             tokens = token.split('-')
             if len(tokens) < 3:
-                return redirect(self._casLoginUrl)
+                return self._casLoginUrl
             else:
                 # 取出token 中的casid
                 apiUrl = self._casCheckTokenUrl.replace('#', tokens[1])
@@ -39,6 +42,7 @@ class LoginAction(object):
                     'userip': userIp,
                     'appid': self._appId
                 }
+                print("token:%s, userip:%s" % (token, userIp))
                 #到中央验证系统进行兑票
                 r = requests.post(apiUrl, data=paramStr)
                 # responseData = r.text
@@ -46,24 +50,24 @@ class LoginAction(object):
                 resultModel = r.json()
 
                 if resultModel.get('Result') == 0:
-                    if resultModel['UserGroup'] == 'Teacher':
-                        teacher = Teacher.query.filter_by(teacherId=resultModel['LoginName']).first()
-                        if teacher:
-                            login_user(teacher)
-                            return redirect(self._successUrl)
-                    else:
+                    if resultModel['UserGroup'] == 'Student':
                         student=Student.query.filter_by(stuId=resultModel['LoginName']).first()
                         if student:
                             login_user(student)
                             #消息提示
                             message={}
-                            message[0]=current_user.internCheck
-                            message[1]=current_user.jourCheck
-                            message[2]=current_user.sumCheck
-                            session['message']=message
-                            return redirect(self._successUrl)
-                    # return True
-                    return redirect(self._casLoginUrl)
+                            internCheck = Student.query.filter_by(stuId=student.stuId).first().internCheck
+                            message[0] = internCheck
+                            jourCheck = Student.query.filter_by(stuId=student.stuId).first().jourCheck
+                            message[1] = jourCheck
+                            sumCheck = Student.query.filter_by(stuId=student.stuId).first().sumCheck
+                            message[2] = sumCheck
+                            session['message'] = message
+                    else:
+                        teacher = Teacher.query.filter_by(teaId=resultModel['LoginName']).first()
+                        if teacher:
+                            login_user(teacher)
+                    return self._successUrl
                 else:
                     # 返回登陆页
-                    return redirect(self._casLoginUrl)
+                    return self._casLoginUrl

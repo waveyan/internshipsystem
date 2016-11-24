@@ -60,7 +60,7 @@
 </div>
 <br><br>
     <!-- 统计图 -->
-    <div id="main" style="width: 1000px;height:450px;">
+    <div id="main" style="width: 1200px;height:450px;">
   </div>
     
     <script type="text/javascript">
@@ -76,7 +76,7 @@
                 data: ['累计实习人数top6']
             },
             xAxis: {
-                data: ["{{ comlist[0]['comAddress'] }}", "{{ comlist[1]['comAddress'] }}", "{{ comlist[2]['comAddress'] }}", "{{ comlist[3]['comAddress'] }}", "{{ comlist[4]['comAddress'] }}", "{{ comlist[5]['comAddress'] }}","{{comlist[6]['comAddress']}}"]
+                data: ["{{ comlist[0]['comCity'] }}", "{{ comlist[1]['comCity'] }}", "{{ comlist[2]['comCity'] }}", "{{ comlist[3]['comCity'] }}", "{{ comlist[4]['comCity'] }}", "{{ comlist[5]['comCity'] }}"]
                 // data: [ten0.innerHTML, ten1.innerHTML, ten2.innerHTML, ten3.innerHTML, ten4.innerHTML, ten5.innerHTML, "其他"]
             },
             yAxis: {},
@@ -85,7 +85,7 @@
                 type: 'bar',
                 // data: [ten10.innerHTML, ten11.innerHTML, ten12.innerHTML, ten13.innerHTML, ten14.innerHTML, ten15.innerHTML, other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML]
 
-                data: ["{{ comlist[0]['students'] }}", "{{ comlist[1]['students'] }}", "{{ comlist[2]['students'] }}", "{{ comlist[3]['students'] }}", "{{ comlist[4]['students'] }}", "{{ comlist[5]['students'] }}", "{{ comlist[6]['students'] }}"]
+                data: ["{{ comlist[0]['students'] }}", "{{ comlist[1]['students'] }}", "{{ comlist[2]['students'] }}", "{{ comlist[3]['students'] }}", "{{ comlist[4]['students'] }}", "{{ comlist[5]['students'] }}"]
             }]
         };
 
@@ -121,13 +121,13 @@
                         //     value: other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML,
                         //     name: "其他"
                         // },
-                        {name:"{{ comlist[0]['comAddress'] }}", value:"{{ comlist[0]['students'] }}"},
-                        {name:"{{ comlist[1]['comAddress'] }}", value:"{{ comlist[1]['students'] }}"},
-                        {name:"{{ comlist[2]['comAddress'] }}", value:"{{ comlist[2]['students'] }}"},
-                        {name:"{{ comlist[3]['comAddress'] }}", value:"{{ comlist[3]['students'] }}"},
-                        {name:"{{ comlist[4]['comAddress'] }}", value:"{{ comlist[4]['students'] }}"},
-                        {name:"{{ comlist[5]['comAddress'] }}", value:"{{ comlist[5]['students'] }}"},
-                        {name:"{{ comlist[6]['comAddress'] }}", value:"{{ comlist[6]['students'] }}"}
+                        {name:"{{ comlist[0]['comCity'] }}", value:"{{ comlist[0]['students'] }}"},
+                        {name:"{{ comlist[1]['comCity'] }}", value:"{{ comlist[1]['students'] }}"},
+                        {name:"{{ comlist[2]['comCity'] }}", value:"{{ comlist[2]['students'] }}"},
+                        {name:"{{ comlist[3]['comCity'] }}", value:"{{ comlist[3]['students'] }}"},
+                        {name:"{{ comlist[4]['comCity'] }}", value:"{{ comlist[4]['students'] }}"},
+                        {name:"{{ comlist[5]['comCity'] }}", value:"{{ comlist[5]['students'] }}"},
+            //            {name:"{{ comlist[6]['comCity'] }}", value:"{{ comlist[6]['students'] }}"}
                     ],
                     roseType: 'angle',
                     itemStyle: {

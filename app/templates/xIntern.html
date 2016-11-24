@@ -166,7 +166,8 @@
                         {% elif current_user.can(Permission.STU_INTERN_CHECK) or schdirtea_can %}
                             <li><a onClick="ComfirmCheck()">审核</a></li>
                             <li>
-                                <a href="{{ url_for('main.xInternEdit',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">修改</a>
+                                <!-- <a href="{{ url_for('main.xInternEdit',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">修改</a> -->
+                                <a onClick="Admin_ComfirmEdit()" >修改</a>
                             </li>
                             <li><a onClick="ComfirmDelete()">删除</a></li>
                         {% endif %}
@@ -221,12 +222,16 @@
             <td width="200" colspan="6" height="50">二、实习企业信息</td>
         </tr>
         <tr>
-            <th>企业名称</th>
+            <th>企业名称
+                {% if comInfor.comCheck != 2 %}
+                    <span class="label label-warning">未通过审核</span>
+                {% endif %}
+            </th>
             <td height="50" width="400" colspan="5"><a href="{{ url_for('.cominfor', id=comInfor.comId) }}">{{ comInfor.comName }}</a></td>
         </tr>
         <tr>
             <th>企业城市</th>
-            <td height="50" width="400" colspan="5">{{ comInfor.comProvince }}</td>
+            <td height="50" width="400" colspan="5">{{ comInfor.comCity }}</td>
         </tr>
         <tr>
             <th>企业地址</th>
@@ -238,10 +243,6 @@
         </tr>
         <tr>
             <td width="200" colspan="6" height="50">三、实习岗位信息</td>
-        </tr>
-        <tr>
-            <th>实习地点</th>
-            <td width="400" height="50" colspan="5">{{ internship.address }}</td>
         </tr>
         <tr>
             <th>实习期间</th>
@@ -318,10 +319,29 @@
         </table>
         <table align="center" border="2" class="table-bordered">
             <tr>
-                <td width="200" colspan="6" height="50">五、审核意见</td>
+                <td width="200" colspan="6" height="50">五、审核情况</td>
             </tr>
             <tr>
-                <th width="200">专业意见</th>
+                <th width="200">修改时间</th>
+                <td width="400" height="50" colspan="3">
+                    {{ internship.time }}
+                </td>
+                <th width="200">审核时间</th>
+                <td width="400" height="50" colspan="3">
+                    {% if internship.internCheck==2 %}
+                        {{ internship.icheckTime }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th width="200">审核教师</th>
+                <td width="400" height="50" colspan="3">{{ checktea.teaName }}</td>
+            </tr>
+        </table>
+
+        <table align="center" border="2" class="table-bordered">
+            <tr>
+                <th width="200">审核意见</th>
                 <td height="200" width="1000">
                     {% if internship.opinion %}
                         <p>{{ internship.opinion }}</p>
@@ -331,6 +351,7 @@
                 </td>
             </tr>
         </table>
+
     <br>
     <br><a href="{{ url_for('.stuInternList') }}">
     <div class="btn btn-primary">返回</div>

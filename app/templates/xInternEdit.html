@@ -85,15 +85,9 @@
             <td width="200" height="50">三、实习岗位信息</td>
         </tr>
         <form method="POST" action="/xInternEdit_intern">
-            <tr>
-                <th>实习地点</th>
-                <td width="400" height="50" colspan="5">
                     <input type="hidden" name="comId" value="{{ comInfor.comId }}">
                     <input type="hidden" name="internId" value="{{ internship.Id }}">
                     <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                    {{ internform.address(class="form-control",required='', value=internship.address) }}</td>
-                </td>
-            </tr>
             <tr>
                 <th>实习期间</th>
                 <td width="400" height="50" colspan="5">

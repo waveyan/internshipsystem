@@ -50,28 +50,31 @@
         </tr>
         </thead>
         <tbody>
-        {% for stu in student %}
+        {% for intern in internship %}
             <tr>
-                <td><a href="{{ url_for('.studetail',stuId=stu.stuId,comId=comId) }}">{{ stu.stuName }}</a></td>
-                <td>{{ stu.stuId }}</td>
-                <td>{{ stu.grade }}</td>
-                <td>{{ stu.major }}{{ stu.classes }}</td>
+                <td><a href="{{ url_for('.xIntern', internId=intern.Id) }}">{{ intern.stuName }}</a></td>
+                <td>{{ intern.stuId }}</td>
+                <td>{{ intern.grade }}</td>
+                <td>{{ intern.major }}{{ intern.classes }}班</td>
+                <td>
+                    {% if intern.internStaus == 0 %}待实习
+                    {% elif intern.internStatus == 1%}实习中
+                    {% elif intern.internStatus == 2 %}实习结束
+                    {% endif %}
+                </td>
+                    
+
                 <!--
-                <td>1</td>
-                -->
-                {% if session[stu.stuId] %}
-                    <td>实习结束</td>
-                {% else %}
-                    <td>实习中</td>
-                {% endif %}
                 <td><a>审核</a>|<a>删除</a></td>
+                -->
+
                 </tr>
         {% endfor %}
         </tbody>
     </table>
     {% if pagination %}
         <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.studentList',comId=comId) }}
+            {{ macros.pagination_widget(pagination,'.comInternList',comId=comId) }}
         </div>
     {% endif %}
 {% endblock %}

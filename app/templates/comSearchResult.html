@@ -54,7 +54,7 @@
                     <td>{{ com.comPhone }}</td>
                     {% if selectCom==None %}
                         {% if current_user.can(Permission.STU_INTERN_LIST) %}
-                            <td><a href="{{ url_for('.studentList',comId=com.comId) }}">
+                            <td><a href="{{ url_for('.comInternList',comId=com.comId) }}">
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</a></td>
                         {% else %}
                             <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>

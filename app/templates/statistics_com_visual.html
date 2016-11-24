@@ -60,7 +60,7 @@
         <br>
         <script src="/static/JS/echarts.common.min.js"></script>
         <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-        <div id="main" style="width: 900px;height:450px;"></div>
+        <div id="main" style="width: 1200px;height:450px;"></div>
         <script type="text/javascript">
             // 基于准备好的dom，初始化echarts实例
             var myChart = echarts.init(document.getElementById('main'));
@@ -71,15 +71,19 @@
                 },
                 tooltip: {},
                 xAxis: {
+                    axisLabel :{ 
+                       interval:0,
+                    }, 
+
                     // data: [ten0.innerHTML, ten1.innerHTML, ten2.innerHTML, ten3.innerHTML, ten4.innerHTML, ten5.innerHTML, "其他"]
-                    data: ["{{ comlist[0]['comName'] }}", "{{ comlist[1]['comName'] }}", "{{ comlist[2]['comName'] }}", "{{ comlist[3]['comName'] }}", "{{ comlist[4]['comName'] }}", "{{ comlist[5]['comName'] }}", "{{ comlist[6]['comName'] }}"]
+                    data: ["{{ comlist[0]['comName'] }}", "{{ comlist[1]['comName'] }}", "{{ comlist[2]['comName'] }}", "{{ comlist[3]['comName'] }}", "{{ comlist[4]['comName'] }}", "{{ comlist[5]['comName'] }}"]
                 },
                 yAxis: {},
                 series: [{
                     name: '累计人数',
                     type: 'bar',
                     // data: [ten10.innerHTML, ten11.innerHTML, ten12.innerHTML, ten13.innerHTML, ten14.innerHTML, ten15.innerHTML, other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML]
-                    data: ["{{ comlist[0]['students'] }}", "{{ comlist[1]['students'] }}", "{{ comlist[2]['students'] }}", "{{ comlist[3]['students'] }}", "{{ comlist[4]['students'] }}", "{{ comlist[5]['students'] }}", "{{ comlist[6]['students'] }}"]
+                    data: ["{{ comlist[0]['students'] }}", "{{ comlist[1]['students'] }}", "{{ comlist[2]['students'] }}", "{{ comlist[3]['students'] }}", "{{ comlist[4]['students'] }}", "{{ comlist[5]['students'] }}"]
                 }]
             };
 
@@ -123,7 +127,7 @@
                                 {name:"{{ comlist[3]['comName'] }}", value:"{{ comlist[3]['students'] }}"},
                                 {name:"{{ comlist[4]['comName'] }}", value:"{{ comlist[4]['students'] }}"},
                                 {name:"{{ comlist[5]['comName'] }}", value:"{{ comlist[5]['students'] }}"},
-                                {name:"{{ comlist[6]['comName'] }}", value:"{{ comlist[6]['students'] }}"}
+                                //{name:"{{ comlist[6]['comName'] }}", value:"{{ comlist[6]['students'] }}"}
                             ],
                             roseType: 'angle',
                             itemStyle: {

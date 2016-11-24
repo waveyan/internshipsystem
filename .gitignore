@@ -1,12 +1,17 @@
 # python.gitignore
 # Byte-compiled / optimized / DLL files
+bin/
 config.py
 .idea/
 storage/
 app/static/storage
+app/static/Flexpaper
 onlinePDF/
 *.swf
 file_cache
+py3venv/
+.nohup.out
+export_all.list
 
 __pycache__/
 *.py[cod]

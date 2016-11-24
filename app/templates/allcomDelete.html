@@ -83,8 +83,8 @@
                     <th>所在城市</th>
                     <th>企业网址</th>
                     <th>联系电话</th>
-                    <th>累计实习人次</th>
-                    <th>审核状态</th>
+                    <th width="80">实习人次</th>
+                    <th width="80">审核状态</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -105,7 +105,7 @@
 
                                 <!-- 若将整个页面设置为仅审核老师以上才能访问 -->
                                 {% if current_user.can(Permission.STU_INTERN_LIST) %}
-                                    <td><a href="{{ url_for('.studentList',comId=com.comId) }}">
+                                    <td><a href="{{ url_for('.comInternList',comId=com.comId) }}">
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</a>
                                     </td>
                                 {% else %}

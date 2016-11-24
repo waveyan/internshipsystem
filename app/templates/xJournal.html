@@ -142,7 +142,7 @@
     <br>
     <table align="center" border="2" class="table-bordered">
 
-        {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'七'} %}
+        {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'日'} %}
         {% for jour in journal %}
                 {% set cur = jour.workStart.isoweekday() %}
                 {% set cur_end = jour.workEnd.isoweekday() %}

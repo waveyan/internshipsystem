@@ -31,7 +31,7 @@ class searchForm(Form):
 
 class comForm(Form):
     comName = StringField('公司名称', validators=[Required(message='此项不能为空')], id='task')
-    comProvince=StringField('公司所在城市',validators=[Required(message='此项不能为空')])
+    comCity=StringField('公司所在城市',validators=[Required(message='此项不能为空')])
     comAddress = StringField('公司详细地址', validators=[Required(message='此项不能为空')])
     # comUrl = StringField('公司网址', validators=[Required(message='此项不能为空'), URL(message='请输入正确的URL')])
     comUrl = StringField('公司网址', [validators.Regexp(message='Not a proper param', regex=r'.*com.*')])
@@ -48,7 +48,6 @@ class comForm(Form):
 
 class internshipForm(Form):
     task = TextAreaField('实习任务', validators=[Required(message='此项不能为空')])
-    address = StringField('实习地址', validators=[Required(message='此项不能为空')])
     start = DateTimeField('开始时间', format='%Y-%m-%d', validators=[Required()])
     end = DateTimeField('结束时间', format='%Y-%m-%d', validators=[Required(message='请按 年-月-日 的格式输入正确的日期')])
     image = FileField()

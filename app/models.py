@@ -207,7 +207,7 @@ class ComInfor(db.Model):
     comId = db.Column(db.Integer, primary_key=True)
     comName = db.Column(db.String(20))
     comBrief = db.Column(db.String(200))
-    comProvince=db.Column(db.String(20))
+    comCity=db.Column(db.String(20))
     comAddress = db.Column(db.String(100))
     comUrl = db.Column(db.String(50))
     comMon = db.Column(db.String(10))
@@ -250,7 +250,6 @@ class InternshipInfor(db.Model):
     __tablename__ = 'InternshipInfor'
     Id = db.Column(db.Integer, primary_key=True)
     task = db.Column(db.String(200))
-    address = db.Column(db.String(200))
     opinion = db.Column(db.String(250))
     start = db.Column(db.Date)
     end = db.Column(db.Date)

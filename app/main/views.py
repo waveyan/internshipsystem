@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, date
 import xlwt, xlrd, os, random, subprocess, re,shutil
 from collections import OrderedDict
 from werkzeug.utils import secure_filename
-
+from sqlalchemy.orm import aliased
 
 
 # -----------------------------统计----------------------------------------
@@ -39,27 +39,27 @@ def update_area_filter():
         session['grade']=None
     if session['major']:
         print(session['major'])
-        sql="select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' group by comAddress order by count(i.comId) desc"%session['major']
+        sql="select comCity,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' group by comCity order by count(i.comId) desc"%session['major']
         # cominfor=db.session.query(ComInfor.comAddress,func.sum(InternshipInfor.comId)).outerjoin(InternshipInfor,InternshipInfor.comId==ComInfor.comId)\
         # .outerjoin(Student,Student.stuId==InternshipInfor.stuId).group_by(ComInfor.comAddress).order_by(func.sum(ComInfor.comId).desc()).filter(Student.major==session['major'])
         if session['grade']:
             print(session['grade'])
-            sql="select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' and grade=%s group by comAddress order by count(i.comId) desc"%(session['major'],session['grade'])
+            sql="select comCity,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' and grade=%s group by comCity order by count(i.comId) desc"%(session['major'],session['grade'])
             # cominfor=cominfor.filter(Student.grade==session['grade'])
 
     if session['grade']:
         print(session['grade'])
-        sql="select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and grade='%s' group by comAddress order by count(i.comId) desc"%session['grade']
+        sql="select comCity,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and grade='%s' group by comCity order by count(i.comId) desc"%session['grade']
         # cominfor=db.session.query(ComInfor.comAddress,func.sum(ComInfor.students)).outerjoin(InternshipInfor,InternshipInfor.comId==ComInfor.comId)\
         # .outerjoin(Student,Student.stuId==InternshipInfor.stuId).group_by(ComInfor.comAddress).order_by(func.sum(ComInfor.students).desc()).filter(Student.grade==session['grade'])
         if session['major']:
             print(session['major'])
-            sql="select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' and grade=%s group by comAddress order by count(i.comId) desc"%(session['major'],session['grade'])
+            sql="select comCity,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId and major='%s' and grade=%s group by comCity order by count(i.comId) desc"%(session['major'],session['grade'])
             # cominfor=cominfor.filter(Student.major==session['major'])
 
     if not session['major'] and not session['grade']:
         print('ok')
-        sql='select comAddress,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId group by comAddress order by count(i.comId) desc'
+        sql='select comCity,count(i.comId) from ComInfor as c ,InternshipInfor as i,Student as s where c.comId=i.comId and s.stuId=i.stuId group by comCity order by count(i.comId) desc'
         # cominfor=db.session.query(ComInfor.comAddress,func.sum(ComInfor.students)).outerjoin(InternshipInfor,InternshipInfor.comId==ComInfor.comId)\
         # .outerjoin(Student,Student.stuId==InternshipInfor.stuId).group_by(ComInfor.comAddress).order_by(func.sum(ComInfor.students).desc())
     return sql
@@ -117,12 +117,12 @@ def statistics_area_visual():
     for com in cominfor:
         if index < 6:
             # com[1] 为学生人数
-            comlist[index]={'comAddress': com[0], 'students': com[1]}
+            comlist[index]={'comCity': com[0], 'students': com[1]}
             index = index + 1
-            if index == 6:
-                comlist[index]={'comAddress': '其他', 'students': 0}
-        else:
-            comlist[6]['students'] = comlist[6]['students'] + com[1]
+        #    if index == 6:
+        #        comlist[index]={'comCity': '其他', 'students': 0}
+        # else:
+        #    comlist[6]['students'] = comlist[6]['students'] + com[1]
     return render_template('statistics_area_visual.html', Permission=Permission, comlist=comlist,major=major,grade=grade)
 
 
@@ -143,10 +143,10 @@ def statistics_com_visual():
         if index < 6:
             comlist[index]={'comName': com[0], 'students': com[1]}
             index = index + 1
-            if index == 6:
-                comlist[index]={'comName': '其他', 'students': 0}
-        else:
-            comlist[6]['students'] = comlist[6]['students'] + com[1]
+        #    if index == 6:
+        #        comlist[index]={'comName': '其他', 'students': 0}
+        #else:
+        #    comlist[6]['students'] = comlist[6]['students'] + com[1]
     return render_template('statistics_com_visual.html', Permission=Permission, comlist=comlist,grade=grade,major=major)
 
 
@@ -170,9 +170,7 @@ def statistics_com_rank():
 def statistics_area_rank():
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query.filter(ComInfor.students != 0).order_by(ComInfor.students.desc()).paginate(page,
-                                                                                                           per_page=8,
-                                                                                                           error_out=False)
+    pagination = InternshipInfor.query.outerjoin(ComInfor, InternshipInfor.comId==ComInfor.comId).with_entities(ComInfor.comCity, func.count(InternshipInfor.Id).label('sum_students')).order_by(desc('sum_students')).group_by(ComInfor.comCity).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
     return render_template('statistics_area_rank.html', form=form, Permission=Permission, pagination=pagination,
                            comInfor=comInfor)
@@ -183,8 +181,9 @@ def statistics_area_rank():
 @main.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
+    if get_export_all_update_status() is 'empty':
+        get_export_all_generate()
     return render_template('index.html', Permission=Permission)
-
 
 
 # 个人实习企业列表
@@ -193,6 +192,9 @@ def index():
 @update_intern_jourCheck
 @update_intern_internStatus
 def stuInternList():
+    # temp = token_check()
+    # if temp:
+    #     return redirect(temp)
     form = searchForm()
     grade = {}
     major = {}
@@ -216,8 +218,8 @@ def stuInternList():
             return redirect(url_for('.addcominfor', from_url='stuInternList'))
         else:
             pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-                .add_columns(ComInfor.comName, ComInfor.comProvince,InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start,
-                             InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck) \
+                .add_columns(ComInfor.comName, ComInfor.comCity,InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start,
+                             InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.time) \
                 .filter(InternshipInfor.stuId == stuId).order_by(
                 func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
             internlist = pagination.items
@@ -229,10 +231,10 @@ def stuInternList():
         intern = create_intern_filter(grade, major, classes, 0)
         intern_org = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(
             Teacher, Teacher.teaId == InternshipInfor.icheckTeaId) \
-            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId, ComInfor.comProvince,
+            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId, ComInfor.comCity,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
-                         InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
-                         InternshipInfor.opinion, InternshipInfor.icheckTime) \
+                         InternshipInfor.internCheck, InternshipInfor.task, Teacher.teaName,
+                         InternshipInfor.opinion, InternshipInfor.icheckTime, InternshipInfor.time) \
             .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2))
         pagination = intern_org.paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
@@ -261,6 +263,15 @@ def selectCom():
 
 
 CITY_LIST = ['北京', '上海', '天津', '重庆', '香港', '澳门', '石家庄', '沧州', '承德', '秦皇岛', '唐山', '保定', '廊坊', '邢台', '衡水', '张家口', '邯郸', '任丘', '河间', '泊头', '武安', '沙河', '南宫', '深州', '冀州', '黄骅', '高碑店', '安国', '涿州', '定州', '三河', '霸州', '迁安', '遵化', '鹿泉', '新乐', '晋州', '藁城', '辛集', '太原', '长治', '大同', '阳泉', '朔州', '临汾', '晋城', '忻州', '运城', '晋中', '吕梁', '古交', '潞城', '高平', '原平', '孝义', '汾阳', '介休', '侯马', '霍州', '永济', '河津', '沈阳', '大连', '本溪', '阜新', '葫芦岛', '盘锦', '铁岭', '丹东', '锦州', '营口', '鞍山', '辽阳', '抚顺', '朝阳', '瓦房店', '兴城', '新民', '普兰店', '庄河', '北票', '凌源', '调兵山', '开原', '灯塔', '海城', '凤城', '东港', '大石桥', '盖州', '凌海', '北镇', '长春', '白城', '白山', '吉林', '辽源', '四平', '通化', '松原', '延吉', '珲春', '龙井', '舒兰', '临江', '公主岭', '梅河口', '德惠', '九台', '榆树', '磐石', '蛟河', '桦甸', '洮南', '大安', '双辽', '集安', '图们', '敦化', '和龙', '哈尔滨', '大庆', '大兴安岭', '鹤岗', '黑河', '鸡西', '佳木斯', '牡丹江', '七台河', '双鸭山', '齐齐哈尔', '伊春', '绥化', '虎林', '五常', '密山', '宁安', '漠河', '海伦', '肇东', '安达', '海林', '绥芬河', '富锦', '同江', '铁力', '五大连池', '北安', '讷河', '阿城', '尚志', '双城', '南京', '苏州', '扬州', '无锡', '南通', '常州', '连云港', '徐州', '镇江', '淮安', '宿迁', '泰州', '太仓', '盐城', '高邮', '新沂', '金坛', '溧阳', '淮阴', '江宁', '睢宁', '清江', '昆山', '常熟', '江阴', '宜兴', '邳州', '张家港', '吴江', '如皋', '海门', '启东', '大丰', '东台', '仪征', '扬中', '句容', '丹阳', '兴化', '姜堰', '泰兴', '靖江', '杭州', '宁波', '温州', '丽水', '奉化', '宁海', '临海', '三门', '绍兴', '舟山', '义乌', '北仑', '慈溪', '象山', '余姚', '天台', '温岭', '仙居', '台州', '嘉兴', '湖州', '衢州', '金华', '余杭', '德清', '海宁', '临安', '富阳', '建德', '平湖', '桐乡', '诸暨', '上虞', '嵊州', '江山', '兰溪', '永康', '东阳', '瑞安', '乐清', '龙泉', '合肥', '黄山', '芜湖', '铜陵', '安庆', '滁州', '宣城', '阜阳', '淮北', '蚌埠', '池州', '青阳', '九华山景区', '黄山景区', '巢湖', '亳州', '马鞍山', '宿州', '六安', '淮南', '绩溪', '界首', '明光', '天长', '桐城', '宁国', '福州', '厦门', '泉州', '漳州', '龙岩', '三明', '南平', '永安', '宁德', '莆田', '闽侯', '福鼎', '罗源', '仙游', '福清', '长乐', '云霄', '长泰', '东山岛', '邵武', '石狮', '晋江', '建阳', '福安', '漳平', '龙海', '南安', '建瓯', '武夷山', '南昌', '九江', '赣州', '景德镇', '萍乡', '新余', '吉安', '宜春', '抚州', '上饶', '鹰潭', '陵川', '瑞金', '井冈山', '瑞昌', '乐平', '南康', '德兴', '丰城', '樟树', '高安', '贵溪', '济南', '青岛', '烟台', '威海', '潍坊', '德州', '滨州', '东营', '聊城', '菏泽', '济宁', '临沂', '淄博', '泰安', '枣庄', '日照', '莱芜', '海阳', '平度', '莱阳', '青州', '肥城', '章丘', '即墨', '利津', '武城', '桓台', '沂源', '曲阜', '龙口', '胶州', '胶南', '莱西', '临清', '乐陵', '禹城', '安丘', '昌邑', '高密', '诸城', '寿光', '栖霞', '莱州', '蓬莱', '招远', '文登', '荣成', '乳山', '滕州', '兖州', '邹城', '新泰', '郑州', '安阳', '济源', '鹤壁', '焦作', '开封', '濮阳', '三门峡', '驻马店', '商丘', '新乡', '信阳', '许昌', '周口', '南阳', '洛阳', '平顶山', '漯河', '中牟', '洛宁', '荥阳', '登封', '项城', '灵宝', '义马', '舞钢', '长葛', '禹州', '林州', '辉县', '卫辉', '沁阳', '孟州', '偃师', '新密', '登封', '新郑', '汝州', '永城', '邓州', '巩义', '武汉', '十堰', '宜昌', '鄂州', '黄石', '襄樊', '荆州', '荆门', '孝感', '黄冈', '咸宁', '随州', '恩施', '仙桃', '天门', '潜江', '神农架', '沙市', '老河口', '利川', '当阳', '枝江', '宜都', '松滋', '洪湖', '石首', '赤壁', '大冶', '麻城', '武穴', '广水', '安陆', '应城', '汉川', '钟祥', '宜城', '枣阳', '丹江口', '长沙', '张家界', '株洲', '韶山', '衡阳', '郴州', '冷水江', '娄底', '耒阳', '永州', '湘乡', '湘潭', '常德', '益阳', '怀化', '邵阳', '岳阳', '吉首', '大庸', '韶山', '常宁', '浏阳', '津市', '沅江', '汨罗', '临湘', '醴陵', '资兴', '武冈', '洪江', '广州', '深圳', '珠海', '东莞', '佛山', '潮州', '汕头', '湛江', '中山', '惠州', '河源', '揭阳', '梅州', '肇庆', '茂名', '云浮', '阳江', '江门', '韶关', '乐昌', '化州', '从化', '鹤山', '汕尾', '清远', '顺德', '雷州', '廉江', '吴川', '高州', '信宜', '阳春', '罗定', '四会', '高要', '开平', '台山', '恩平', '陆丰', '普宁', '兴宁', '南雄', '连州', '英德', '增城', '南宁', '柳州', '北海', '百色', '梧州', '贺州', '玉林', '河池', '桂林', '钦州', '防城港', '来宾', '崇左', '贵港', '北流', '宜州', '桂平', '岑溪', '东兴', '凭祥', '合山', '海口', '三亚', '琼海', '儋州', '文昌', '万宁', '东方', '五指山', '成都', '内江', '峨眉山', '绵阳', '宜宾', '泸州', '攀枝花', '自贡', '资阳', '崇州', '西昌', '都江堰', '遂宁', '乐山', '达州', '江油', '大邑', '金堂', '德阳', '南充', '广安', '广元', '巴中', '雅安', '眉山', '马尔康', '康定', '三台', '丹棱', '梁平', '万县', '广汉', '汶川县', '什邡', '彭州', '绵竹', '邛崃', '阆中', '华蓥', '万源', '简阳', '贵阳', '安顺', '铜仁', '六盘水', '遵义', '毕节', '兴义', '凯里', '都匀', '福泉', '仁怀', '赤水', '清镇', '昆明', '西双版纳', '大理', '潞西', '思茅', '玉溪', '曲靖', '保山', '昭通', '临沧', '丽江', '文山', '个旧', '楚雄', '香格里拉', '宜良', '沅江', '安宁', '宣威', '瑞丽', '开远', '景洪', '拉萨', '那曲', '昌都', '山南', '日喀则', '噶尔', '林芝', '西安', '宝鸡', '延安', '兴平', '咸阳', '铜川', '渭南', '汉中', '榆林', '安康', '商洛', '周至', '韩城', '华阴', '兰州', '嘉峪关', '酒泉', '临夏', '白银', '天水', '武威', '张掖', '平凉', '庆阳', '定西', '成县', '合作', '敦煌', '金昌', '玉门', '西宁', '平安', '海晏', '同仁', '共和', '玛沁', '德令哈', '玉树', '格尔木', '呼和浩特', '海拉尔', '包头', '赤峰', '鄂尔多斯', '临河', '阿拉善左旗', '乌兰浩特', '通辽', '乌海', '集宁', '锡林浩特', '满洲里', '扎兰屯', '牙克石', '根河', '额尔古纳', '阿尔山', '霍林郭勒', '二连浩特', '丰镇', '银川', '石嘴山', '吴忠', '固原', '中卫', '灵武', '青铜峡', '乌鲁木齐', '克拉玛依', '哈密', '喀什', '吐鲁番', '石河子', '图木舒克', '和田', '昌吉', '阿图什', '库尔勒', '博乐', '伊宁', '阿拉尔', '阿克苏', '五家渠', '北屯', '阜康', '米泉', '奎屯', '塔城', '乌苏', '阿勒泰', '台北', '台中', '台南', '高雄', '基隆', '新竹', '嘉义', '宜兰', '桃园', '彰化', '苗栗', '云林', '屏东', '彭湖', '花莲']
+
+def secure_comName(comName):
+    comName = comName.replace(" ","")
+    comName = comName.replace(",","")
+    comName = comName.replace(".","")
+    comName = comName.replace("(","")
+    comName = comName.replace(")","")
+    return comName
+
 # 添加企业信息
 @main.route('/addcominfor', methods=['GET', 'POST'])
 @login_required
@@ -275,7 +286,8 @@ def addcominfor():
         else:
             max_comId = max_comId + 1
         try:
-            comName = form.comName.data
+            # 在资料导出时, comName作为文件名, 所以需要检查
+            comName = secure_comName(form.comName.data)
             comBrief = form.comBrief.data
             comAddress = form.comAddress.data
             comUrl = form.comUrl.data
@@ -286,12 +298,12 @@ def addcominfor():
             comPhone = form.comPhone.data
             comEmail = form.comEmail.data
             comFax = form.comFax.data
-            comProvince = form.comProvince.data
-            if comProvince not in CITY_LIST:
+            comCity = form.comCity.data
+            if comCity not in CITY_LIST:
                 flash('请选择正确的城市')
                 return redirect(url_for('.addcominfor'))
             # 通过企业名称, 城市, 地址来判断是否属于同一个公司
-            is_exist = ComInfor.query.filter_by(comName=comName, comAddress=comAddress, comProvince=comProvince).all()
+            is_exist = ComInfor.query.filter_by(comName=comName, comAddress=comAddress, comCity=comCity).all()
             if is_exist:
                 flash('企业已存在')
                 return redirect(url_for('.interncompany'))
@@ -308,7 +320,7 @@ def addcominfor():
                     comStaff = comStaff,
                     comPhone = comPhone,
                     comEmail = comEmail,
-                    comProvince = comProvince,
+                    comCity = comCity,
                     comFax = comFax,
                     comCheck = 2)
             else:
@@ -323,7 +335,7 @@ def addcominfor():
                     comStaff = comStaff,
                     comPhone = comPhone,
                     comEmail = comEmail,
-                    comProvince = comProvince,
+                    comCity = comCity,
                     comFax = comFax)
 
             db.session.add(comInfor)
@@ -387,7 +399,6 @@ def addInternship():
                 start=start,
                 end=end,
                 time=datetime.now().date(),
-                address=request.form.get('address'),
                 comId=comId,
                 stuId=stuId,
                 internStatus=internStatus
@@ -484,6 +495,9 @@ def xIntern():
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
     comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
+    checktea = None
+    if internship.icheckTeaId :
+        checktea = Teacher.query.filter_by(teaId=internship.icheckTeaId).first()
     #实习协议图片路径
     path=[]
     p=os.path.join(os.path.abspath('.'),"app/static/storage/%s/agreement"%internId)
@@ -497,7 +511,7 @@ def xIntern():
         .filter(InternshipInfor.Id == internId) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
-                     InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task, Teacher.teaName,
+                     InternshipInfor.internCheck, InternshipInfor.task, Teacher.teaName,
                      InternshipInfor.opinion, InternshipInfor.icheckTime)
     # 若普通老师为学生的指导老师, 赋予其权限
     schdirtea_can = is_schdirtea(stuId)
@@ -508,7 +522,7 @@ def xIntern():
                 file_path = excel_export(excel_export_intern, intern_excel)
                 return export_download(file_path)
     return render_template('xIntern.html', Permission=Permission, comInfor=comInfor,
-                           schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student, schdirtea_can=schdirtea_can, path=path)
+                           schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student, schdirtea_can=schdirtea_can, path=path, checktea=checktea)
 
 
 # 审核通过实习信息
@@ -598,7 +612,7 @@ def xInternEdit():
         if request.files.getlist('image'):
             for i in request.files.getlist('image'):
                 i.save('%s/%s/agreement/%s' % (STORAGE_FOLDER, internId,i.filename))
-        flash('上传成功！')
+            flash('上传成功！')
         return redirect(url_for('.xInternEdit',stuId=stuId,internId=internId))
     return render_template('xInternEdit.html', Permission=Permission, comInfor=comInfor, schdirtea=schdirtea, \
                            comdirtea=comdirtea, internship=internship, student=student, stuform=stuform, \
@@ -624,32 +638,31 @@ def xInternEdit_intern():
     #     internCheck = 2
     if permission:
         task = request.form.get('task')
-        address = request.form.get('address')
         start = request.form.get('start')
         end = request.form.get('end')
-        time = datetime.now().date()
+        time = datetime.now()
         comId = request.form.get("comId")
         internId = request.form.get("internId")
-        # if task is None or address is None or start is None or end is None or time is None or comId is None or stuId is None or internId is None:
-        if not (task and address and start and end and time and comId and stuId and internId):
+        # if task is None or start is None or end is None or time is None or comId is None or stuId is None or internId is None:
+        if not (task and start and end and time and comId and stuId and internId):
             flash("修改实习信息失败,请重试")
             return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
         db.session.execute(' \
             update InternshipInfor set \
             task = "%s", \
-            address = "%s", \
             start = "%s", \
             end = "%s", \
             time = "%s", \
             internCheck = %s \
             where Id=%s' \
-                           % (task, address, start, end, time, internCheck, internId)
+                           % (task, start, end, time, internCheck, internId)
                            )
         # 若审核通过, 则添加审核时间和教师工号
         if internCheck == 2:
-            icheckTime = datetime.now().date()
+            icheckTime = datetime.now()
+            time = datetime.now()
             icheckTeaId = current_user.get_id()
-            db.session.execute('update InternshipInfor set icheckTime=%s, icheckTeaId=%s where Id=%s' % (icheckTime, icheckTeaId, internId))
+            db.session.execute('update InternshipInfor set internCheck=2, time="%s", icheckTime="%s", icheckTeaId=%s where Id=%s' % (time, icheckTime, icheckTeaId, internId))
         # 实习信息修改,日志跟随变动
         journal_migrate(internId)
         return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
@@ -675,6 +688,7 @@ def xInternEdit_comdirtea():
         teaPhone = request.form.get('cteaPhone')
         teaEmail = request.form.get('cteaEmail')
         internId = request.form.get("internId")
+        time = datetime.now()
         # if teaName is None or comId is None or internId is None or stuId is None:
         if not (teaName and comId and internId and stuId):
             flash("修改实习信息失败,请重试")
@@ -688,6 +702,7 @@ def xInternEdit_comdirtea():
             where Id=%s'
                            % (teaName, teaDuty, teaPhone, teaEmail, Id)
                            )
+        db.session.execute('update InternshipInfor set time="%s" where Id=%s' % (time, internId))
         flash("实习信息修改成功")
         return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
 
@@ -943,55 +958,27 @@ def user_search():
                            form=form, key=form.key.data, snum=len(student), tnum=len(teacher))
 
 
-# 填写实习日志
-@main.route('/addjournal/<int:comId>', methods=['GET', 'POST'])
-@login_required
-def addjournal(comId):
-    form = journalForm()
-    if form.validate_on_submit():
-        # workend = datetime.strptime(form.workStart.data, '%Y-%m-%d').date()
-        workend = form.workStart.data
-        journal = Journal(
-            stuId=current_user.stuId,
-            workStart=form.workStart.data.strftime('%Y-%m-%d'),
-            weekNo=form.weekNo.data,
-            workEnd=workend,
-            comId=comId,
-            mon=form.mon.data,
-            tue=form.tue.data,
-            wed=form.wed.data,
-            thu=form.thu.data,
-            fri=form.fri.data,
-            sat=form.sat.data,
-            sun=form.sun.data)
-        db.session.add(journal)
-        try:
-            db.session.commit()
-            flash('提交成功！')
-            return redirect(url_for('.myjournal', comId=comId))
-        except Exception as e:
-            db.session.rollback()
-            print('日志提交失败：', e)
-            flash('提交失败！')
-    return render_template('addjournal.html', Permission=Permission, form=form)
-
 
 # 管理员\普通教师\审核教师
 # 特定企业的实习学生列表
-@main.route('/comInternList/<int:comId>', methods=['GET', 'POST'])
+@main.route('/comInternList', methods=['GET', 'POST'])
 @login_required
-def studentList(comId):
+def comInternList():
+    comId = request.args.get('comId')
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    comName = ComInfor.query.filter(ComInfor.comId == comId).with_entities(ComInfor.comName).first()[0]
+    comName = ComInfor.query.filter(ComInfor.comId == comId).first().comName
     # filter过滤当前特定企业ID
-    pagination = Student.query.join(InternshipInfor).filter(InternshipInfor.comId == comId).order_by(
-        Student.grade).paginate(page, per_page=8, error_out=False)
-    student = pagination.items
-    for stu in student:
-        internStatus = InternshipInfor.query.filter_by(comId=comId, stuId=stu.stuId, internStatus=0).count()
-        session[stu.stuId] = internStatus
-    return render_template('studentList.html', form=form, pagination=pagination, student=student, Permission=Permission,
+    pagination = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId) \
+            .add_columns(InternshipInfor.Id, InternshipInfor.comId, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.stuId
+                    ,Student.stuName, Student.grade, Student.classes, Student.major) \
+            .filter(InternshipInfor.comId == comId) \
+            .order_by(Student.grade).paginate(page, per_page=8, error_out=False)
+    internship = pagination.items
+    # for stu in student:
+        # internStatus = InternshipInfor.query.filter_by(comId=comId, stuId=stu.stuId, internStatus=0).count()
+        # session[stu.stuId] = internStatus
+    return render_template('comInternList.html', form=form, pagination=pagination, internship=internship, Permission=Permission,
                            comId=comId, comName=comName)
 
 
@@ -1115,7 +1102,7 @@ def editcominfor():
     if request.method == 'POST':
         print(comform.comName.data)
         com.comName = comform.comName.data
-        com.comProvince=comform.comProvince.data
+        com.comCity=comform.comCity.data
         com.comAddress = comform.comAddress.data
         com.comUrl = comform.comUrl.data
         com.comBrief = request.form.get('text')
@@ -1126,6 +1113,7 @@ def editcominfor():
         com.comPhone = comform.comPhone.data
         com.comEmail = comform.comEmail.data
         com.comFax = comform.comFax.data
+        com.comDate = datetime.now().date()
         try:
             db.session.add(com)
             db.session.commit()
@@ -1364,7 +1352,6 @@ def stuJournalList():
         # 批量导出实习excel表
         if request.method == "POST" and current_user.can(Permission.STU_JOUR_EDIT):
             isexport = request.form.get('isexport')
-            print ('1111', isexport)
             if isexport:
                 internIdList = []
                 for x in internlist:
@@ -2256,7 +2243,7 @@ def create_com_filter(city, flag=True):
     try:
         if session.get('city') is not None:
             print('city:', session['city'])
-            com = ComInfor.query.filter_by(comProvince=session['city'])
+            com = ComInfor.query.filter_by(comCity=session['city'])
 
             if session.get('name') is not None:
                 if session['name'] == 'desc':
@@ -2291,10 +2278,10 @@ def create_com_filter(city, flag=True):
                         print('status')
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor')
                 else:
                     com = com.filter_by(comCheck=2)
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor WHERE comCheck=2')
         elif session.get('name') is not None:
             if session['name'] == 'desc':
                 com = ComInfor.query.order_by(ComInfor.comName.desc())
@@ -2319,14 +2306,14 @@ def create_com_filter(city, flag=True):
                         com = com.filter_by(comCheck=0)
                         print('status')
             if session.get('city') is not None:
-                com = com.filter_by(comProvince=session['city'])
+                com = com.filter_by(comCity=session['city'])
 
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor')
                 else:
                     com = com.filter_by(comCheck=2)
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor WHERE comCheck=2')
         elif session.get('students') is not None:
             if session['students'] == 'desc':
                 com = ComInfor.query.order_by(ComInfor.students.desc())
@@ -2351,14 +2338,14 @@ def create_com_filter(city, flag=True):
                         com = com.filter_by(comCheck=0)
                         print('status')
             if session.get('city') is not None:
-                com = com.filter_by(comProvince=session['city'])
+                com = com.filter_by(comCity=session['city'])
 
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor')
                 else:
                     com = com.filter_by(comCheck=2)
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor WHERE comCheck=2')
         elif session.get('status') is not None:
             if flag:
                 if session['status'] == '2':
@@ -2384,34 +2371,34 @@ def create_com_filter(city, flag=True):
                 else:
                     com = com.order_by(ComInfor.students.asc())
             if session.get('city') is not None:
-                com = com.filter_by(comProvince=session['city'])
+                com = com.filter_by(comCity=session['city'])
 
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor')
                 else:
                     com = com.filter_by(comCheck=2)
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor WHERE comCheck=2')
         else:
             if flag:
                 if current_user.can(Permission.COM_INFOR_EDIT):
                     com = ComInfor.query.order_by(ComInfor.comDate.desc())
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor')
                     print('hi')
                 else:
                     com = ComInfor.query.filter_by(comCheck=2).order_by(ComInfor.comDate.desc())
-                    citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck=2')
+                    citys = db.session.execute('select DISTINCT comCity from ComInfor WHERE comCheck=2')
             else:
                 com = ComInfor.query.filter(ComInfor.comCheck != 2).order_by(ComInfor.comDate.desc())
-                citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck!=2')
+                citys = db.session.execute('select DISTINCT comCity from ComInfor WHERE comCheck!=2')
         if not flag:
             com = com.filter(ComInfor.comCheck != 2)
-            citys = db.session.execute('select DISTINCT comProvince from ComInfor WHERE comCheck!=2')
+            citys = db.session.execute('select DISTINCT comCity from ComInfor WHERE comCheck!=2')
     except Exception as e:
         print('组合筛选：', e)
     # 生成筛选项
     for c in citys:
-        city[i] = c.comProvince
+        city[i] = c.comCity
         i = i + 1
     return com
 
@@ -2621,7 +2608,7 @@ def journal_init(internId):
     else:
         weeks = 0
         # 第1年至 n-1 年的周数累计
-        for x in range(end_isoweek - start_isoweek):
+        for x in range(end_isoyear - start_isoyear):
             if x == 0:
                 weeks = datetime(start_isoyear, 12, 31).isocalendar()[1] - start_isoweek + 1
             else:
@@ -2828,26 +2815,26 @@ def getMaxComId():
 
 # Excel文档列名的模板. 导入和导出
 # 实习信息表
-excel_export_intern = OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comProvince', '城市'), ('comName', '企业名称'), ('address', '地址'),
+excel_export_intern = OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comCity', '城市'), ('comName', '企业名称'),
                                    ('internCheck', '审核状态'), ('internStatus', '实习状态'), ('start', '开始日期'),
                                    ('end', '结束日期'), ('task', '任务'), ('teaName', '审核教师'), ('opinion', '审核意见'),
-                                   ('icheckTime', '审核时间'), ('steaName', '校内指导老师姓名'), ('steaDuty', '校内指导老师职务'),
+                                   ('icheckTime', '审核时间'), ('time', '修改时间'), ('steaName', '校内指导老师姓名'), ('steaDuty', '校内指导老师职务'),
                                    ('steaPhone', '校内指导老师电话'), ('steaEmail', '校内指导老师邮箱'), ('cteaName', '企业指导老师姓名'),
                                    ('cteaDuty', '企业指导老师职务'), ('cteaPhone', '企业指导老师电话'), ('cteaEmail', '企业指导老师邮箱')))
-excel_import_intern = {'学号': 'stuId', '姓名': 'stuName', '企业编号': 'comId', '地址': 'address', '开始日期': 'start', '结束日期': 'end',
+excel_import_intern = {'学号': 'stuId', '姓名': 'stuName', '企业编号': 'comId', '开始日期': 'start', '结束日期': 'end',
                        '任务': 'task', '企业指导老师姓名': 'cteaName', '企业指导老师职务': 'cteaDuty', '企业指导老师电话': 'cteaPhone', '企业指导老师邮箱': 'cteaEmail'}
 # 企业信息表
-excel_export_com = OrderedDict((('comId', '企业编号'), ('comName', '企业名称'), ('comProvince', '城市'), ('comBrief', '企业简介'), ('comAddress', '地址'),
+excel_export_com = OrderedDict((('comId', '企业编号'), ('comName', '企业名称'), ('comCity', '城市'), ('comBrief', '企业简介'), ('comAddress', '地址'),
                                 ('comUrl', '网站'), ('comMon', '营业额'), ('comContact', '联系人'), ('comDate', '录入时间'),
                                 ('comProject', '企业项目'), ('comStaff', '员工人数'), ('comPhone', '电话'), ('comEmail', '邮箱'),
                                 ('comFax', '传真'), ('comCheck', '审核状态'), ('students', '实习学生人数')))
-excel_import_com = {'企业名称': 'comName', '企业简介': 'comBrief', '城市': 'comProvince', '地址': 'comAddress', '网站': 'comUrl', '营业额': 'comMon',
+excel_import_com = {'企业名称': 'comName', '企业简介': 'comBrief', '城市': 'comCity', '地址': 'comAddress', '网站': 'comUrl', '营业额': 'comMon',
                     '联系人': 'comContact', '录入时间': 'comDate', '企业项目': 'comProject', '员工人数': 'comStaff', '电话': 'comPhone',
                     '邮箱': 'comEmail', '传真': 'comFax'}
 
 # 日志表
 # 实习详情
-excel_export_journal_internDetail =  OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comName', '企业名称'), ('comProvince', '企业城市'), ('major','专业班级'), ('start','实习期间')))
+excel_export_journal_internDetail =  OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comName', '企业名称'), ('comCity', '企业城市'), ('major','专业班级'), ('start','实习期间')))
 # 日志详情
 excel_export_journal_log =  OrderedDict((('weekNo','第N周'), ('workStart','工作时间'), ('mon','周一'), ('tue','周二'), ('wed','周三'), ('thu','周四'), ('fri','周五'), ('sat','周六'), ('sun','周日')))
 
@@ -2887,7 +2874,7 @@ def export_download(file_path):
     if index in template_dict.keys():
         file_attachname = template_dict[index] + '_%s.xls' % datetime.now().date()
     # attachment_finaname为下载时,提供的默认文件名
-    return send_file(file_path, as_attachment=True, attachment_filename=file_attachname.encode('utf-8')) 
+    return send_file(file_path, as_attachment=True, attachment_filename=file_attachname.encode('utf-8'))
 
 
 # 导出日志表
@@ -2898,7 +2885,7 @@ def journal_export(internIdList):
     ws = wb.add_sheet('Sheet 1', cell_overwrite_ok=True)
     row = 0
     for internId in internIdList:
-        intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(ComInfor, ComInfor.comId == InternshipInfor.comId).add_columns(InternshipInfor.stuId, InternshipInfor.start, InternshipInfor.end, Student.stuName, Student.major, Student.classes, ComInfor.comName, ComInfor.comProvince).filter(InternshipInfor.Id == internId).first()
+        intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(ComInfor, ComInfor.comId == InternshipInfor.comId).add_columns(InternshipInfor.stuId, InternshipInfor.start, InternshipInfor.end, Student.stuName, Student.major, Student.classes, ComInfor.comName, ComInfor.comCity).filter(InternshipInfor.Id == internId).first()
         journal = Journal.query.filter(Journal.internId == internId).all()
         # 实习详情, 一次写两行
         for col, colname in zip(range(len(template_A)), template_A):
@@ -2940,7 +2927,7 @@ def journal_export(internIdList):
     file_name = 'journalList_export_%s' % random.randint(1,100)
     file_path = os.path.join(EXPORT_FOLDER, file_name)
     wb.save(file_path)
-    return file_path 
+    return file_path
 
 
 # 导出Excel, 多个指导老师合并在一个单元格上
@@ -3067,10 +3054,7 @@ def excel_export(template, data):
     wb.save(file_path)
     return file_path
 
-
-# 导出所有实习资料
-@update_intern_internStatus
-def export_all():
+def export_all_file_list():
     # 根目录
     root_path = os.path.join(EXPORT_ALL_FOLDER, str(datetime.now().timestamp()))
     root_path_2 = os.path.join(root_path, '实习管理系统批量导出_%s' % datetime.now().date())
@@ -3079,7 +3063,7 @@ def export_all():
         .join(ComInfor, ComInfor.comId==InternshipInfor.comId) \
         .outerjoin(Teacher, Teacher.teaId==InternshipInfor.icheckTeaId) \
         .filter(InternshipInfor.internStatus==2, InternshipInfor.internCheck==2) \
-        .add_columns(InternshipInfor.Id, InternshipInfor.stuId, InternshipInfor.internCheck, InternshipInfor.internStatus, InternshipInfor.start, InternshipInfor.end, InternshipInfor.task, InternshipInfor.opinion, InternshipInfor.icheckTime, Student.stuName, Student.grade, Student.major, ComInfor.comName, ComInfor.comProvince, InternshipInfor.address, Teacher.teaName)
+        .add_columns(InternshipInfor.Id, InternshipInfor.stuId, InternshipInfor.internCheck, InternshipInfor.internStatus, InternshipInfor.start, InternshipInfor.end, InternshipInfor.task, InternshipInfor.opinion, InternshipInfor.icheckTime, InternshipInfor.time, Student.stuName, Student.grade, Student.major, ComInfor.comName, ComInfor.comCity, Teacher.teaName)
     internlist = intern_org.all()
     for intern in internlist:
         x_grade = intern.grade
@@ -3101,39 +3085,169 @@ def export_all():
             'storage_path': storage_path
         }
         file_list.append(path_group)
-    # 建立文件
-    for x in file_list:
-        root_path_3 = os.path.join(root_path_2, x['grade'], x['major'], x['stuId']+'_'+x['stuName'], x['comName'])
-        os.system('mkdir -p %s' % root_path_3)
-        os.system('cp -r %s/* %s %s %s' % (x['storage_path'], x['intern_path'], x['journal_path'], root_path_3))
-        # 更改中文名
-        os.system('mv %s/summary_doc %s/总结文档' % (root_path_3, root_path_3))
-        os.system('mv %s/attachment %s/附件' % (root_path_3, root_path_3))
-        os.system('mv %s/agreement %s/实习协议书' % (root_path_3, root_path_3))
-        os.system('mv %s/visit %s/探访记录' % (root_path_3, root_path_3))
-        os.system('mv %s/score_img/comscore %s/score_img/企业评分' % (root_path_3, root_path_3))
-        os.system('mv %s/score_img/schscore %s/score_img/校内评分' % (root_path_3, root_path_3))
-        os.system('mv %s/score_img %s/评分' % (root_path_3, root_path_3))
-        os.system('mv %s/internlist* %s/%s_实习信息.xls' % (root_path_3, root_path_3, x['comName']))
-        os.system('mv %s/journalList* %s/%s_实习日志.xls' % (root_path_3, root_path_3, x['comName']))
-    # 打包zip文件
-    zip_folder = os.path.basename(root_path_2)
-    zip_file = '%s.zip' % zip_folder
-    zip_path = os.path.join(root_path, zip_file)
-    os.system('cd %s; zip -0r %s %s' %(root_path, zip_file, zip_folder))
-    # return zip_path
-    file_attachname = os.path.basename(root_path_2)+'.zip'
-    return send_file(zip_path, as_attachment=True, attachment_filename=file_attachname.encode('utf-8')) 
+    return file_list, root_path, root_path_2
+
+# 导出所有实习资料
+#@update_intern_internStatus
+#def export_all():
+#    # 根目录
+#    root_path = os.path.join(EXPORT_ALL_FOLDER, str(datetime.now().timestamp()))
+#    root_path_2 = os.path.join(root_path, '实习管理系统批量导出_%s' % datetime.now().date())
+#    file_list = []
+#    intern_org = InternshipInfor.query.join(Student, Student.stuId==InternshipInfor.stuId) \
+#        .join(ComInfor, ComInfor.comId==InternshipInfor.comId) \
+#        .outerjoin(Teacher, Teacher.teaId==InternshipInfor.icheckTeaId) \
+#        .filter(InternshipInfor.internStatus==2, InternshipInfor.internCheck==2) \
+#        .add_columns(InternshipInfor.Id, InternshipInfor.stuId, InternshipInfor.internCheck, InternshipInfor.internStatus, InternshipInfor.start, InternshipInfor.end, InternshipInfor.task, InternshipInfor.opinion, InternshipInfor.icheckTime, InternshipInfor.time, Student.stuName, Student.grade, Student.major, ComInfor.comName, ComInfor.comCity, Teacher.teaName)
+#    internlist = intern_org.all()
+#    for intern in internlist:
+#        x_grade = intern.grade
+#        x_major = intern.major
+#        x_stuName = intern.stuName
+#        x_stuId = intern.stuId
+#        x_comName = intern.comName
+#        intern_path = excel_export(excel_export_intern, intern_org.filter(InternshipInfor.Id==intern.Id))
+#        journal_path = journal_export([intern.Id])
+#        storage_path = os.path.join(STORAGE_FOLDER, str(intern.Id))
+#        path_group = {
+#            'grade': str(x_grade),
+#            'major': x_major,
+#            'stuName': x_stuName,
+#            'stuId': x_stuId,
+#            'comName': x_comName,
+#            'intern_path': intern_path,
+#            'journal_path': journal_path,
+#            'storage_path': storage_path
+#        }
+#        file_list.append(path_group)
+#    # 建立文件
+#    for x in file_list:
+#        root_path_3 = os.path.join(root_path_2, x['grade'], x['major'], x['stuId']+'_'+x['stuName'], x['comName'])
+#        os.system('mkdir -p %s' % root_path_3)
+#        os.system('cp -r %s/* %s %s %s' % (x['storage_path'], x['intern_path'], x['journal_path'], root_path_3))
+#        # 更改中文名
+#        os.system('mv %s/summary_doc %s/总结文档' % (root_path_3, root_path_3))
+#        os.system('mv %s/attachment %s/附件' % (root_path_3, root_path_3))
+#        os.system('mv %s/agreement %s/实习协议书' % (root_path_3, root_path_3))
+#        os.system('mv %s/visit %s/探访记录' % (root_path_3, root_path_3))
+#        os.system('mv %s/score_img/comscore %s/score_img/企业评分' % (root_path_3, root_path_3))
+#        os.system('mv %s/score_img/schscore %s/score_img/校内评分' % (root_path_3, root_path_3))
+#        os.system('mv %s/score_img %s/评分' % (root_path_3, root_path_3))
+#        os.system('mv %s/internlist* %s/%s_实习信息.xls' % (root_path_3, root_path_3, x['comName']))
+#        os.system('mv %s/journalList* %s/%s_实习日志.xls' % (root_path_3, root_path_3, x['comName']))
+#    # 打包zip文件
+#    zip_folder = os.path.basename(root_path_2)
+#    zip_file = '%s.zip' % zip_folder
+#    zip_path = os.path.join(root_path, zip_file)
+#    os.system('cd %s; zip -0r %s %s' %(root_path, zip_file, zip_folder))
+#    return zip_path
+#    #file_attachname = os.path.basename(root_path_2)+'.zip'
+#    #return send_file(zip_path, as_attachment=True, attachment_filename=file_attachname.encode('utf-8'))
+
+
+def get_export_all_update_status():
+    #current_update_file = 0.0
+    #update_time = sorted(os.listdir(EXPORT_ALL_FOLDER))
+    #file_path = os.path.join(EXPORT_ALL_FOLDER, update_time[-1])
+    #for x in os.listdir(file_path):
+    #    if x.split('.')[-1] == 'zip':
+    #        update_file = os.path.join(file_path, x)
+    #        return update_file
+    ## 若没有找到 .zip 文件, 则使用老版本
+    #file_path = os.path.join(EXPORT_ALL_FOLDER, update_time[-2])
+    #for x in os.listdir(file_path)
+
+    def search_updated(update_time):
+        result = {}
+        temp_path = os.path.join(EXPORT_ALL_FOLDER, update_time)
+        for x in os.listdir(temp_path):
+           if x.split('.')[-1] == 'zip':
+               file_path = os.path.join(temp_path, x)
+               result['file_path'] = file_path
+               update_time = datetime.fromtimestamp(float(update_time)).strftime('%Y-%m-%d %H:%M:%S')
+               result['update_time'] = update_time
+               return result
+        return False
+    is_exporting_all = False
+    update_time_list = sorted(os.listdir(EXPORT_ALL_FOLDER))
+    # 文件夹为空, 需要初始化
+    if not update_time_list:
+        return 'empty'
+    temp = search_updated(update_time_list[-1])
+    if not temp:
+        # 第一个文件夹正在初始化
+        if len(update_time_list) == 1:
+            return 'initing'
+        else:
+            is_exporting_all = True
+            temp = search_updated(update_time_list[-2])
+    temp['is_exporting_all'] = is_exporting_all
+    return temp
+
+def get_export_all_generate():
+    file_list, root_path, root_path_2 = export_all_file_list()
+    with open('export_all.list','w') as f:
+        f.write(str(file_list) + '\n')
+        f.write('%s' % root_path + '\n')
+        f.write('%s' % root_path_2)
+    os.popen('python3 export_all.py&', 'r')
+
 
 @main.route('/export_all_page', methods=['GET', 'POST'])
 def export_all_page():
     if current_user.can(Permission.STU_INTERN_SEARCH) and current_user.can(Permission.STU_JOUR_SEARCH) and current_user.can(Permission.STU_SUM_SEARCH):
-        return export_all()
+        update_status = get_export_all_update_status()
+        if update_status is 'empty' :
+            get_export_all_generate()
+            return redirect(url_for('.export_all_page'))
+        elif update_status is 'initing':
+            update_time = False
+            is_exporting_all = True
+        else :
+            update_time = update_status['update_time']
+            is_exporting_all = update_status['is_exporting_all']
+            updated_file_path = update_status['file_path']
+            if request.method == 'POST':
+                isdownload = request.form.get('isdownload')
+                isupdate = request.form.get('isupdate')
+                if isupdate:
+                    get_export_all_generate()
+                    return redirect(url_for('.export_all_page'))
+                elif isdownload:
+                    return send_file(updated_file_path, as_attachment=True, attachment_filename=updated_file_path.split('/')[-1].encode('utf-8'))
+        return render_template('export_all_page.html', Permission=Permission, update_time=update_time, is_exporting_all=is_exporting_all)
+
+
+#@main.route('/export_all_page', methods=['GET', 'POST'])
+#def export_all_page():
+#    if current_user.can(Permission.STU_INTERN_SEARCH) and current_user.can(Permission.STU_JOUR_SEARCH) and current_user.can(Permission.STU_SUM_SEARCH):
+#        update_status = get_export_all_update_status()
+#        update_time = update_status['update_time']
+#        is_exporting_all = update_status['is_exporting_all']
+#        print('debug:', is_exporting_all)
+#        updated_file_path = update_status['file_path']
+#        if request.method == 'POST':
+#            isdownload = request.form.get('isdownload')
+#            isupdate = request.form.get('isupdate')
+#            if isupdate:
+#                is_exporting_all = True
+#                #export_all()
+#                file_list, root_path, root_path_2 = export_all_file_list()
+#                with open('1018.list','w') as f:
+#                    f.write(str(file_list))
+#                #print ('file_list', file_list, 'root_path', root_path, 'root_path_2', root_path_2)
+#                #os.system('python3 /home/bloom/temp_internshipsystem/test_export.py %s %s %s &' % (file_list, root_path, root_path_2))
+#                os.popen('python3 test_export.py "%s" "%s" &' % (root_path, root_path_2), 'r')
+#                print('os.popen success')
+#                return redirect(url_for('.export_all_page'))
+#            elif isdownload:
+#                return send_file(updated_file_path, as_attachment=True, attachment_filename=updated_file_path.split('/')[-1].encode('utf-8'))
+#        return render_template('export_all_page.html', Permission=Permission, update_time=update_time, is_exporting_all=is_exporting_all)
 
 
 # 导入excel表, 检查数据是否完整或出错
 EXCEL_IMPORT_CHECK_STUINTERNLIST = ['stuId', 'stuName', 'comId', 'start', 'end']
-EXCEL_IMPORT_CHECK_INTERNCOMPANY = ['comName', 'comAddress', 'comProject', 'comPhone', 'comEmail', 'comProvince']
+EXCEL_IMPORT_CHECK_INTERNCOMPANY = ['comName', 'comAddress', 'comProject', 'comPhone', 'comEmail', 'comCity']
 EXCEL_IMPORT_CHECK_STUUSERLIST = ['stuId', 'stuName', 'grade', 'classes', 'major', 'sex']
 EXCEL_IMPORT_CHECK_JOURNAL = ['weekNo']
 # 教师工号可为空
@@ -3213,14 +3327,14 @@ def excel_importpage():
     internId = request.args.get('internId')
     temp_dict = {
         'stuInternList':
-            {'file_name':'stuInternList_import_template.xls', 'attach_name':'实习信息导入模板.xls'}, 
+            {'file_name':'stuInternList_import_template.xls', 'attach_name':'实习信息导入模板.xls'},
         'xJournal':
-            {'file_name':'xJournal_import_template.xls', 'attach_name': '日志导入模板.xls'}, 
+            {'file_name':'xJournal_import_template.xls', 'attach_name': '日志导入模板.xls'},
         'interncompany':
-            {'file_name': 'interncompany_import_template.xls', 'attach_name': '企业导入模板.xls'}, 
+            {'file_name': 'interncompany_import_template.xls', 'attach_name': '企业导入模板.xls'},
         'teaUserList':
-            {'file_name':'teaUserList_import_template.xls', 'attach_name':'教师用户信息导入模板.xls'}, 
-        'stuUserList': 
+            {'file_name':'teaUserList_import_template.xls', 'attach_name':'教师用户信息导入模板.xls'},
+        'stuUserList':
             {'file_name': 'stuUserList_import_template.xls', 'attach_name':'学生用户信息导入模板.xls'}
     }
     if from_url == 'stuInternList':
@@ -3278,7 +3392,6 @@ def excel_importpage():
                         # 因导入本身需要审核权限, 所以这里自动通过审核
                         internship = InternshipInfor(
                             stuId = float2str(intern['stuId']),
-                            address=intern['address'],
                             start=start,
                             end=end,
                             task=intern['task'],
@@ -3300,9 +3413,9 @@ def excel_importpage():
                             comdirtea = ComDirTea(
                                 stuId = intern['stuId'],
                                 comId = intern['comId'],
-                                cteaName = cteaName_temp[x].strip(), 
-                                cteaDuty = cteaDuty_temp[x].strip(), 
-                                cteaPhone = float2str(cteaPhone_temp[x].strip()), 
+                                cteaName = cteaName_temp[x].strip(),
+                                cteaDuty = cteaDuty_temp[x].strip(),
+                                cteaPhone = float2str(cteaPhone_temp[x].strip()),
                                 cteaEmail = cteaEmail_temp[x].strip()
                             )
                             db.session.add(comdirtea)
@@ -3354,8 +3467,9 @@ def excel_importpage():
                     for com, col in zip(comlist, range(len(comlist))):
                         if current_user.can(Permission.COM_INFOR_CHECK):
                              cominfor = ComInfor(
-                                comName = com['comName'],
-                                comProvince = com['comProvince'],
+                                # 在资料导出时, comName作为文件名, 所以需要检查
+                                comName = secure_comName(com['comName']),
+                                comCity = com['comCity'],
                                 comBrief = com['comBrief'],
                                 comAddress = com['comAddress'],
                                 comUrl = com['comUrl'],
@@ -3373,7 +3487,7 @@ def excel_importpage():
                         else:
                             cominfor = ComInfor(
                                 comName = com['comName'],
-                                comProvince = com['comProvince'],
+                                comCity = com['comCity'],
                                 comBrief = com['comBrief'],
                                 comAddress = com['comAddress'],
                                 comUrl = com['comUrl'],
@@ -3394,17 +3508,37 @@ def excel_importpage():
                     stuUserList = excel_import(os.path.join(IMPORT_FOLDER, filename), excel_import_stuUser, EXCEL_IMPORT_CHECK_STUUSERLIST)
                     if stuUserList is False:
                         return redirect('/')
+                    # build the major option list
+                    major_option_list = []
+                    for x in Major.query.all():
+                        major_option_list.append(x.major)
                     for stuUser, col in zip(stuUserList, range(len(stuUserList))):
-                        # 数据规范
+                        ## 数据规范
+                        ## 班级取数字, 不要'班'
+                        #classes = re.findall(r'\d+', stuUser['classes'])[0]
+                        ## 例'2014级'取'2014'
+                        #grade = re.findall(r'\d+', stuUser['grade'])[0]
+                        #major = stuUser['major']
+                        #if len(grade) == 2:
+                        #    grade = '20' + grade
+
                         # 班级取数字, 不要'班'
-                        classes = re.findall(r'\d+', stuUser['classes'])[0]
+                        classes = re.findall(r'\d+', stuUser['classes'])
                         # 例'2014级'取'2014'
-                        grade = re.findall(r'\d{4}', stuUser['grade'])[0]
+                        grade = re.findall(r'\d+', stuUser['grade'])
+                        major = stuUser['major']
+                        sex = stuUser['sex']
+                        assert len(grade) and len(classes) and major in major_option_list and sex in ['男', '女'], '部分数据有误, 请重新填写'
+                        classes = classes[0]
+                        if len(grade[0]) == 2:
+                            grade = '20' + grade[0]
+                        else:
+                            grade = grade[0]
                         student = Student(
                             stuId = float2str(stuUser['stuId']),
                             stuName=stuUser['stuName'],
-                            major=stuUser['major'],
-                            sex=stuUser['sex'],
+                            major=major,
+                            sex= sex,
                             classes=classes,
                             grade=grade,
                             institutes=stuUser['institutes']
@@ -3433,7 +3567,11 @@ def excel_importpage():
                     return redirect(url_for('.%s' % from_url, internId=internId))
                 return redirect(url_for('.%s' % from_url))
             except Exception as e:
-                flash('导入出现异常')
+                #flash('导入出现异常:%'% str(e))
+                if str(e) == '部分数据有误, 请重新填写':
+                    flash('部分数据有误, 请重新填写')
+                else:
+                    flash('导入失败')
                 print(from_url, '导入出现异常:', e)
                 db.session.rollback()
                 return redirect('/')
@@ -3517,10 +3655,10 @@ def storage_upload(internId):
         file = request.files.get(x)
         if file:
             try:
-                filename = file.filename
+#                filename = secure_filename(file.filename)
                 dest = path_dict[x]
                 file_path = storage_cwd(internId, dest)
-                file.save(os.path.join(file_path, filename))
+                file.save(os.path.join(file_path, file.filename))
                 return True
             except Exception as e:
                 print(datetime.now(), '上传文件失败', e)
@@ -3717,6 +3855,9 @@ def xSum_fileManager():
 
         return render_template('xSum_fileManager.html', Permission=Permission, comInfor=comInfor, internship=internship,
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc)
+    else:
+        flash('该实习还没有结束,暂不能上传总结等文件！')
+        return redirect(url_for('.xSum',stuId=stuId,internId=internId))
 
 
 # 实习评分详情
@@ -3942,7 +4083,7 @@ def stuSum_allDelete():
         .filter(InternshipInfor.internCheck ==2 ) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, InternshipInfor.comId,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
-                     InternshipInfor.internCheck, InternshipInfor.address, InternshipInfor.task,
+                     InternshipInfor.internCheck, InternshipInfor.task,
                      InternshipInfor.opinion, InternshipInfor.icheckTime, Summary.sumScore, Summary.sumCheck) \
         .order_by(Summary.sumCheck, InternshipInfor.end.desc()).paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
@@ -3993,7 +4134,7 @@ def selectManage():
             return redirect(url_for('.selectManage'))
         if grade:
             db.session.execute('delete from Grade where grade=%s'%grade)
-            flash('删除年级成功！')            
+            flash('删除年级成功！')
             return redirect(url_for('.selectManage'))
     except Exception as e:
         flash('删除失败,请重试')
@@ -4050,6 +4191,7 @@ def upload_Visit():
                 flash('删除成功！仅删除教师文件夹内的探访记录，而已选学生中的探访记录需到各个学生实习信息中删除!')
                 return redirect(url_for('.upload_Visit'))
             if 'download' in request.form:
+                #file_name=secure_filename(request.form.get('download'))
                 file_name=request.form.get('download')
                 return send_file(os.path.join(STORAGE_FOLDER,'visit',userId,file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))

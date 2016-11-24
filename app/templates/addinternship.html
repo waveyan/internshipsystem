@@ -79,8 +79,6 @@
             <h3>实习岗位信息</h3>
             <div>
                 {{ iform.hidden_tag() }}
-                {{ iform.address.label }}{{ iform.address(class="form-control",placeholder="",
-                        oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                 {{ iform.task.label }}{{ iform.task(class="form-control",required='',placeholder="请输入实习任务",
                         oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                 {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='',placeholder="请输入开始时间，如：2016-10-10") }}

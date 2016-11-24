@@ -18,23 +18,15 @@
         <table class="table">
             <thead>
             <tr>
-                <th>企业地址</th>
-                <th>企业网址</th>
-                <th>联系电话</th>
+                <th>实习城市</th>
                 <th>累计实习人次</th>
             </tr>
             </thead>
             <tbody>
             {% for com in comInfor %}
                 <tr>
-                    <td>{{ com.comAddress }}</td>
-                    <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
-                    <td>{{ com.comPhone }}</td>
-                    {% if current_user.roleId==0 %}
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
-                    {% else %}
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
-                    {% endif %}
+                    <td>{{ com.comCity }}</td>
+                    <td>{{ com.sum_students }}</td>
                 </tr>
             {% endfor %}
             </tbody>

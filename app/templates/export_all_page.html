@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}实习资料批量导出{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block page_content %}
+    <!-- form provide download -->
+    <form id="download_form" method="post">
+        <input type="hidden" name="isdownload" value="1">
+    </form>
+    
+    <!-- form provide update -->
+    <form id="update_form" method="post">
+        <input type="hidden" name="isupdate" value="1">
+    </form>
+
+
+    <h1>实习资料批量导出</h1>
+    {% if update_time %}
+        <h3>当前最新版本时间为 {{ update_time }} . 点击
+            <a href="javascript:{}" onclick="document.getElementById('download_form').submit();">这里</a>
+            进行下载</h3><br>
+    {% endif %}
+    {% if is_exporting_all %}
+        正在导出新版本, 请稍后刷新页面
+    {% else %}
+        若数据有改动, 并且需要重新导出, 点击
+        <a href="javascript:{}" onclick="document.getElementById('update_form').submit();">这里</a>
+        重新导出.
+        <br><span class='label label-danger'>注意</span>&nbsp由于文件较大, 若重新导出, 请于两分钟后刷新页面
+    {% endif %}
+    <br>
+{% endblock %}
