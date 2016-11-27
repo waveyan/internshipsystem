@@ -4,7 +4,7 @@ import os, ast
 with open('export_all.list', 'r') as f:
     file_list = f.readline().strip('\n')
     root_path = f.readline().strip('\n')
-    root_path_2 = f.readline()
+    root_path_2 = f.readline().strip('\n')
 file_list = ast.literal_eval(file_list)
 
 # 建立文件

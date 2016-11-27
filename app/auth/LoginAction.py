@@ -1,6 +1,6 @@
 import os
 import requests
-from flask import redirect, session, request, url_for
+from flask import redirect, session, request, url_for, flash
 from flask.ext.login import login_user, logout_user
 from ..models import Teacher,Student
 from .. import db
@@ -13,9 +13,12 @@ class LoginAction(object):
         # 中央认证服务器地址配置，登陆账号密码，获取Token
         self._casLoginUrl = "https://cas.dgut.edu.cn/?appid=%s"%self._appId
         self._casCheckTokenUrl = "http://cas-#.dgut.edu.cn/ssoapi/checktoken"
+        # fail to use jinja2 pattern to match server_ip
+        self._casReloginUrl = "https://cas.dgut.edu.cn/user/logout?service=http://219.222.189.70"
         # 本应用地址
         # self._successUrl = os.environ.get('local_ip')
-        self._successUrl = url_for('auth.lg')
+        # self._successUrl = url_for('auth.lg')
+        self._successUrl = url_for('main.index')
 
 
     def service(self, token=None):
@@ -63,11 +66,14 @@ class LoginAction(object):
                             sumCheck = Student.query.filter_by(stuId=student.stuId).first().sumCheck
                             message[2] = sumCheck
                             session['message'] = message
+                            return self._successUrl
                     else:
                         teacher = Teacher.query.filter_by(teaId=resultModel['LoginName']).first()
                         if teacher:
                             login_user(teacher)
-                    return self._successUrl
+                            return self._successUrl
+                    flash("此用户信息未录入本系统!")
+                    return self._casReloginUrl
                 else:
                     # 返回登陆页
                     return self._casLoginUrl

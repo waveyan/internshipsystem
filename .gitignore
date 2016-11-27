@@ -12,6 +12,7 @@ file_cache
 py3venv/
 .nohup.out
 export_all.list
+*.ini
 
 __pycache__/
 *.py[cod]

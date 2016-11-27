@@ -14,6 +14,7 @@ import xlwt, xlrd, os, random, subprocess, re,shutil
 from collections import OrderedDict
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import aliased
+from ..auth.views import logout_url
 
 
 # -----------------------------统计----------------------------------------
@@ -139,7 +140,6 @@ def statistics_com_visual():
     for i in range(7):
         comlist.append(None)
     for com in cominfor:
-        print('com',com[0],com[1])
         if index < 6:
             comlist[index]={'comName': com[0], 'students': com[1]}
             index = index + 1
@@ -183,6 +183,13 @@ def statistics_area_rank():
 def index():
     if get_export_all_update_status() is 'empty':
         get_export_all_generate()
+    isLogout = request.args.get("isLogout")
+    if session['isLogout']:
+        session['isLogout'] = False
+        return redirect(logout_url)
+    if isLogout:
+        session['isLogout'] = True
+        # return redirect(logout_url)
     return render_template('index.html', Permission=Permission)
 
 
@@ -2878,6 +2885,7 @@ def export_download(file_path):
 
 
 # 导出日志表
+# multiple internship can export to one .xls
 def journal_export(internIdList):
     template_A = excel_export_journal_internDetail
     template_B = excel_export_journal_log
@@ -2924,7 +2932,7 @@ def journal_export(internIdList):
             #         ws.write(row, col, str(getattr(journal_temp, colname)))
         # 空两行
         row = row + 3
-    file_name = 'journalList_export_%s' % random.randint(1,100)
+    file_name = 'journalList_export_%s' % random.randint(1,1000)
     file_path = os.path.join(EXPORT_FOLDER, file_name)
     wb.save(file_path)
     return file_path
@@ -3043,13 +3051,13 @@ def excel_export(template, data):
                 ws.write(row + 1, cols_list.index('cteaEmail'), multiComTea[xdata.stuId]['cteaEmail'])
     # 每个模板最多保存100份导出临时文件
     if template == excel_export_intern:
-        file_name = 'internlist_export_%s.xls' % random.randint(1, 99)
+        file_name = 'internlist_export_%s.xls' % random.randint(1, 1000)
     elif template == excel_export_com:
-        file_name = 'comlist_export_%s.xls' % random.randint(1, 99)
+        file_name = 'comlist_export_%s.xls' % random.randint(1, 1000)
     elif template == excel_export_stuUser:
-        file_name = 'stuUserList_export_%s.xls' % random.randint(1, 99)
+        file_name = 'stuUserList_export_%s.xls' % random.randint(1, 1000)
     elif template == excel_export_teaUser:
-        file_name = 'teaUserList_export_%s.xls' % random.randint(1, 99)
+        file_name = 'teaUserList_export_%s.xls' % random.randint(1, 1000)
     file_path = os.path.join(EXPORT_FOLDER, file_name)
     wb.save(file_path)
     return file_path
