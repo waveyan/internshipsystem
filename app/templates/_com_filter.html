@@ -38,18 +38,18 @@
                     <tr>
                         <th width="100">城市:</th>
                         {% for i in citys.keys() %}
-                            {% if i<3 %}
-                                <td width="200"><a href="{{ url_for(endpoint,city=citys[i]) }}">{{ citys[i] }}</a>
+                            {% if i<5 %}
+                                <td width="200" style="word-wrap:break-word;"><a href="{{ url_for(endpoint,city=citys[i]) }}">{{ citys[i] }}</a>
                                 </td>
                             {% endif %}
                         {% endfor %}
-                        {% if 3 in citys %}
-                            <td width="200">
+                        {% if 5 in citys %}
+                            <td width="200" style="word-wrap:break-word;">
                                 <div class="first">
                                     <a>更多</a>
                                     <div class="second">
                                         {% for i in citys.keys() %}
-                                            {% if i>2 %}
+                                            {% if i>4 %}
                                                 <li style="list-style-type:none;"><a
                                                         href="{{ url_for(endpoint,city=citys[i]) }}">{{ citys[i] }}</a>
                                                 </li>
@@ -64,7 +64,8 @@
                     <tr>
                         <td>&nbsp;</td>
                     </tr>
-                    <tr>
+                    </table>
+                    <table>
                     <tr>
                         <th width="200">企业名称：</th>
                         <td width="400"><a href="{{ url_for(endpoint,name='asc') }}">按拼音首字母升序排列</a></td>

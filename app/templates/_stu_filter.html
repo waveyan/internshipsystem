@@ -30,21 +30,21 @@
 
                 <table>
                     <tr>
-                        <th width="100">年级:</th>
+                        <th width="100" style="word-wrap:break-word;">年级:</th>
                         {% for i in grades.keys() %}
-                            {% if i<3 %}
-                                <td width="200"><a
+                            {% if i<5 %}
+                                <td width="150" style="word-wrap:break-word;"><a
                                         href="{{ url_for(endpoint,grade=grades[i]) }}">{{ grades[i] }}级</a>
                                 </td>
                             {% endif %}
                         {% endfor %}
-                        {% if 3 in grades %}
-                            <td width="200">
+                        {% if 5 in grades %}
+                            <td width="150" style="word-wrap:break-word;">
                                 <div class="first">
                                     <a>更多</a>
                                     <div class="second">
                                         {% for i in grades.keys() %}
-                                            {% if i>2 %}
+                                            {% if i>4 %}
                                                 <li style="list-style-type:none;"><a
                                                         href="{{ url_for(endpoint,grade=grades[i]) }}">{{ grades[i] }}级</a>
                                                 </li>
@@ -59,72 +59,41 @@
                     <tr>
                         <td>&nbsp;</td>
                     </tr>
+                    </table>
+                    <table>
                     <tr>
                         <th width="100">专业:</th>
                         {% for i in majors.keys() %}
-                            {% if i<3 %}
-                                <td width="200"><a
+                                <td width="150" style="word-wrap:break-word;"><a
                                         href="{{ url_for(endpoint,major=majors[i]) }}">{{ majors[i] }}</a></td>
-                            {% endif %}
                         {% endfor %}
-                        {% if 3 in majors %}
-                            <td>
-                                <div class="first">
-                                    <a>更多</a>
-                                    <div class="second">
-                                        {% for i in majors.keys() %}
-                                            {% if i>2 %}
-                                                <li style="list-style-type:none;"><a
-                                                        href="{{ url_for(endpoint,major=majors[i]) }}">{{ majors[i] }}</a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </td>
-                        {% endif %}
+  
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
                     </tr>
+                    </table>
+                    <table>
                     <tr>
-                        <th width="200">班级：</th>
+                        <th width="100" style="word-wrap:break-word;">班级：</th>
                         {% for i in classess.keys() %}
-                            {% if i<3 %}
-                                <td width="200"><a
+                                <td width="150" style="word-wrap:break-word;"><a
                                         href="{{ url_for(endpoint,classes=classess[i]) }}">{{ classess[i] }}班</a>
                                 </td>
-                            {% endif %}
                         {% endfor %}
-                        {% if 3 in classess %}
-                            <td>
-                                <div class="first">
-                                    <a>更多</a>
-                                    <div class="second">
-                                        {% for i in classess.keys() %}
-                                            {% if i>2 %}
-                                                <li style="list-style-type:none;"><a
-                                                        href="{{ url_for(endpoint,classes=classess[i]) }}">{{ classess[i] }}班</a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </td>
-                        {% endif %}
                     </tr>
-
                     <tr>
                         <td>&nbsp;</td>
                     </tr>
+                    </table>
+                    <table>
                     <tr>
                         <th width="200">性别：</th>
-                        <td width="300"><a href="{{ url_for(endpoint,sex='男') }}">男</a></td>
-                        <td width="300"><a href="{{ url_for(endpoint,sex='女') }}">女</a></td>
+                        <td width="200"><a href="{{ url_for(endpoint,sex='男') }}">男</a></td>
+                        <td width="200"><a href="{{ url_for(endpoint,sex='女') }}">女</a></td>
                         <td>
                         </td>
                     </tr>
-
                 </table>
             </div>
         </div>
