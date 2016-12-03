@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}上传探访记录{% endblock %}
+{% block head %}
+{{ super() }}
+<!-- 教师确认删除窗口 ,传递参数-->
+    <script type="text/javascript">
+        function ComfirmDelete(str) {
+            $('#deleteToggle').modal();
+            var obj = document.getElementById("filename_delete");
+            obj.value = str
+        }
+    </script>
+    <!-- ajax -->
+    <script>
+function showStudentTable(filename)
+{
+  var xmlhttp;    
+  if (window.XMLHttpRequest)
+  {
+    // IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+    xmlhttp=new XMLHttpRequest();
+  }
+  else
+  {
+    // IE6, IE5 浏览器执行代码
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  xmlhttp.onreadystatechange=function()
+  {
+    if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+      document.getElementById("studentTable").innerHTML=xmlhttp.responseText;
+      // responseText返回一个页面
+    }
+  }
+  xmlhttp.open("GET","/studentTable/"+filename,true);
+  xmlhttp.send();
+}
+</script>
+{% endblock %}
+{% block page_content %}
+    <h1>我的探访记录<a href="{{url_for('.update_stu_filter',flag=3)}}" class="btn btn-info btn-xs">
+        <span class="glyphicon glyphicon-plus"></span>添加</a>
+    </h1>
+    <!-- 上传页面信息 -->
+        {% if files %}
+            <table class="table">
+        <h3>探访历史</h3>
+        <tr>
+            <th>名称</th>
+            <th></th>
+            <th>操作</th>
+            <th></th>
+            <th>相关学生</th>
+        </tr>
+    	{% for x in files %}
+    	<tr>
+    		<td><a data-toggle="tooltip" title="点击进行在线阅览" href="{{ url_for('.teaVisit',filename=x) }}">{{ x }}</a></td>
+    	    <td></td>
+    		<td><a href="javascript:{}"
+                       onclick="document.getElementById('{{x}}_download').submit();">下载</a>|<a onclick="ComfirmDelete({{ '\''+x+'\'' }})">删除</a></td>
+            <td></td>
+            <td><button type="button" class="btn btn-success btn-sm" style="text-shadow: black 5px 3px 3px;" data-toggle="modal" data-target="#myModal" onclick="showStudentTable({{'\''+x+'\''}})">
+  <span class="glyphicon glyphicon-user"></span> <span class="glyphicon glyphicon-user"></span>
+</button></td>
+    	</tr>
+    <!-- 提供下载的form -->
+    <form id="{{x}}_download" method="post">
+        <input type="hidden" name="download" value="{{ x }}">
+    </form>
+    	{% endfor %}
+        </table>
+        {% endif %}
+        {% if path %}
+    <h3>在线阅览</h3>
+            <div id="pdf">
+            <object width="1000" height="1100" type="application/pdf" data="{{ path }}" id="pdf_content">
+                <p>你的浏览器不支持在线阅览, 请更换浏览器, 或点击&nbsp<a href="javascript:{}"
+                                                    onclick="document.getElementById('pdf').submit();">这里</a>&nbsp下载离线阅览
+                </p>
+            </object>
+        </div>
+        {% endif %}
+    <!--教师确认弹窗-->
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
+         aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        提示：
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否任要删除？</h4>
+                </div>
+                <div class="modal-footer">
+                    <form action="/teaVisit" method="POST">
+                        <input type="hidden" id="filename_delete" name=delete>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+        <!-- 相关学生框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:1100px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    本次探访记录的相关学生
+                </h4>
+            </div>
+            <div id="studentTable"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+
+{% endblock %}

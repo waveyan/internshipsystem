@@ -350,6 +350,17 @@ class Classes(db.Model):
     __tablename__='Classes'
     classes=db.Column(db.Integer,primary_key=True)
 
+class Visit(db.Model):
+    __tablename__='Visit'
+    visitId=db.Column(db.Integer,primary_key=True)
+    userId=db.Column(db.String(13))
+    filename=db.Column(db.String(50),default='nothing')
+    time=db.Column(db.DATETIME)
+
+class Visit_Intern(db.Model):
+    __tablename__='Visit_Intern'
+    visitId=db.Column(db.Integer,primary_key=True)
+    internId=db.Column(db.Integer,primary_key=True)
 
 class Permission:
     # 企业信息查询

@@ -5,8 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
     <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
     <link rel="icon" href="static/favicon.ico" type="image/x-icon">
-<!--     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"> -->
     <link href="/static/CSS/bootstrap.min.css" rel="stylesheet">
         <script type="text/javascript" src="/static/JS/jquery-2.1.4.min.js"></script>
 <!-- 对文件上传插件有影响 -->
@@ -86,7 +84,7 @@
                         <li><a href="{{ url_for('main.statistics_area_visual') }}">统计</a></li>
                         {% if current_user.roleId==0 %}
                             <li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="">个人信息<span
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="">我的实习跟踪<span
                                         class="caret"></span>
                                     {% if session['message']['0']==1 or session['message']['1']==1 or session['message']['2']==1 %}
                                         <span class="glyphicon glyphicon-bell"></span>
@@ -115,7 +113,7 @@
                         {% elif current_user.can(Permission.STU_INTERN_LIST) %}
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="">
-                                    学生信息 <span class="caret"></span>
+                                    学生实习跟踪 <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ url_for('main.update_intern_filter',flag=5) }}">实习信息</a></li>
@@ -131,7 +129,7 @@
                             </li>
                         {% endif %}
                         {% if current_user.can(Permission.UPLOAD_VISIT) %}
-                        <li><a href="{{ url_for('.upload_Visit') }}">教师探访记录</a></li>
+                        <li><a href="{{ url_for('.teaVisit') }}">教师探访记录</a></li>
                         {% endif %}
                         {% if current_user.can(Permission.STU_INTERN_MANAGE) or current_user.can(Permission.PERMIS_MANAGE) or current_user.can(Permission.TEA_INFOR_MANAGE) or current_user.can(Permission.SELECT_MANAGE) %}
                             <li class="dropdown">

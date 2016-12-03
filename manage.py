@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 from app import create_app, db
 from app.models import Teacher, Role, Student, ComInfor, Journal, InternshipInfor, ComDirTea, SchDirTea, Summary,Major

@@ -29,10 +29,16 @@
             $('.file').fileinput({
                 language: 'zh', //设置语言
                 allowedFileExtensions : ['pdf'],//接收的文件后缀,
+                uploadAsync:true,
                 maxFileCount: 100,
                 showUpload: true, //是否显示上传按钮
                 showCaption: true,//是否显示标题
                 browseClass: "btn btn-primary", //按钮样式             
-            });
+            }).on("fileuploaded", function(event, data) {
+        if(data.response)
+        {
+            alert('处理成功');
+        }
+    });;
 </script>
 {% endblock %}
