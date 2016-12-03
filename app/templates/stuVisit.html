@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}上传探访记录{% endblock %}
+{% block head %}
+{{ super() }}
+            <!-- 学生页面确认删除窗口 ,传递参数-->
+    <script type="text/javascript">
+        function stuComfirmDelete(str,fileId) {
+            $('#studeleteToggle').modal();
+            var obj = document.getElementById("file_delete");
+            obj.value = str
+            var obj = document.getElementById("fileId");
+            obj.value = fileId
+        }
+    </script>
+    {% endblock %}
+ {% block page_content %}
+ {% if visit_intern %}
+        <table class="table">
+        <h3>探访历史</h3>
+        <tr>
+            <th>名称</th>
+            <th></th>
+            <th>上传者</th>
+            <th>上传时间</th>
+            <th></th>
+            <th>操作</th>
+        </tr>
+       {% for x in visit_intern %}
+    	<tr>
+    		<td><a data-toggle="tooltip" title="点击进行在线阅览" href="{{ url_for('.stuVisit',filename=x.filename,internId=internId,fileId=x.teaId) }}">{{ x.filename }}</a></td>
+    	    <td></td>
+    		<td>{{x.teaName}}{{x.stuName}}</td>
+    		<td>{{x.time}}</td>
+            <td></td>
+    		<td><a href="javascript:{}"
+                       onclick="document.getElementById('{{x.filename}}_download').submit();">下载</a>
+                       {% if current_user.can(Permission.UPLOAD_VISIT) %}
+                       |<a onclick="stuComfirmDelete({{ '\''+x.filename+'\'' }},{{x.teaId}}{{x.stuId}})">删除</a>
+                       {% endif %}</td>
+    	</tr>
+    <!-- 提供下载的form -->
+    <form id="{{x.filename}}_download" method="post">
+        <input type="hidden" name="download" value="{{ x.filename }}">
+        <input type="hidden" name="fileId" value="{{ x.teaId }}{{x.stuId}}">
+    </form>
+    	{% endfor %}
+        </table>
+        {% else %}
+        <p><h2>该学生暂无相关被探访记录</h2></p>
+        {% endif %}
+        
+            {% if path %}
+    <h3>在线阅览</h3>
+            <div id="pdf">
+            <object width="1000" height="1100" type="application/pdf" data="{{ path }}" id="pdf_content">
+                <p>你的浏览器不支持在线阅览, 请更换浏览器, 或点击&nbsp<a href="javascript:{}"
+                                                    onclick="document.getElementById('pdf').submit();">这里</a>&nbsp下载离线阅览
+                </p>
+            </object>
+        </div>
+        {% endif %}
+<!--学生实习页面确认弹窗-->
+    <div class="modal fade" id="studeleteToggle" tabindex="-1" role="dialog"
+         aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        提示：
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否任要删除？</h4>
+                </div>
+                <div class="modal-footer">
+                    <form action="{{ url_for('.stuVisit',internId=internId)}}" method="POST">
+                        <input type="hidden" id="file_delete" name="delete">
+                        <input type="hidden" id="fileId" name="fileId">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+  {% endblock %}

@@ -354,7 +354,7 @@ class Visit(db.Model):
     __tablename__='Visit'
     visitId=db.Column(db.Integer,primary_key=True)
     userId=db.Column(db.String(13))
-    filename=db.Column(db.String(50))
+    filename=db.Column(db.String(50),default='nothing')
     time=db.Column(db.DATETIME)
 
 class Visit_Intern(db.Model):

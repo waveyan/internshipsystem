@@ -84,7 +84,7 @@
                         <li><a href="{{ url_for('main.statistics_area_visual') }}">统计</a></li>
                         {% if current_user.roleId==0 %}
                             <li class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="">个人信息<span
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="">我的实习跟踪<span
                                         class="caret"></span>
                                     {% if session['message']['0']==1 or session['message']['1']==1 or session['message']['2']==1 %}
                                         <span class="glyphicon glyphicon-bell"></span>
@@ -129,7 +129,7 @@
                             </li>
                         {% endif %}
                         {% if current_user.can(Permission.UPLOAD_VISIT) %}
-                        <li><a href="{{ url_for('.upload_Visit') }}">教师探访记录</a></li>
+                        <li><a href="{{ url_for('.teaVisit') }}">教师探访记录</a></li>
                         {% endif %}
                         {% if current_user.can(Permission.STU_INTERN_MANAGE) or current_user.can(Permission.PERMIS_MANAGE) or current_user.can(Permission.TEA_INFOR_MANAGE) or current_user.can(Permission.SELECT_MANAGE) %}
                             <li class="dropdown">

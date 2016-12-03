@@ -4183,22 +4183,25 @@ def selectManage():
     return render_template('selectManage.html',Permission=Permission,majors=majors,grades=grades,classess=classess)
 
 #上传探访记录
-@main.route('/upload_Visit',methods=['GET','POST'])
+@main.route('/teaVisit',methods=['GET','POST'])
 @login_required
-def upload_Visit():
+def teaVisit():
     permission = current_user.can(Permission.UPLOAD_VISIT)
     if not permission:
         flash('非法操作')
         return redirect('/')
     userId=current_user.get_id()
+    #在线预览
     path=None
-    files=[]
     filename=request.args.get('filename')
+    if filename:
+        path=os.path.join(STATIC_STORAGE,'visit',userId,filename)
+    print('path',path)
+    #end 在线阅览
+    files=[]
     url='%s/visit/%s'%(STORAGE_FOLDER, userId)
     if os.path.exists(url):
         files=os.listdir(url)
-    if filename:
-        path=os.path.join(STATIC_STORAGE,'visit',userId,filename)
     if request.method=='POST':
         try:
             if 'delete' in request.form:
@@ -4214,28 +4217,26 @@ def upload_Visit():
                         db.session.delete(x)
                     db.session.commit()
                 flash('删除成功!')
-                return redirect(url_for('.upload_Visit'))
+                return redirect(url_for('.teaVisit'))
             if 'download' in request.form:
                 #file_name=secure_filename(request.form.get('download'))
                 file_name=request.form.get('download')
                 return send_file(os.path.join(STORAGE_FOLDER,'visit',userId,file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
-            file=request.files.get('visit')
-            if file:
-                if not os.path.exists('%s/visit/%s'%(STORAGE_FOLDER,userId)):
-                    os.system('mkdir %s/visit/%s' % (STORAGE_FOLDER,userId))
-                file.save('%s/visit/%s/%s'%(STORAGE_FOLDER,userId,file.filename))
-                visit=Visit(userId=userId,filename=file.filename,time=datetime.now())
-                db.session.add(visit)
-                db.session.commit()
-                flash('上传成功！请选择学生，一个学生可能有多个实习企业，请正确选择这次探访记录的学生实习信息。')
-                return redirect(url_for('.update_stu_filter',flag=3,filename=file.filename))
         except Exception as e:
             db.session.rollback()
             flash('操作失败，请重试！')
-            print('探访记录：',e)
-            return redirect(url_for('.upload_Visit'))
-    return render_template('visit.html',Permission=Permission,path=path,files=files)
+            print('teaVisit：',e)
+            return redirect(url_for('.teaVisit'))
+    return render_template('teaVisit.html',Permission=Permission,path=path,files=files)
+
+#用于ajax异步获取某探访记录的相关学生表
+@main.route('/studentTable/<filename>',methods=['GET'])
+@login_required
+def student_table(filename):
+    visitId=Visit.query.filter_by(filename=filename,userId=current_user.teaId).first().visitId
+    show_infor=db.session.execute('select s.stuId,stuName,comName,start,end from Student as s,InternshipInfor as i,ComInfor as c,Visit_Intern as v where i.Id=v.internId and i.stuId=s.stuId and i.comId=c.comId and visitId=%s'%visitId)
+    return render_template('studentTable.html',show_infor=show_infor)
 
 #选择探访学生
 @main.route('/selectStudent',methods=['GET','POST'])
@@ -4246,46 +4247,82 @@ def selectStudent():
     classes={}
     page = request.args.get('page', 1, type=int)
     pagination=create_stu_filter(grade, major, classes).join(InternshipInfor,InternshipInfor.stuId==Student.stuId).join(ComInfor,ComInfor.comId==InternshipInfor.comId)\
-    .add_columns(ComInfor.comName,Student.stuName,InternshipInfor.Id,Student.stuId,InternshipInfor.start,InternshipInfor.end).paginate(page, per_page=8, error_out=False)
+    .add_columns(ComInfor.comName,Student.stuName,InternshipInfor.Id,Student.stuId,InternshipInfor.start,InternshipInfor.end).paginate(page, per_page=60, error_out=False)
     internlist = pagination.items
     form=searchForm()
     userId=current_user.get_id()
-    if request.args.get('filename'):
-        session['filename']=request.args.get('filename')
     if request.method=='POST':
-        visitId=getMaxVisitId()
-        for x in request.form.getlist('approve[]'):
-            source='%s/visit/%s/%s'%(STORAGE_FOLDER,userId,session['filename'])
-            direction='%s/%s/visit/%s'%(STORAGE_FOLDER,x,userId)
-            if not os.path.exists(direction):
-                os.mkdir(direction)
-            shutil.copyfile(source,os.path.join(direction,session['filename']))
-            visit_intern=Visit_Intern(visitId=visitId,internId=x)
-            db.session.add(visit_intern)
         try:
+            visit=Visit(userId=userId,time=datetime.now())
+            db.session.add(visit)
             db.session.commit()
-            flash('操作成功！')
+            for x in request.form.getlist('approve[]'):
+                if x:
+                    visit_intern=Visit_Intern(visitId=visit.visitId,internId=x)
+                    db.session.add(visit_intern)
+        
+            db.session.commit()
+            flash('请上传本次探访记录！')
+            return redirect(url_for('.upload_Visit'))
         except Exception as e:
             db.session.rollback()
             flash('操作失败，请重试！')
-        return redirect(url_for('.upload_Visit'))
+            print('teaVisit:',e)
+            return redirect(url_for('.selectStudent'))
     return render_template('selectStudent.html',Permission=Permission,form=form,internlist=internlist,grade=grade,classes=classes,major=major,pagination=pagination)
 
-#用于ajax异步获取某探访记录的相关学生表
-@main.route('/studentTable/<filename>',methods=['GET'])
+
+#上传探访记录
+@main.route('/upload_Visit',methods=['GET','POST'])
 @login_required
-def student_table(filename):
-    visitId=Visit.query.filter_by(filename=filename,userId=current_user.teaId).first().visitId
-    show_infor=db.session.execute('select s.stuId,stuName,comName,start,end from Student as s,InternshipInfor as i,ComInfor as c,Visit_Intern as v where i.Id=v.internId and i.stuId=s.stuId and i.comId=c.comId and visitId=%s'%visitId)
-    return render_template('studentTable.html',show_infor=show_infor)
+def upload_Visit():
+    permission = current_user.can(Permission.UPLOAD_VISIT)
+    if not permission:
+        flash('非法操作')
+        return redirect('/')
+    userId=current_user.get_id()
+    if request.method=='POST':
+        try:
+            file=request.files.get('visit')
+            if file:
+                if not os.path.exists('%s/visit/%s'%(STORAGE_FOLDER,userId)):
+                    os.system('mkdir %s/visit/%s' % (STORAGE_FOLDER,userId))
+                tea_url='%s/visit/%s/%s'%(STORAGE_FOLDER,userId,file.filename)
+                file.save(tea_url)
+                visit=Visit.query.filter_by(userId=userId,filename='nothing').first()
+                v_t=None
+                #“跳过此步”就没有对selectStudent提出Post，因此没有创建Visit行
+                if visit:
+                    v_t=Visit_Intern.query.filter_by(visitId=visit.visitId).all()
+                else:
+                    visit=Visit(userId=userId,filename=file.filename,time=datetime.now())
+                #没有选择学生的时候
+                if v_t:
+                    for x in v_t:
+                        direction='%s/%s/visit/%s'%(STORAGE_FOLDER,x.internId,userId)
+                        if not os.path.exists(direction):
+                            os.mkdir(direction)
+                        shutil.copyfile(tea_url,os.path.join(direction,file.filename))
+                visit.filename=file.filename
+                db.session.add(visit)
+                db.session.commit()
+                flash('上传成功！')
+                return redirect(url_for('.teaVisit'))
+        except Exception as e:
+            db.session.rollback()
+            flash('操作失败，请重试！')
+            print('upload_Visit：',e)
+            return redirect(url_for('.upload_Visit'))
+    return render_template('visit.html',Permission=Permission)
+
+
 
 #学生的被探访记录
-@main.route('/visit',methods=['GET','POST'])
+@main.route('/stuVisit',methods=['GET','POST'])
 @login_required
-def visit():
+def stuVisit():
     internId=request.args.get('internId')
-    session['internId']=internId
-    v=request.args.get('v')
+    # session['internId']=internId
     #防止sql注入
     if current_user.roleId==0:
         stuId=InternshipInfor.query.filter_by(Id=internId).first().stuId
@@ -4300,21 +4337,19 @@ def visit():
     teaName=None
     time=None
     print(url)
-    if os.path.exists(url):
-        file_path=os.walk(url)
-        fileId=next(file_path)[1]
-        for x in file_path:
-            file=x[2]
-    if fileId and file:
-        teaName=[Teacher.query.filter_by(teaId=x).first().teaName for x in fileId]
-        id_file=zip(fileId,file)
-        time=[Visit.query.filter_by(userId=userId,filename=file).first().time for userId,file in id_file]
-        id_file=zip(fileId,file,teaName,time)
+    #只考虑教师上传的探访记录
+    visit_intern=Visit_Intern.query.filter_by(internId=internId).join(Visit,Visit.visitId==Visit_Intern.visitId).add_columns(Visit.time,Teacher.teaName,Teacher.teaId,Visit.filename).join(Teacher,Teacher.teaId==Visit.userId).all()
+    #只考虑学生上传的探访记录
+    visit_intern_stu=Visit_Intern.query.filter_by(internId=internId).join(Visit,Visit.visitId==Visit_Intern.visitId).add_columns(Visit.time,Teacher.teaName,Teacher.teaId,Visit.filename).join(Student,Student.stuId==Visit.userId).all()
+    visit_intern+=visit_intern_stu
+    print(visit_intern)
+    #在线阅读
     path=None
     filename=request.args.get('filename')
     fileid=request.args.get('fileId')
-    if filename:
+    if filename and fileid:
         path='%s/%s/visit/%s/%s'%(STATIC_STORAGE,internId,fileid,filename)
+    #在线阅读end 
     if request.method=='POST':
         try:
             if 'delete' in request.form:
@@ -4326,16 +4361,16 @@ def visit():
                 db.session.delete(v_i)
                 db.session.commit()
                 flash('删除成功！')
-                del(session['internId'])
-                return redirect(url_for('.visit',internId=internId,v='v'))
+                # del(session['internId'])
+                return redirect(url_for('.stuVisit',internId=internId))
             if 'download' in request.form:
                 file_name=request.form.get('download')
                 return send_file(os.path.join(url,request.form.get('fileId'),file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
             flash('操作成功！')
-            return redirect(url_for('.visit',internId=internId,v='v'))
+            return redirect(url_for('.stuVisit',internId=internId))
         except Exception as e:
             db.session.rollback()
             flash('操作失败！请重试！')
-            return redirect(url_for('.visit',internId=internId,v='v'))
-    return render_template('visit.html',v=v,Permission=Permission,path=path,id_file=id_file,internId=internId)
+            return redirect(url_for('.stuVisit',internId=internId))
+    return render_template('stuVisit.html',Permission=Permission,path=path,visit_intern=visit_intern,internId=internId)
