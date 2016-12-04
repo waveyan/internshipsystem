@@ -5,6 +5,7 @@ with open('export_all.list', 'r') as f:
     file_list = f.readline().strip('\n')
     root_path = f.readline().strip('\n')
     root_path_2 = f.readline().strip('\n')
+    visit_src = f.readline().strip('\n')
 file_list = ast.literal_eval(file_list)
 
 # 建立文件
@@ -22,6 +23,11 @@ for x in file_list:
     os.system('mv %s/score_img %s/评分' % (root_path_3, root_path_3))
     os.system('mv %s/internlist* %s/%s_实习信息.xls' % (root_path_3, root_path_3, x['comName']))
     os.system('mv %s/journalList* %s/%s_实习日志.xls' % (root_path_3, root_path_3, x['comName']))
+
+# 探访记录
+os.system('cp -r %s %s/' %(visit_src,root_path_2))
+os.system('mv %s/visit %s/探访记录' % (root_path_2,root_path_2))
+
 # 打包zip文件
 zip_folder = os.path.basename(root_path_2)
 zip_file = '%s.zip' % zip_folder

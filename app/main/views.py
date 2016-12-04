@@ -16,6 +16,7 @@ from collections import OrderedDict
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import aliased
 from ..auth.views import logout_url
+import time
 
 
 
@@ -181,7 +182,6 @@ def statistics_area_rank():
 # --------------------------------------------------------------------
 # 首页
 @main.route('/', methods=['GET', 'POST'])
-@login_required
 def index():
     if get_export_all_update_status() is 'empty':
         get_export_all_generate()
@@ -191,7 +191,6 @@ def index():
         return redirect(logout_url)
     if isLogout:
         session['isLogout'] = True
-        # return redirect(logout_url)
     return render_template('index.html', Permission=Permission)
 
 
@@ -3073,6 +3072,7 @@ def export_all_file_list():
     # 根目录
     root_path = os.path.join(EXPORT_ALL_FOLDER, str(datetime.now().timestamp()))
     root_path_2 = os.path.join(root_path, '实习管理系统批量导出_%s' % datetime.now().date())
+    visit_src = os.path.join(STORAGE_FOLDER, 'visit')
     file_list = []
     intern_org = InternshipInfor.query.join(Student, Student.stuId==InternshipInfor.stuId) \
         .join(ComInfor, ComInfor.comId==InternshipInfor.comId) \
@@ -3100,78 +3100,11 @@ def export_all_file_list():
             'storage_path': storage_path
         }
         file_list.append(path_group)
-    return file_list, root_path, root_path_2
+    return file_list, root_path, root_path_2, visit_src
 
-# 导出所有实习资料
-#@update_intern_internStatus
-#def export_all():
-#    # 根目录
-#    root_path = os.path.join(EXPORT_ALL_FOLDER, str(datetime.now().timestamp()))
-#    root_path_2 = os.path.join(root_path, '实习管理系统批量导出_%s' % datetime.now().date())
-#    file_list = []
-#    intern_org = InternshipInfor.query.join(Student, Student.stuId==InternshipInfor.stuId) \
-#        .join(ComInfor, ComInfor.comId==InternshipInfor.comId) \
-#        .outerjoin(Teacher, Teacher.teaId==InternshipInfor.icheckTeaId) \
-#        .filter(InternshipInfor.internStatus==2, InternshipInfor.internCheck==2) \
-#        .add_columns(InternshipInfor.Id, InternshipInfor.stuId, InternshipInfor.internCheck, InternshipInfor.internStatus, InternshipInfor.start, InternshipInfor.end, InternshipInfor.task, InternshipInfor.opinion, InternshipInfor.icheckTime, InternshipInfor.time, Student.stuName, Student.grade, Student.major, ComInfor.comName, ComInfor.comCity, Teacher.teaName)
-#    internlist = intern_org.all()
-#    for intern in internlist:
-#        x_grade = intern.grade
-#        x_major = intern.major
-#        x_stuName = intern.stuName
-#        x_stuId = intern.stuId
-#        x_comName = intern.comName
-#        intern_path = excel_export(excel_export_intern, intern_org.filter(InternshipInfor.Id==intern.Id))
-#        journal_path = journal_export([intern.Id])
-#        storage_path = os.path.join(STORAGE_FOLDER, str(intern.Id))
-#        path_group = {
-#            'grade': str(x_grade),
-#            'major': x_major,
-#            'stuName': x_stuName,
-#            'stuId': x_stuId,
-#            'comName': x_comName,
-#            'intern_path': intern_path,
-#            'journal_path': journal_path,
-#            'storage_path': storage_path
-#        }
-#        file_list.append(path_group)
-#    # 建立文件
-#    for x in file_list:
-#        root_path_3 = os.path.join(root_path_2, x['grade'], x['major'], x['stuId']+'_'+x['stuName'], x['comName'])
-#        os.system('mkdir -p %s' % root_path_3)
-#        os.system('cp -r %s/* %s %s %s' % (x['storage_path'], x['intern_path'], x['journal_path'], root_path_3))
-#        # 更改中文名
-#        os.system('mv %s/summary_doc %s/总结文档' % (root_path_3, root_path_3))
-#        os.system('mv %s/attachment %s/附件' % (root_path_3, root_path_3))
-#        os.system('mv %s/agreement %s/实习协议书' % (root_path_3, root_path_3))
-#        os.system('mv %s/visit %s/探访记录' % (root_path_3, root_path_3))
-#        os.system('mv %s/score_img/comscore %s/score_img/企业评分' % (root_path_3, root_path_3))
-#        os.system('mv %s/score_img/schscore %s/score_img/校内评分' % (root_path_3, root_path_3))
-#        os.system('mv %s/score_img %s/评分' % (root_path_3, root_path_3))
-#        os.system('mv %s/internlist* %s/%s_实习信息.xls' % (root_path_3, root_path_3, x['comName']))
-#        os.system('mv %s/journalList* %s/%s_实习日志.xls' % (root_path_3, root_path_3, x['comName']))
-#    # 打包zip文件
-#    zip_folder = os.path.basename(root_path_2)
-#    zip_file = '%s.zip' % zip_folder
-#    zip_path = os.path.join(root_path, zip_file)
-#    os.system('cd %s; zip -0r %s %s' %(root_path, zip_file, zip_folder))
-#    return zip_path
-#    #file_attachname = os.path.basename(root_path_2)+'.zip'
-#    #return send_file(zip_path, as_attachment=True, attachment_filename=file_attachname.encode('utf-8'))
 
 
 def get_export_all_update_status():
-    #current_update_file = 0.0
-    #update_time = sorted(os.listdir(EXPORT_ALL_FOLDER))
-    #file_path = os.path.join(EXPORT_ALL_FOLDER, update_time[-1])
-    #for x in os.listdir(file_path):
-    #    if x.split('.')[-1] == 'zip':
-    #        update_file = os.path.join(file_path, x)
-    #        return update_file
-    ## 若没有找到 .zip 文件, 则使用老版本
-    #file_path = os.path.join(EXPORT_ALL_FOLDER, update_time[-2])
-    #for x in os.listdir(file_path)
-
     def search_updated(update_time):
         result = {}
         temp_path = os.path.join(EXPORT_ALL_FOLDER, update_time)
@@ -3194,17 +3127,21 @@ def get_export_all_update_status():
         if len(update_time_list) == 1:
             return 'initing'
         else:
+            # if the compress was corrupted
+            if time.time() - float(update_time_list[-1]) > 300:
+                os.system('rm -r %s/%s' % (EXPORT_ALL_FOLDER, update_time_list[-1]))
             is_exporting_all = True
             temp = search_updated(update_time_list[-2])
     temp['is_exporting_all'] = is_exporting_all
     return temp
 
 def get_export_all_generate():
-    file_list, root_path, root_path_2 = export_all_file_list()
+    file_list, root_path, root_path_2, visit_src = export_all_file_list()
     with open('export_all.list','w') as f:
         f.write(str(file_list) + '\n')
         f.write('%s' % root_path + '\n')
-        f.write('%s' % root_path_2)
+        f.write('%s' % root_path_2 + '\n')
+        f.write('%s' % visit_src)
     os.popen('python3 export_all.py&', 'r')
 
 
@@ -3231,33 +3168,6 @@ def export_all_page():
                 elif isdownload:
                     return send_file(updated_file_path, as_attachment=True, attachment_filename=updated_file_path.split('/')[-1].encode('utf-8'))
         return render_template('export_all_page.html', Permission=Permission, update_time=update_time, is_exporting_all=is_exporting_all)
-
-
-#@main.route('/export_all_page', methods=['GET', 'POST'])
-#def export_all_page():
-#    if current_user.can(Permission.STU_INTERN_SEARCH) and current_user.can(Permission.STU_JOUR_SEARCH) and current_user.can(Permission.STU_SUM_SEARCH):
-#        update_status = get_export_all_update_status()
-#        update_time = update_status['update_time']
-#        is_exporting_all = update_status['is_exporting_all']
-#        print('debug:', is_exporting_all)
-#        updated_file_path = update_status['file_path']
-#        if request.method == 'POST':
-#            isdownload = request.form.get('isdownload')
-#            isupdate = request.form.get('isupdate')
-#            if isupdate:
-#                is_exporting_all = True
-#                #export_all()
-#                file_list, root_path, root_path_2 = export_all_file_list()
-#                with open('1018.list','w') as f:
-#                    f.write(str(file_list))
-#                #print ('file_list', file_list, 'root_path', root_path, 'root_path_2', root_path_2)
-#                #os.system('python3 /home/bloom/temp_internshipsystem/test_export.py %s %s %s &' % (file_list, root_path, root_path_2))
-#                os.popen('python3 test_export.py "%s" "%s" &' % (root_path, root_path_2), 'r')
-#                print('os.popen success')
-#                return redirect(url_for('.export_all_page'))
-#            elif isdownload:
-#                return send_file(updated_file_path, as_attachment=True, attachment_filename=updated_file_path.split('/')[-1].encode('utf-8'))
-#        return render_template('export_all_page.html', Permission=Permission, update_time=update_time, is_exporting_all=is_exporting_all)
 
 
 # 导入excel表, 检查数据是否完整或出错
@@ -4260,7 +4170,7 @@ def selectStudent():
                 if x:
                     visit_intern=Visit_Intern(visitId=visit.visitId,internId=x)
                     db.session.add(visit_intern)
-        
+
             db.session.commit()
             flash('请上传本次探访记录！')
             return redirect(url_for('.upload_Visit'))
@@ -4349,7 +4259,7 @@ def stuVisit():
     fileid=request.args.get('fileId')
     if filename and fileid:
         path='%s/%s/visit/%s/%s'%(STATIC_STORAGE,internId,fileid,filename)
-    #在线阅读end 
+    #在线阅读end
     if request.method=='POST':
         try:
             if 'delete' in request.form:

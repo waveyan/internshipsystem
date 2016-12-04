@@ -23,7 +23,6 @@ def login():
     for i,token in params:
         d[i] = token
     redirect_link = loginAction.service(d.get('token'))
-    session['isLogout'] = False
     return redirect(redirect_link)
 
     # # DEBUG
@@ -45,9 +44,5 @@ def lg():
 @login_required
 def logout():
     logout_user()
-    # session['LoginName'] = ''
-    # session['UserGroup'] = ''
-    # flash('登出成功！')
-    #return redirect(url_for('main.index'))
-    # return redirect('https://cas.dgut.edu.cn/user/logout?service=http://%s' % server_ip)
+    flash('登出成功！')
     return redirect(url_for('main.index', isLogout=1))
