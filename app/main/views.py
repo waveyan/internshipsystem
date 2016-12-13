@@ -185,12 +185,13 @@ def statistics_area_rank():
 def index():
     if get_export_all_update_status() is 'empty':
         get_export_all_generate()
-    isLogout = request.args.get("isLogout")
-    if session['isLogout']:
-        session['isLogout'] = False
+    if request.args.get("isLogout"):
         return redirect(logout_url)
-    if isLogout:
-        session['isLogout'] = True
+    # if session['isLogout']:
+    #     session['isLogout'] = False
+    #     return redirect(logout_url)
+    # if isLogout:
+    #     session['isLogout'] = True
     return render_template('index.html', Permission=Permission)
 
 
@@ -396,16 +397,12 @@ def addInternship():
             if start < now:
                 if end <= now:
                     internStatus = 2  # 实习结束
-                    print('this is 1')
                 if end > now:
                     internStatus = 1  # 实习中
-                    print('this is 2')
             elif start > now:
                 internStatus = 0  # 待实习
-                print('this is 3')
             else:
                 internStatus = 1  # start=now, 实习中
-                print('this is 4')
             internship = InternshipInfor(
                 task=request.form.get('task'),
                 start=start,
@@ -448,7 +445,6 @@ def addInternship():
                 else:
                     break
             # 先commit internship,更新等等需用到的internId
-            print('3333333333333333')
             try:
                 db.session.add(internship)
                 db.session.commit()
@@ -1765,7 +1761,6 @@ def editStudent():
             stu.sex = request.form.get('sex')
             i = 0
             for name in request.form:
-                print(name)
                 if name.find('nteaId')!=-1:
                     i=i+1
             i=i+1
@@ -1773,6 +1768,7 @@ def editStudent():
             stu.grade = form.grade.data
             stu.classes = form.classes.data
             db.session.add(stu)
+            #修改校内指导老师
             x=0
             while True:
                 x=x+1
@@ -1789,11 +1785,12 @@ def editStudent():
                     db.session.add(nschdirtea)
                 elif x==i:
                     break
-                    # 添加新老师
-            j = 0
+            # 添加新老师,js原因j从2开始
+            j = 1
             while True:
                 j = j + 1
                 teaId = request.form.get('teaId%s' % j)
+                print(teaId)
                 if teaId:
                     schdirtea = SchDirTea(
                         teaId=teaId,

@@ -15,7 +15,7 @@
             form.submit();
         }
     </script>
-     <script>
+          <script>
         $(document).ready(function () {
             var i = 1;
             $("#addTea").click(function () {
@@ -29,15 +29,14 @@
                 $(".teaForm .form-control").eq(i + i + i + i + i + 4).attr({name: "teaEmail" + i});
                 if (i > 1) {
                     $("#delTea").show();
+                    // $("#addTea").hide();
                 }
-                $("#addTea").hide();
             });
             $("#delTea").click(function () {
                 i--;
                 $(".teaForm:last").remove();
                 if (i == 1) {
                     $("#delTea").slideUp();
-                    $("#addTea").show();
                 }
             });
             $("#finish").click(function () {
@@ -58,14 +57,11 @@
         <div class="panel-body">
             <div class="teaForm" style="display: None">
                 {{ schdirteaform.hidden_tag() }}
-                {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="",
-            pattern="[0-9]{6}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
-                {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="",
-            pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
-                {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="",
-            oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",required='',placeholder="") }}
-                {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control",required='',placeholder="") }}
+                {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",placeholder="") }}
+                {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",placeholder="") }}
+                {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",placeholder="") }}
+                {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",placeholder="") }}
+                {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control") }}
                 </br></br>
             </div>
 
@@ -108,13 +104,20 @@
                 <br><br><br>
             {% endif %}
         {% endfor %}
-        <div class="teaForm">
+        <div class="teaForm" style="display: None">
+        {{ schdirteaform.hidden_tag() }}
+                    {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control") }}
+                    {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control") }}
+                    {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control") }}
+                    {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control") }}
+                    {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control") }}
+                    </br></br>
         </div>
-        <input type="button" id="addTea" class="btn" value="添加校内指导老师">
-        <input type="button" id="delTea" class="btn" value="删除校内指导老师" style="display: none">
+                       <input type="button" id="addTea" class="btn" value="添加老师">
+                <input type="button" id="delTea" class="btn" value="删除老师" style="display: none">
+
         <br><br><br>
         <p><br><span class="label label-danger">注意</span>
-        <br>*&nbsp;每次只能添加一位校内指导老师师。
             <br>*&nbsp;若要删除校内指导老师，把需要删除的指导老师的信息表单清空后，点击提交键即可。
         </p>
         <button class="btn btn-primary" onclick="save({{ stu.stuId }})" id='finish'>提交</button>
