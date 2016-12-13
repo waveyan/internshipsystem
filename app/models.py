@@ -323,13 +323,13 @@ class Journal(db.Model):
     weekNo = db.Column(db.Integer, default=1)
     workStart = db.Column(db.DATE)
     workEnd = db.Column(db.DATE)
-    mon = db.Column(db.String(500), default=' ')
-    tue = db.Column(db.String(500), default=' ')
-    wed = db.Column(db.String(500), default=' ')
-    thu = db.Column(db.String(500), default=' ')
-    fri = db.Column(db.String(500), default=' ')
-    sat = db.Column(db.String(500), default=' ')
-    sun = db.Column(db.String(500), default=' ')
+    mon = db.Column(db.String(1000), default=' ')
+    tue = db.Column(db.String(1000), default=' ')
+    wed = db.Column(db.String(1000), default=' ')
+    thu = db.Column(db.String(1000), default=' ')
+    fri = db.Column(db.String(1000), default=' ')
+    sat = db.Column(db.String(1000), default=' ')
+    sun = db.Column(db.String(1000), default=' ')
     jcheckTeaId = db.Column(db.String(8))
     jourCheck = db.Column(db.Integer, default=0)
     jcheckTime = db.Column(db.DATETIME)
@@ -406,3 +406,4 @@ class Permission:
     SELECT_MANAGE=0X0080000
     #上传探访记录
     UPLOAD_VISIT= 0X0100030
+

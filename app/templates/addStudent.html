@@ -45,8 +45,7 @@
         <div class="panel-body">
             <div class="teaForm" style="display: None">
                 {{ schdirteaform.hidden_tag() }}
-                {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="",
-            pattern="[0-9]{6}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
+                {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',oninput="setCustomValidity('')") }}
                 {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="",
             pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
                 {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="",
@@ -75,7 +74,7 @@
                 <h3>校内指导老师信息</h3>
                 <div class="teaForm">
                     {{ schdirteaform.hidden_tag() }}
-                    {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="", pattern="[0-9]{6}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
+                    {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
                     {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="", pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
                     {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                     {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",required='',placeholder="") }}

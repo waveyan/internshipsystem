@@ -103,7 +103,7 @@
                     <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
                     <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId, from_url='xJournal') }}">实习总结与成果</a></li>
                     <li>
-                        <a href="{{ url_for('.visit', internId=internship.Id) }}">教师探访记录</a>
+                        <a href="{{ url_for('.stuVisit', internId=internship.Id) }}">教师探访记录</a>
                     </li>
                 </ul>
             </div
