@@ -371,6 +371,10 @@ def addInternship():
     comdirteaform = comdirteaForm()
     i = 0
     j = 0
+    #当已存在校内指导老师或管理员添加学生信息时不添加
+    schdirtea=False
+    if SchDirTea.query.filter_by(stuId=current_user.get_id()).first() or hasattr(current_user,'teaId'):
+        schdirtea=True        
     try:
         if request.method == 'POST':
             # 若请求非学生,从request获取学生学号和姓名
@@ -411,6 +415,7 @@ def addInternship():
                 stuId=stuId,
                 internStatus=internStatus
             )
+            #校外指导老师
             while True:
                 j = j + 1
                 cteaValue = request.form.get('cteaName%s' % j)
@@ -426,7 +431,24 @@ def addInternship():
                     db.session.add(comdirtea)
                 else:
                     break
+            #校内指导老师
+            while True:
+                i = i + 1
+                teaValue = request.form.get('teaId%s' % i)
+                if teaValue:
+                    schdirtea = SchDirTea(
+                        teaId=teaValue,
+                        stuId=current_user.stuId,
+                        steaName=request.form.get('teaName%s' % i),
+                        steaDuty=request.form.get('teaDuty%s' % i),
+                        steaPhone=request.form.get('teaPhone%s' % i),
+                        steaEmail=request.form.get('teaEmail%s' % i)
+                    )
+                    db.session.add(schdirtea)
+                else:
+                    break
             # 先commit internship,更新等等需用到的internId
+            print('3333333333333333')
             try:
                 db.session.add(internship)
                 db.session.commit()
@@ -470,11 +492,11 @@ def addInternship():
             return redirect(url_for('.update_intern_filter',flag=5))
     except Exception as e:
         print("实习信息：", e)
-        db.session.rollback
+        db.session.rollback()
         flash('提交实习信息失败，请重试！')
         return redirect(url_for('.addcominfor'))
     return render_template('addinternship.html', iform=iform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,
-                           Permission=Permission)
+                           Permission=Permission,schdirtea=schdirtea)
 
 
 # 普通老师对于自己的指导学生, 带有'审核老师'的权限
@@ -508,10 +530,13 @@ def xIntern():
         checktea = Teacher.query.filter_by(teaId=internship.icheckTeaId).first()
     #实习协议图片路径
     path=[]
+    name=[]
     p=os.path.join(os.path.abspath('.'),"app/static/storage/%s/agreement"%internId)
     if os.path.exists(p):
         for x in os.listdir(p):
             path.append(os.path.join(p[p.find('/static'):],x))
+            name.append(x)
+    path=zip(name,path)
     # 导出实习excel表
     intern_excel = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(ComInfor,
                                                                                                     InternshipInfor.comId == ComInfor.comId).outerjoin(
@@ -714,6 +739,48 @@ def xInternEdit_comdirtea():
         flash("实习信息修改成功")
         return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
 
+# 修改实习信息 个人实习信息--企业指导老师
+@main.route('/xInternEdit_schdirtea', methods=["POST"])
+@login_required
+def xInternEdit_schdirtea():
+    if current_user.roleId == 0:
+        stuId = current_user.stuId
+        permission = True
+    else:
+        stuId = request.form.get('stuId')
+        if is_schdirtea(stuId):
+            permission = True
+    if permission:
+        comId = request.form.get('comId')
+        Id = request.form.get("Id")
+        teaId = request.form.get('steaId')
+        teaName = request.form.get('steaName')
+        teaDuty = request.form.get('steaDuty')
+        teaPhone = request.form.get('steaPhone')
+        teaEmail = request.form.get('steaEmail')
+        internId = request.form.get("internId")
+        time = datetime.now()
+        # if teaName is None or comId is None or internId is None or stuId is None:
+        # if not (teaName and comId and internId and stuId):
+        #     flash("修改实习信息失败,请重试")
+        #     return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
+        try:
+            db.session.execute(' \
+                update SchDirTea set \
+                teaId="%s",\
+                steaName = "%s", \
+                steaDuty = "%s", \
+                steaPhone ="%s", \
+                steaEmail = "%s" \
+                where Id=%s'
+                               % (teaId,teaName, teaDuty, teaPhone, teaEmail, Id)
+                               )
+            db.session.execute('update InternshipInfor set time="%s" where Id=%s' % (time, internId))
+            flash("实习信息修改成功")
+        except Exception as e:
+            db.session.rollback()
+            print('校内指导老师：',e)
+        return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
 
 # 实习,日志,总结成果的单个删除
 @main.route('/intern_delete', methods=['POST'])

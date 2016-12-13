@@ -75,6 +75,7 @@ class schdirteaForm(Form):
     steaDuty = StringField('职称')
     steaPhone = StringField('联系电话')
     steaEmail = StringField('邮箱')
+    submit = SubmitField('提交')
 
 
 class comdirteaForm(Form):

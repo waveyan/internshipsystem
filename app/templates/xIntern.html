@@ -29,6 +29,10 @@
         function ComfirmCheck() {
             $('#checkToggle').modal();
         }
+        function ReadOnline(path) {
+            $('#readToggle').modal();
+            document.getElementById("pdf_content").setAttribute('data', path);
+        }
     </script>
 
     <!-- 换行显示 -->
@@ -124,6 +128,38 @@
                 </div>
             </div>
         </div>
+    </div>
+<!--在线预览弹窗-->
+    <div class="modal fade" id="readToggle" tabindex="-1" role="dialog"
+         aria-labelledby="readModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:1100px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        在线预览
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="pdf">
+            <object width="1000" height="800" type="application/pdf" data="" id="pdf_content">
+                <p>你的浏览器不支持在线阅览, 请更换浏览器, 或点击&nbsp<a href="javascript:{}"
+                                                    onclick="document.getElementById('pdf').submit();">这里</a>&nbsp下载离线阅览
+                </p>
+            </object>
+        </div>
+                </div>
+                <div class="modal-footer">
+                    <form action="/upload_Visit" method="POST">
+                        <input type="hidden" id="filename_delete" name=delete>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
     </div>
 
 {% endblock %}<!--先执行父模板-->
@@ -299,21 +335,26 @@
                         <td height="50" colspan="2">{{ tea.steaEmail }}</td>
                     </tr>
                 {% endif %}
-            {% endfor %}
-            {% if path %}        
+            {% endfor %}       
         <tr>
-            <td width="200" colspan="6" height="50">四、实习协议书</td>
+            <th width="200" colspan="6" height="50">四、实习协议书</th>
         </tr>
-        {%endif%}
         </table>
-        <table align="center" border="2" class="table-bordered">
+        <table width="1200" class="table">
         <tr>
-        <div class="container row">
+<th width="200" colspan="6" height="50">pdf文件</th>
+       </tr>
+       {% for name,path in path %}
+       {% if 'pdf' in name %}
+       <tr><td height="50" colspan="6"><a onClick="ReadOnline({{'\''+path+'\''}})">{{name}}</a></td></tr> 
+       <tr>
+       {%else%}
+               <div class="container row">
         <div class="example">
-       {% for p in path %}       
-                <img src="{{p}}" class="img-rounded min" alt="">
+                <img src="{{path}}" class="img-rounded min" alt="">
+        {%endif%}
         {% endfor %}
-        </div>
+          </div>
         </div>
     </tr>
         </table>
@@ -353,13 +394,10 @@
         </table>
 
     <br>
-    <br><a href="{{ url_for('.stuInternList') }}">
-    <div class="btn btn-primary">返回</div>
-</a>
-<!-- 图片展示 -->
+<!-- <!-- 图片展示 -->
 <script src="/static/JS/zoomify.min.js"></script>
 <script type="text/javascript">
     $('.example img').zoomify();
-</script>
+</script> 
 {% endblock %}
 

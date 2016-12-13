@@ -75,7 +75,7 @@
         </tr>
         <tr>
             <th>公司网址</th>
-            <td width="400" height="50" colspan="3">{{ com.comUrl }}</td>
+            <td width="400" height="50" colspan="3"><a href="{{ com.comUrl }}">{{ com.comUrl }}</a></td>
         </tr>
         <tr>
             <th>公司简介</th>
@@ -101,10 +101,7 @@
             <td height="50">{{ com.comFax }}</td>
         </tr>
     </table>
-    <br>
-    <a href="{{ url_for('.interncompany') }}">
-        <div class="btn btn-default">返回</div>
-    </a>
+
     <br><br>
     <!--确认弹窗-->
     <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"

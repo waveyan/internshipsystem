@@ -155,33 +155,44 @@
                 <td height="50" width="240">电话</td>
                 <td height="50" width="240">E-mail</td>
             </tr>
-            {% for tea in schdirtea %}
-                {% if tea.steaName %}
+                {% for tea in schdirtea %}
                     <tr>
-                        <td height="50">{{ tea.teaId }}</td>
-                        <td height="50">{{ tea.steaName }}</td>
-                        <td height="50">{{ tea.steaDuty }}</td>
-                        <td height="50">{{ tea.steaPhone }}</td>
-                        <td height="50" colspan="2">{{ tea.steaEmail }}</td>
+                        <form method="POST" action="/xInternEdit_schdirtea">
+                            {{ schdirteaform.hidden_tag() }}
+                            <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                            <input type="hidden" name="comId" value="{{ comInfor.comId }}">
+                            <input type="hidden" name="Id" value="{{ tea.Id }}">
+                            <input type="hidden" name="internId" value="{{ internship.Id }}">
+                            <td height="50">{{ schdirteaform.steaId(required='', value=tea.teaId,class="form-control") }}</td>
+                            <td height="50">{{ schdirteaform.steaName(required='', value=tea.steaName,class="form-control") }}</td>
+                            <td height="50">{{ schdirteaform.steaDuty(required='', value=tea.steaDuty,class="form-control") }}</td>
+                            <td height="50">{{ schdirteaform.steaPhone(required='', value=tea.steaPhone,class="form-control") }}</td>
+                            <td height="50"
+                                colspan="2">{{ schdirteaform.steaEmail(required='', value=tea.steaEmail,class="form-control") }}</td>
+                            {{ schdirteaform.csrf_token }}
+                            <td>{{ schdirteaform.submit(class="btn btn-danger",type="submit", value="确定修改") }}</td>
+                        </form>
                     </tr>
-                {% endif %}
             {% endfor %}
+            
                     <tr>
-            <td width="200" colspan="6" height="50">四、实习协议书</td>
+            <td width="200" colspan="7" height="50">四、实习协议书</td>
         </tr>
+        {% if imageName %}
          <tr>
             <td colspan="4" height="50">文件名</td>
-            <td  height="50">操作</td>
+            <td  height="50" colspan="3">操作</td>
         </tr>
+        {% endif %}
         {% for name in imageName %}
         <tr><td colspan="4" height="50">{{name}}</td>       
-        <td><a href="{{ url_for('.xInternEdit',filename=name,stuId=student.stuId,internId=internship.Id) }}">删除</a></td></tr>
+        <td colspan="3"><a href="{{ url_for('.xInternEdit',filename=name,stuId=student.stuId,internId=internship.Id) }}">删除</a></td></tr>
         {% endfor %}
-        <td width="200" colspan="6" height="50">添加实习协议书</td>
-        <tr><td colspan="6" height="50">
+        <td width="200" colspan="7" height="50">添加实习协议书</td>
+        <tr><td colspan="7" height="50">
         <form method="POST" enctype="multipart/form-data">
         <input id="file-1" type="file" class="file" multiple=""  name="image" data-overwrite-initial="false" data-min-file-count="1">
-        <h5><small>仅支持jpe、png、gif格式图片上传</small></h5>
+        <h5><small>仅支持jpe、png、gif、pdf格式文件上传</small></h5>
         </form>
         </td></tr>
         </table>
@@ -199,6 +210,7 @@
         </table>
     </table>
     {% endif %}
+    <br>
     <br>
 <!-- <a href="{{ url_for('.xIntern',internId=internship.Id, comId=comInfor.comId, stuId=student.stuId) }}">
     <button class="btn btn-primary">返回</button>
@@ -219,7 +231,7 @@
            <script type="text/javascript">
             $('.file').fileinput({
                 language: 'zh', //设置语言
-                allowedFileExtensions : ['jpg', 'png','gif'],//接收的文件后缀,
+                allowedFileExtensions : ['jpg', 'png','gif','pdf'],//接收的文件后缀,
                 maxFileCount: 100,
                 showUpload: true, //是否显示上传按钮
                 showCaption: true,//是否显示标题
