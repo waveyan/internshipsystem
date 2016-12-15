@@ -111,7 +111,7 @@ class stuForm(Form):
 
     #初始化下拉框
     def __init__(self):
-        super(stuForm,self).__init__()
+        super().__init__()
         self.grade.choices=[(x.grade,x.grade)for x in db.session.execute('Select distinct grade from Grade order by grade desc')]
         self.major.choices=[(x.major,x.major)for x in db.session.execute('Select distinct major from Major')]
         self.classes.choices=[(x.classes,x.classes)for x in db.session.execute('Select distinct classes from Classes order by classes')]
@@ -156,3 +156,9 @@ class xSumScoreForm(Form):
     comfile = FileField('企业实习评分表')
     schfile = FileField('校内评分表')
     submit = SubmitField('保存')
+
+class visitForm(Form):
+    teaName=StringField('探访老师',validators=[Required(message='此项不能为空')])
+    visitTime=StringField('探访时间',validators=[Required(message='此项不能为空')])
+    visitWay=SelectField('探访方式', choices=[('电话', '电话'), ('现场', '现场')], default='现场')
+    submit = SubmitField('确定')

@@ -7,18 +7,34 @@
         <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
     <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
     <script src="/static/JS/locales/fileinput_locale_zh.js" charset="utf-8"></script>
+        <!-- bootstrap日期选择器 -->
+    <script type="text/javascript" src="/static/JS/datetimepicker.min.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+     <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
 {% endblock %}
 
   {% block page_content %}
    {% if current_user.can(Permission.UPLOAD_VISIT) %}
     <form method="POST" enctype="multipart/form-data">
-    <h3>上传我的探访记录</h3>
+    <h3>请填写以下探访信息</h3>
+    <div>
+    {{ visitform.hidden_tag() }}
+                {{ visitform.teaName.label }}{{ visitform.teaName(class="form-control",required='',placeholder="请输入探访教师姓名",
+                        oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+                {{ visitform.visitTime.label }}{{ visitform.visitTime(class="form-control datetimepicker",required='',placeholder="请输入探访时间，如：2016-10-10") }}
+                {{ visitform.visitWay.label }}{{ visitform.visitWay(class="form-control",required='', placeholder="请选择探访方式") }}
+                </div>
+                <br>
+                <br>
+        <h4>我的探访记录</h4>           
     	<input id="file-1" type="file" class="file" name="visit" data-overwrite-initial="false" data-min-file-count="1"><h5><small>
     <span class="label label-danger">注意</span>
     <br>
     *&nbsp&nbsp单文件上传，仅支持pdf格式文件上传
     <br>*&nbsp&nbsp
     探访记录文件不可重名，若重名，新的探访记录将会覆盖原有探访记录.</small></h5>
+                <br><br>
+                {{ visitform.submit(class="btn btn-success",type="submit",id='finish') }}
     </form>
     <br>
     {% endif %}
@@ -41,4 +57,17 @@
         }
     });;
 </script>
+        <!-- bootstrap日期选择器 -->
+        <script type="text/javascript">
+            $('.datetimepicker').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                pickDate: true,
+                inputMask: true,
+                autoclose: true,
+                todayBtn: 'linked',
+                todayHighlight: true,
+                minView: "month",
+            });
+        </script>
 {% endblock %}

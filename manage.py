@@ -27,8 +27,7 @@ def test():
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 
-manager.add_command("runserver", Server(host="0.0.0.0"))
+manager.add_command("runserver", Server(host='0.0.0.0'))
 
 if __name__ == '__main__':
     manager.run()
-    # app.run()

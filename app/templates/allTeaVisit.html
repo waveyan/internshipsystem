@@ -4,14 +4,6 @@
 {% block title %}上传探访记录{% endblock %}
 {% block head %}
 {{ super() }}
-<!-- 教师确认删除窗口 ,传递参数-->
-    <script type="text/javascript">
-        function ComfirmDelete(str) {
-            $('#deleteToggle').modal();
-            var obj = document.getElementById("filename_delete");
-            obj.value = str
-        }
-    </script>
     <!-- ajax -->
     <script>
 function showStudentTable(uid,filename)
@@ -43,38 +35,43 @@ function showStudentTable(uid,filename)
 {% block page_content %}
 <h1>教师探访记录</h1>
         <ul class="nav nav-tabs">
-            <li class="active"><a href="">我的探访记录</a></li>
-            <li><a href="{{url_for('.allTeaVisit')}}">探访记录汇总</a></li>
+            <li><a href="{{url_for('.teaVisit')}}">我的探访记录</a></li>
+            <li class="active"><a href="">探访记录汇总</a></li>
         </ul>
 <br>
     <!-- 上传页面信息 -->
         
-        <h3>我的探访记录<a href="{{url_for('.update_stu_filter',flag=3)}}" class="btn btn-info btn-xs">
-        <span class="glyphicon glyphicon-plus"></span>添加</a></h3>
+        <h3>探访记录汇总<a href="#" class="btn btn-default btn-s">
+        导出Excle</a></h3>
             <table class="table">
         <tr>
             <th>文件名称</th>
             <th>探访人</th>
             <th>探访方式</th>
             <th>探访时间</th>
+            <th>上传者</th>
+            <th>上传时间</th>
             <th>相关学生</th>
             <th>操作</th>
         </tr>
     	{% for x in visit %}
     	<tr>
-    		<td><a data-toggle="tooltip" title="点击进行在线阅览" href="{{ url_for('.teaVisit',filename=x.filename) }}">{{ x.filename }}</a></td>
+    		<td><a data-toggle="tooltip" title="点击进行在线阅览" href="{{ url_for('.allTeaVisit',uid=x.userId,filename=x.filename) }}">{{ x.filename }}</a></td>
     	    <td>{{x.vteaName}}</td>
             <td>{{x.visitWay}}</td>
             <td>{{x.visitTime}}</td>
+            <td>{{x.teaName}}</td>
+            <td>{{x.time}}</td>
             <td><button type="button" class="btn btn-success btn-sm" style="text-shadow: black 5px 3px 3px;" data-toggle="modal" data-target="#myModal" onclick="showStudentTable({{x.userId}},{{'\''+x.filename+'\''}})">
   <span class="glyphicon glyphicon-user"></span> <span class="glyphicon glyphicon-user"></span>
 </button></td>
 <td><a href="javascript:{}"
-                       onclick="document.getElementById('{{x.filename}}_download').submit();">下载</a>|<a onclick="ComfirmDelete({{ '\''+x.filename+'\'' }})">删除</a></td>
+                       onclick="document.getElementById('{{x.filename}}_download').submit();">下载</a></td>
     	</tr>
     <!-- 提供下载的form -->
     <form id="{{x.filename}}_download" method="post">
         <input type="hidden" name="download" value="{{ x.filename }}">
+        <input type="hidden" name="userId" value="{{ x.userId }}">
     </form>
     	{% endfor %}
         </table>
@@ -93,33 +90,6 @@ function showStudentTable(uid,filename)
             </object>
         </div>
         {% endif %}
-    <!--教师确认弹窗-->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
-         aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close"
-                            data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">
-                        提示：
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否任要删除？</h4>
-                </div>
-                <div class="modal-footer">
-                    <form action="/teaVisit" method="POST">
-                        <input type="hidden" id="filename_delete" name=delete>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-primary">删除</button>
-                    </form>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
-    </div>
         <!-- 相关学生框（Modal） -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" style="width:1100px;">

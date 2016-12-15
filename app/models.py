@@ -354,8 +354,12 @@ class Visit(db.Model):
     __tablename__='Visit'
     visitId=db.Column(db.Integer,primary_key=True)
     userId=db.Column(db.String(13))
-    filename=db.Column(db.String(50),default='nothing')
+    filename=db.Column(db.String(50))
     time=db.Column(db.DATETIME)
+    vteaName=db.Column(db.String(10))
+    visitTime=db.Column(db.DATETIME)
+    visitWay=db.Column(db.String(2))
+    
 
 class Visit_Intern(db.Model):
     __tablename__='Visit_Intern'

@@ -20,19 +20,21 @@
         <h3>探访历史</h3>
         <tr>
             <th>名称</th>
-            <th></th>
+            <th>探访人</th>
+            <th>探访方式</th>
+            <th>探访时间</th>
             <th>上传者</th>
             <th>上传时间</th>
-            <th></th>
             <th>操作</th>
         </tr>
        {% for x in visit_intern %}
     	<tr>
     		<td><a data-toggle="tooltip" title="点击进行在线阅览" href="{{ url_for('.stuVisit',filename=x.filename,internId=internId,fileId=x.teaId) }}">{{ x.filename }}</a></td>
-    	    <td></td>
+    	    <td>{{x.vteaName}}</td>
+            <td>{{x.visitWay}}</td>
+            <td>{{x.visitTime}}</td>
     		<td>{{x.teaName}}{{x.stuName}}</td>
     		<td>{{x.time}}</td>
-            <td></td>
     		<td><a href="javascript:{}"
                        onclick="document.getElementById('{{x.filename}}_download').submit();">下载</a>
                        {% if current_user.can(Permission.UPLOAD_VISIT) %}
