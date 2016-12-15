@@ -176,7 +176,7 @@
                 <form id="{{ summary }}" method="post">
                     <input type="hidden" name="summary_doc_download" value="{{ summary }}">
                 </form>
-                {% if summary.split('.')[-1] in ['xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png'] %}
+                {% if summary.split('.')[-1] in ['xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png','pdf'] %}
                     <td><a href="{{ url_for('.xSum',summary=summary,internId=internship.Id,stuId=student.stuId) }}"
                            data-toggle="tooltip"
                            title="点击进行在线阅览">{{ summary }}</a></td>
@@ -208,7 +208,7 @@
                 <form id="{{ attach }}" method="post">
                     <input type="hidden" name="attachment_download" value="{{ attach }}">
                 </form>
-                {% if attach.split('.')[-1] in ['xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png'] %}
+                {% if attach.split('.')[-1] in ['pdf','xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png'] %}
                     <td><a href="{{ url_for('.xSum',attach=attach,internId=internship.Id,stuId=student.stuId) }}"
                            data-toggle="tooltip"
                            title="点击进行在线阅览">{{ attach }}</a></td>
@@ -222,7 +222,9 @@
         {% endfor %}
         </tbody>
     </table>
+    <br>
     {% if path %}
+    <h2>在线预览</h2>
         <!-- 提供下载的form -->
         <form id="pdf" method="post">
             <input type="hidden" name="pdf_download" value="{{ path }}">

@@ -812,10 +812,13 @@ def comfirmDeletreJournal_Intern():
             db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s' % (stuId, comId))
             db.session.execute('delete from Journal where internId=%s and stuId=%s' % (internId, stuId))
             db.session.execute('delete from InternshipInfor where Id=%s and stuId=%s' % (internId, stuId))
+            db.session.execute('delete from Visit_Intern where internId=%s'%(internId))
             # 企业累计实习人数减一
             db.session.execute('update ComInfor set students = students -1 where comId=%s' % comId)
             # 删除总结成果--文件目录
             subprocess.call('rm %s/%s -r' % (STORAGE_FOLDER, internId), shell=True)
+            #删除pdf在线阅览文件
+            subprocess.call('rm %s/%s -r' % (PDF_FOLDER, internId), shell=True)
             flash('删除相关实习信息成功')
             if from_url == "xIntern":
                 return redirect(url_for('.stuInternList'))
@@ -1836,8 +1839,15 @@ def student_delete():
                 db.session.delete(jour)
             for i in intern:
                 summary = Summary.query.filter_by(internId=i.Id).all()
-                for sum in summary:
-                    db.session.delete(sum)
+                # 删除总结成果--文件目录
+                subprocess.call('rm %s/%s -r' % (STORAGE_FOLDER, i.Id), shell=True)
+                #删除pdf在线阅览文件
+                subprocess.call('rm %s/%s -r' % (PDF_FOLDER, i.Id), shell=True)
+                v_t=Visit_Intern.query.filter_by(internId=i.Id).all()
+                for s in summary:
+                    db.session.delete(s)
+                for x in v_t:
+                    db.session.delete(x)
                 db.session.delete(i)
             db.session.delete(stu)
             db.session.commit()
@@ -2653,9 +2663,11 @@ def summary_init(internId):
     db.session.execute('insert into Summary set internId=%s' % internId)
     # 初始化总结成果文件目录
     os.system('mkdir %s/%s' % (STORAGE_FOLDER, internId))
-    #os.system('mkdir %s/visit' % (STORAGE_FOLDER))
+    os.system('mkdir %s/%s' % (PDF_FOLDER,internId))
     os.system('mkdir %s/%s/attachment' % (STORAGE_FOLDER, internId))
     os.system('mkdir %s/%s/summary_doc' % (STORAGE_FOLDER, internId))
+    os.system('mkdir %s/%s/attachment' % (PDF_FOLDER, internId))
+    os.system('mkdir %s/%s/summary_doc' % (PDF_FOLDER, internId))
     os.system('mkdir %s/%s/score_img' % (STORAGE_FOLDER, internId))
     os.system('mkdir %s/%s/agreement' % (STORAGE_FOLDER, internId))
     os.system('mkdir %s/%s/visit' % (STORAGE_FOLDER, internId))
@@ -3668,8 +3680,11 @@ def pdf_postfix(file_name):
 def onlinePDF(internId, dest, file):
     if dest in ['summary_doc', 'attachment']:
         if file.split('.')[-1] in ['xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png']:
+            #获取文件的pdf名称
             pdf_file = pdf_postfix(file)
+            #获取原文件路径
             storage_path = os.path.join(storage_cwd(internId, dest), file)
+            #获取对应pdf文件路径
             pdf_path = os.path.join(pdf_cwd(internId, dest), pdf_file)
             if os.path.exists(pdf_path):
                 pdf_path = pdf_path[pdf_path.find('/static'):]
@@ -3677,6 +3692,12 @@ def onlinePDF(internId, dest, file):
                 os.system('unoconv -f pdf -o %s %s' % (pdf_path, storage_path))
                 pdf_path = pdf_path[pdf_path.find('/static'):]
             return pdf_path
+        elif file.split('.')[-1]=='pdf':
+            pdf_file = file
+            storage_path = os.path.join(storage_cwd(internId, dest), file)
+            pdf_path = os.path.join(pdf_cwd(internId, dest), pdf_file)
+            os.system('cp %s %s'%(storage_path,pdf_path))
+            return pdf_path[pdf_path.find('/static'):]
 
 
 # 学生实习总结与成果列表
@@ -3756,6 +3777,7 @@ def xSum():
         path = onlinePDF(internId, 'summary_doc', summary)
     elif attach:
         path = onlinePDF(internId, 'attachment', attach)
+    print('path',path)
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     now = datetime.now().date()
