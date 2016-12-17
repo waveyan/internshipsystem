@@ -69,14 +69,14 @@
         <table class="table">
             <thead>
             <tr>
-                <th>企业名称</th>
+                <th width="250" style="word-wrap:break-word;">企业名称</th>
                 <th>所在城市</th>
-                <th>企业网址</th>
+                <th width="150" style="word-wrap:break-word;">企业网址</th>
                 <th>联系电话</th>
-                <th width="80">实习人次</th>
+                <th width="80" style="word-wrap:break-word;">实习人次</th>
                 {% if current_user.can(Permission.COM_INFOR_EDIT) %}
-                    <th width="80">审核状态</th>
-                    <th width="80">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 操作</th>
+                    <th width="80" style="word-wrap:break-word;">审核状态</th>
+                    <th width="150" style="word-wrap:break-word;">操作</th>
                 {% endif %}
             </tr>
             </thead>
@@ -88,7 +88,7 @@
                     {% else %}
                         <td>{{ com.comName }}</td>
                     {% endif %}
-                    <td>{{ com.comAddress }}</td>
+                    <td>{{ com.comCity }}</td>
                     <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
                     <td>{{ com.comPhone }}</td>
                     {% if current_user.can(Permission.STU_INTERN_LIST) %}

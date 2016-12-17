@@ -149,44 +149,37 @@
                 <th height="50" colspan="6">校内指导老师</th>
             </tr>
             <tr>
-                <td height="50" width="240">教工号</td>
-                <td height="50" width="240">姓名</td>
-                <td height="50" width="240">职务/职称</td>
-                <td height="50" width="240">电话</td>
-                <td height="50" width="240">E-mail</td>
+                <td height="50" width="800">姓名</td>
+                <td height="50" width="400"></td>
+
             </tr>
                 {% for tea in schdirtea %}
                     <tr>
                         <form method="POST" action="/xInternEdit_schdirtea">
                             {{ schdirteaform.hidden_tag() }}
                             <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                            <input type="hidden" name="old_teaName" value="{{ tea.teaName }}">
                             <input type="hidden" name="comId" value="{{ comInfor.comId }}">
-                            <input type="hidden" name="Id" value="{{ tea.Id }}">
                             <input type="hidden" name="internId" value="{{ internship.Id }}">
-                            <td height="50">{{ schdirteaform.steaId(required='', value=tea.teaId,class="form-control") }}</td>
-                            <td height="50">{{ schdirteaform.steaName(required='', value=tea.steaName,class="form-control") }}</td>
-                            <td height="50">{{ schdirteaform.steaDuty(required='', value=tea.steaDuty,class="form-control") }}</td>
-                            <td height="50">{{ schdirteaform.steaPhone(required='', value=tea.steaPhone,class="form-control") }}</td>
-                            <td height="50"
-                                colspan="2">{{ schdirteaform.steaEmail(required='', value=tea.steaEmail,class="form-control") }}</td>
+                            <td height="50">{{ schdirteaform.steaName(required='', value=tea.teaName,class="form-control") }}</td>
                             {{ schdirteaform.csrf_token }}
                             <td>{{ schdirteaform.submit(class="btn btn-danger",type="submit", value="确定修改") }}</td>
                         </form>
                     </tr>
             {% endfor %}
             
-                    <tr>
+        <tr>
             <td width="200" colspan="7" height="50">四、实习协议书</td>
         </tr>
         {% if imageName %}
          <tr>
-            <td colspan="4" height="50">文件名</td>
-            <td  height="50" colspan="3">操作</td>
+            <td height="50">文件名</td>
+            <td  height="50">操作</td>
         </tr>
         {% endif %}
         {% for name in imageName %}
-        <tr><td colspan="4" height="50">{{name}}</td>       
-        <td colspan="3"><a href="{{ url_for('.xInternEdit',filename=name,stuId=student.stuId,internId=internship.Id) }}">删除</a></td></tr>
+        <tr><td height="50">{{name}}</td>       
+        <td><a href="{{ url_for('.xInternEdit',filename=name,stuId=student.stuId,internId=internship.Id) }}">删除</a></td></tr>
         {% endfor %}
         <td width="200" colspan="7" height="50">添加实习协议书</td>
         <tr><td colspan="7" height="50">

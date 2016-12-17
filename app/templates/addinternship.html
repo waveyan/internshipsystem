@@ -45,11 +45,7 @@
                 $(".teaForm:first").clone(true).insertAfter(".teaForm:last");
                 $(".teaForm:last").slideDown();
                 i++;
-                $(".teaForm .form-control").eq(i + i + i + i + i).attr({name: "teaId" + i});
-                $(".teaForm .form-control").eq(i + i + i + i + i + 1).attr({name: "teaName" + i});
-                $(".teaForm .form-control").eq(i + i + i + i + i + 2).attr({name: "teaDuty" + i});
-                $(".teaForm .form-control").eq(i + i + i + i + i + 3).attr({name: "teaPhone" + i});
-                $(".teaForm .form-control").eq(i + i + i + i + i + 4).attr({name: "teaEmail" + i});
+                $(".teaForm .form-control").eq(i).attr({name: "teaName" + i});
                 if (i > 1) {
                     $("#delTea").show();
                     // $("#addTea").hide();
@@ -63,12 +59,7 @@
                 }
             });
             $("#finish").click(function () {
-                $(".teaForm .form-control").eq(5).attr({name: "teaId" + 1});
-                $(".teaForm .form-control").eq(6).attr({name: "teaName" + 1});
-                $(".teaForm .form-control").eq(7).attr({name: "teaDuty" + 1});
-                $(".teaForm .form-control").eq(8).attr({name: "teaPhone" + 1});
-                $(".teaForm .form-control").eq(9).attr({name: "teaEmail" + 1});
-
+                $(".teaForm .form-control").eq(1).attr({name: "teaName" + 1});
                 $(".buttonStd").click();
                 $(".buttonTea").click();
             });
@@ -107,14 +98,8 @@
         <div class="panel-body">
             <div class="teaForm" style="display: None">
                 {{ schdirteaform.hidden_tag() }}
-                {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="",
-            pattern="[0-9]{8}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
                 {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="",
             pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
-                {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="",
-            oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",required='',placeholder="") }}
-                {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control",required='',placeholder="") }}
                 </br></br>
             </div>
 
@@ -147,20 +132,14 @@
             <input type="button" id="addcTea" class="btn" value="添加老师">
             <input type="button" id="delcTea" class="btn" value="删除老师" style="display: none">
             <br><br>
-         {% if not schdirtea %}
-         <h3>校内指导老师信息</h3>
+         <h3>校内指导老师</h3>
                 <div class="teaForm">
                     {{ schdirteaform.hidden_tag() }}
-                    {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",required='',placeholder="", pattern="[0-9]{8}",oninvalid="setCustomValidity('请输入正确的教师工号')",oninput="setCustomValidity('')") }}
                     {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="", pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
-                    {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
-                    {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",required='',placeholder="") }}
-                    {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control",required='',placeholder="") }}
                     </br></br>
                 </div>
                         <input type="button" id="addTea" class="btn" value="添加老师">
                 <input type="button" id="delTea" class="btn" value="删除老师" style="display: none">
-        {% endif %}
             </br></br>
             <h3>实践协议书</h3>
             <input id="file-1" type="file" class="file" multiple=""  name="image" data-overwrite-initial="false" data-min-file-count="1"><h5><small>仅支持jpe、png、gif、pdf格式文件上传</small></h5>
@@ -189,7 +168,7 @@
                 language: 'zh', //设置语言
                 allowedFileExtensions : ['jpg', 'png','gif','pdf'],//接收的文件后缀,
                 maxFileCount: 100,
-                showUpload: true, //是否显示上传按钮
+                showUpload: false, //是否显示上传按钮
                 showCaption: true,//是否显示标题
                 browseClass: "btn btn-primary", //按钮样式             
             });

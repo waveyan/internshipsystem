@@ -114,6 +114,9 @@ class Teacher(db.Model, UserMixin):
     teaSex = db.Column(db.String(2))
     roleId = db.Column(db.Integer, db.ForeignKey('Role.roleId'), default=1)
     password = db.Column(db.String(10))
+    teaPosition = db.Column(db.String(20))
+    teaPhone = db.Column(db.String(15))
+    teaEmail = db.Column(db.String(20))
 
     def get_id(self):
         return self.teaId
@@ -162,6 +165,9 @@ class Student(db.Model, UserMixin):
     sumCheck = db.Column(db.Integer, default=0)
     roleId = db.Column(db.Integer, db.ForeignKey('Role.roleId'), default=0)
     password = db.Column(db.String(10))
+    internshipinfor = db.relationship('InternshipInfor', backref='student', lazy='dynamic')
+
+
 
     def get_id(self):
         return self.stuId
@@ -246,6 +252,12 @@ class ComInfor(db.Model):
                 db.session.rollback()
 
 
+#由于校内指导老师与学生实习信息是多对多关系，把SchDirTea设置为第三张对应表
+#对于InternshipInfor类和Teacher类可以直接 实例名.schdirtea和实例名.students
+SchDirTea=db.Table('SchDirTea',
+    db.Column('teaId',db.String(20),db.ForeignKey('Teacher.teaId')),
+    db.Column('internId',db.Integer,db.ForeignKey('InternshipInfor.Id')))
+
 class InternshipInfor(db.Model):
     __tablename__ = 'InternshipInfor'
     Id = db.Column(db.Integer, primary_key=True)
@@ -259,9 +271,13 @@ class InternshipInfor(db.Model):
     internCheck = db.Column(db.Integer, default=0)
     internStatus = db.Column(db.Integer, default=0)
     icheckTime = db.Column(db.DATETIME)
+    #cominfor
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
+    #student
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
     jourCheck = db.Column(db.Integer, default=0)
+    #InternshipInfor.schdirtea  #Teacher.internshipinfor
+    schdirtea=db.relationship('Teacher',secondary=SchDirTea,backref=db.backref('internshipinfor',lazy='dynamic'),lazy='dynamic')
 
 
 # # can be delete
@@ -281,15 +297,17 @@ class InternshipInfor(db.Model):
 #     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
 
 
-class SchDirTea(db.Model):
-    __tablename__ = 'SchDirTea'
-    Id = db.Column(db.Integer, primary_key=True)
-    teaId = db.Column(db.String(10))
-    steaName = db.Column(db.String(10))
-    steaDuty = db.Column(db.String(20))
-    steaPhone = db.Column(db.String(15))
-    steaEmail = db.Column(db.String(20))
-    stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
+# class SchDirTea(db.Model):
+    # __tablename__ = 'SchDirTea'
+    # Id = db.Column(db.Integer, primary_key=True)
+    # teaId = db.Column(db.String(10))
+    # steaName = db.Column(db.String(10))
+    # steaDuty = db.Column(db.String(20))
+    # steaPhone = db.Column(db.String(15))
+    # steaEmail = db.Column(db.String(20))
+    # internId=db.Column(db.Integer,db.ForeignKey('InternshipInfor.Id'))
+    # stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
+
 
 
 class ComDirTea(db.Model):
@@ -301,7 +319,6 @@ class ComDirTea(db.Model):
     cteaEmail = db.Column(db.String(20))
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
-
 
 class Summary(db.Model):
     __tablename__ = 'Summary'

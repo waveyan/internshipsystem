@@ -90,14 +90,15 @@
             <th>学号</th>
         {% endif %}
         <th>企业名称</th>
-        <th>开始时间</th>
-        <th>结束时间</th>
-        <th>审核状态</th>
-        <th>实习状态</th>
+        <th width="150" style="word-wrap:break-word;">校外指导老师</th>
+        <th width="150" style="word-wrap:break-word;">校内指导老师</th>
+        <th width="180" style="word-wrap:break-word;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;实习时间</th>
+        <th>成绩</th>
+        <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;状态</th>
     </tr>
     </thead>
     <tbody>
-    {% for intern in internlist %}
+    {% for intern,comdirtea,schdirtea in internlist %}
         <tr>
             {% if current_user.can(Permission.STU_INTERN_LIST) %}
                 <td>
@@ -114,24 +115,57 @@
                     <a href="{{ url_for('.xIntern',stuId=intern.stuId, internId=intern.Id) }}">{{ intern.comName }}</a>
                 </td>
             {% endif %}
+            <td>
+            {% for comtea in comdirtea %}
+            {{ comtea.cteaName }}&nbsp;
+            {%endfor%}
+            </td>
 
-
-            <td>{{ intern.start }}</td>
-            <td>{{ intern.end }}</td>
-            {% if intern.internCheck==0 %}
-                <td>未审核</td>
-            {% elif intern.internCheck==1 %}
-                <td>被退回</td>
+            <td>
+            {% for schtea in schdirtea %}
+            {{ schtea[0] }}&nbsp;
+            {%endfor%}
+            </td>
+            <td>{{ intern.start }}至{{ intern.end }}</td>
+            {% if intern.sumScore %}
+            <td>{{intern.sumScore}}</td>
             {% else %}
-                <td>已审核</td>
-            {% endif %}
+            <td>暂无</td>
+            {%endif%}
+
+        {% if intern.internCheck==0 %}
+            <td>未审核、
             {% if intern.internStatus==0 %}
-                <td>待实习</td>
+                待实习</td>
             {% elif intern.internStatus==1 %}
-                <td>实习中</td>
+                实习中</td>
             {% else %}
-                <td>实习结束</td>
+                实习结束</td>
             {% endif %}
+
+        {% elif intern.internCheck==1 %}
+            <td>被退回、
+            {% if intern.internStatus==0 %}
+                待实习</td>
+            {% elif intern.internStatus==1 %}
+                实习中</td>
+            {% else %}
+                实习结束</td>
+            {% endif %}
+
+        {% else %}
+
+                <td>已审核、
+            {% if intern.internStatus==0 %}
+                待实习</td>
+            {% elif intern.internStatus==1 %}
+                实习中</td>
+            {% else %}
+                实习结束</td>
+            {% endif %}
+
+            {% endif %}
+
         </tr>
     {% endfor %}
     </tbody>

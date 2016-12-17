@@ -101,9 +101,11 @@
                     data-toggle="dropdown">更多<span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
+                {% if comfirm_can %}
                     <li><a onClick="ComfirmCheck()">审核</a></li>
+                    <li class="divider"></li>
                     <li><a onClick="ComfirmDelete()">删除</a></li>
+                    <li class="divider"></li>
                     <li>
                         <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">上传文件</a>
                     </li>

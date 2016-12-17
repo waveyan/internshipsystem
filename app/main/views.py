@@ -226,27 +226,41 @@ def stuInternList():
             flash('您还没完成实习信息的填写，请完善相关实习信息！')
             return redirect(url_for('.addcominfor', from_url='stuInternList'))
         else:
-            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-                .add_columns(ComInfor.comName, ComInfor.comCity,InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start,
+            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Summary,Summary.internId==InternshipInfor.Id) \
+                .add_columns(Summary.sumScore,ComInfor.comName, ComInfor.comCity,InternshipInfor.comId, InternshipInfor.Id, InternshipInfor.start,
                              InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.time) \
                 .filter(InternshipInfor.stuId == stuId).order_by(
                 func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
             internlist = pagination.items
+            #指导老师
+            schdirtea=list()
+            comdirtea=list()
+            for i in internlist:
+                comdirtea.append(ComDirTea.query.filter_by(stuId=stuId,comId=i.comId).all())
+                schdirtea.append(db.session.execute('select teaName from SchDirTea,Teacher where SchDirTea.teaId=Teacher.teaId and internId=%s'%i.Id))
+            internlist=zip(internlist,comdirtea,schdirtea)
             return render_template('stuInternList.html', internlist=internlist, Permission=Permission,
                                    student=student, pagination=pagination, form=form,
                                    grade=grade, major=major, classes=classes)
     elif current_user.can(Permission.STU_INTERN_LIST):
         # 函数返回的intern已经join了Student
         intern = create_intern_filter(grade, major, classes, 0)
-        intern_org = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).outerjoin(
-            Teacher, Teacher.teaId == InternshipInfor.icheckTeaId) \
-            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId, ComInfor.comCity,
+        intern_org = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Summary,Summary.internId==InternshipInfor.Id).outerjoin(
+            Teacher, Teacher.teaId == InternshipInfor.icheckTeaId)\
+            .add_columns(Summary.sumScore,InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId, ComInfor.comCity,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
                          InternshipInfor.internCheck, InternshipInfor.task, Teacher.teaName,
                          InternshipInfor.opinion, InternshipInfor.icheckTime, InternshipInfor.time) \
             .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2))
         pagination = intern_org.paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
+        #指导老师
+        schdirtea=list()
+        comdirtea=list()
+        for internship in internlist:
+            comdirtea.append(ComDirTea.query.filter_by(stuId=internship.stuId,comId=internship.comId).all())
+            schdirtea.append(db.session.execute('select teaName from SchDirTea,Teacher where SchDirTea.teaId=Teacher.teaId and internId=%s'%internship.Id))
+        internlist=zip(internlist,comdirtea,schdirtea)
         # 批量导出实习excel表
         if request.method == "POST" and current_user.can(Permission.STU_INTERN_EDIT):
             isexport = request.form.get('isexport')
@@ -371,11 +385,7 @@ def addInternship():
     schdirteaform = schdirteaForm()
     comdirteaform = comdirteaForm()
     i = 0
-    j = 0
-    #当已存在校内指导老师或管理员添加学生信息时不添加
-    schdirtea=False
-    if SchDirTea.query.filter_by(stuId=current_user.get_id()).first() or hasattr(current_user,'teaId'):
-        schdirtea=True        
+    j = 0    
     try:
         if request.method == 'POST':
             # 若请求非学生,从request获取学生学号和姓名
@@ -412,42 +422,43 @@ def addInternship():
                 stuId=stuId,
                 internStatus=internStatus
             )
-            #校外指导老师
-            while True:
-                j = j + 1
-                cteaValue = request.form.get('cteaName%s' % j)
-                if cteaValue:
-                    comdirtea = ComDirTea(
-                        stuId=stuId,
-                        cteaName=cteaValue,
-                        comId=comId,
-                        cteaDuty=request.form.get('cteaDuty%s' % j),
-                        cteaEmail=request.form.get('cteaEmail%s' % j),
-                        cteaPhone=request.form.get('cteaPhone%s' % j)
-                    )
-                    db.session.add(comdirtea)
-                else:
-                    break
-            #校内指导老师
-            while True:
-                i = i + 1
-                teaValue = request.form.get('teaId%s' % i)
-                if teaValue:
-                    schdirtea = SchDirTea(
-                        teaId=teaValue,
-                        stuId=current_user.stuId,
-                        steaName=request.form.get('teaName%s' % i),
-                        steaDuty=request.form.get('teaDuty%s' % i),
-                        steaPhone=request.form.get('teaPhone%s' % i),
-                        steaEmail=request.form.get('teaEmail%s' % i)
-                    )
-                    db.session.add(schdirtea)
-                else:
-                    break
-            # 先commit internship,更新等等需用到的internId
             try:
                 db.session.add(internship)
                 db.session.commit()
+                #校外指导老师
+                while True:
+                    j = j + 1
+                    cteaValue = request.form.get('cteaName%s' % j)
+                    if cteaValue:
+                        comdirtea = ComDirTea(
+                            stuId=stuId,
+                            cteaName=cteaValue,
+                            comId=comId,
+                            cteaDuty=request.form.get('cteaDuty%s' % j),
+                            cteaEmail=request.form.get('cteaEmail%s' % j),
+                            cteaPhone=request.form.get('cteaPhone%s' % j)
+                        )
+                        db.session.add(comdirtea)
+                    else:
+                        break
+                #校内指导老师
+                while True:
+                    i = i + 1
+                    teaValue = request.form.get('teaName%s' % i)
+                    if teaValue:
+                        tea=Teacher.query.filter_by(teaName=teaValue).first()
+                        if tea:
+                            internship.schdirtea.append(tea)
+                        else:
+                            tea=Teacher.query.filter_by(teaName='无该用户').first()
+                            internship.schdirtea.append(tea)
+                    else:
+                        break
+                db.session.commit()
+                # 初始化日志和总结成果
+                internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
+                journal_init(internId)
+                summary_init(internId)               
             except Exception as e:
                 print('添加校外指导老师：', e)
                 db.session.rollback()
@@ -462,15 +473,6 @@ def addInternship():
                     print(datetime.now(), '/addinternship 审核企业失败:', e)
                     flash('所选企业审核失败,请重试')
                     return redirect('/')
-
-
-
-
-            # 初始化日志和总结成果
-            db.session.commit()
-            internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
-            journal_init(internId)
-            summary_init(internId)
             # 更新累计实习人数
             cominfor = ComInfor.query.filter_by(comId=comId).first()
             if cominfor.students:
@@ -492,15 +494,24 @@ def addInternship():
         flash('提交实习信息失败，请重试！')
         return redirect(url_for('.addcominfor'))
     return render_template('addinternship.html', iform=iform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,
-                           Permission=Permission,schdirtea=schdirtea)
+                           Permission=Permission)
 
 
 # 普通老师对于自己的指导学生, 带有'审核老师'的权限
 def is_schdirtea(stuId):
-    if hasattr(current_user, 'teaId'):
-        teaId = current_user.teaId
-        flag = hasattr(SchDirTea.query.filter_by(stuId=stuId, teaId=teaId).first(), 'Id')
-        return flag
+    # if hasattr(current_user, 'teaId'):
+    #     teaId = current_user.teaId
+    #     flag = hasattr(SchDirTea.query.filter_by(stuId=stuId, teaId=teaId).first(), 'Id')
+    #     return flag
+    #当过该学生的校内指导老师都能审核该学生的所有实习信息
+    flag=False
+    all_internship=InternshipInfor.query.filter_by(stuId=stuId).all()
+    for internship in all_internship:
+        for tea in internship.schdirtea:
+            if tea.teaId==current_user.get_id():
+                flag=True
+                break
+    return flag
 
 
 # 学生个人实习信息
@@ -517,9 +528,12 @@ def xIntern():
         stuId = request.args.get('stuId')
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     student = Student.query.filter_by(stuId=stuId).first()
+    #找到internship
     internship = InternshipInfor.query.filter_by(Id=internId).first()
+    #与本次internship相关的Teacher信息，包含Teacher类的属性，如teaName等
+    schdirtea = internship.schdirtea
     comInfor = ComInfor.query.filter_by(comId=comId).first()
-    schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
+    print('schdirtea',schdirtea)
     comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
     checktea = None
     if internship.icheckTeaId :
@@ -550,8 +564,7 @@ def xIntern():
             if isexport:
                 file_path = excel_export(excel_export_intern, intern_excel)
                 return export_download(file_path)
-    return render_template('xIntern.html', Permission=Permission, comInfor=comInfor,
-                           schdirtea=schdirtea, comdirtea=comdirtea, internship=internship, student=student, schdirtea_can=schdirtea_can, path=path, checktea=checktea)
+    return render_template('xIntern.html', Permission=Permission, comInfor=comInfor, comdirtea=comdirtea, internship=internship, student=student, schdirtea_can=schdirtea_can, path=path, checktea=checktea,schdirtea=schdirtea)
 
 
 # 审核通过实习信息
@@ -612,7 +625,7 @@ def xInternEdit():
     student = Student.query.filter_by(stuId=stuId).first()
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     comInfor = ComInfor.query.filter_by(comId=comId).first()
-    schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
+    schdirtea = internship.schdirtea
     comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
     # 各种Form
     stuform = stuForm()
@@ -642,10 +655,10 @@ def xInternEdit():
             for i in request.files.getlist('image'):
                 i.save('%s/%s/agreement/%s' % (STORAGE_FOLDER, internId,i.filename))
             flash('上传成功！')
-        return redirect(url_for('.xInternEdit',stuId=stuId,internId=internId))
+        return redirect(url_for('.xIntern',stuId=stuId,internId=internId))
     return render_template('xInternEdit.html', Permission=Permission, comInfor=comInfor, schdirtea=schdirtea, \
                            comdirtea=comdirtea, internship=internship, student=student, stuform=stuform, \
-                           comform=comform, \
+                           comform=comform, 
                            internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,imageName=imageName)
 
 
@@ -701,12 +714,13 @@ def xInternEdit_intern():
 @main.route('/xInternEdit_comdirtea', methods=["POST"])
 @login_required
 def xInternEdit_comdirtea():
+    permission=None
     if current_user.roleId == 0:
         stuId = current_user.stuId
         permission = True
     else:
         stuId = request.form.get('stuId')
-        if is_schdirtea(stuId):
+        if is_schdirtea(stuId) or current_user.can(Permission.STU_INTERN_EDIT):
             permission = True
     if permission:
         Id = request.form.get("Id")
@@ -734,11 +748,15 @@ def xInternEdit_comdirtea():
         db.session.execute('update InternshipInfor set time="%s" where Id=%s' % (time, internId))
         flash("实习信息修改成功")
         return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
+    else:
+        flash('没有该权限！')
+        return redirect('/')
 
-# 修改实习信息 个人实习信息--企业指导老师
+# 修改实习信息 个人实习信息--校内指导老师
 @main.route('/xInternEdit_schdirtea', methods=["POST"])
 @login_required
 def xInternEdit_schdirtea():
+    permission=None
     if current_user.roleId == 0:
         stuId = current_user.stuId
         permission = True
@@ -746,37 +764,28 @@ def xInternEdit_schdirtea():
         stuId = request.form.get('stuId')
         if is_schdirtea(stuId):
             permission = True
-    if permission:
+    if permission or current_user.can(Permission.STU_INTERN_EDIT):
         comId = request.form.get('comId')
         Id = request.form.get("Id")
-        teaId = request.form.get('steaId')
+        old_teaName = request.form.get('old_teaName')
         teaName = request.form.get('steaName')
-        teaDuty = request.form.get('steaDuty')
-        teaPhone = request.form.get('steaPhone')
-        teaEmail = request.form.get('steaEmail')
         internId = request.form.get("internId")
         time = datetime.now()
-        # if teaName is None or comId is None or internId is None or stuId is None:
-        # if not (teaName and comId and internId and stuId):
-        #     flash("修改实习信息失败,请重试")
-        #     return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
         try:
-            db.session.execute(' \
-                update SchDirTea set \
-                teaId="%s",\
-                steaName = "%s", \
-                steaDuty = "%s", \
-                steaPhone ="%s", \
-                steaEmail = "%s" \
-                where Id=%s'
-                               % (teaId,teaName, teaDuty, teaPhone, teaEmail, Id)
-                               )
+            teacher=Teacher.query.filter_by(teaName=teaName).first()
+            old_teacher=Teacher.query.filter_by(teaName=old_teaName).first()
+            internship=InternshipInfor.query.filter_by(Id=internId).first()
+            internship.schdirtea.remove(old_teacher)
+            internship.schdirtea.append(teacher)
             db.session.execute('update InternshipInfor set time="%s" where Id=%s' % (time, internId))
             flash("实习信息修改成功")
         except Exception as e:
             db.session.rollback()
             print('校内指导老师：',e)
         return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
+    else:
+        flash('没有该权限！！')
+        return redirect('/')
 
 # 实习,日志,总结成果的单个删除
 @main.route('/intern_delete', methods=['POST'])
@@ -810,6 +819,7 @@ def comfirmDeletreJournal_Intern():
             # 企业指导老师,日志,实习一同删除
             comId = InternshipInfor.query.filter_by(Id=internId).first().comId
             db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s' % (stuId, comId))
+            db.session.execute('delete from SchDirTea where internId=%s'% internId)
             db.session.execute('delete from Journal where internId=%s and stuId=%s' % (internId, stuId))
             db.session.execute('delete from InternshipInfor where Id=%s and stuId=%s' % (internId, stuId))
             db.session.execute('delete from Visit_Intern where internId=%s'%(internId))
@@ -1451,6 +1461,8 @@ def xJournal():
         stuId = request.args.get('stuId')
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     comId = internship.comId
+    #指导老师审核权限
+    comfirm_can=is_schdirtea(stuId) or current_user.can(Permission.STU_JOUR_CHECK)
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     student = Student.query.filter_by(stuId=stuId).first()
     # 获得当前时间对应的页码
@@ -1476,11 +1488,11 @@ def xJournal():
                 return export_download(file_path)
     if current_user.roleId == 0:
         return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
-                               student=student, comInfor=comInfor, pagination=pagination, page=page, now=now)
+                               student=student, comInfor=comInfor, pagination=pagination, page=page, now=now,comfirm_can=comfirm_can)
     else:
         if internship.internCheck == 2:
             return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
-                                   student=student, comInfor=comInfor, pagination=pagination, page=page, now=now)
+                                   student=student, comInfor=comInfor, pagination=pagination, page=page, now=now,comfirm_can=comfirm_can)
         else:
             flash("实习申请需审核后,才能查看日志")
             return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
@@ -1495,7 +1507,7 @@ def journal_comfirm():
     internId = request.args.get('internId')
     checkTime = datetime.now()
     checkTeaId = current_user.get_id()
-    if current_user.can(Permission.STU_JOUR_CHECK):
+    if current_user.can(Permission.STU_JOUR_CHECK) or is_schdirtea(stuId):
         db.session.execute('update Journal set jourCheck=1, jcheckTime="%s", jcheckTeaId=%s where Id=%s' % (
             checkTime, checkTeaId, jourId))
         # 作消息提示
@@ -1706,7 +1718,7 @@ def addStudent():
     # user=Teacher.query.filter_by(teaId=current_user.teaId).first()
     stuform = stuForm()
     print('stuform',stuform.institutes)
-    schdirteaform = schdirteaForm()
+    # schdirteaform = schdirteaForm()
     if request.method == 'POST':
         stu = Student(
             stuName=stuform.stuName.data,
@@ -1718,22 +1730,6 @@ def addStudent():
             grade=stuform.grade.data
         )
         db.session.add(stu)
-        i = 0
-        while True:
-            i = i + 1
-            teaValue = request.form.get('teaId%s' % i)
-            if teaValue:
-                schdirtea = SchDirTea(
-                    teaId=teaValue,
-                    stuId=stuform.stuId.data,
-                    steaName=request.form.get('teaName%s' % i),
-                    steaDuty=request.form.get('teaDuty%s' % i),
-                    steaPhone=request.form.get('teaPhone%s' % i),
-                    steaEmail=request.form.get('teaEmail%s' % i)
-                )
-                db.session.add(schdirtea)
-            else:
-                break
         try:
             db.session.commit()
             flash('添加学生信息成功！')
@@ -1743,7 +1739,7 @@ def addStudent():
             flash('添加学生信息失败请重试！')
             print('添加学生信息：', e)
             return redirect(url_for('.addStudent'))
-    return render_template('addStudent.html', stuform=stuform, Permission=Permission, schdirteaform=schdirteaform)
+    return render_template('addStudent.html', stuform=stuform, Permission=Permission)
 
 
 # 修改学生用户信息
@@ -1754,58 +1750,19 @@ def editStudent():
     schdirteaform = schdirteaForm()
     stuId = request.args.get('stuId')
     stu = Student.query.filter_by(stuId=stuId).first()
-    schdirtea = SchDirTea.query.filter_by(stuId=stuId).all()
+    grade=Grade.query.all()
+    classes=Classes.query.all()
+    major=Major.query.all()
     if request.method == 'POST':
         try:
-            for tea in schdirtea:
-                db.session.delete(tea)
+            #form
             stu.stuId = form.stuId.data
             stu.stuName = form.stuName.data
             stu.sex = request.form.get('sex')
-            i = 0
-            for name in request.form:
-                if name.find('nteaId')!=-1:
-                    i=i+1
-            i=i+1
             stu.major = form.major.data
             stu.grade = form.grade.data
             stu.classes = form.classes.data
             db.session.add(stu)
-            #修改校内指导老师
-            x=0
-            while True:
-                x=x+1
-                teaId = request.form.get('nteaId%s' % x)
-                if teaId:
-                    nschdirtea = SchDirTea(
-                        teaId=teaId,
-                        stuId=form.stuId.data,
-                        steaName=request.form.get('nteaName%s' % x),
-                        steaDuty=request.form.get('nteaDuty%s' % x),
-                        steaPhone=request.form.get('nteaPhone%s' % x),
-                        steaEmail=request.form.get('nteaEmail%s' % x)
-                    )
-                    db.session.add(nschdirtea)
-                elif x==i:
-                    break
-            # 添加新老师,js原因j从2开始
-            j = 1
-            while True:
-                j = j + 1
-                teaId = request.form.get('teaId%s' % j)
-                print(teaId)
-                if teaId:
-                    schdirtea = SchDirTea(
-                        teaId=teaId,
-                        stuId=form.stuId.data,
-                        steaName=request.form.get('teaName%s' % j),
-                        steaDuty=request.form.get('teaDuty%s' % j),
-                        steaPhone=request.form.get('teaPhone%s' % j),
-                        steaEmail=request.form.get('teaEmail%s' % j)
-                    )
-                    db.session.add(schdirtea)
-                else:
-                    break
             db.session.commit()
             flash('修改成功！')
             return redirect(url_for('.stuUserList'))
@@ -1814,8 +1771,7 @@ def editStudent():
             db.session.rollback()
             flash('修改失败，请重试！')
             return redirect(url_for('.editStudent', stuId=stuId))
-    return render_template('editStudent.html', Permission=Permission, form=form, stu=stu, schdirtea=schdirtea,
-                           schdirteaform=schdirteaform)
+    return render_template('editStudent.html', Permission=Permission, form=form, stu=stu,classes=classes,major=major,grade=grade)
 
 
 # 单条删除学生用户信息
@@ -1824,32 +1780,21 @@ def editStudent():
 def student_delete():
     if current_user.can(Permission.STU_INTERN_MANAGE):
         stuId = request.form.get('stuId')
-        print('stuId=', stuId)
-        stu = Student.query.filter_by(stuId=stuId).first()
-        journal = Journal.query.filter_by(stuId=stuId).all()
-        intern = InternshipInfor.query.filter_by(stuId=stuId).all()
-        stea = SchDirTea.query.filter_by(stuId=stuId).all()
-        ctea = ComDirTea.query.filter_by(stuId=stuId).all()
+        internship = InternshipInfor.query.filter_by(stuId=stuId).all()
         try:
-            for tea in ctea:
-                db.session.delete(tea)
-            for tea in stea:
-                db.session.delete(tea)
-            for jour in journal:
-                db.session.delete(jour)
-            for i in intern:
-                summary = Summary.query.filter_by(internId=i.Id).all()
+            db.session.execute('delete from Student where stuId="%s"'%stuId)
+            for i in internship:
+                db.session.execute('delete from Journal where stuId="%s"'%i.Id)
+                db.session.execute('delete from ComDirTea where internId=%s'%i.Id)
+                db.session.execute('delete from SchDirTea where internId=%s'%i.Id)
+                db.session.execute('delete from Summary where internId=%s'%i.Id)
+                db.session.execute('delete from Visit_Intern where internId=%s'%i.Id)                
+                db.session.delete(i)
                 # 删除总结成果--文件目录
                 subprocess.call('rm %s/%s -r' % (STORAGE_FOLDER, i.Id), shell=True)
                 #删除pdf在线阅览文件
                 subprocess.call('rm %s/%s -r' % (PDF_FOLDER, i.Id), shell=True)
-                v_t=Visit_Intern.query.filter_by(internId=i.Id).all()
-                for s in summary:
-                    db.session.delete(s)
-                for x in v_t:
-                    db.session.delete(x)
                 db.session.delete(i)
-            db.session.delete(stu)
             db.session.commit()
             flash('删除成功')
             return redirect(url_for('.stuUserList'))
@@ -1882,13 +1827,11 @@ def selectRole():
         tea = []
         tea.append(teaId)
         session['tea'] = tea
-        print(teaId)
     # 点击选择后发生
     if roleId:
         # 学生
         if session.get('stu'):
             for stuId in session['stu']:
-                print(stuId)
                 stu = Student.query.filter_by(stuId=stuId).first()
                 stu.roleId = roleId
                 try:
@@ -1959,7 +1902,22 @@ def allStuDelete():
     if request.method == 'POST':
         for x in request.form.getlist('stu[]'):
             try:
-                db.session.execute('delete from Student where stuId=%s' % x)
+                stuId=x    
+                internship = InternshipInfor.query.filter_by(stuId=stuId).all()
+                db.session.execute('delete from Student where stuId="%s"'%stuId)
+                for i in internship:
+                    db.session.execute('delete from Journal where stuId="%s"'%i.Id)
+                    db.session.execute('delete from ComDirTea where internId=%s'%i.Id)
+                    db.session.execute('delete from SchDirTea where internId=%s'%i.Id)
+                    db.session.execute('delete from Summary where internId=%s'%i.Id)
+                    db.session.execute('delete from Visit_Intern where internId=%s'%i.Id)                
+                    db.session.delete(i)
+                    # 删除总结成果--文件目录
+                    subprocess.call('rm %s/%s -r' % (STORAGE_FOLDER, i.Id), shell=True)
+                    #删除pdf在线阅览文件
+                    subprocess.call('rm %s/%s -r' % (PDF_FOLDER, i.Id), shell=True)
+                    db.session.delete(i)
+                db.session.commit()               
             except Exception as e:
                 db.session.rollback()
                 print('批量删除学生用户：', e)
@@ -2013,7 +1971,7 @@ def addTeacher():
         return redirect('/')
     form = teaForm()
     if form.validate_on_submit():
-        tea = Teacher(teaName=form.teaName.data, teaId=form.teaId.data, teaSex=form.teaSex.data)
+        tea = Teacher(teaName=form.teaName.data, teaId=form.teaId.data, teaSex=form.teaSex.data,teaEmail=form.teaEmail.data,teaPhone=form.teaPhone.data,teaPosition=form.teaPosition.data)
         db.session.add(tea)
         try:
             db.session.commit()
@@ -2039,7 +1997,9 @@ def editTeacher():
             tea.teaId = form.teaId.data
             tea.teaName = form.teaName.data
             tea.teaSex = request.form.get('sex')
-            print(request.form.get('sex'))
+            tea.teaEmail=form.teaEmail.data
+            tea.teaPhone=form.teaPhone.data
+            tea.teaPosition=form.teaPosition.data
             db.session.add(tea)
             db.session.commit()
             flash('修改成功！')
@@ -2512,7 +2472,14 @@ def create_intern_filter(grade, major, classes, flag):
     # 组合查询 *_*
     try:
         if session.get('grade') is not None:
-            intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
+            if flag==2:
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(
+                Student.grade == session['grade'])
+            elif flag==1:        
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(
+                Student.grade == session['grade'])
+            else:
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
                 Student.grade == session['grade'])
 
             if session.get('major') is not None:
@@ -2526,16 +2493,19 @@ def create_intern_filter(grade, major, classes, flag):
 
             if session.get('checkStatus') is not None:
                 if flag == 2:
-                    intern = intern.outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Summary.sumCheck == session['checkStatus'])
+                    intern = intern.filter(Summary.sumCheck == session['checkStatus'])
                 elif flag == 0:
                     intern = intern.filter(InternshipInfor.internCheck == session['checkStatus'])
                 else:
-                    intern = intern.join(Journal, InternshipInfor.Id == Journal.internId).filter_by(
-                        jourCheck=session['checkStatus'])
+                    intern = intern.filter_by(jourCheck=session['checkStatus'])
 
         elif session.get('major') is not None:
-            intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
-                Student.major == session['major'])
+            if flag==2:
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Student.major == session['major'])
+            elif flag==1:        
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(Student.major == session['major'])
+            else:
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(Student.major == session['major'])
 
             if session.get('grade') is not None:
                 intern = intern.filter(Student.grade == session['grade'])
@@ -2548,16 +2518,20 @@ def create_intern_filter(grade, major, classes, flag):
 
             if session.get('checkStatus') is not None:
                 if flag == 2:
-                    intern = intern.outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Summary.sumCheck == session['checkStatus'])
+                    intern = intern.filter(Summary.sumCheck == session['checkStatus'])
                 elif flag == 0:
                     intern = intern.filter(InternshipInfor, InternshipInfor.internCheck == session['checkStatus'])
                 else:
-                    intern = intern.join(Journal, InternshipInfor.Id == Journal.internId).filter_by(
-                        jourCheck=session['checkStatus'])
+                    intern = intern.filter_by(jourCheck=session['checkStatus'])
 
         elif session.get('classes') is not None:
-            intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
-                Student.classes == session['classes'])
+            if flag==2:
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Student.classes == session['classes'])
+            elif flag==1:        
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(Student.classes == session['classes'])
+            else:
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(Student.classes == session['classes'])
+
 
             if session.get('grade') is not None:
                 intern = intern.filter(Student.grade == session['grade'])
@@ -2570,17 +2544,20 @@ def create_intern_filter(grade, major, classes, flag):
 
             if session.get('checkStatus') is not None:
                 if flag == 2:
-                    intern = intern.outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Summary.sumCheck == session['checkStatus'])
+                    intern = intern.filter(Summary.sumCheck == session['checkStatus'])
                 elif flag == 0:
                     intern = intern.filter(InternshipInfor.internCheck == session['checkStatus'])
                 else:
-                    intern = intern.join(Journal, InternshipInfor.Id == Journal.internId).filter_by(
+                    intern = intern.filter_by(
                         jourCheck=session['checkStatus'])
 
         elif session.get('internStatus') is not None:
-
-            intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
-                InternshipInfor.internStatus == session['internStatus'])
+            if flag==2:
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(InternshipInfor.internStatus == session['internStatus'])
+            elif flag==1:        
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(InternshipInfor.internStatus == session['internStatus'])
+            else:
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(InternshipInfor.internStatus == session['internStatus'])
 
             if session.get('classes') is not None:
                 intern = intern.filter(Student.classes == session['classes'])
@@ -2593,15 +2570,13 @@ def create_intern_filter(grade, major, classes, flag):
 
             if session.get('checkStatus') is not None:
                 if flag == 2:
-                    intern = intern.outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Summary.sumCheck == session['checkStatus'])
+                    intern = intern.filter(Summary.sumCheck == session['checkStatus'])
                 elif flag == 0:
                     intern = intern.filter(InternshipInfor.internCheck == session['checkStatus'])
                 else:
-                    intern = intern.join(Journal, InternshipInfor.Id == Journal.internId).filter_by(
-                        jourCheck=session['checkStatus'])
+                    intern = intern.filter_by(jourCheck=session['checkStatus'])
 
         elif session.get('checkStatus') is not None:
-            print('checkStatus')
             if flag == 2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary,
                                                                                                                Summary.internId == InternshipInfor.Id).filter(
@@ -3696,7 +3671,7 @@ def onlinePDF(internId, dest, file):
             pdf_file = file
             storage_path = os.path.join(storage_cwd(internId, dest), file)
             pdf_path = os.path.join(pdf_cwd(internId, dest), pdf_file)
-            os.system('cp %s %s'%(storage_path,pdf_path))
+            a=os.system('cp %s %s'%(storage_path,pdf_path))
             return pdf_path[pdf_path.find('/static'):]
 
 
@@ -3735,7 +3710,7 @@ def stuSumList():
                              InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck,
                              Summary.sumScore, Summary.sumCheck) \
                 .filter(InternshipInfor.stuId == stuId).order_by(
-                func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
+                func.field(InternshipInfor.internStatus, 1, 0, 2)).filter(InternshipInfor.internCheck==2).paginate(page, per_page=8, error_out=False)
             internlist = pagination.items
             return render_template('stuSumList.html', internlist=internlist, Permission=Permission,
                                    student=student, pagination=pagination, form=form,
@@ -3743,7 +3718,7 @@ def stuSumList():
     elif current_user.can(Permission.STU_INTERN_LIST):
         # 函数返回的intern已经join了Student,Summary
         intern = create_intern_filter(grade, major, classes, 2)
-        pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
+        pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId)\
             .filter(InternshipInfor.internCheck == 2, InternshipInfor.internStatus == 2) \
             .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
@@ -3786,17 +3761,19 @@ def xSum():
     summary = Summary.query.filter_by(internId=internId).first()
     summary_doc = storage_list(internId, 'summary_doc')
     attachment = storage_list(internId, 'attachment')
+    #指导老师审核权限
+    comfirm_can=is_schdirtea(stuId) or current_user.can(Permission.STU_JOUR_CHECK)
     if request.method == 'POST':
         return storage_download(internId)
     if current_user.roleId == 0:
         return render_template('xSum.html', Permission=Permission, comInfor=comInfor, internship=internship,
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc,
-                               path=path)
+                               path=path,comfirm_can=comfirm_can)
     elif internship.end < now:
         if internship.internCheck == 2:
             return render_template('xSum.html', Permission=Permission, comInfor=comInfor, internship=internship,
                                    student=student, summary=summary, attachment=attachment, summary_doc=summary_doc,
-                                   path=path)
+                                   path=path,comfirm_can=comfirm_can)
         else:
             flash("实习申请需审核后,才能查看总结和成果")
             return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
@@ -3848,7 +3825,7 @@ def xSum_fileManager():
                     storage_path = os.path.join(storage_cwd(internId, dest_path), file_name)
                     pdf_path = os.path.join(pdf_cwd(internId, dest_path), pdf_postfix(file_name))
                     if action == 'delete':
-                        os.remove(pdf_path)
+                        os.system('rm  %s'%pdf_path)
                         os.remove(storage_path)
                         flash('删除成功！')
                     elif action == 'rename_begin':
@@ -3977,10 +3954,12 @@ def xSumScoreEdit():
 @main.route('/xSum_comfirm', methods=["POST", "GET"])
 @not_student_login
 def xSum_comfirm():
-    if current_user.can(Permission.STU_SUM_SCO_CHECK):
+    stuId = request.form.get('stuId')
+    comfirm_can=is_schdirtea(stuId) or current_user.can(Permission.STU_SUM_SCO_CHECK)
+    if comfirm_can: 
         internId = request.form.get('internId')
         sumCheck = request.form.get('sumCheck')
-        stuId = request.form.get('stuId')
+        
         sumCheckOpinion = request.form.get('sumCheckOpinion')
         comId = InternshipInfor.query.filter_by(Id=internId).first().comId
         com = ComInfor.query.filter(comId == comId).first()
@@ -4017,7 +3996,9 @@ def xSum_comfirm():
             flash("审核实习总结失败")
             return redirect("/")
         flash("审核实习总结成功")
-    return redirect(url_for('.xSum', stuId=stuId, internId=internId))
+        return redirect(url_for('.xSum', stuId=stuId, internId=internId))
+    else:
+        return redirect(url_for('.index'))
 
 
 # 批量审核总结和成果
@@ -4196,7 +4177,7 @@ def teaVisit():
         path=os.path.join(STATIC_STORAGE,'visit',userId,filename)
     #end 在线阅览
     url='%s/visit/%s'%(STORAGE_FOLDER, userId)
-    pagination=Visit.query.filter_by(userId=current_user.get_id()).order_by(Visit.time.asc()).paginate(page,per_page=3,error_out=False)
+    pagination=Visit.query.filter_by(userId=current_user.get_id()).order_by(Visit.time.desc()).paginate(page,per_page=3,error_out=False)
     visit=pagination.items
     if request.method=='POST':
         try:

@@ -70,11 +70,11 @@ class directTeaForm(Form):
 
 
 class schdirteaForm(Form):
-    steaId = StringField('校内教师工号')
-    steaName = StringField('姓名')
-    steaDuty = StringField('职称')
-    steaPhone = StringField('联系电话')
-    steaEmail = StringField('邮箱')
+    # steaId = StringField('校内教师工号')
+    steaName = StringField('教师姓名')
+    # steaDuty = StringField('职称')
+    # steaPhone = StringField('联系电话')
+    # steaEmail = StringField('邮箱')
     submit = SubmitField('提交')
 
 
@@ -102,11 +102,11 @@ class journalForm(Form):
 class stuForm(Form):
     stuId = StringField('学号', validators=[Required(message='此项不能为空')])
     stuName = StringField('姓名', validators=[Required(message='此项不能为空')])
-    sex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='男')
+    sex = SelectField('性别', choices=[('男', '男'), ('女', '女')])
     institutes = StringField('学院', default='计算机与网络安全学院', validators=[Required(message='此项不能为空')])
-    grade = SelectField('年级', coerce=str)
-    major = SelectField('专业', coerce=str)
-    classes = SelectField('班级', coerce=str)
+    grade = SelectField('年级', coerce=str,default=' ')
+    major = SelectField('专业', coerce=str,default=' ')
+    classes = SelectField('班级', coerce=str,default=' ')
     submit = SubmitField('提交')
 
     #初始化下拉框
@@ -121,7 +121,10 @@ class stuForm(Form):
 class teaForm(Form):
     teaId = StringField('教工号', validators=[Required(message='此项不能为空')])
     teaName = StringField('姓名', validators=[Required(message='此项不能为空')])
-    teaSex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default='男')
+    teaSex = SelectField('性别', choices=[('男', '男'), ('女', '女')], default=' ')
+    teaPosition = StringField('职称')
+    teaPhone = StringField('联系电话')
+    teaEmail = StringField('邮箱')
     submit = SubmitField('提交')
 
 

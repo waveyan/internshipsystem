@@ -34,7 +34,10 @@
                 <option value="女" selected>女</option>
             </select>
         {% endif %}
-        <p></p>
+        {{ form.teaPosition.label }}{{ form.teaPosition(class="form-control",class="form-control",request='',value=tea.teaPosition) }}
+        {{ form.teaPhone.label }}{{ form.teaPhone(class="form-control",class="form-control",request='',value=tea.teaPhone) }}
+        {{ form.teaEmail.label }}{{ form.teaEmail(class="form-control",class="form-control",request='',value=tea.teaEmail) }}
+        <br><br>
         <button class="btn btn-primary" onclick="save({{ tea.teaId }})">提交</button>
         <button class="btn btn-default" onclick="back()">返回
         </button>

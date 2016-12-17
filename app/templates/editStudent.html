@@ -15,55 +15,8 @@
             form.submit();
         }
     </script>
-          <script>
-        $(document).ready(function () {
-            var i = 1;
-            $("#addTea").click(function () {
-                $(".teaForm:first").clone(true).insertAfter(".teaForm:last");
-                $(".teaForm:last").slideDown();
-                i++;
-                $(".teaForm .form-control").eq(i + i + i + i + i).attr({name: "teaId" + i});
-                $(".teaForm .form-control").eq(i + i + i + i + i + 1).attr({name: "teaName" + i});
-                $(".teaForm .form-control").eq(i + i + i + i + i + 2).attr({name: "teaDuty" + i});
-                $(".teaForm .form-control").eq(i + i + i + i + i + 3).attr({name: "teaPhone" + i});
-                $(".teaForm .form-control").eq(i + i + i + i + i + 4).attr({name: "teaEmail" + i});
-                if (i > 1) {
-                    $("#delTea").show();
-                    // $("#addTea").hide();
-                }
-            });
-            $("#delTea").click(function () {
-                i--;
-                $(".teaForm:last").remove();
-                if (i == 1) {
-                    $("#delTea").slideUp();
-                }
-            });
-            $("#finish").click(function () {
-                $(".teaForm .form-control").eq(5).attr({name: "teaId" + 1});
-                $(".teaForm .form-control").eq(6).attr({name: "teaName" + 1});
-                $(".teaForm .form-control").eq(7).attr({name: "teaDuty" + 1});
-                $(".teaForm .form-control").eq(8).attr({name: "teaPhone" + 1});
-                $(".teaForm .form-control").eq(9).attr({name: "teaEmail" + 1});
-
-                $(".buttonStd").click();
-                $(".buttonTea").click();
-            });
-        });
-    </script>
 {% endblock %}
 {% block page_content %}
- <div class="panel">
-        <div class="panel-body">
-            <div class="teaForm" style="display: None">
-                {{ schdirteaform.hidden_tag() }}
-                {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control",placeholder="") }}
-                {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",placeholder="") }}
-                {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control",placeholder="") }}
-                {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control",placeholder="") }}
-                {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control") }}
-                </br></br>
-            </div>
 
     <form method="post" class="form-horizontal" id="comform">
         <h1>学生基本信息</h1>
@@ -82,49 +35,46 @@
                 <option value="女" selected>女</option>
             </select>
         {% endif %}
-        {{ form.major.label }}{{ form.major(class="form-control",request='',value=stu.major) }}
-        {{ form.grade.label }}{{ form.grade(class="form-control",request='',value=stu.grade) }}
-        {{ form.classes.label }}{{ form.classes(class="form-control",class="form-control",request='',value=stu.classes) }}
-        {% set i=0 %}
-        <br>
-        <h3>校内指导老师</h3>
-        {% for tea in schdirtea %}
-            {% if tea.teaId %}
-                {% set i=i+1 %}
-                <b>{{ i }}、校内教师工号<b><br>
-                <input type="text" name="nteaId{{ i }}" value="{{ tea.teaId }}" class="form-control">
-                <b>姓名<b><br>
-                <input type="text" name="nteaName{{ i }}" value="{{ tea.steaName }}" class="form-control">
-                <b>任务<b><br>
-                <input type="text" name="nteaDuty{{ i }}" value="{{ tea.steaDuty }}" class="form-control">
-                <b>电话<b><br>
-                <input type="text" name="nteaPhone{{ i }}" value="{{ tea.steaPhone }}" class="form-control">
-                <b>邮箱<b><br>
-                <input type="text" name="nteaEmail{{ i }}" value="{{ tea.steaEmail }}" class="form-control">
-                <br><br><br>
-            {% endif %}
+        
+        <label for="name">专业</label>
+        <select class="form-control" name="major">
+        {% for x in major %}
+        {% if stu.major==x.major %}
+                <option value="{{x.major}}" name="major" selected>{{x.major}}</option>
+        {%else%}
+        <option value="{{x.major}}" name="major">{{x.major}}</option>
+        {% endif %}
         {% endfor %}
-        <div class="teaForm" style="display: None">
-        {{ schdirteaform.hidden_tag() }}
-                    {{ schdirteaform.steaId.label }} {{ schdirteaform.steaId(class="form-control") }}
-                    {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control") }}
-                    {{ schdirteaform.steaDuty.label }} {{ schdirteaform.steaDuty(class="form-control") }}
-                    {{ schdirteaform.steaPhone.label }} {{ schdirteaform.steaPhone(class="form-control") }}
-                    {{ schdirteaform.steaEmail.label }} {{ schdirteaform.steaEmail(class="form-control") }}
-                    </br></br>
-        </div>
-                       <input type="button" id="addTea" class="btn" value="添加老师">
-                <input type="button" id="delTea" class="btn" value="删除老师" style="display: none">
+        </select>
+        
+         <label for="name">年级</label>
+        <select class="form-control" name="grade">
+        {% for x in grade %}
+        {% if stu.grader==x.grade %}
+                <option value="{{x.grade}}" name="grade" selected>{{x.grade}}</option>
+        {%else%}
+        <option value="{{x.grade}}" name="grade">{{x.grade}}</option>
+        {% endif %}
+        {% endfor %}
+        </select>
 
-        <br><br><br>
-        <p><br><span class="label label-danger">注意</span>
-            <br>*&nbsp;若要删除校内指导老师，把需要删除的指导老师的信息表单清空后，点击提交键即可。
-        </p>
+         <label for="name">班级</label>
+        <select class="form-control" name="classes">
+        {% for x in classes %}
+        {% if stu.classes==x.classes %}
+                <option value="{{x.classes}}" name="classes" selected>{{x.classes}}</option>
+        {%else%}
+        <option value="{{x.classes}}" name="classes">{{x.classes}}</option>
+        {% endif %}
+        {% endfor %}
+        </select>
+
+        <br><br>
         <button class="btn btn-primary" onclick="save({{ stu.stuId }})" id='finish'>提交</button>
         <button class="btn btn-default" onclick="back()">返回
         </button>
     </form>
     </div>
     </div>
-    <br><br><br><br>
+    <br><br>
 {% endblock %}

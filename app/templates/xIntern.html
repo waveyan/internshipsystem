@@ -118,7 +118,7 @@
                 </div>
                 <div class="modal-footer">
                     <!-- 用form来获取数据 -->
-                    <form action="/xInternEdit" method="POST">
+                    <form action="{{url_for('.xInternEdit')}}" method="GET">
                         <input type="hidden" name="stuId" value="{{ student.stuId }}">
                         <input type="hidden" name="internId" value="{{ internship.Id }}">
                         <input type="hidden" name="comId" value="{{ comInfor.comId }}">
@@ -325,13 +325,13 @@
                 <td height="50" width="240">E-mail</td>
             </tr>
             {% for tea in schdirtea %}
-                {% if tea.steaName %}
+                {% if tea.teaName %}
                     <tr>
                         <td height="50">{{ tea.teaId }}</td>
-                        <td height="50">{{ tea.steaName }}</td>
-                        <td height="50">{{ tea.steaDuty }}</td>
-                        <td height="50">{{ tea.steaPhone }}</td>
-                        <td height="50" colspan="2">{{ tea.steaEmail }}</td>
+                        <td height="50">{{ tea.teaName }}</td>
+                        <td height="50">{{ tea.teaPosition }}</td>
+                        <td height="50">{{ tea.teaPhone }}</td>
+                        <td height="50" colspan="2">{{ tea.teaEmail }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}       

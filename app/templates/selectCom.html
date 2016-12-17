@@ -30,7 +30,7 @@
         {% for com in comInfor %}
             <tr>
                 <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
-                <td>{{ com.comAddress }}</td>
+                <td>{{ com.comCity }}</td>
                 <td><a href="http://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
                 <td>{{ com.comPhone }}</td>
                 <td><a href="{{ url_for('.addInternship',comId=com.comId) }}" class="btn btn-info btn-xs">
