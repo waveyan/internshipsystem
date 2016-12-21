@@ -31,7 +31,7 @@
         }
         function ReadOnline(path) {
             $('#readToggle').modal();
-            document.getElementById("pdf_content").setAttribute('data', path);
+            document.getElementById("pdf_content").setAttribute('src', path);
         }
     </script>
 
@@ -145,17 +145,14 @@
                 </div>
                 <div class="modal-body">
                     <div id="pdf">
-            <object width="1000" height="800" type="application/pdf" data="" id="pdf_content">
+            <embed width="1000" height="800" type="application/pdf" id="pdf_content">
                 <p>你的浏览器不支持在线阅览, 请更换浏览器.
                 </p>
-            </object>
+            </embed>
         </div>
                 </div>
                 <div class="modal-footer">
-                    <form action="/upload_Visit" method="POST">
-                        <input type="hidden" id="filename_delete" name=delete>
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    </form>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal -->
@@ -345,7 +342,12 @@
        </tr>
        {% for name,path in path %}
        {% if 'pdf' in name %}
-       <tr><td height="50" colspan="6"><a onClick="ReadOnline({{'\''+path+'\''}})">{{name}}</a></td></tr> 
+       <tr><td height="50" colspan="6"><a onClick="ReadOnline({{'\''+path+'\''}})">{{name}}</a></td>
+       <td><a href="javascript:{}"onclick="document.getElementById('{{name}}_download').submit();">下载</a></td>
+       </tr>
+    <form id="{{name}}_download" method="post">
+        <input type="hidden" name="download" value="{{ name }}">
+    </form>
        <tr>
        {%else%}
                <div class="container row">

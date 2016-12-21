@@ -559,6 +559,13 @@ def xIntern():
     # 若普通老师为学生的指导老师, 赋予其权限
     schdirtea_can = is_schdirtea(stuId)
     if request.method == "POST":
+        print(request.form)
+        if 'download' in request.form:
+                #file_name=secure_filename(request.form.get('download'))
+                file_name=request.form.get('download')
+                print(file_name)
+                return send_file(os.path.join(STORAGE_FOLDER,internId,'agreement',file_name), as_attachment=True,
+                             attachment_filename=file_name.encode('utf-8'))
         if current_user.roleId == 0 or current_user.can(Permission.STU_INTERN_SEARCH) or schdirtea_can:
             isexport = request.form.get('isexport')
             if isexport:
@@ -4205,7 +4212,7 @@ def teaVisit():
             flash('操作失败，请重试！')
             print('teaVisit：',e)
             return redirect(url_for('.teaVisit'))
-    return render_template('teaVisit.html',Permission=Permission,path=path,visit=visit,pagination=pagination)
+    return render_template('teaVisit.html',Permission=Permission,path=path,visit=visit,pagination=pagination,filename=filename)
 
 #用于ajax异步获取某探访记录的相关学生表
 @main.route('/studentTable/<uid>/<filename>',methods=['GET'])
