@@ -31,7 +31,13 @@
             <tr>
                 <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
                 <td>{{ com.comCity }}</td>
-                <td><a href="http://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
+                <td>
+                {% if 'http' in com.comUrl %}
+                <a href="{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
+                {% else %}
+                <a href="http://{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
+                {%endif%}  
+                </td>
                 <td>{{ com.comPhone }}</td>
                 <td><a href="{{ url_for('.addInternship',comId=com.comId) }}" class="btn btn-info btn-xs">
                     <span class="glyphicon glyphicon-plus"></span>选择</a></td>

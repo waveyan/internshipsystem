@@ -161,13 +161,18 @@
                             <input type="hidden" name="old_teaName" value="{{ tea.teaName }}">
                             <input type="hidden" name="comId" value="{{ comInfor.comId }}">
                             <input type="hidden" name="internId" value="{{ internship.Id }}">
-                            <td height="50">{{ schdirteaform.steaName(required='', value=tea.teaName,class="form-control") }}</td>
+                            <td height="50">{{ schdirteaform.steaName(required='', value=tea.teaName,class="form-control",list="teachers") }}</td>
                             {{ schdirteaform.csrf_token }}
                             <td>{{ schdirteaform.submit(class="btn btn-danger",type="submit", value="确定修改") }}</td>
                         </form>
                     </tr>
             {% endfor %}
-            
+                <!-- 校内指导老师提示列表 -->
+                <datalist id="teachers">
+                {% for tea in teachers %}
+                 <option value="{{tea.teaName}}">
+                 {% endfor %}
+                </datalist>
         <tr>
             <td width="200" colspan="7" height="50">四、实习协议书</td>
         </tr>

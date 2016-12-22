@@ -384,6 +384,8 @@ def addInternship():
     iform = internshipForm()
     schdirteaform = schdirteaForm()
     comdirteaform = comdirteaForm()
+    #校内指导老师提示列表
+    teachers=Teacher.query.all()
     i = 0
     j = 0    
     try:
@@ -494,7 +496,7 @@ def addInternship():
         flash('提交实习信息失败，请重试！')
         return redirect(url_for('.addcominfor'))
     return render_template('addinternship.html', iform=iform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,
-                           Permission=Permission)
+                           Permission=Permission,teachers=teachers)
 
 
 # 普通老师对于自己的指导学生, 带有'审核老师'的权限
@@ -634,6 +636,8 @@ def xInternEdit():
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     schdirtea = internship.schdirtea
     comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
+    #校内指导老师提示列表
+    teachers=Teacher.query.all()
     # 各种Form
     stuform = stuForm()
     comform = comForm()
@@ -666,7 +670,7 @@ def xInternEdit():
     return render_template('xInternEdit.html', Permission=Permission, comInfor=comInfor, schdirtea=schdirtea, \
                            comdirtea=comdirtea, internship=internship, student=student, stuform=stuform, \
                            comform=comform, 
-                           internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,imageName=imageName)
+                           internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,imageName=imageName,teachers=teachers)
 
 
 # 修改实习信息 个人实习信息--实习岗位信息

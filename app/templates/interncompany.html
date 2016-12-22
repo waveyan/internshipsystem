@@ -89,7 +89,13 @@
                         <td>{{ com.comName }}</td>
                     {% endif %}
                     <td>{{ com.comCity }}</td>
-                    <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
+                    <td>
+                    {% if 'http' in com.comUrl %}
+                    <a href="{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
+                    {% else %}
+                    <a href="http://{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
+                    {%endif%}                    
+                    </td>
                     <td>{{ com.comPhone }}</td>
                     {% if current_user.can(Permission.STU_INTERN_LIST) %}
                         <td><a href="{{ url_for('.comInternList',comId=com.comId) }}">

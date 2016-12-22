@@ -75,7 +75,13 @@
         </tr>
         <tr>
             <th>公司网址</th>
-            <td width="400" height="50" colspan="3"><a href="{{ com.comUrl }}">{{ com.comUrl }}</a></td>
+            <td width="400" height="50" colspan="3">
+            {% if 'http' in com.comUrl %}
+            <a href="{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
+            {% else %}
+             <a href="http://{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
+            {%endif%}  
+            </td>
         </tr>
         <tr>
             <th>公司简介</th>

@@ -98,8 +98,7 @@
         <div class="panel-body">
             <div class="teaForm" style="display: None">
                 {{ schdirteaform.hidden_tag() }}
-                {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="",
-            pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
+                {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')",list='teachers') }}
                 </br></br>
             </div>
 
@@ -135,11 +134,18 @@
          <h3>校内指导老师</h3>
                 <div class="teaForm">
                     {{ schdirteaform.hidden_tag() }}
-                    {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="", pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')") }}
+                    {{ schdirteaform.steaName.label }} {{ schdirteaform.steaName(class="form-control",required='',placeholder="",oninvalid="setCustomValidity('请输入正确的姓名')",oninput="setCustomValidity('')",list='teachers') }}
                     </br></br>
                 </div>
                         <input type="button" id="addTea" class="btn" value="添加老师">
                 <input type="button" id="delTea" class="btn" value="删除老师" style="display: none">
+                <!-- 校内指导老师提示列表 -->
+                <datalist id="teachers">
+                {% for tea in teachers %}
+                 <option value="{{tea.teaName}}">
+                 {% endfor %}
+                </datalist>
+
             </br></br>
             <h3>实践协议书</h3>
             <input id="file-1" type="file" class="file" multiple=""  name="image" data-overwrite-initial="false" data-min-file-count="1"><h5><small>仅支持jpe、png、gif、pdf格式文件上传</small></h5>
