@@ -4458,13 +4458,14 @@ def allTeaVisit():
         # transform the folder's name from English to Chinese
         def visit_tar_transform():
             teacher = Teacher.query.all()
-            transform = "--transform='flags=r;s|visit|探访记录汇总|'"
-            for tea in teacher:
-                transform = transform + " --transform='flags=r;s|%s|%s|'" % (tea.teaId,tea.teaName)
+            transform = ["--transform='s,%s,%s,'" % (tea.teaId,tea.teaName) for tea in teacher]
+            transform.append("--transform='s,visit,探访记录汇总,'")
+            transform = " ".join(transform)
             return transform
         transform = visit_tar_transform()
         zip_file = os.path.join(VISIT_EXPORT_ALL_FOLDER,str(time.time()) + ".zip")
-        os.system("cd %s;tar %s -cf %s %s" % (STORAGE_FOLDER,transform,zip_file,"visit"))
+        visit_folder = os.path.join(STORAGE_FOLDER,'visit')
+        os.system("tar --transform='s,^.*storage/,,' %s -cf %s %s" % (transform, zip_file, visit_folder))
         file_attachname = "探访记录汇总_%s.zip" % datetime.now().date()
         return send_file(zip_file, as_attachment=True, attachment_filename=file_attachname.encode('utf-8'))
 
