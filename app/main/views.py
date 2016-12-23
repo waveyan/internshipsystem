@@ -187,11 +187,6 @@ def index():
         get_export_all_generate()
     if request.args.get("isLogout"):
         return redirect(logout_url)
-    # if session['isLogout']:
-    #     session['isLogout'] = False
-    #     return redirect(logout_url)
-    # if isLogout:
-    #     session['isLogout'] = True
     return render_template('index.html', Permission=Permission)
 
 
@@ -387,7 +382,7 @@ def addInternship():
     #校内指导老师提示列表
     teachers=Teacher.query.all()
     i = 0
-    j = 0    
+    j = 0
     try:
         if request.method == 'POST':
             # 若请求非学生,从request获取学生学号和姓名
@@ -460,7 +455,7 @@ def addInternship():
                 # 初始化日志和总结成果
                 internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
                 journal_init(internId)
-                summary_init(internId)               
+                summary_init(internId)
             except Exception as e:
                 print('添加校外指导老师：', e)
                 db.session.rollback()
@@ -669,7 +664,7 @@ def xInternEdit():
         return redirect(url_for('.xIntern',stuId=stuId,internId=internId))
     return render_template('xInternEdit.html', Permission=Permission, comInfor=comInfor, schdirtea=schdirtea, \
                            comdirtea=comdirtea, internship=internship, student=student, stuform=stuform, \
-                           comform=comform, 
+                           comform=comform,
                            internform=internform, schdirteaform=schdirteaform, comdirteaform=comdirteaform,imageName=imageName,teachers=teachers)
 
 
@@ -1799,7 +1794,7 @@ def student_delete():
                 db.session.execute('delete from ComDirTea where internId=%s'%i.Id)
                 db.session.execute('delete from SchDirTea where internId=%s'%i.Id)
                 db.session.execute('delete from Summary where internId=%s'%i.Id)
-                db.session.execute('delete from Visit_Intern where internId=%s'%i.Id)                
+                db.session.execute('delete from Visit_Intern where internId=%s'%i.Id)
                 db.session.delete(i)
                 # 删除总结成果--文件目录
                 subprocess.call('rm %s/%s -r' % (STORAGE_FOLDER, i.Id), shell=True)
@@ -1913,7 +1908,7 @@ def allStuDelete():
     if request.method == 'POST':
         for x in request.form.getlist('stu[]'):
             try:
-                stuId=x    
+                stuId=x
                 internship = InternshipInfor.query.filter_by(stuId=stuId).all()
                 db.session.execute('delete from Student where stuId="%s"'%stuId)
                 for i in internship:
@@ -1921,14 +1916,14 @@ def allStuDelete():
                     db.session.execute('delete from ComDirTea where internId=%s'%i.Id)
                     db.session.execute('delete from SchDirTea where internId=%s'%i.Id)
                     db.session.execute('delete from Summary where internId=%s'%i.Id)
-                    db.session.execute('delete from Visit_Intern where internId=%s'%i.Id)                
+                    db.session.execute('delete from Visit_Intern where internId=%s'%i.Id)
                     db.session.delete(i)
                     # 删除总结成果--文件目录
                     subprocess.call('rm %s/%s -r' % (STORAGE_FOLDER, i.Id), shell=True)
                     #删除pdf在线阅览文件
                     subprocess.call('rm %s/%s -r' % (PDF_FOLDER, i.Id), shell=True)
                     db.session.delete(i)
-                db.session.commit()               
+                db.session.commit()
             except Exception as e:
                 db.session.rollback()
                 print('批量删除学生用户：', e)
@@ -2486,7 +2481,7 @@ def create_intern_filter(grade, major, classes, flag):
             if flag==2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(
                 Student.grade == session['grade'])
-            elif flag==1:        
+            elif flag==1:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(
                 Student.grade == session['grade'])
             else:
@@ -2513,7 +2508,7 @@ def create_intern_filter(grade, major, classes, flag):
         elif session.get('major') is not None:
             if flag==2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Student.major == session['major'])
-            elif flag==1:        
+            elif flag==1:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(Student.major == session['major'])
             else:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(Student.major == session['major'])
@@ -2538,7 +2533,7 @@ def create_intern_filter(grade, major, classes, flag):
         elif session.get('classes') is not None:
             if flag==2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Student.classes == session['classes'])
-            elif flag==1:        
+            elif flag==1:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(Student.classes == session['classes'])
             else:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(Student.classes == session['classes'])
@@ -2565,7 +2560,7 @@ def create_intern_filter(grade, major, classes, flag):
         elif session.get('internStatus') is not None:
             if flag==2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(InternshipInfor.internStatus == session['internStatus'])
-            elif flag==1:        
+            elif flag==1:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(InternshipInfor.internStatus == session['internStatus'])
             else:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(InternshipInfor.internStatus == session['internStatus'])
@@ -2894,7 +2889,7 @@ def getMaxVisitId():
 excel_export_intern = OrderedDict((('stuId', '学号'), ('stuName', '姓名'), ('comCity', '城市'), ('comName', '企业名称'),
                                    ('internCheck', '审核状态'), ('internStatus', '实习状态'), ('start', '开始日期'),
                                    ('end', '结束日期'), ('task', '任务'), ('teaName', '审核教师'), ('opinion', '审核意见'),
-                                   ('icheckTime', '审核时间'), ('time', '修改时间'), ('steaName', '校内指导老师姓名'), ('steaDuty', '校内指导老师职务'),
+                                   ('icheckTime', '审核时间'), ('time', '修改时间'), ('steaName', '校内指导老师姓名'), ('steaPosition', '校内指导老师职务'),
                                    ('steaPhone', '校内指导老师电话'), ('steaEmail', '校内指导老师邮箱'), ('cteaName', '企业指导老师姓名'),
                                    ('cteaDuty', '企业指导老师职务'), ('cteaPhone', '企业指导老师电话'), ('cteaEmail', '企业指导老师邮箱')))
 excel_import_intern = {'学号': 'stuId', '姓名': 'stuName', '企业编号': 'comId', '开始日期': 'start', '结束日期': 'end',
@@ -2927,12 +2922,15 @@ excel_import_stuUser = {'学号': 'stuId', '姓名': 'stuName', '性别': 'sex',
 # 教师用户列表
 excel_export_teaUser = OrderedDict((('teaId', '教工号'), ('teaName', '姓名'), ('teaSex', '性别'), ('roleId', '系统角色')))
 
-excel_import_teaUser = {'教工号': 'teaId', '姓名': 'teaName', '性别': 'teaSex', '系统角色': 'roleId'}
+excel_import_teaUser = {'教工号': 'teaId', '姓名': 'teaName', '性别': 'teaSex', '职称':'teaPosition', '邮箱': 'teaEmail', '电话':'teaPhone'}
+
 
 IMPORT_FOLDER = os.path.join(os.path.abspath('.'), 'file_cache/xls_import')
 EXPORT_FOLDER = os.path.join(os.path.abspath('.'), 'file_cache/xls_export')
 IMPORT_TEMPLATE_FOLDER = os.path.join(os.path.abspath('.'), 'file_cache/import_template')
 EXPORT_ALL_FOLDER = os.path.join(os.path.abspath('.'), 'file_cache/all_export')
+VISIT_EXPORT_ALL_FOLDER = os.path.join(os.path.abspath('.'), 'file_cache/visit_export')
+
 
 
 # 可加上成果的上传文件格式限制
@@ -3001,7 +2999,7 @@ def journal_export(internIdList):
             #         ws.write(row, col, str(getattr(journal_temp, colname)))
         # 空两行
         row = row + 3
-    file_name = 'journalList_export_%s' % random.randint(1,1000)
+    file_name = 'journalList_export_%s.xls' % random.randint(1,1000)
     file_path = os.path.join(EXPORT_FOLDER, file_name)
     wb.save(file_path)
     return file_path
@@ -3010,29 +3008,46 @@ def journal_export(internIdList):
 # 导出Excel, 多个指导老师合并在一个单元格上
 def multiDirTea_dict(tb_name):
     if tb_name in ['SchDirTea', 'ComDirTea']:
-        multiDirTea = db.session.execute(
-            'select * from %s where stuId in (select stuId from %s group by stuId having count(stuId) > 1)' % (
-                tb_name, tb_name))
         multiDirTea_dict = {}
         # 校内导师
         if tb_name == 'SchDirTea':
+            multiDirTea = db.session.execute('select * from SchDirTea left join Teacher on SchDirTea.teaId=Teacher.teaId group by internId having count(internId)>1')
+            # multiDirTea = db.session.execute('select * from SchDirTea group by internId having count(internId) > 1;')
             for x in multiDirTea:
-                # if not multiDirTea_dict[x.stuId]:
-                if not multiDirTea_dict.get(x.stuId):
-                    multiDirTea_dict[x.stuId] = {'steaName': x.steaName, 'steaDuty': x.steaDuty,
-                                                 'steaEmail': x.steaEmail, 'steaPhone': x.steaPhone}
-                    for xx in multiDirTea_dict[x.stuId]:
-                        if multiDirTea_dict[x.stuId].get(xx) is None:
-                            multiDirTea_dict[x.stuId][xx] = '未知'
+                # schdirtea = Teacher.query.filter_by(teaId=x.teaId).first()
+                if not multiDirTea_dict.get(x.internId):
+                    multiDirTea_dict[x.internId] = {'teaName': x.teaName, 'teaPosition': x.teaPosition,
+                                                 'teaEmail': x.teaEmail, 'teaPhone': x.teaPhone}
+                    for xx in multiDirTea_dict[x.internId]:
+                        if multiDirTea_dict[x.internId].get(xx) is None:
+                            multiDirTea_dict[x.internId][xx] = '未知'
                 else:
-                    multiDirTea_dict[x.stuId] = { \
-                        'steaName': multiDirTea_dict[x.stuId]['steaName'] + '/%s' % x.steaName, \
-                        'steaDuty': multiDirTea_dict[x.stuId]['steaDuty'] + '/%s' % x.steaDuty, \
-                        'steaEmail': multiDirTea_dict[x.stuId]['steaEmail'] + '/%s' % x.steaEmail, \
-                        'steaPhone': multiDirTea_dict[x.stuId]['steaPhone'] + '/%s' % x.steaPhone \
+                    multiDirTea_dict[x.internId] = { \
+                        'teaName': multiDirTea_dict[x.internId]['teaName'] + '/%s' % x.teaName, \
+                        'teaPosition': multiDirTea_dict[x.internId]['teaPosition'] + '/%s' % x.teaPosition, \
+                        'teaEmail': multiDirTea_dict[x.internId]['teaEmail'] + '/%s' % x.teaEmail, \
+                        'teaPhone': multiDirTea_dict[x.internId]['teaPhone'] + '/%s' % x.teaPhone \
                         }
+
+                # if not multiDirTea_dict.get(x.stuId):
+                #     multiDirTea_dict[x.stuId] = {'steaName': x.steaName, 'steaDuty': x.steaDuty,
+                #                                  'steaEmail': x.steaEmail, 'steaPhone': x.steaPhone}
+                #     for xx in multiDirTea_dict[x.stuId]:
+                #         if multiDirTea_dict[x.stuId].get(xx) is None:
+                #             multiDirTea_dict[x.stuId][xx] = '未知'
+                # else:
+                #     multiDirTea_dict[x.stuId] = { \
+                #         'steaName': multiDirTea_dict[x.stuId]['steaName'] + '/%s' % x.steaName, \
+                #         'steaDuty': multiDirTea_dict[x.stuId]['steaDuty'] + '/%s' % x.steaDuty, \
+                #         'steaEmail': multiDirTea_dict[x.stuId]['steaEmail'] + '/%s' % x.steaEmail, \
+                #         'steaPhone': multiDirTea_dict[x.stuId]['steaPhone'] + '/%s' % x.steaPhone \
+                #         }
         # 企业导师
         elif tb_name == 'ComDirTea':
+            # multiDirTea = db.session.execute(
+            #     'select * from %s where stuId in (select stuId from %s group by stuId having count(stuId) > 1)' % (
+            #         tb_name, tb_name))
+            multiDirTea = db.session.execute('select * from ComDirTea group by stuId having count(stuId) > 1')
             for x in multiDirTea:
                 if not multiDirTea_dict.get(x.stuId):
                     multiDirTea_dict[x.stuId] = {'cteaName': x.cteaName, 'cteaDuty': x.cteaDuty,
@@ -3050,6 +3065,66 @@ def multiDirTea_dict(tb_name):
                         }
         return multiDirTea_dict
 
+'''
+def excel_export_intern_teacher(data):
+    # def get_teacher_information(internId, flag):
+    #     if flag == "SchDirTea":
+    #         teachers = SchDirTea.query.join(Teacher, SchDirTea.teaId==Teacher.teaId)
+    #         teachers = db.session.execute("select * from SchDirTea left join Teacher on SchDirTea.teaId=Teacher.teaId where SchDirTea.internId=%s" % internId)
+    #         for teacher in teachers:
+    internId_list = [x.Id for x in data]
+    flagA = []
+    teacher_dict = {}
+    # temp = ''.join([',%s' % x for x in internId_list])
+    # for x in db.session.execute("select * from SchDirTea where internId in (null,%s) group by internId having count(internId) > 1" %  ''.join([',%s' % x for x in internId_list])):
+    teachers = db.session.execute('select * from SchDirTea left join Teacher on SchDirTea.teaId=Teacher.teaId where internId in (null,%s)' % ''.join([',%s' % internId for internId in internId_list]))
+    for teacher in teachers:
+        if teacher.internId in flagA:
+            teacher_dict[str(teacher.internId)]['steaName'] = '/'.join(teacher_dict[str(teacher.internId)]['steaName'], teacher.teaName)
+            teacher_dict[str(teacher.internId)]['steaPosition'] = '/'.join(teacher_dict[str(teacher.internId)]['steaPosition'], teacher.teaPosition)
+            teacher_dict[str(teacher.internId)]['steaEmail'] = '/'.join(teacher_dict[str(teacher.internId)]['steaEmail'], teacher.teaEmail)
+            teacher_dict[str(teacher.internId)]['steaPhone'] = '/'.join(teacher_dict[str(teacher.internId)]['steaPhone'], teacher.teaPhone)
+        else:
+            teacher_dict[str(teacher.internId)]['steaName'] = teacher.teaName
+            teacher_dict[str(teacher.internId)]['steaPosition'] = teacher.teaPosition
+            teacher_dict[str(teacher.internId)]['steaEmail'] = teacher.teaEmail
+            teacher_dict[str(teacher.internId)]['steaPhone'] = teacher.teaPhone
+        flagA.append(teacher.internId)
+    for internship,index in zip(data, range(len(data))):
+        internId = str(internship.Id)
+        data[index]['steaName'] = teacher_dict[internId]['steaName']
+        data[index]['steaPosition'] = teacher_dict[internId]['steaPosition']
+        data[index]['steaEmail'] = teacher_dict[internId]['steaEmail']
+        data[index]['steaPhone'] = teacher_dict[internId]['steaPhone']
+    return data
+'''
+
+def joinMultiTeacher(internship,target):
+    def getNoNone(foo):
+        if foo:
+            return foo
+        else:
+            return ""
+    target_dict = {
+            'steaName' : 'teaName',
+            'steaPhone' : 'teaPhone',
+            'steaPosition' : 'teaPosition',
+            'steaEmail' : 'teaEmail'
+            }
+    internId = internship.Id
+    schdirtea = db.session.execute("SELECT * FROM SchDirTea left join Teacher on SchDirTea.teaId=Teacher.teaId where internId=%s" % internId)
+    multlTeacher = ""
+    flag = False
+    for x in schdirtea:
+        if flag:
+            multiTeacher = multiTeacher + '/' + getNoNone(getattr(x,target_dict[target]))
+        else:
+            flag = True
+            multiTeacher = getNoNone(getattr(x,target_dict[target]))
+    return multiTeacher
+
+
+
 
 
 # 导出Excel
@@ -3057,11 +3132,11 @@ def multiDirTea_dict(tb_name):
 def excel_export(template, data):
     # 实习列表再处理
     if template == excel_export_intern:
-        multiSchTea = multiDirTea_dict('SchDirTea')
+        # multiSchTea = multiDirTea_dict('SchDirTea')
         multiComTea = multiDirTea_dict('ComDirTea')
-        data = data.outerjoin(SchDirTea, SchDirTea.stuId == InternshipInfor.stuId).outerjoin(ComDirTea, and_(
+        data = data.outerjoin(ComDirTea, and_(
             ComDirTea.comId == InternshipInfor.comId, ComDirTea.stuId == InternshipInfor.stuId)) \
-            .add_columns(SchDirTea.steaName, SchDirTea.steaDuty, SchDirTea.steaPhone, SchDirTea.steaEmail,
+            .add_columns(
                          ComDirTea.cteaName, ComDirTea.cteaDuty, ComDirTea.cteaPhone, ComDirTea.cteaEmail).group_by(
             InternshipInfor.Id).all()
 
@@ -3103,16 +3178,18 @@ def excel_export(template, data):
                     ws.write(row + 1, col, '审核老师')
                 elif getattr(xdata, colname) == 1:
                     ws.write(row + 1, col, '普通老师')
+            elif colname in ['steaName','steaEmail','steaPhone','steaPosition']:
+                ws.write(row+1,col,joinMultiTeacher(xdata,colname))
             else:
-                if getattr(xdata, colname):
+                if hasattr(xdata, colname):
                     ws.write(row + 1, col, str(getattr(xdata, colname)))
         # 若一学生存在多个导师
         if template == excel_export_intern:
-            if xdata.stuId in multiSchTea.keys():
-                ws.write(row + 1, cols_list.index('steaName'), multiSchTea[xdata.stuId]['steaName'])
-                ws.write(row + 1, cols_list.index('steaPhone'), multiSchTea[xdata.stuId]['steaPhone'])
-                ws.write(row + 1, cols_list.index('steaDuty'), multiSchTea[xdata.stuId]['steaDuty'])
-                ws.write(row + 1, cols_list.index('steaEmail'), multiSchTea[xdata.stuId]['steaEmail'])
+        #     if xdata.internId in multiSchTea.keys():
+        #         ws.write(row + 1, cols_list.index('teaName'), multiSchTea[xdata.internId]['teaName'])
+        #         ws.write(row + 1, cols_list.index('teaPhone'), multiSchTea[xdata.internId]['teaPhone'])
+        #         ws.write(row + 1, cols_list.index('teaPosition'), multiSchTea[xdata.internId]['teaPosition'])
+        #         ws.write(row + 1, cols_list.index('teaEmail'), multiSchTea[xdata.internId]['teaEmail'])
             if xdata.stuId in multiComTea.keys():
                 ws.write(row + 1, cols_list.index('cteaName'), multiComTea[xdata.stuId]['cteaName'])
                 ws.write(row + 1, cols_list.index('cteaPhone'), multiComTea[xdata.stuId]['cteaPhone'])
@@ -3537,15 +3614,15 @@ def excel_importpage():
                     if teaUserList is False:
                         return redirect('/')
                     for teaUser, col in zip(teaUserList, range(len(teaUserList))):
-                        # 系统角色Id为空, 则默认普通老师
-                        roleId = teaUser['roleId']
-                        if re.match(r'^\d{1}$', roleId) is None:
-                            roleId = '1'
+                        # 系统角色默认为普通老师, 变动需在系统上更改
                         teacher = Teacher(
-                            teaId=str(teaUser['teaId'])[:-2],
-                            teaName=teaUser['teaName'],
-                            teaSex=teaUser['teaSex'],
-                            roleId=roleId
+                            teaId = str(teaUser['teaId'])[:-2],
+                            teaName = teaUser['teaName'],
+                            teaSex = teaUser['teaSex'],
+                            teaPosition = teaUser['teaPosition'],
+                            teaEmail = teaUser['teaEmail'],
+                            teaPhone = teaUser['teaPhone'][:-2],
+                            roleId=1
                         )
                         db.session.add(teacher)
                 # 最后提交并跳转到原本的地址
@@ -3721,7 +3798,7 @@ def stuSumList():
                              InternshipInfor.end, InternshipInfor.internStatus, InternshipInfor.internCheck,
                              Summary.sumScore, Summary.sumCheck) \
                 .filter(InternshipInfor.stuId == stuId).order_by(
-                func.field(InternshipInfor.internStatus, 1, 0, 2)).filter(InternshipInfor.internCheck==2).paginate(page, per_page=8, error_out=False)
+                func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
             internlist = pagination.items
             return render_template('stuSumList.html', internlist=internlist, Permission=Permission,
                                    student=student, pagination=pagination, form=form,
@@ -3967,10 +4044,10 @@ def xSumScoreEdit():
 def xSum_comfirm():
     stuId = request.form.get('stuId')
     comfirm_can=is_schdirtea(stuId) or current_user.can(Permission.STU_SUM_SCO_CHECK)
-    if comfirm_can: 
+    if comfirm_can:
         internId = request.form.get('internId')
         sumCheck = request.form.get('sumCheck')
-        
+
         sumCheckOpinion = request.form.get('sumCheckOpinion')
         comId = InternshipInfor.query.filter_by(Id=internId).first().comId
         com = ComInfor.query.filter(comId == comId).first()
@@ -4376,6 +4453,21 @@ def allTeaVisit():
     #url='%s/visit/%s'%(STORAGE_FOLDER, userId)
     pagination=Visit.query.order_by(Visit.time.asc()).join(Teacher,Teacher.teaId==Visit.userId).add_columns(Visit.userId,Visit.vteaName,Visit.visitWay,Visit.visitTime,Visit.time,Teacher.teaName,Teacher.teaId,Visit.filename).paginate(page,per_page=6,error_out=False)
     visit=pagination.items
+
+    if request.args.get('export_all'):
+        # transform the folder's name from English to Chinese
+        def visit_tar_transform():
+            teacher = Teacher.query.all()
+            transform = "--transform='flags=r;s|visit|探访记录汇总|'"
+            for tea in teacher:
+                transform = transform + " --transform='flags=r;s|%s|%s|'" % (tea.teaId,tea.teaName)
+            return transform
+        transform = visit_tar_transform()
+        zip_file = os.path.join(VISIT_EXPORT_ALL_FOLDER,str(time.time()) + ".zip")
+        os.system("cd %s;tar %s -cf %s %s" % (STORAGE_FOLDER,transform,zip_file,"visit"))
+        file_attachname = "探访记录汇总_%s.zip" % datetime.now().date()
+        return send_file(zip_file, as_attachment=True, attachment_filename=file_attachname.encode('utf-8'))
+
     if request.method=='POST':
         try:
             if 'download' in request.form:
@@ -4384,6 +4476,8 @@ def allTeaVisit():
                 userId=request.form.get('userId')
                 return send_file(os.path.join(STORAGE_FOLDER,'visit',userId,file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
+
+
         except Exception as e:
             flash('操作失败，请重试！')
             print('allTeaVisit：',e)
