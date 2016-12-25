@@ -21,7 +21,7 @@
             {% if session['status']=='2' %}
                 <li><a href="#"> 审核通过</a></li>
             {% elif session['status']!='2' and session.get('status')!= None %}
-                <li><a href="#"> 审核不通过</a></li>
+                <li><a href="#"> 未通过审核</a></li>
             {% endif %}
         </ol>
         <input style="float:right;" type="button" class="class1" data-toggle="collapse"
@@ -95,7 +95,7 @@
                             <tr>
                                 <th width="200">审核状态：</th>
                                 <td width="400"><a href="{{ url_for(endpoint,status=2) }}">审核通过</a></td>
-                                <td width="400"><a href="{{ url_for(endpoint,status=0) }}">审核不通过</a></td>
+                                <td width="400"><a href="{{ url_for(endpoint,status=0) }}">未通过审核</a></td>
                             </tr>
                         {% endif %}
                     {% endif %}

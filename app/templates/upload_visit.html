@@ -11,6 +11,28 @@
     <script type="text/javascript" src="/static/JS/datetimepicker.min.js" charset="UTF-8"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
      <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<!-- 上传等待 -->
+<style>
+.loading{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:300;
+    background-image:url(static/loading.gif);
+    background-repeat:no-repeat;
+    background-position:center center;
+    background-color:#000;
+    background-color:rgba(0,0,0,0.5);
+    filter:alpha(opacity=50);
+}
+</style>
+<script type="text/javascript">
+        function getLoading() {
+            document.getElementById("ddd").setAttribute('class', 'loading');
+        }
+</script>
 {% endblock %}
 
   {% block page_content %}
@@ -34,8 +56,9 @@
     <br>*&nbsp&nbsp
     探访记录文件不可重名，若重名，新的探访记录将会覆盖原有探访记录.</small></h5>
                 <br><br>
-                {{ visitform.submit(class="btn btn-success",type="submit",id='finish') }}
+                {{ visitform.submit(class="btn btn-success",type="submit",id='finish',onclick='getLoading()') }}
     </form>
+    <div id="ddd"></div>
     <br>
     {% endif %}
   {% endblock %}
@@ -47,7 +70,7 @@
                 allowedFileExtensions : ['pdf'],//接收的文件后缀,
                 uploadAsync:true,
                 maxFileCount: 100,
-                showUpload: true, //是否显示上传按钮
+                showUpload: false, //是否显示上传按钮
                 showCaption: true,//是否显示标题
                 browseClass: "btn btn-primary", //按钮样式             
             }).on("fileuploaded", function(event, data) {
@@ -70,4 +93,5 @@
                 minView: "month",
             });
         </script>
+
 {% endblock %}
