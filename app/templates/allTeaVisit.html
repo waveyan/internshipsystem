@@ -41,8 +41,8 @@ function showStudentTable(uid,filename)
 <br>
     <!-- 上传页面信息 -->
         
-        <h3>探访记录汇总<a href="#" class="btn btn-default btn-s">
-        导出Excle</a></h3>
+    <h3>探访记录汇总<a href="{{ url_for('.allTeaVisit',export_all=1)}} class="btn btn-default btn-s">
+        打包下载</a></h3>
             <table class="table">
         <tr>
             <th>文件名称</th>

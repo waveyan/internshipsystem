@@ -376,7 +376,7 @@ class Visit(db.Model):
     vteaName=db.Column(db.String(10))
     visitTime=db.Column(db.DATETIME)
     visitWay=db.Column(db.String(2))
-    
+
 
 class Visit_Intern(db.Model):
     __tablename__='Visit_Intern'
