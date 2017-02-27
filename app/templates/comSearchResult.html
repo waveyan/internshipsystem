@@ -53,9 +53,11 @@
                     <td>
                     {% if 'http' in com.comUrl %}
                     <a href="{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
-                    {% else %}
+                    {% elif '.' in com.comUrl %}
                     <a href="http://{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
-                    {%endif%}  
+                    {% else %}
+                    暂无
+                    {%endif%}   
                     </td>
                     <td>{{ com.comPhone }}</td>
                     {% if selectCom==None %}

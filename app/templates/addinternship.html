@@ -91,9 +91,38 @@
 }
 </style>
 <script type="text/javascript">
+        function checkForm(){
+            var task=$('#task');
+            var start=$('#start');
+            var end=$('#end');
+            var file=$('#file-1');
+            if(task.val()!==""&&start.val()!==""&&end.val()!==""&&file.val()!==""&&checkDate()){
+                return true;
+            }
+            else
+                return false;
+
+        }
         function getLoading() {
+            if(checkForm())
             document.getElementById("ddd").setAttribute('class', 'loading');
         }
+</script>
+<script type="text/javascript">
+    function checkDate(){
+        var start=$('#start');
+        var end=$('#end');
+        var time1 = new Date(start.val()).getTime();
+        var time2 = new Date(end.val()).getTime();
+    if(time1 >= time2){
+        alert("结束时间不得先于或等于开始时间！");
+        end.val("");
+        start.val("");
+        return false;
+    }
+    else
+        return true;
+}
 </script>
 {% endblock %}
 {% block page_content %}
@@ -109,12 +138,11 @@
     <div class="panel">
         <div class="cteaForm" style="display: None">
             {{ comdirteaform.hidden_tag() }}
-            {{ comdirteaform.cteaName.label }} {{ comdirteaform.cteaName(class="form-control",required='',placeholder="",
-            pattern="[\u4e00-\u9fa5]{2,6}",oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+            {{ comdirteaform.cteaName.label }} {{ comdirteaform.cteaName(class="form-control",required='',placeholder="",oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
             {{ comdirteaform.cteaDuty.label }} {{ comdirteaform.cteaDuty(class="form-control",required='',placeholder="",
             oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
             {{ comdirteaform.cteaPhone.label }} {{ comdirteaform.cteaPhone(class="form-control",required='',placeholder="") }}
-            {{ comdirteaform.cteaEmail.label }} {{ comdirteaform.cteaEmail(class="form-control",placeholder="") }}
+            {{ comdirteaform.cteaEmail.label }} {{ comdirteaform.cteaEmail(class="form-control",placeholder="",type="email") }}
             </br></br>
         </div>
         <div class="panel-body">
@@ -124,7 +152,7 @@
                 </br></br>
             </div>
 
-        <form method="POST" role="form" id="S1" enctype="multipart/form-data" >
+        <form method="POST" role="form" id="S1" enctype="multipart/form-data" onsubmit="return checkForm()" >
             {% if current_user.roleId != 0 %}
                 <h3>学生信息</h3>
                 <div>
@@ -138,7 +166,7 @@
                 {{ iform.task.label }}{{ iform.task(class="form-control",required='',placeholder="请输入实习任务",
                         oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                 {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='',placeholder="请输入开始时间，如：2016-10-10") }}
-                {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='', placeholder="请输入结束时间，如：2016-11-11") }}
+                {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='', placeholder="请输入结束时间，如：2016-11-11",onchange="checkDate()") }}
             </div>
             <br>
             <h3>企业指导老师信息</h3>
@@ -147,7 +175,7 @@
                 {{ comdirteaform.cteaName.label }} {{ comdirteaform.cteaName(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                 {{ comdirteaform.cteaDuty.label }} {{ comdirteaform.cteaDuty(class="form-control",required='',placeholder="", oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
                 {{ comdirteaform.cteaPhone.label }} {{ comdirteaform.cteaPhone(class="form-control",required='',placeholder="") }}
-                {{ comdirteaform.cteaEmail.label }} {{ comdirteaform.cteaEmail(class="form-control",cols=50,rows=5,placeholder="") }}
+                {{ comdirteaform.cteaEmail.label }} {{ comdirteaform.cteaEmail(class="form-control",cols=50,rows=5,placeholder="",type="email") }}
                 </br></br>
             </div>
             <input type="button" id="addcTea" class="btn" value="添加老师">
@@ -172,7 +200,7 @@
             <h3>实践协议书</h3>
             <input id="file-1" type="file" class="file" multiple=""  name="image" data-overwrite-initial="false" data-min-file-count="1"><h5><small>仅支持jpe、png、gif、pdf格式文件上传</small></h5>
             </br></br>
-            {{ iform.submit(class="btn btn-success",type="submit",id='finish',onclick='getLoading()') }}
+            {{ iform.submit(class="btn btn-success",id='finish',onclick="getLoading()") }}
         </form>
         <div id="ddd"></div>
         <br><br>

@@ -32,6 +32,26 @@
     <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
     <script type="text/javascript" src="/static/JS/locales/fileinput_locale_zh.js"></script>
         <script src="/static/JS/locales/fileinput_locale_zh.js" charset="utf-8"></script>
+        <!-- 检测时间 -->
+        <script type="text/javascript">
+    function checkPosition(){
+        var start=$('#start');
+        var end=$('#end');
+        var time1 = new Date(start.val()).getTime();
+        var time2 = new Date(end.val()).getTime();
+        var task=document.getElementById('task');
+        var flag=true;
+        if(task.value.length>500){
+            alert("工作任务字数超过限定字数，请确保在500字以内！");
+            flag=false;
+        }
+    if(time1 >= time2){
+        $('#msg').text("结束时间不得先于或等于开始时间！");
+        flag=false;
+    }
+    return flag;
+}
+</script>
 {% endblock %}
 
 {% block page_content %}
@@ -84,7 +104,7 @@
         <tr>
             <td width="200" height="50">三、实习岗位信息</td>
         </tr>
-        <form method="POST" action="/xInternEdit_intern">
+        <form method="POST" action="/xInternEdit_intern" onsubmit="return checkPosition()">
                     <input type="hidden" name="comId" value="{{ comInfor.comId }}">
                     <input type="hidden" name="internId" value="{{ internship.Id }}">
                     <input type="hidden" name="stuId" value="{{ student.stuId }}">
@@ -93,7 +113,7 @@
                 <td width="400" height="50" colspan="5">
                     <div class="form-inline">
                         {{ internform.start(required='', value=internship.start,class="form-control datetimepicker") }}至
-                    {{ internform.end(required='', value=internship.end, class="form-control datetimepicker") }}</td>
+                    {{ internform.end(required='', value=internship.end, class="form-control datetimepicker") }}&nbsp;&nbsp;<span style="color:red" id="msg"></span></td>
                 <div>
             </tr>
             <tr>
@@ -194,6 +214,7 @@
         </form>
         </td></tr>
         </table>
+
 {% if internship.opinion %}
 <table align="center" border="2" class="table-bordered">
             <tr>

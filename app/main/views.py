@@ -1195,8 +1195,8 @@ def editcominfor():
         com.comCity=comform.comCity.data
         com.comAddress = comform.comAddress.data
         com.comUrl = comform.comUrl.data
-        com.comBrief = request.form.get('text')
-        com.comProject = comform.comProject.data
+        com.comBrief = request.form.get('brief')
+        com.comProject = request.form.get('project')
         com.comMon = comform.comMon.data
         com.comStaff = comform.comStaff.data
         com.comContact = comform.comContact.data
@@ -3113,7 +3113,7 @@ def joinMultiTeacher(internship,target):
             }
     internId = internship.Id
     schdirtea = db.session.execute("SELECT * FROM SchDirTea left join Teacher on SchDirTea.teaId=Teacher.teaId where internId=%s" % internId)
-    multlTeacher = ""
+    multiTeacher = ""
     flag = False
     for x in schdirtea:
         if flag:
@@ -4006,7 +4006,8 @@ def xSumScoreEdit():
         if request.form.get('action') == 'upload':
             summary.comScore = form.comScore.data
             summary.schScore = form.schScore.data
-            summary.sumScore = float(form.comScore.data) * 0.7 + float(form.schScore.data) * 0.3
+            if summary.comScore and summary.schScore:
+                summary.sumScore = float(form.comScore.data) * 0.7 + float(form.schScore.data) * 0.3
             db.session.add(summary)
             paths = []
             paths.append(os.path.join(storage_cwd(internId, 'score_img'), 'comscore'))

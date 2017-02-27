@@ -66,7 +66,7 @@
             <td width="400" height="50" colspan="3">{{ com.comName }}</td>
         </tr>
                 <tr>
-                <th>公司所在城市</th>
+                <th>所在城市</th>
             <td width="400" height="50" colspan="3">{{ com.comCity }}</td>
         </tr>
         <tr>
@@ -78,14 +78,20 @@
             <td width="400" height="50" colspan="3">
             {% if 'http' in com.comUrl %}
             <a href="{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
-            {% else %}
+            {% elif '.' in com.comUrl%}
              <a href="http://{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
+             {% else %}
+             暂无
             {%endif%}  
             </td>
         </tr>
         <tr>
             <th>公司简介</th>
             <td height="200" width="900" colspan="3">{{ com.comBrief }}</td>
+        </tr>
+        <tr>
+            <th>营业项目</th>
+            <td height="100" width="900" colspan="3">{{ com.comProject }}</td>
         </tr>
         <tr>
             <th>年营业额</th>

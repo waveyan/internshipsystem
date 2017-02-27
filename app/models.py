@@ -212,12 +212,12 @@ class ComInfor(db.Model):
     __tablename__ = 'ComInfor'
     comId = db.Column(db.Integer, primary_key=True)
     comName = db.Column(db.String(20))
-    comBrief = db.Column(db.String(200))
+    comBrief = db.Column(db.String(500))
     comCity=db.Column(db.String(20))
     comAddress = db.Column(db.String(100))
-    comUrl = db.Column(db.String(50))
+    comUrl = db.Column(db.String(100),default="暂无")
     comMon = db.Column(db.String(10))
-    comProject = db.Column(db.String(100))
+    comProject = db.Column(db.String(250))
     comStaff = db.Column(db.Integer)
     comContact = db.Column(db.String(10))
     comPhone = db.Column(db.String(20))
@@ -261,7 +261,7 @@ SchDirTea=db.Table('SchDirTea',
 class InternshipInfor(db.Model):
     __tablename__ = 'InternshipInfor'
     Id = db.Column(db.Integer, primary_key=True)
-    task = db.Column(db.String(200))
+    task = db.Column(db.String(500))
     opinion = db.Column(db.String(250))
     start = db.Column(db.Date)
     end = db.Column(db.Date)
@@ -376,7 +376,7 @@ class Visit(db.Model):
     vteaName=db.Column(db.String(10))
     visitTime=db.Column(db.DATETIME)
     visitWay=db.Column(db.String(2))
-
+    
 
 class Visit_Intern(db.Model):
     __tablename__='Visit_Intern'

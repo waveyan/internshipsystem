@@ -16,6 +16,22 @@ window.onload = function(){
     };
 }
 </script>
+<script type="text/javascript">
+    function checkForm(){
+        var brief=$('#comBrief');
+        var project=$('#comProject');
+        var flag=true;
+        if(brief.val().length>500){
+            flag=false;
+            $('#bmsg').text("字数已超出限定字数，请确保字数在500字以内");
+        }
+        if(project.val().length>250){
+            flag=false;
+            $('#pmsg').text("字数已超出限定字数，请确保字数在250字以内");
+        }
+        return flag;
+    }
+</script>
 {% endblock %}
 {% block page_content %}
     <div class="progress progress-striped active">
@@ -29,7 +45,7 @@ window.onload = function(){
     </div>
 
 
-    <form method="POST" role="form" id="S1">
+    <form method="POST" role="form" id="S1" onsubmit="return checkForm()">
         {% if from_url == 'stuInternList' %}
             <a href="{{ url_for('.selectCom') }}"><span class="label label-primary">从已有的企业信息中选择</span></a><br><br>
         {% endif %}
@@ -37,14 +53,14 @@ window.onload = function(){
         {{ form.comName.label }} {{ form.comName(class="form-control", required="", placeholder="") }} <br>
         {{ form.comCity.label }} {{ form.comCity(class="form-control", required="", placeholder="",id='province') }} <br>
         {{ form.comAddress.label }} {{ form.comAddress(class="form-control", required="", placeholder="",id='test') }} <br>
-        {{ form.comUrl.label }} {{ form.comUrl(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comBrief.label }} {{ form.comBrief(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comProject.label }} {{ form.comProject(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comUrl.label }} {{ form.comUrl(class="form-control", placeholder="",type="url") }} <br>
+        {{ form.comBrief.label }}&nbsp;&nbsp;<span style="color:red" id="bmsg"></span> {{ form.comBrief(class="form-control", required="", placeholder="",onkeyup="checkForm()") }} <br>
+        {{ form.comProject.label }}&nbsp;&nbsp;<span style="color:red" id="pmsg"></span> {{ form.comProject(class="form-control", required="", placeholder="",onkeyup="checkForm()") }} <br>
         {{ form.comMon.label }} {{ form.comMon(class="form-control", required="", placeholder="") }} <br>
         {{ form.comStaff.label }} {{ form.comStaff(class="form-control", required="", placeholder="") }} <br>
         {{ form.comContact.label }} {{ form.comContact(class="form-control", required="", placeholder="") }} <br>
         {{ form.comPhone.label }} {{ form.comPhone(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comEmail.label }} {{ form.comEmail(class="form-control", required="", placeholder="") }} <br>
+        {{ form.comEmail.label }} {{ form.comEmail(class="form-control", required="", placeholder="",type="email") }} <br>
         {{ form.comFax.label }} {{ form.comFax(class="form-control", placeholder="") }} <br>
         {{ form.csrf_token }}
         <!-- 若是从 .stuInternList 添加实习信息跳转至此,则现在跳转到 .addinternship,继续完善实习信息添加 -->

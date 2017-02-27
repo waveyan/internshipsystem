@@ -26,7 +26,57 @@
         #sun {
             height: 290px;
         }
+        #exceed 
+        {border:1px solid red;}
 </style>
+<script type="text/javascript">
+    function checkJournal(){
+        var sum=$('#sun');
+        var mon=$('#mon');
+        var tue=$('#tue');
+        var wed=$('#wed');
+        var thu=$('#thu');
+        var fri=$('#fri');
+        var sat=$('#sat');
+        var flag=true;
+        if(sum.val()!==undefined)
+            if(sum.val().length>1000){
+                flag=false;
+                alert("周日日志字数超过限定字数，请确保字数小于1000字！");
+            }
+        if(mon.val()!==undefined)
+            if(mon.val().length>1000){
+                flag=false;
+                alert("周一日志字数超过限定字数，请确保字数小于1000字！");
+            }
+        if(tue.val()!==undefined)
+            if(tue.val().length>1000){
+                flag=false;
+                alert("周二日志字数超过限定字数，请确保字数小于1000字！");
+            }
+        if(wed.val()!==undefined)
+            if(wed.val().length>1000){
+                flag=false;
+                alert("周三日志字数超过限定字数，请确保字数小于1000字！");
+            }
+        if(thu.val()!==undefined)
+            if(thu.val().length>1000){
+                flag=false;
+                alert("周四日志字数超过限定字数，请确保字数小于1000字！");
+            }
+        if(fri.val()!==undefined)
+            if(fri.val().length>1000){
+                flag=false;
+                alert("周五日志字数超过限定字数，请确保字数小于1000字！");
+            }
+        if(sat.val()!==undefined)
+            if(sat.val().length>1000){
+                flag=false;
+                alert("周六日志字数超过限定字数，请确保字数小于1000字！");
+            }
+        return flag;
+    }
+</script>
 {% endblock %}<!--先执行父模板-->
 
 {% block title %}实习日志{% endblock %}
@@ -65,7 +115,7 @@
     </table>
     <br>
     <table align="center" border="2" class="table-bordered">
-    <form method="POST" action="/xJournalEditProcess">
+    <form method="POST" action="/xJournalEditProcess" onsubmit="return checkJournal()">
         {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'日'} %}
         {% set cur = jour.workStart.isoweekday() %}
         {% set cur_end = jour.workEnd.isoweekday() %}
@@ -80,7 +130,7 @@
                 <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
                 <td height="50">一</td>
                 {% set temp=jourform.mon.process_data(jour.mon) %}
-                <td height="300">{{ jourform.mon(class="form-control") }}</td>
+                <td height="300">{{ jourform.mon(class="form-control journal",onkeyup="checkJournal()") }}<span></span></td>
             </tr>
             <tr>
                 <th></th>
@@ -178,7 +228,7 @@
         <input type="hidden" name="internId" value="{{ internship.Id }}">
         <tr><td colspan="6" align="center">{{ jourform.submit(class="btn btn-success", type="submit", id="finish", width="100") }}</td></tr>
     </form>
+
 </table>
-         
 {% endblock %}
 

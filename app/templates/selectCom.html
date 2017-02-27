@@ -34,9 +34,11 @@
                 <td>
                 {% if 'http' in com.comUrl %}
                 <a href="{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
-                {% else %}
-                <a href="http://{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
-                {%endif%}  
+                    {% elif '.' in  com.comUrl %}
+                    <a href="http://{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
+                    {% else %}
+                    暂无
+                    {%endif%}   
                 </td>
                 <td>{{ com.comPhone }}</td>
                 <td><a href="{{ url_for('.addInternship',comId=com.comId) }}" class="btn btn-info btn-xs">

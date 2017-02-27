@@ -12,6 +12,7 @@
         function save(comid) {
             var form = document.getElementById('comform');
             form.action = '/editcominfor?comId=' + comid;
+            if(checkForm())
             form.submit();
         }
     </script>
@@ -26,16 +27,35 @@ window.onload = function(){
             a.value = data;
         });
     };
-    // t.onclick=function(){
-    //     citypicker.close()
-
-    // };
-    
 }
 </script>
+<script type="text/javascript">
+    function checkForm(){
+        var brief=$('#comBrief');
+        var project=$('#comProject');
+        var flag=true;
+        if(brief.val().length>500){
+            flag=false;
+            $('#bmsg').text("字数已超出限定字数，请确保字数在500字以内");
+        }
+        if(project.val().length>250){
+            flag=false;
+            $('#pmsg').text("字数已超出限定字数，请确保字数在250字以内");
+        }
+        return flag;
+    }
+</script>
+    <style type="text/css">
+        #comBrief {
+            height: 200px;
+        }
+        #comProject {
+            height: 100px;
+        }
+    </style>
 {% endblock %}
 {% block page_content %}
-    <form method="post" class="form-horizontal" id="comform">
+    <form method="post" class="form-horizontal" id="comform" onsubmit="return checkForm()">
         {{ comform.hidden_tag() }}
         <table align="center" border="2" class="table-bordered">
             <caption>
@@ -62,7 +82,7 @@ window.onload = function(){
                     colspan="3">{{ comform.comName( class="form-control",request='',value=com.comName) }}</td>
             </tr>
                         <tr>
-                <th>公司地址</th>
+                <th>所在城市</th>
                 <td width="400" height="50"
                     colspan="3">{{ comform.comCity(class="form-control",request='',value=com.comCity,id='province') }}</td>
             </tr>
@@ -74,12 +94,16 @@ window.onload = function(){
             <tr>
                 <th>公司网址</th>
                 <td width="400" height="50"
-                    colspan="3">{{ comform.comUrl(class="form-control",request='',value=com.comUrl) }}</td>
+                    colspan="3">{{ comform.comUrl(class="form-control",value=com.comUrl) }}</td>
             </tr>
             <tr>
-                <th>公司简介</th>
+                <th align="justify">公司简介</th>
                 <td height="200" width="900"
-                    colspan="3"><textarea class="form-control" name="text">{{ com.comBrief }}</textarea></td>
+                    colspan="3"><textarea class="form-control" name="brief" id="comBrief" onkeyup="checkForm()">{{ com.comBrief }}</textarea>&nbsp;&nbsp;<span style="color:red;" id="bmsg"></span></td>
+            </tr>
+            <tr><th align="justify">营业项目</th>
+            <td height="100" width="900"
+                    colspan="3"><textarea class="form-control" name="project" id="comProject" onkeyup="checkForm()">{{ com.comProject }}</textarea>&nbsp;&nbsp;<span style="color:red;" id="pmsg"></span></td>
             </tr>
             <tr>
                 <th>年营业额</th>
@@ -104,6 +128,7 @@ window.onload = function(){
         <p></p>
         <p></p>
         <p></p>
+        <br><br>
         <button class="btn btn-primary" onclick="save({{ com.comId }})">提交</button>
         <button class="btn btn-default" onclick="back({{ com.comId }})">返回
         </button>

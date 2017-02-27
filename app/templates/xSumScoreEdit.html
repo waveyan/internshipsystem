@@ -53,10 +53,21 @@
                     <th width="200">
                         {{ form.comScore.label }}</th>
                     <td width="400"
-                        height="50">{{ form.comScore(class="form-control",request='',value=summary.comScore) }}</td>
+                        height="50">
+                        {% if summary.comScore %}
+                        {{ form.comScore(class="form-control",request='',value=summary.comScore,type="number") }}
+                        {% else %}
+                        {{ form.comScore(class="form-control",request='',placeholder="暂无",type="number") }}
+                        {% endif %}
+                        </td>
                     <th width="200"> {{ form.schScore.label }}</th>
                     <td width="400"
-                        height="50">{{ form.schScore(class="form-control",request='',value=summary.schScore) }}</td>
+                        height="50">
+                        {% if summary.schScore %}
+                        {{ form.schScore(class="form-control",request='',value=summary.schScore,type="number") }}
+                        {% else %}
+                        {{ form.schScore(class="form-control",request='',placeholder="暂无",type="number") }}
+                        {% endif %}</td>
                 </tr>
                 <tr>
                     <th width="200">企业实习评分表</th>

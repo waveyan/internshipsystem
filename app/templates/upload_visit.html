@@ -11,7 +11,7 @@
     <script type="text/javascript" src="/static/JS/datetimepicker.min.js" charset="UTF-8"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
      <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
-<!-- 上传等待 -->
+    <!-- 上传等待 -->
 <style>
 .loading{
     position:fixed;
@@ -29,7 +29,19 @@
 }
 </style>
 <script type="text/javascript">
+        function checkForm(){
+            var teaName=$('#teaName');
+            var visitTime=$('#visitTime');
+            var file=$('#file-1');
+            if(teaName.val()!==""&&visitTime.val()!==""&&file.val()!==""){
+                return true;
+            }
+            else
+                return false;
+
+        }
         function getLoading() {
+            if(checkForm())
             document.getElementById("ddd").setAttribute('class', 'loading');
         }
 </script>
@@ -37,7 +49,7 @@
 
   {% block page_content %}
    {% if current_user.can(Permission.UPLOAD_VISIT) %}
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" onsubmit="return checkForm()">
     <h3>请填写以下探访信息</h3>
     <div>
     {{ visitform.hidden_tag() }}
@@ -56,7 +68,7 @@
     <br>*&nbsp&nbsp
     探访记录文件不可重名，若重名，新的探访记录将会覆盖原有探访记录.</small></h5>
                 <br><br>
-                {{ visitform.submit(class="btn btn-success",type="submit",id='finish',onclick='getLoading()') }}
+                {{ visitform.submit(class="btn btn-success",type="submit",onclick="getLoading()") }}
     </form>
     <div id="ddd"></div>
     <br>

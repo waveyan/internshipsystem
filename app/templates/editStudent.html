@@ -50,7 +50,7 @@
          <label for="name">年级</label>
         <select class="form-control" name="grade">
         {% for x in grade %}
-        {% if stu.grader==x.grade %}
+        {% if stu.grade==x.grade %}
                 <option value="{{x.grade}}" name="grade" selected>{{x.grade}}</option>
         {%else%}
         <option value="{{x.grade}}" name="grade">{{x.grade}}</option>
