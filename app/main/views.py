@@ -864,7 +864,8 @@ def cominfor():
     if request.method == "POST" and current_user.can(Permission.COM_INFOR_SEARCH):
         isexport = request.form.get('isexport')
         if isexport:
-            return excel_export(excel_export_com, ComInfor.query.filter_by(comId=id).all())
+            fpath = excel_export(excel_export_com, ComInfor.query.filter_by(comId=id).all())
+            return export_download(fpath)
     return render_template('cominfor.html', Permission=Permission, com=com)
 
 
