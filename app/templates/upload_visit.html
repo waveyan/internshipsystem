@@ -64,9 +64,7 @@
     	<input id="file-1" type="file" class="file" name="visit" data-overwrite-initial="false" data-min-file-count="1"><h5><small>
     <span class="label label-danger">注意</span>
     <br>
-    *&nbsp&nbsp单文件上传，仅支持pdf格式文件上传
-    <br>*&nbsp&nbsp
-    探访记录文件不可重名，若重名，新的探访记录将会覆盖原有探访记录.</small></h5>
+    *&nbsp&nbsp单文件上传，仅支持pdf格式文件上传，文件名称不可与已上传文件名重复，不可含有标点、空格等特殊符号。</small></h5>
                 <br><br>
                 {{ visitform.submit(class="btn btn-success",type="submit",onclick="getLoading()") }}
     </form>
