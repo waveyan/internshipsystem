@@ -188,6 +188,11 @@
                     <input type=file name="summary_doc_upload" value="选择文件" class="file"><br>
                     <input type="hidden" name="summary_doc2_upload" values="1">
                 </form>
+        <h5><small>
+        <br><span class="label label-danger">注意</span>
+        <br>*&nbsp&nbsp实习总结命名方式为：学号_姓名_实习总结
+        <br>*&nbsp&nbsp每次修改文件,必需经需老师审核后,方能生效
+        <br>*&nbsp&nbsp实习总结文档只能存在一份. 若要上传新的文档,请先删除旧的文档.</small></h5>
             {% endif %}
         <br>
 
@@ -255,9 +260,11 @@
             <input type=file name="attachment_upload" value="选择文件" class="file" multiple=""><br>
             <input type="hidden" name="attachment_upload" values="1">
         </form>
+                <h5><small>
         <br><span class="label label-danger">注意</span>
-        <br>*&nbsp&nbsp每次修改文件,必需经需老师审核后,方能生效
-        <br>*&nbsp&nbsp实习总结文档只能存在一份. 若要上传新的文档,请先删除旧的文档
+        <br>*&nbsp&nbsp实习总结命名方式为：学号_姓名_附件名（附件名不可带空格，“（
+        ”，“）”，“ ’ ”，“ ‘ ”等特殊字符
+        </small></h5>
     {% endif %}
 {% endblock %}
 
