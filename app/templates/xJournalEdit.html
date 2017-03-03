@@ -31,49 +31,35 @@
 </style>
 <script type="text/javascript">
     function checkJournal(){
-        var sum=$('#sun');
         var mon=$('#mon');
         var tue=$('#tue');
         var wed=$('#wed');
         var thu=$('#thu');
         var fri=$('#fri');
-        var sat=$('#sat');
         var flag=true;
-        if(sum.val()!==undefined)
-            if(sum.val().length>1000){
-                flag=false;
-                alert("周日日志字数超过限定字数，请确保字数小于1000字！");
-            }
         if(mon.val()!==undefined)
-            if(mon.val().length>1000){
+            if(mon.val().length>1000||mon.val().length<30){
                 flag=false;
-                alert("周一日志字数超过限定字数，请确保字数小于1000字！");
             }
         if(tue.val()!==undefined)
-            if(tue.val().length>1000){
+            if(tue.val().length>1000||tue.val().length<30){
                 flag=false;
-                alert("周二日志字数超过限定字数，请确保字数小于1000字！");
             }
         if(wed.val()!==undefined)
-            if(wed.val().length>1000){
+            if(wed.val().length>1000||wed.val().length<30){
                 flag=false;
-                alert("周三日志字数超过限定字数，请确保字数小于1000字！");
             }
         if(thu.val()!==undefined)
-            if(thu.val().length>1000){
+            if(thu.val().length>1000||thu.val().length<30){
                 flag=false;
-                alert("周四日志字数超过限定字数，请确保字数小于1000字！");
             }
         if(fri.val()!==undefined)
-            if(fri.val().length>1000){
+            if(fri.val().length>1000||fri.val().length<30){
                 flag=false;
-                alert("周五日志字数超过限定字数，请确保字数小于1000字！");
             }
-        if(sat.val()!==undefined)
-            if(sat.val().length>1000){
-                flag=false;
-                alert("周六日志字数超过限定字数，请确保字数小于1000字！");
-            }
+        if(!flag){
+            alert("日志字数请确保在30字到1000字范围内！");
+        }
         return flag;
     }
 </script>
@@ -130,7 +116,7 @@
                 <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
                 <td height="50">一</td>
                 {% set temp=jourform.mon.process_data(jour.mon) %}
-                <td height="300">{{ jourform.mon(class="form-control journal",onkeyup="checkJournal()") }}<span></span></td>
+                <td height="300">{{ jourform.mon(class="form-control") }}<span></span></td>
             </tr>
             <tr>
                 <th></th>
