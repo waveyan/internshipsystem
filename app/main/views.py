@@ -930,7 +930,7 @@ def com_search():
         key = form.key.data
         cominfor = ComInfor.query.all()
         for c in cominfor:
-            if c.comName.find(key) != -1:
+            if c.comName.find(key.strip()) != -1:
                 comInfor.append(c)
     return render_template('comSearchResult.html', num=len(comInfor), form=form, Permission=Permission,
                            comInfor=comInfor,
@@ -955,11 +955,11 @@ def intern_search():
                                                                                  , InternshipInfor.internStatus,
                                                                                  InternshipInfor.Id).all()
         for intern in internship:
-            if intern.stuName == form.key.data:
+            if intern.stuName == form.key.data.strip():
                 internList.append(intern)
-            if intern.stuId == form.key.data:
+            if intern.stuId == form.key.data.strip():
                 internList.append(intern)
-            if intern.comName.find(form.key.data) != -1:
+            if intern.comName.find(form.key.data.strip()) != -1:
                 internList.append(intern)
     return render_template('internSearchResult.html', Permission=Permission, form=form, key=form.key.data,
                            num=len(internList), \
@@ -984,11 +984,11 @@ def journal_search():
                                                                                  , InternshipInfor.internStatus,
                                                                                  InternshipInfor.Id).all()
         for intern in internship:
-            if intern.stuName == form.key.data:
+            if intern.stuName == form.key.data.strip():
                 internList.append(intern)
-            if intern.stuId == form.key.data:
+            if intern.stuId == form.key.data.strip():
                 internList.append(intern)
-            if intern.comName.find(form.key.data) != -1:
+            if intern.comName.find(form.key.data.strip()) != -1:
                 internList.append(intern)
     return render_template('internSearchResult.html', Permission=Permission, form=form, key=form.key.data,
                            num=len(internList), \
@@ -1012,11 +1012,11 @@ def sum_search():
                                                                          Summary.sumCheck, Summary.sumScore,
                                                                          InternshipInfor.Id).all()
         for intern in internship:
-            if intern.stuId == form.key.data:
+            if intern.stuId == form.key.data.strip():
                 internList.append(intern)
-            if intern.stuName == form.key.data:
+            if intern.stuName == form.key.data.strip():
                 internList.append(intern)
-            if intern.comName.find(form.key.data) != -1:
+            if intern.comName.find(form.key.data.strip()) != -1:
                 internList.append(intern)
     return render_template("internSearchResult.html", form=form, Permission=Permission, journal=journal, sum=sum,
                            internList=internList, key=form.key.data, num=len(internList))
@@ -1034,16 +1034,16 @@ def user_search():
         if tea:
             tea = Teacher.query.all()
             for t in tea:
-                if t.teaName == form.key.data:
+                if t.teaName == form.key.data.strip():
                     teacher.append(t)
-                if t.teaId == form.key.data:
+                if t.teaId == form.key.data.strip():
                     teacher.append(t)
         else:
             stu = Student.query.all()
             for s in stu:
-                if s.stuId == form.key.data:
+                if s.stuId == form.key.data.strip():
                     student.append(s)
-                if s.stuName == form.key.data:
+                if s.stuName == form.key.data.strip():
                     student.append(s)
     return render_template("userSearchResult.html", Permission=Permission, student=student, tea=tea, teacher=teacher,
                            form=form, key=form.key.data, snum=len(student), tnum=len(teacher))
