@@ -3521,8 +3521,8 @@ def excel_importpage():
                                 week_end = jour.workEnd
                             else:
                                 week_end = today
-                            for x in range(jour.workStart.isocalendar()[2], week_end.isocalendar()[2]+1):
-                                whcih_day = week[x]
+                            for x in range(jour.workStart.isocalendar()[2] - 1, week_end.isocalendar()[2]):
+                                which_day = week[x]
                                 if journal[which_day]:
                                     db.session.execute('update Journal set %s = "%s" where internId=%s and weekNo=%s' % (which_day, journal[which_day], internId,  int(journal['weekNo'].split('.')[0])))
 
