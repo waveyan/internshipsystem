@@ -166,51 +166,51 @@
                     <tr>
                         <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
                         <td height="50">一</td>
-                        <td height="50"><p>{{ jour.mon }}</p></td>
+                        <td height="50"><p>{{ jour.mon |safe }}</p></td>
                     </tr>
                     <tr>
                         <th></th>
                         <td height="50">二</td>
-                        <td height="50"><p>{{ jour.tue }}</p></td>
+                        <td height="50"><p>{{ jour.tue |safe }}</p></td>
                     </tr>
                     <tr>
                         <th></th>
                         <td height="50">三</td>
-                        <td><p>{{ jour.wed }}</p></td>
+                        <td><p>{{ jour.wed |safe }}</p></td>
                     </tr>
                     <tr>
                         <th></th>
                         <td height="50">四</td>
-                        <td><p>{{ jour.thu }}</p></td>
+                        <td><p>{{ jour.thu |safe }}</p></td>
                     </tr>
                     <tr>
                         <th></th>
                         <td height="50">五</td>
-                        <td><p>{{ jour.fri }}</p></td>
+                        <td><p>{{ jour.fri |safe }}</p></td>
                     </tr>
                     <tr>
                         <th></th>
                         <td height="50">六</td>
-                        <td><p>{{ jour.sat }}</p></td>
+                        <td><p>{{ jour.sat |safe }}</p></td>
                     </tr>
                     <tr>
                         <th></th>
                         <td height="50">日</td>
-                        <td><p>{{ jour.sun }}</p></td>
+                        <td><p>{{ jour.sun |safe }}</p></td>
                     </tr>
                 {% else %}
                 {% set weekday2var = {1:jour.mon, 2:jour.tue, 3:jour.wed, 4:jour.thu, 5:jour.fri, 6:jour.   sat, 7:jour.sun} %}
                     <tr>
                         <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
                         <td height="50">{{ weekday2ch[cur] }}</td>
-                        <td height="50"><p>{{ weekday2var[cur] }}</p></td>
+                        <td height="50"><p>{{ weekday2var[cur] |safe}}</p></td>
                     </tr>
                     {% set cur_last = (jour.workEnd.isoweekday() - jour.workStart.isoweekday()) %}
                     {% for x in range(cur_last) %}
                         <tr>
                             <th></th>
                             <td height="50">{{ weekday2ch[cur+x+1] }}</td>
-                            <td height="50"><p>{{ weekday2var[cur+x+1] }}</p></td>
+                            <td height="50"><p>{{ weekday2var[cur+x+1] |safe }}</p></td>
                         </tr>
                     {% endfor %}
                 {% endif %}

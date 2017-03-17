@@ -1,8 +1,9 @@
 from . import db
-from flask.ext.login import UserMixin
+from flask.ext.login import UserMixin,AnonymousUserMixin
 from . import login_manager
 from datetime import datetime
-
+from markdown import markdown
+import bleach
 
 # 装饰器not_student_login 所需要的模块
 from functools import wraps
@@ -262,6 +263,8 @@ class InternshipInfor(db.Model):
     __tablename__ = 'InternshipInfor'
     Id = db.Column(db.Integer, primary_key=True)
     task = db.Column(db.String(500))
+    # 岗位信息
+    post = db.Column(db.String(100))
     opinion = db.Column(db.String(250))
     start = db.Column(db.Date)
     end = db.Column(db.Date)
@@ -427,4 +430,25 @@ class Permission:
     SELECT_MANAGE=0X0080000
     #上传探访记录
     UPLOAD_VISIT= 0X0100030
+    #修改首页介绍
+    ALTER_INTRODUCE=0X0200000
 
+class AnonymousUser(AnonymousUserMixin):
+    def can(self,permissions):
+        return False
+
+login_manager.anonymous_user=AnonymousUser
+
+class Introduce(db.Model):
+    __tablename__='Introduce'
+    Id=db.Column(db.Integer,primary_key=True)
+    content=db.Column(db.String(1000))
+    time=db.Column(db.DATE)
+    content_html=db.Column(db.String(1000))
+
+    @staticmethod
+    def change_content(target,value,oldvalue,initiator):
+        allowed_tags=['a','abbr','acronym','b','blockquote','code','em','i','li','ol','pre','strong','ul','h1','h2','h3','p']
+        target.content_html=bleach.linkify(bleach.clean(markdown(value,output_format='html'),tags=allowed_tags,strip=True))
+db.event.listen(Introduce.content,'set',Introduce.change_content)
+        

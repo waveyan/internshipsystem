@@ -3,7 +3,7 @@ from wtforms import StringField, SubmitField, TextAreaField, DateTimeField, Sele
     validators, FileField
 from wtforms.validators import Required, URL, Email
 from .. import db
-
+from flask.ext.pagedown.fields import PageDownField
 # datepicker failed
 '''
 from wtforms import widgets
@@ -48,6 +48,7 @@ class comForm(Form):
 
 class internshipForm(Form):
     task = TextAreaField('实习任务', validators=[Required(message='此项不能为空')])
+    post = TextAreaField('实习岗位', validators=[Required(message='此项不能为空')])
     start = DateTimeField('开始时间', format='%Y-%m-%d', validators=[Required()])
     end = DateTimeField('结束时间', format='%Y-%m-%d', validators=[Required(message='请按 年-月-日 的格式输入正确的日期')])
     image = FileField()
@@ -150,6 +151,7 @@ class permissionForm(Form):
     PERMIS_MANAGE = BooleanField('权限管理', default=False, description='0X0040000')
     SELECT_MANAGE=BooleanField('下拉框管理',default=False,description='0X0080000')
     UPLOAD_VISIT= BooleanField('上传探访记录',default=False,description='0X0100030')
+    ALTER_INTRODUCE=BooleanField('首页介绍内容修改',default=False,description='0X0200000')
     submit = SubmitField('提交')
 
 
@@ -165,3 +167,7 @@ class visitForm(Form):
     visitTime=StringField('探访时间',validators=[Required(message='此项不能为空')])
     visitWay=SelectField('探访方式', choices=[('电话', '电话'), ('现场', '现场')], default='现场')
     submit = SubmitField('确定')
+
+class introduceForm(Form):
+    content=PageDownField('首页介绍',validators=[Required()],id='content')
+    submit=SubmitField('提交')

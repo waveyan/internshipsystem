@@ -27,6 +27,11 @@
             height: 200px;
         }
     </style>
+    <style type="text/css">
+        #post {
+            height: 200px;
+        }
+    </style>
     <!-- 文件上传 -->
         <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
     <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
@@ -122,6 +127,13 @@
                     <!-- it's a magic -->
                     {% set temp_task = internform.task.process_data(internship.task) %}
                     {{ internform.task(class="form-control", required='', cols="190", row="190",) }}</td>
+            </tr>
+	    <tr>
+                <th>工作岗位</th>
+                <td width="400" height="200" colspan="5">
+                    <!-- it's a magic -->
+                    {% set temp_post = internform.post.process_data(internship.post) %}
+                    {{ internform.post(class="form-control", required='', cols="190", row="190",) }}</td>
             </tr>
             <tr>
                 <td colspan="6"

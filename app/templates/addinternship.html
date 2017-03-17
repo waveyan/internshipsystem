@@ -165,6 +165,8 @@
                 {{ iform.hidden_tag() }}
                 {{ iform.task.label }}{{ iform.task(class="form-control",required='',placeholder="请输入实习任务",
                         oninvalid="setCustomValidity('')",oninput="setCustomValidity('')") }}
+		{{ iform.post.label }}{{ iform.post(class="form-control",required='',placeholder="请输入实习岗位",
+                        oninvalid="setCustomValidity('')",oninput="setCustomvalidity('')") }}
                 {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='',placeholder="请输入开始时间，如：2016-10-10") }}
                 {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='', placeholder="请输入结束时间，如：2016-11-11",onchange="checkDate()") }}
             </div>

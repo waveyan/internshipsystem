@@ -97,7 +97,7 @@
                     </div>
                 </td>
                 <td>
-                                        <div class="checkbox-inline">
+               <div class="checkbox-inline">
                         <label style="font-size:12px;">
                             {% if role.can(role,Permission.UPLOAD_VISIT) %}
                                 {{ form.UPLOAD_VISIT(type="checkbox",checked='True') }}
@@ -182,6 +182,19 @@
                         </label>
                     </div>
                 </td>
+                <td>
+                <div class="checkbox-inline">
+                        <label style="font-size:12px;">
+                         {% if role.can(role,Permission.ALTER_INTRODUCE) %}
+                                {{ form.ALTER_INTRODUCE(type="checkbox",checked='True') }}
+                            {% else %}
+                                {{ form.ALTER_INTRODUCE(type="checkbox") }}
+                            {% endif %}
+                            {{ form.ALTER_INTRODUCE.label }}
+                        </label>
+                    </div>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td height="50">
@@ -255,7 +268,7 @@
                 <td></td>
                 <td></td>
                 <td height="50">
-                                        <div class="checkbox-inline">
+                                <div class="checkbox-inline">
                         <label style="font-size:12px;">
                             {% if role.can(role,Permission.SELECT_MANAGE) %}
                                 {{ form.SELECT_MANAGE(type="checkbox",checked='True') }}

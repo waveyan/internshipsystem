@@ -15,7 +15,7 @@
 {% endblock %}<!--先执行父模板-->
 {% block page_content %}
     <h1>请选择您的实习企业
-        {{ search.search(url_for('.com_search',selectCom='selectCom'),form) }}
+        {{ search.search(url_for('.selectCom',selectCom='selectCom'),form) }}
     </h1>
     <table class="table" id="t">
         <thead>

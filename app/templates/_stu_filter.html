@@ -3,6 +3,10 @@
     <div>
         <ol class="breadcrumb">
             <li><a href="{{ url_for('.update_stu_filter',flag=flags) }}">所有分类</a></li>
+            {% if session['myStudent'] %}
+                <li><a href="{{ url_for('.update_intern_filter',myStudent='1',flag=flags) }}">我的学生</a>
+                </li>
+            {% endif %}
             {% if session['grade']!=None %}
                 <li><a href="{{ url_for('.update_stu_filter',grade='1',flag=flags) }}">{{ session['grade'] }}</a></li>
             {% endif %}
@@ -26,7 +30,18 @@
     <div id="demo" class="collapse in ">
         <div class="panel panel-danger">
             <div class="panel-body">
-
+            <table>
+                        <tr>
+                            <th width="150">学生：</th>
+                            <td width="150"><a href="{{ url_for('.update_stu_filter',flag=flags) }}">全体学生</a></td>
+                            <td width="150"><a href="{{ url_for(endpoint,myStudent=1) }}">我的学生</a></td>
+                            <td>
+                            </td>
+                        </tr>
+                      <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </table>
 
                 <table>
                     <tr>

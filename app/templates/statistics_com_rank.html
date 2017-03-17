@@ -23,6 +23,47 @@
             <li><a href="{{ url_for('main.statistics_area_rank') }}">地域排行</a></li>
         </ul>
     </ul>
+    <br>
+        <div class="btn-group" >
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        {% if session['major'] %}
+        {{ session['major'] }}
+        {% else %}
+            所有专业
+            {% endif %}
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+        {% if session['major'] %}
+        <li><a href="{{url_for('.statistics_com_rank',m='m')}}">所有专业</a></li>
+        {% endif %}
+        {% for x in major %}
+        {% if session['major']!=x.major %}
+            <li><a href="{{url_for('.statistics_com_rank',major=x.major)}}">{{x.major}}</a></li>
+        {% endif %}
+        {% endfor %}
+        </ul>
+            <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    {% if session['grade'] %}
+        {{ session['grade'] }}级
+        {% else %}
+            所有年级
+            {% endif %}
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+        {% if session['grade'] %}
+        <li><a href="{{url_for('.statistics_com_rank',g='g')}}">所有年级</a></li>
+        {% endif %}
+               {% for x in grade %}
+               {% if session['grade']!=x.grade %}
+            <li><a href="{{url_for('.statistics_com_rank',grade=x.grade)}}">{{x.grade}}级</a></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+  </div>
+</div>
 
     <div>
     <table class="table">
@@ -40,7 +81,7 @@
                 <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
                 <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
                 <td>{{ com.comPhone }}</td>
-                {% if current_user.roleId==0 %}
+                {% if current_user.roleId==0%}
                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
                 {% else %}
                     <td>

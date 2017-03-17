@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}计算机学院学生实习信息管理系统{% endblock %}
+{% block head %}
+{{ super() }}
+<style type="text/css">
+    textarea[name="content"] {
+    height: 290px;
+    }
+</style>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$.ajax({
+            type: "get",
+            url: "/getIntroduce_json",
+            async: true,
+            dataType: 'json',
+            success: function (response) {
+               	for(var x in response){
+               			var text=document.getElementById("flask-pagedown-content");
+               			text.value=response[x];
+               	}
+            }
+});
+	});
+</script>
+{% endblock %}<!--先执行父模板-->
+{% block page_content %}
+<form method="POST">
+<div onload="">
+    {% if current_user.can(Permission.ALTER_INTRODUCE) %}
+    {{ introduceform.content(class="form-control",required='') }}
+    <br>
+    <h5><small>
+    *&nbsp&nbsp支持Markdown标记语言
+    </small></h5>
+    {{ introduceform.submit(class='btn btn-primary')}}
+    {% endif %}
+</div>
+</form>
+{% endblock %}
+{% block scripts %}
+{{super()}}
+{{pagedown.include_pagedown()}}
+{% endblock %}

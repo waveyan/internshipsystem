@@ -84,11 +84,9 @@
                 name: '累计实习人数',
                 type: 'bar',
                 // data: [ten10.innerHTML, ten11.innerHTML, ten12.innerHTML, ten13.innerHTML, ten14.innerHTML, ten15.innerHTML, other.innerHTML - ten10.innerHTML - ten11.innerHTML - ten12.innerHTML - ten13.innerHTML - ten14.innerHTML - ten15.innerHTML]
-
                 data: ["{{ comlist[0]['students'] }}", "{{ comlist[1]['students'] }}", "{{ comlist[2]['students'] }}", "{{ comlist[3]['students'] }}", "{{ comlist[4]['students'] }}", "{{ comlist[5]['students'] }}"]
             }]
         };
-
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
     </script>
@@ -145,6 +143,4 @@
     </script>
     </div>
 {% endblock %}       
-
-
 

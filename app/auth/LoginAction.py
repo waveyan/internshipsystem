@@ -19,6 +19,7 @@ class LoginAction(object):
         # self._successUrl = os.environ.get('local_ip')
         # self._successUrl = url_for('auth.lg')
         self._successUrl = url_for('main.index')
+        self._improveTeaInforUrl=url_for('main.improveTeaInforUrl')
 
 
     def service(self, token=None):
@@ -71,7 +72,10 @@ class LoginAction(object):
                         teacher = Teacher.query.filter_by(teaId=resultModel['LoginName']).first()
                         if teacher:
                             login_user(teacher)
-                            return self._successUrl
+                            if teacher.teaEmail and teacher.teaPhone:
+                                return self._successUrl
+                            else:
+                                return self._improveTeaInforUrl
                     flash("此用户信息未录入本系统!")
                     return self._casReloginUrl
                 else:
