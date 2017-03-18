@@ -19,7 +19,7 @@ class LoginAction(object):
         # self._successUrl = os.environ.get('local_ip')
         # self._successUrl = url_for('auth.lg')
         self._successUrl = url_for('main.index')
-        self._improveTeaInforUrl=url_for('main.improveTeaInforUrl')
+        self._improveTeaInforUrl=url_for('main.improveTeaInfor')
 
 
     def service(self, token=None):
