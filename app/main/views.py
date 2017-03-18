@@ -2419,6 +2419,8 @@ def addRole():
             a = eval(form.SELECT_MANAGE.description) | a
         if form.UPLOAD_VISIT.data:
             a = eval(form.UPLOAD_VISIT.description) | a
+        if form.ALTER_INTRODUCE.data:
+            a = eval(form.ALTER_INTRODUCE.description) | a
         per = hex(a)
         # print(per)
         # describe = ''.join(p)
@@ -2502,6 +2504,8 @@ def editRole():
             a = eval(form.SELECT_MANAGE.description) | a
         if form.UPLOAD_VISIT.data:
             a = eval(form.UPLOAD_VISIT.description) | a
+        if form.ALTER_INTRODUCE.data:
+            a = eval(form.ALTER_INTRODUCE.description) | a
         per = hex(a)
         role.roleName = form.roleName.data
         role.roleDescribe = request.form.get('roleDescribe')
