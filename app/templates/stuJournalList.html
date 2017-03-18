@@ -70,9 +70,9 @@
     <table class="table" id="t">
         <thead>
         <tr>
-            <th>姓名</th>
-            <th>实习企业</th>
+            <th>日志</th>
             {% if current_user.roleId !=0 %}
+                <th>实习企业</th>
                 <th>学号</th>
             {% endif %}
             <th>开始时间</th>
@@ -90,10 +90,7 @@
                 <tr>
                     {% if current_user.roleId==0 %}
                         <td>
-                            <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ current_user.stuName }}</a>
-                        </td>
-                        <td>
-                            {{ intern.comName }}
+                            <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ current_user.stuName }}在{{ intern.comName }}的日志</a>
                         </td>
                     {% else %}
                         <td>

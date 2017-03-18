@@ -107,13 +107,13 @@
                     <li><a onClick="ComfirmDelete()">删除</a></li>
                     <li class="divider"></li>
                     <li>
-                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">上传文件</a>
+                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">上传总结和附件</a>
                     </li>
                     <li class="divider"></li>
                 {% elif (current_user.can(Permission.STU_SUM_EDIT) or current_user.roleId == 0 ) and summary.sumCheck!=2 %}
                     <li><a onClick="ComfirmDelete()">删除</a></li>
                     <li>
-                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">文件管理</a>
+                        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">上传总结和附件</a>
                     </li>
                     <li class="divider"></li>
                 {% endif %}
@@ -124,6 +124,12 @@
                 </li>
             </ul>
         </div>
+        {% if comfirm_can and summary.sumCheck != 2  %}
+            <a onClick="ComfirmCheck()"><button class="btn btn-success">点击这里通过审核</button></a>
+            {% endif %}
+        {% if current_user.roleId == 0  and summary.sumCheck!=2 %}
+        <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}"><button class="btn btn-success">上传总结和附件</button></a>
+    {% endif %}
         </h1>
 
         <!-- 审核情况 -->

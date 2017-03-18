@@ -123,7 +123,7 @@
                             </li>
                         {% endif %}
                         {% if current_user.can(Permission.UPLOAD_VISIT) %}
-                        <li><a href="{{ url_for('.teaVisit') }}">教师探访记录</a></li>
+                        <li><a href="{{ url_for('main.teaVisit') }}">教师探访记录</a></li>
                         {% endif %}
                         {% if current_user.can(Permission.STU_INTERN_MANAGE) or current_user.can(Permission.PERMIS_MANAGE) or current_user.can(Permission.TEA_INFOR_MANAGE) or current_user.can(Permission.SELECT_MANAGE) %}
                             <li class="dropdown">
@@ -166,7 +166,7 @@
                         {% if current_user.stuId %}
                             {{ current_user.stuName }}
                         {% elif current_user.teaId %}
-                        <a href="{{url_for('.improveTeaInfor')}}">
+                        <a href="{{url_for('main.improveTeaInfor')}}">
                             {{ current_user.teaName }}
                             </a>
                         {% endif %}

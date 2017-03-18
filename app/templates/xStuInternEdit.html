@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+
+{% block title %}添加学生实习信息{% endblock %}
+{% block head %}
+    {{ super() }}
+    <!-- bootstrap日期选择器 -->
+    <script type="text/javascript" src="/static/JS/datetimepicker.min.js" charset="UTF-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/bootstrap-datetimepicker.min.css">
+     <script type="text/javascript" src="/static/JS/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+    <!-- 文件上传 -->
+        <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
+    <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/JS/locales/fileinput_locale_zh.js"></script>
+    <!-- 上传等待 -->
+<style>
+.loading{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:300;
+    background-image:url(static/loading.gif);
+    background-repeat:no-repeat;
+    background-position:center center;
+    background-color:#000;
+    background-color:rgba(0,0,0,0.5);
+    filter:alpha(opacity=50);
+}
+</style>
+<script type="text/javascript">
+    function checkDate(){
+        var start=$('#start');
+        var end=$('#end');
+        var time1 = new Date(start.val()).getTime();
+        var time2 = new Date(end.val()).getTime();
+    if(time1 >= time2){
+        alert("结束时间不得先于或等于开始时间！");
+        end.val("");
+        start.val("");
+        return false;
+    }
+    else
+        return true;
+}
+</script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $.ajax({
+            type: "GET",
+            url: "/getIntern_json?stuId={{stuId}}&internId={{internId}}",
+            async: true,
+            dataType: 'json',
+            success: function (response) {
+                var cteaDiv=document.getElementById("cteaForm");
+                var teaDiv=document.getElementById("teaForm");
+                for(var x in response){
+                if(x.toString()=="intern"){
+                        for(var y in response[x]){
+                           document.getElementById(y.toString()).value=response[x][y];
+                }
+                }
+                else if(x.toString()=="ctea"){
+                    var i=0;
+                    for(var y of response[x]){
+                        i++;
+                        var cteaName=document.createElement("input");
+                        var nameLabel=document.createElement("label");
+                        var cteaDuty=document.createElement("input");
+                        var dutyLabel=document.createElement("label");
+                        var cteaPhone=document.createElement("input");
+                        var phoneLabel=document.createElement("label");
+                        var cteaEmail=document.createElement("input");
+                        var emailLabel=document.createElement("label");
+                        var br=document.createElement('br');
+                        nameLabel.innerText="企业教师姓名";
+                        cteaName.id="cteaName"+i.toString();
+                        cteaName.name="cteaName"+i.toString();
+                        cteaName.value=y[0]; 
+                        cteaName.setAttribute("class","form-control")
+                        dutyLabel.innerText="职称";
+                        cteaDuty.id="cteaDuty"+i.toString();
+                        cteaDuty.name="cteaDuty"+i.toString();
+                        cteaDuty.value=y[1]; 
+                        cteaDuty.setAttribute("class","form-control");
+                        emailLabel.innerText="邮箱";
+                        cteaEmail.id="cteaEmail"+i.toString();
+                        cteaEmail.name="cteaEmail"+i.toString();
+                        cteaEmail.value=y[2]; 
+                        cteaEmail.setAttribute("class","form-control");
+                        phoneLabel.innerText="联系电话";
+                        cteaPhone.id="cteaPhone"+i.toString();
+                        cteaPhone.name="cteaPhone"+i.toString();
+                        cteaPhone.value=y[3]; 
+                        cteaPhone.setAttribute("class","form-control");
+                        cteaDiv.appendChild(nameLabel);                 
+                        cteaDiv.appendChild(cteaName);
+                        cteaDiv.appendChild(dutyLabel);
+                        cteaDiv.appendChild(cteaDuty);
+                        cteaDiv.appendChild(phoneLabel);
+                        cteaDiv.appendChild(cteaPhone);
+                        cteaDiv.appendChild(emailLabel);
+                        cteaDiv.appendChild(cteaEmail);
+                        cteaDiv.appendChild(br)
+
+                    }
+                }
+                else {
+                    var i=0;
+                    for(var y of response[x]){
+                        i++;
+                        var teaName=document.createElement("input");
+                        var old_teaName=document.createElement("input");
+                        old_teaName.name="old_teaName";
+                        old_teaName.id="old_teaName";
+                        old_teaName.value=y[0];
+                        old_teaName.setAttribute("type","hidden");
+                        document.getElementById("hidden_input").appendChild(old_teaName)
+                        var nameLabel=document.createElement("label");
+                        var br=document.createElement('br');
+                        nameLabel.innerText="校内教师姓名";
+                        teaName.id="teaName"+i.toString();
+                        teaName.name="teaName"+i.toString();
+                        teaName.setAttribute("class","form-control");
+                        teaName.setAttribute("list","teachers");
+                        teaName.value=y[0]; 
+                        teaDiv.appendChild(nameLabel);                 
+                        teaDiv.appendChild(teaName);
+                        teaDiv.appendChild(br)
+
+                }
+                }
+            }
+        if(teaDiv.children.length/3>=2){
+            document.getElementById("delTea").style.display="";
+        }
+        else{
+            document.getElementById("delTea").style.display="none";
+        }
+        if(cteaDiv.children.length/9>=2){
+            document.getElementById("delcTea").style.display="";
+        }
+        else{
+            document.getElementById("delcTea").style.display="none";
+        }
+        }
+
+});
+    });
+</script>
+<script type="text/javascript">
+    function addTeacher(){
+        var br=document.createElement('br');
+        var teaDiv=document.getElementById("teaForm");
+        var i=teaDiv.children.length/3;
+        i++;
+        if(i>=2){
+            document.getElementById("delTea").style.display="";
+        }
+        else{
+            document.getElementById("delTea").style.display="none";
+        }
+        var teaName=document.createElement("input");
+        var nameLabel=document.createElement("label");
+        var br=document.createElement('br');
+        nameLabel.innerText="校内教师姓名";
+        teaName.id="teaName"+i.toString();
+        teaName.name="teaName"+i.toString();
+        teaName.setAttribute("class","form-control");
+        teaName.setAttribute("list","teachers");
+        teaName.value=null; 
+        teaDiv.appendChild(nameLabel);                 
+        teaDiv.appendChild(teaName);
+        teaDiv.appendChild(br)
+
+    }
+    function delTeacher(){
+        var teaDiv=document.getElementById("teaForm");
+        var i=teaDiv.children.length/3;
+        if(i>2){
+            document.getElementById("delTea").style.display="";
+        }
+        else{
+            document.getElementById("delTea").style.display="none";
+        }
+        var teaName=document.getElementById("teaName"+i.toString())
+        var nameLabel=teaName.previousSibling
+        var br=teaDiv.lastElementChild
+        teaDiv.removeChild(br)
+        teaDiv.removeChild(nameLabel)
+        teaDiv.removeChild(teaName)
+    }
+</script>
+
+
+<script type="text/javascript">
+    function addCTeacher(){
+        var br=document.createElement('br');
+        var cteaDiv=document.getElementById("cteaForm");
+        var i=cteaDiv.children.length/9;
+        i++;
+        if(i>=2){
+            document.getElementById("delcTea").style.display="";
+        }
+        else{
+            document.getElementById("delcTea").style.display="none";
+        }
+        var cteaName=document.createElement("input");
+        var nameLabel=document.createElement("label");
+        var cteaDuty=document.createElement("input");
+        var dutyLabel=document.createElement("label");
+        var cteaPhone=document.createElement("input");
+        var phoneLabel=document.createElement("label");
+        var cteaEmail=document.createElement("input");
+        var emailLabel=document.createElement("label");
+        var br=document.createElement('br');
+        nameLabel.innerText="企业教师姓名";
+        cteaName.id="cteaName"+i.toString();
+        cteaName.name="cteaName"+i.toString();
+        cteaName.setAttribute("class","form-control")
+        dutyLabel.innerText="职称";
+        cteaDuty.id="cteaDuty"+i.toString();
+        cteaDuty.name="cteaDuty"+i.toString();
+        cteaDuty.setAttribute("class","form-control");
+        emailLabel.innerText="邮箱";
+        cteaEmail.id="cteaEmail"+i.toString();
+        cteaEmail.name="cteaEmail"+i.toString();
+        cteaEmail.setAttribute("class","form-control");
+        phoneLabel.innerText="联系电话";
+        cteaPhone.setAttribute("class","form-control");
+        cteaPhone.id="cteaPhone"+i.toString();
+        cteaPhone.name="cteaPhone"+i.toString();
+        cteaDiv.appendChild(nameLabel);                 
+        cteaDiv.appendChild(cteaName);
+        cteaDiv.appendChild(dutyLabel);
+        cteaDiv.appendChild(cteaDuty);
+        cteaDiv.appendChild(phoneLabel);
+        cteaDiv.appendChild(cteaPhone);
+        cteaDiv.appendChild(emailLabel);
+        cteaDiv.appendChild(cteaEmail);
+        cteaDiv.appendChild(br)
+    }
+    function delcTeacher(){
+        var cteaDiv=document.getElementById("cteaForm");
+        var i=cteaDiv.children.length/9;
+        if(i>2){
+            document.getElementById("delcTea").style.display="";
+        }
+        else{
+            document.getElementById("delcTea").style.display="none";
+        }
+        var cteaName=document.getElementById("cteaName"+i.toString())
+        var nameLabel=cteaName.previousSibling
+        var cteaEmail=document.getElementById("cteaEmail"+i.toString())
+        var emailLabel=cteaEmail.previousSibling
+        var cteaDuty=document.getElementById("cteaDuty"+i.toString())
+        var dutyLabel=cteaDuty.previousSibling
+        var cteaPhone=document.getElementById("cteaPhone"+i.toString())
+        var phoneLabel=cteaPhone.previousSibling
+        var br=cteaDiv.lastElementChild
+        cteaDiv.removeChild(br)
+        cteaDiv.removeChild(nameLabel)
+        cteaDiv.removeChild(cteaName)
+        cteaDiv.removeChild(phoneLabel)
+        cteaDiv.removeChild(cteaPhone)
+        cteaDiv.removeChild(cteaEmail)
+        cteaDiv.removeChild(emailLabel)
+        cteaDiv.removeChild(cteaDuty)
+        cteaDiv.removeChild(dutyLabel)
+    }
+</script>
+{% endblock %}
+{% block page_content %}
+    <div class="page-header">
+        <h1>请修改实习信息</h1>
+    </div>
+        <form method="POST" role="form" id="S1" enctype="multipart/form-data">
+            <h3>实习岗位信息</h3>
+            <div>
+                {{ iform.hidden_tag() }}
+                {{ iform.task.label }}{{ iform.task(class="form-control",required='',placeholder="请输入实习任务") }}
+		{{ iform.post.label }}{{ iform.post(class="form-control",required='',placeholder="请输入实习岗位") }}
+                {{ iform.start.label }}{{ iform.start(class="form-control datetimepicker",required='',placeholder="请输入开始时间，如：2016-10-10") }}
+                {{ iform.end.label }}{{ iform.end(class="form-control datetimepicker",required='', placeholder="请输入结束时间，如：2016-11-11",onchange="checkDate()") }}
+            </div>
+            <br>
+            <h3>企业指导老师信息</h3>
+            <div id="cteaForm">
+            </div>
+            <input type="button" id="addcTea" class="btn" onclick="addCTeacher()" value="添加老师">
+            <input type="button" id="delcTea" class="btn" value="删除老师" onclick="delcTeacher()">
+            <br><br>
+         <h3>校内指导老师</h3>
+                <div id="teaForm">
+                </div>
+                        <input type="button" id="addTea" class="btn" onclick="addTeacher()" value="添加老师">
+                <input type="button" id="delTea" class="btn" value="删除老师" onclick="delTeacher()">
+                <!-- 校内指导老师提示列表 -->
+                <datalist id="teachers">
+                {% for tea in teachers %}
+                 <option value="{{tea.teaName}}">
+                 {% endfor %}
+                </datalist>
+
+            </br></br>
+            <h3>实践协议书</h3>
+             {% if imageName %}
+             <table id="table" class="table">
+         <tr>
+            <td height="50" width="600" style="word-wrap:break-word;">文件名</td>
+            <td  height="50" width="200" style="word-wrap:break-word;">操作</td>
+        </tr>
+        {% endif %}
+        {% for name in imageName %}
+        <tr><td height="50">{{name}}</td>       
+        <td><a href="{{ url_for('.xInternEdit',filename=name,stuId=stuId,internId=internId) }}">删除</a></td></tr>
+        {% endfor %}
+        </table>
+        <td width="200" colspan="7" height="50">添加实习协议书</td>
+        <tr><td colspan="7" height="50">
+        <input id="file-1" type="file" class="file" multiple=""  name="image" data-overwrite-initial="false" data-min-file-count="0">
+            <h5><small>
+
+    <span class="label label-danger">注意</span>
+    <br>*&nbsp&nbsp协议书命名格式为：学号_姓名_实习协议.pdf
+    <br>
+    *&nbsp&nbsp仅支持jpe、png、gif、pdf格式文件上传</small></h5>
+    <br>
+                {{ iform.submit(class="btn btn-success",id='finish') }}
+                    <div id="hidden_input">
+        <input type="hidden" name="internId" value="{{ internId }}">
+        <input type="hidden" name="stuId" value="{{ stuId }}">
+        <input type="hidden" name="comId" value="{{ comId }}">
+        </div>
+        </form>
+        <div id="ddd"></div>
+        <br><br>
+{% endblock %}
+{% block scripts %}
+        <!-- bootstrap日期选择器 -->
+        <script type="text/javascript">
+            $('.datetimepicker').datetimepicker({
+                format: 'yyyy-mm-dd',
+                language: 'zh-CN',
+                pickDate: true,
+                inputMask: true,
+                autoclose: true,
+                todayBtn: 'linked',
+                todayHighlight: true,
+                minView: "month",
+            });
+        </script>
+            <script type="text/javascript">
+            $('.file').fileinput({
+                language: 'zh', //设置语言
+                allowedFileExtensions : ['jpg', 'png','gif','pdf'],//接收的文件后缀,
+                maxFileCount: 100,
+                showUpload: false, //是否显示上传按钮
+                showCaption: true,//是否显示标题
+                browseClass: "btn btn-primary", //按钮样式             
+            });
+</script>
+{% endblock %}

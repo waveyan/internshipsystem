@@ -146,8 +146,6 @@
                 <div class="modal-body">
                     <div id="pdf">
             <embed width="1000" height="800" type="application/pdf" id="pdf_content">
-                <p>你的浏览器不支持在线阅览, 请更换浏览器.
-                </p>
             </embed>
         </div>
                 </div>
@@ -181,27 +179,15 @@
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">导出到Excel</a></li>
                         <li class="divider"></li>
-
-                        <!-- 未通过审核的 -->
-                        {% if internship.internCheck != 2 %}
-                            {% if current_user.can(Permission.STU_INTERN_EDIT) or current_user.roleId==0 or schdirtea_can %}
-                                {% if current_user.can(Permission.STU_INTERN_CHECK) or schdirtea_can %}
-                                    <li><a onClick="ComfirmCheck()">审核</a></li>
-                                {% endif %}
-                                <li>
-                                    <a href="{{ url_for('main.xInternEdit',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">修改</a>
-                                </li>
-                                <li><a onClick="ComfirmDelete()">删除</a></li>
-                            {% endif %}
-
                         <!-- 通过审核的 -->
-                        {% elif current_user.can(Permission.STU_INTERN_CHECK) or schdirtea_can %}
+                        {% if current_user.can(Permission.STU_INTERN_CHECK) or schdirtea_can %}
                             <li><a onClick="ComfirmCheck()">审核</a></li>
-                            <li>
-                                <!-- <a href="{{ url_for('main.xInternEdit',comId=comInfor.comId, internId=internship.Id, stuId=student.stuId) }}">修改</a> -->
-                                <a onClick="Admin_ComfirmEdit()" >修改</a>
-                            </li>
+                            <li><a onClick="Admin_ComfirmEdit()" >修改</a></li>
                             <li><a onClick="ComfirmDelete()">删除</a></li>
+                        <!-- 未通过审核 -->
+                        {% elif internship.internCheck != 2 %}
+                        <li><a onClick="Admin_ComfirmEdit()" >修改</a></li>
+                        <li><a onClick="ComfirmDelete()">删除</a></li>
                         {% endif %}
 
                         <li class="divider"></li>
@@ -214,13 +200,13 @@
                                                 <li>
                             <a href="{{ url_for('.stuVisit', internId=internship.Id) }}">教师探访记录</a>
                         </li>
-
                     </ul>
                 </div>
-
-
-
-
+        {% if internship.internCheck != 2 %}
+        {% if current_user.can(Permission.STU_INTERN_CHECK) or schdirtea_can %}
+            <a onClick="ComfirmCheck()"><button class="btn btn-success">点击这里通过审核</button></a>
+        {% endif %}
+        {% endif %}
             </h1>
             {% if internship.internCheck == 0 %}
                 <span class="label label-warning">待审核</span>
@@ -230,7 +216,6 @@
                 <span class="label label-info">已审核</span>
             {% endif %}
         </caption>
-
         <tr>
             <td colspan="6" height="50">一、学生信息</td>
         </tr>

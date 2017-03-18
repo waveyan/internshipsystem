@@ -106,8 +106,15 @@
                         <a href="{{ url_for('.stuVisit', internId=internship.Id) }}">教师探访记录</a>
                     </li>
                 </ul>
-            </div
->        </h1>
+            </div> 
+        {% for jour in journal %}  
+        {% if current_user.roleId == 0 and jour.jourCheck == 0 and jour.workStart <= now %}
+        {% if jour.workStart <= now %}
+            <a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}"><button class=" btn btn-success">编辑日志</button></a>
+        {% endif %}
+    {% endif %} 
+    {% endfor %}    
+            </h1>
 
     <!-- 日志总体审核情况 -->
     {% if internship.jourCheck == 0 %}
@@ -116,9 +123,6 @@
         <span class="label label-info">已审核</span>
     {% endif %}
         <br><br>
-
-
-
     </div>
     <table align="center" border="2" class="table-bordered">
         <tr>
@@ -140,6 +144,11 @@
         </tr>
     </table>
     <br>
+            {% for jour in journal %}
+        {% if jour.jourCheck == 0 and comfirm_can and jour.workEnd < now%}
+                    <a href="{{ url_for('.journal_comfirm', jourId=jour.Id, stuId=student.stuId, internId=internship.Id) }}"><button class="btn btn-success">点击这里，通过这周日志的审核</button></a>
+        {% endif %}
+    {% endfor %}
     <table align="center" border="2" class="table-bordered">
 
         {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'日'} %}
@@ -223,10 +232,6 @@
         </div>
     {% endif %}
 
-    <br><a href="{{ url_for('.stuJournalList') }}"><div class="btn btn-primary">返回&nbsp;</div></a>
-    {% for jour in journal %}
-        {% if jour.jourCheck == 0 and comfirm_can and jour.workEnd < now%}
-                    <a href="{{ url_for('.journal_comfirm', jourId=jour.Id, stuId=student.stuId, internId=internship.Id) }}"><button class="btn btn-success">点击这里，通过这周日志的审核</button></a>
-        {% endif %}
-    {% endfor %}
+    <!-- <br><a href="{{ url_for('.stuJournalList') }}"><div class="btn btn-primary">返回&nbsp;</div></a> -->
+
 {% endblock %}
