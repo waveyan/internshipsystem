@@ -28,15 +28,33 @@
                 <option value="男"  selected>男</option>
                 <option value="女" >女</option>
             </select>
-        {% else %}
+        {% elif tea.Sex=='女' %}
             <select class="form-control" name="sex">
                 <option value="男">男</option>
                 <option value="女" selected>女</option>
             </select>
+        {% else %}
+            <select class="form-control" name="sex">
+                <option value="男">男</option>
+                <option value="女">女</option>
+            </select>
         {% endif %}
-        {{ form.teaPosition.label }}{{ form.teaPosition(class="form-control",class="form-control",request='',value=tea.teaPosition) }}
-        {{ form.teaPhone.label }}{{ form.teaPhone(class="form-control",class="form-control",request='',value=tea.teaPhone) }}
-        {{ form.teaEmail.label }}{{ form.teaEmail(class="form-control",class="form-control",request='',value=tea.teaEmail) }}
+        {{ form.teaPosition.label }}
+        {% if tea.teaPosition %}
+        {{ form.teaPosition(class="form-control",request='',value=tea.teaPosition) }}
+        {% else %}
+        {{ form.teaPosition(class="form-control",request='') }}
+        {% endif %}
+        {% if tea.teaPhone %}
+        {{ form.teaPhone.label }}{{ form.teaPhone(class="form-control",request='',value=tea.teaPhone) }}
+        {% else %}
+        {{ form.teaPhone.label }}{{ form.teaPhone(class="form-control",class="form-control",request='') }}
+        {% endif%}
+        {%if tea.teaEmail%}
+        {{ form.teaEmail.label }}{{ form.teaEmail(class="form-control",request='',value=tea.teaEmail) }}
+        {% else %}
+        {{ form.teaEmail.label }}{{ form.teaEmail(class="form-control",request='',type='email') }}
+        {%endif%}
         <br><br>
         <button class="btn btn-primary" onclick="save({{ tea.teaId }})">提交</button>
         <button class="btn btn-default" onclick="back()">返回
