@@ -317,6 +317,7 @@ def selectCom():
     page = request.args.get('page', 1, type=int)
     pagination = ComInfor.query.paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
+    
     return render_template('selectCom.html', form=form, Permission=Permission, comInfor=comInfor, pagination=pagination)
 
 

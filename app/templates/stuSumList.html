@@ -60,8 +60,9 @@
         </ul>
     </div>
 {% endif %}
+    {% if current_user.roleId!=0 %}
 {{ search.search(url_for('.sum_search',sum='sum'),form) }}
-
+{% endif %}
 </h1>
 {% if current_user.role.roleId!=0 %}
     {{ filter.intern_filter('.stuSumList',6,grade,major,classes) }}

@@ -56,7 +56,9 @@
             </div>
         {% endif %}
     {% endif %}
+    {% if current_user.roleId!=0 %}
 {{ search.search(url_for('.journal_search',journal='journal'),form) }}
+{% endif %}
 </h1>
 <!--Excel导出-->
 <form id="export_form" method="post">
