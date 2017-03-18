@@ -2265,6 +2265,8 @@ def editTeacher():
     form = teaForm()
     teaId = request.args.get('teaId')
     tea = Teacher.query.filter_by(teaId=teaId).first()
+    #普通教师基本信息修改
+    m=request.args.get('m')
     if request.method == 'POST':
         try:
             tea.teaId = form.teaId.data
@@ -2276,7 +2278,10 @@ def editTeacher():
             db.session.add(tea)
             db.session.commit()
             flash('修改成功！')
-            return redirect(url_for('.teaUserList'))
+            if current_user.can(Permission.TEA_INFOR_MANAGE)and m is None:
+                return redirect(url_for('.teaUserList'))
+            else:
+                return redirect(url_for('.index'))
         except Exception as e:
             print('修改教师用户信息：', e)
             db.session.rollback()
@@ -4824,4 +4829,4 @@ def getIntroduce_json():
 def improveTeaInfor():
     if not (current_user.teaEmail and current_user.teaPhone):
         flash('请先完善相关信息！')
-    return redirect(url_for('.editTeacher',teaId=current_user.get_id()))
+    return redirect(url_for('.editTeacher',teaId=current_user.get_id(),m='m'))
