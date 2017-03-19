@@ -52,7 +52,7 @@
         <tbody>
         {% for intern in internship %}
             <tr>
-                <td><a href="{{ url_for('.xIntern', internId=intern.Id) }}">{{ intern.stuName }}</a></td>
+                <td><a href="{{ url_for('.xIntern', internId=intern.Id,stuId=intern.stuId) }}">{{ intern.stuName }}</a></td>
                 <td>{{ intern.stuId }}</td>
                 <td>{{ intern.grade }}</td>
                 <td>{{ intern.major }}{{ intern.classes }}班</td>

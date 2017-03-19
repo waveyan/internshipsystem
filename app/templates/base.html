@@ -164,7 +164,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         {% if current_user.stuId %}
-                            {{ current_user.stuName }}
+                            <a>{{ current_user.stuName }}</a>
                         {% elif current_user.teaId %}
                         <a href="{{url_for('main.improveTeaInfor')}}">
                             {{ current_user.teaName }}

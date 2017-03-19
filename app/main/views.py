@@ -257,7 +257,7 @@ def stuInternList():
         student = Student.query.filter_by(stuId=stuId).first()
         internship = InternshipInfor.query.filter_by(stuId=stuId).all()
         # 让添加实习企业 addcominfor 下一步跳转到 addinternship
-        if internship is None:
+        if len(internship)==0:
             flash('您还没完成实习信息的填写，请完善相关实习信息！')
             return redirect(url_for('.addcominfor', from_url='stuInternList'))
         else:
@@ -315,7 +315,7 @@ def stuInternList():
 def selectCom():
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    pagination = ComInfor.query.paginate(page, per_page=8, error_out=False)
+    pagination = ComInfor.query.order_by(ComInfor.comDate.desc()).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
 
     return render_template('selectCom.html', form=form, Permission=Permission, comInfor=comInfor, pagination=pagination)
@@ -461,48 +461,40 @@ def addInternship():
                 stuId=stuId,
                 internStatus=internStatus
             )
-            try:
-                db.session.add(internship)
-                db.session.commit()
-                #校外指导老师
-                while True:
-                    j = j + 1
-                    cteaValue = request.form.get('cteaName%s' % j)
-                    if cteaValue:
-                        comdirtea = ComDirTea(
-                            stuId=stuId,
-                            cteaName=cteaValue,
-                            comId=comId,
-                            cteaDuty=request.form.get('cteaDuty%s' % j),
-                            cteaEmail=request.form.get('cteaEmail%s' % j),
-                            cteaPhone=request.form.get('cteaPhone%s' % j)
-                        )
-                        db.session.add(comdirtea)
+            db.session.add(internship)
+            #校外指导老师
+            while True:
+                j = j + 1
+                cteaValue = request.form.get('cteaName%s' % j)
+                if cteaValue:
+                    comdirtea = ComDirTea(
+                        stuId=stuId,
+                        cteaName=cteaValue,
+                        comId=comId,
+                        cteaDuty=request.form.get('cteaDuty%s' % j),
+                        cteaEmail=request.form.get('cteaEmail%s' % j),
+                        cteaPhone=request.form.get('cteaPhone%s' % j)
+                    )
+                    db.session.add(comdirtea)
+                else:
+                    break
+            #校内指导老师
+            while True:
+                i = i + 1
+                teaValue = request.form.get('teaName%s' % i)
+                if teaValue:
+                    tea=Teacher.query.filter_by(teaName=teaValue).first()
+                    if tea:
+                        internship.schdirtea.append(tea)
                     else:
-                        break
-                #校内指导老师
-                while True:
-                    i = i + 1
-                    teaValue = request.form.get('teaName%s' % i)
-                    if teaValue:
-                        tea=Teacher.query.filter_by(teaName=teaValue).first()
-                        if tea:
-                            internship.schdirtea.append(tea)
-                        else:
-                            tea=Teacher.query.filter_by(teaName='无该用户').first()
-                            internship.schdirtea.append(tea)
-                    else:
-                        break
-                db.session.commit()
-                # 初始化日志和总结成果
-                internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
-                journal_init(internId)
-                summary_init(internId)
-            except Exception as e:
-                print('添加校外指导老师：', e)
-                db.session.rollback()
-                flash('添加实习信息失败，请重试！')
-                return redirect('/')
+                        tea=Teacher.query.filter_by(teaName='无该用户').first()
+                        internship.schdirtea.append(tea)
+                else:
+                    break
+            # 初始化日志和总结成果
+            internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
+            journal_init(internId)
+            summary_init(internId)
             # 若所选企业未被审核通过,且用户有审核权限,自动审核通过企业
             if current_user.can(Permission.COM_INFOR_CHECK):
                 try:
@@ -518,7 +510,6 @@ def addInternship():
                 db.session.execute('update ComInfor set students=students+1 where comId=%s'%comId)
             else:
                 db.session.execute('update ComInfor set students=1 where comId=%s'%comId)
-
             #上传协议书
             if request.files.getlist('image'):
                 for i in request.files.getlist('image'):
@@ -1162,7 +1153,7 @@ def com_search():
     selectCom = request.args.get('selectCom')
     if request.method == 'POST':
         key = form.key.data
-        cominfor = ComInfor.query.all()
+        cominfor = ComInfor.query.order_by(ComInfor.comDate.desc()).all()
         for c in cominfor:
             if c.comName.find(key.strip()) != -1:
                 comInfor.append(c)
