@@ -317,7 +317,7 @@ def selectCom():
     page = request.args.get('page', 1, type=int)
     pagination = ComInfor.query.order_by(ComInfor.comDate.desc()).paginate(page, per_page=8, error_out=False)
     comInfor = pagination.items
-    
+
     return render_template('selectCom.html', form=form, Permission=Permission, comInfor=comInfor, pagination=pagination)
 
 
@@ -664,7 +664,7 @@ def getIntern_json():
         intern_json={}
         intern_json.setdefault('intern',{})
         intern_json.setdefault('ctea',[])
-        intern_json.setdefault('tea',[])        
+        intern_json.setdefault('tea',[])
         intern_json['intern'].update({'task':str(internship.task),'post':str(internship.post),'start':str(internship.start),'end':str(internship.end)})
         for x in comdirtea:
             intern_json['ctea'].append([x.cteaName,x.cteaDuty,x.cteaPhone,x.cteaEmail])
@@ -785,7 +785,7 @@ def xInternEdit():
         except Exception as e:
             flash("修改失败！")
             print("修改实习信息和邮件通知：",e)
-            return redirect(url_for(".xInternEdit",stuId=stuId,internId=internId))       
+            return redirect(url_for(".xInternEdit",stuId=stuId,internId=internId))
     return render_template('xStuInternEdit.html', Permission=Permission,internId=internId,stuId=stuId,imageName=imageName,iform=iform,teachers=teachers,comId=comId)
 
     # if request.form.get('stuId'):
@@ -846,9 +846,9 @@ def xInternEdit():
     #                     teaName=tea.teaName
     #                     teaEmail=tea.teaEmail
     #                     body='%s老师:你好,学号为%s,姓名为%s,重新上传了协议书!请登录东莞理工学院计算机与网络安全学院实习管理系统进行审核.' %(teaName,stuId,stuName)
-    #                     html='%s老师:<p>你好,学号为%s,姓名为%s,重新上传了协议书!</p><p>请登录<a href="http://shixi.dgut.edu.cn">东莞理工学院计算机与网络安全学院实习管理系统</a>进行审核.</p>'%(teaName,stuId,stuName) 
-    #                     send_email(teaEmail,body,html)        
-    #         except Exception as e:      
+    #                     html='%s老师:<p>你好,学号为%s,姓名为%s,重新上传了协议书!</p><p>请登录<a href="http://shixi.dgut.edu.cn">东莞理工学院计算机与网络安全学院实习管理系统</a>进行审核.</p>'%(teaName,stuId,stuName)
+    #                     send_email(teaEmail,body,html)
+    #         except Exception as e:
     #             print('邮件发送异常:',e)
     #         flash('上传成功！')
     #     return redirect(url_for('.xIntern',stuId=stuId,internId=internId))
@@ -918,7 +918,7 @@ def xInternEdit():
 #                     body='%s老师:你好,学号为%s,姓名为%s,修改了实习岗位信息!请登录东莞理工学院计算机与网络安全学院实习管理系统进行审核.' %(teaName,stuId,stuName)
 #                     html='%s老师:<p>你好,学号为%s,姓名为%s,修改了实习岗位信息!</p><p>请登录<a href="http://shixi.dgut.edu.cn">东莞理工学院计算机与网络安全学院实习管理系统</a>进行审核.</p>'%(teaName,stuId,stuName)
 #                     send_email(teaEmail,body,html)
-#         except Exception as e:      
+#         except Exception as e:
 #             print('邮件发送异常:',e)
 #         flash("实习信息修改成功")
 #         return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
@@ -966,14 +966,14 @@ def xInternEdit():
 #             # internId=InternshipInfor.query.filter_by(stuId=stuId).first().Id
 #             internship = InternshipInfor.query.filter_by(Id=internId).first()
 #             schdirtea = internship.schdirtea
-#             for tea in schdirtea:        
+#             for tea in schdirtea:
 #                 if tea.teaEmail:
 #                     teaName=tea.teaName
 #                     teaEmail=tea.teaEmail
 #                     body='%s老师:你好,学号为%s,姓名为%s,修改了企业指导老师信息!请登录东莞理工学院计算机与网络安全学院实习管理系统进行审核.' %(teaName,stuId,stuName)
-#                     html='%s老师:<p>你好,学号为%s,姓名为%s,修改了企业指导老师信息!</p><p>请登录<a href="http://shixi.dgut.edu.cn">东莞理工学院计算机与网络安全学院实习管理系统</a>进行审核.</p>'%(teaName,stuId,stuName) 
-#                     send_email(teaEmail,body,html)    
-#         except Exception as e:      
+#                     html='%s老师:<p>你好,学号为%s,姓名为%s,修改了企业指导老师信息!</p><p>请登录<a href="http://shixi.dgut.edu.cn">东莞理工学院计算机与网络安全学院实习管理系统</a>进行审核.</p>'%(teaName,stuId,stuName)
+#                     send_email(teaEmail,body,html)
+#         except Exception as e:
 #                 print('邮件发送异常:',e)
 #         flash("实习信息修改成功")
 #         return redirect(url_for('.xIntern', comId=comId, internId=internId, stuId=stuId))
@@ -1634,16 +1634,12 @@ def stuJournalList():
                 flash('error!!!')
                 return redirect('/')
         internship = InternshipInfor.query.filter_by(stuId=stuId, internCheck=2).count()
-        # if internship == 0:
-        #     flash('目前还没有通过审核的实习信息,请完善相关实习信息,或耐心等待审核通过')
-        #     return redirect('/')
-        # else:
         pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal, InternshipInfor.Id == Journal.internId).join(
             Student, InternshipInfor.stuId == Student.stuId) \
                 .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId,
                              InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                              InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-                .filter(InternshipInfor.stuId == stuId, InternshipInfor.internCheck == 2).group_by(
+                .filter(InternshipInfor.stuId == stuId).group_by(
                 InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8,  error_out=False)
         internlist = pagination.items
         return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
@@ -1826,15 +1822,15 @@ def xJournalEditProcess():
         # internId=InternshipInfor.query.filter_by(stuId=stuId).first().Id
         internship = InternshipInfor.query.filter_by(Id=internId).first()
         schdirtea = internship.schdirtea
-        for tea in schdirtea:                            
+        for tea in schdirtea:
             if tea.teaEmail:
                 teaName=tea.teaName
                 teaEmail=tea.teaEmail
                 body='%s老师:你好,学号为%s,姓名为%s,编辑了实习日志!请登录东莞理工学院计算机与网络安全学院实习管理系统进行审核.' %(teaName,stuId,stuName)
-                html='%s老师:<p>你好,学号为%s,姓名为%s,编辑了实习日志!</p><p>请登录<a href="http://shixi.dgut.edu.cn">东莞理工学院计算机与网络安全学院实习管理系统</a>进行审核.</p>'%(teaName,stuId,stuName) 
+                html='%s老师:<p>你好,学号为%s,姓名为%s,编辑了实习日志!</p><p>请登录<a href="http://shixi.dgut.edu.cn">东莞理工学院计算机与网络安全学院实习管理系统</a>进行审核.</p>'%(teaName,stuId,stuName)
                 send_email(teaEmail,body,html)
-        
-    except Exception as e:      
+
+    except Exception as e:
         print('邮件发送异常:',e)
     flash("修改日志成功")
     return redirect(url_for('.xJournal', stuId=stuId, internId=internId))
@@ -2861,7 +2857,7 @@ def create_intern_filter(grade, major, classes, flag):
             if session.get('myStudent'):
                 intern=intern.join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
 
-        
+
         elif session.get('myStudent'):
             if flag==2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
