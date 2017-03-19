@@ -491,6 +491,7 @@ def addInternship():
                         internship.schdirtea.append(tea)
                 else:
                     break
+            db.session.commit()
             # 初始化日志和总结成果
             internId = int(InternshipInfor.query.order_by(desc(InternshipInfor.Id)).first().Id)
             journal_init(internId)
