@@ -1634,17 +1634,21 @@ def stuJournalList():
                 print('message:', e)
                 flash('error!!!')
                 return redirect('/')
-        internship = InternshipInfor.query.filter_by(stuId=stuId, internCheck=2).count()
-        pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal, InternshipInfor.Id == Journal.internId).join(
-            Student, InternshipInfor.stuId == Student.stuId) \
-                .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId,
-                             InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
-                             InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-                .filter(InternshipInfor.stuId == stuId).group_by(
-                InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8,  error_out=False)
-        internlist = pagination.items
-        return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
-                                   pagination=pagination, grade=grade, major=major, classes=classes)
+        internship = InternshipInfor.query.filter_by(stuId=stuId).count()
+        if internship == 0:
+            flash('目前还没有实习信息, 请先完善相关实习信息')
+            return redirect('/')
+        else:
+            pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal, InternshipInfor.Id == Journal.internId).join(
+                Student, InternshipInfor.stuId == Student.stuId) \
+                    .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId,
+                                 InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
+                                 InternshipInfor.internStatus, InternshipInfor.internCheck, InternshipInfor.jourCheck) \
+                    .filter(InternshipInfor.stuId == stuId).group_by(
+                    InternshipInfor.Id).order_by(func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8,  error_out=False)
+            internlist = pagination.items
+            return render_template('stuJournalList.html', form=form, internlist=internlist, Permission=Permission,
+                                       pagination=pagination, grade=grade, major=major, classes=classes)
     elif current_user.can(Permission.STU_JOUR_SEARCH):
         intern = create_intern_filter(grade, major, classes, flag=1)
         pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
