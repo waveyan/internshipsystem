@@ -99,7 +99,7 @@
                 <td>{{ intern.comName }}</td>
             {% else %}
                 <td>
-                    <a href="{{ url_for('.xSum',stuId=intern.stuId, internId=intern.Id) }}">{{ intern.comName }}</a>
+                    <a href="{{ url_for('.xSum',stuId=intern.stuId, internId=intern.Id) }}">在{{ intern.comName }}的实习总结与成果</a>
                 </td>
             {% endif %}
 

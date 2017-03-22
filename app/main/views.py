@@ -4019,17 +4019,18 @@ def storage_download(internId):
 def storage_upload(internId):
     path_dict = {'attachment_upload': 'attachment', 'summary_doc_upload': 'summary_doc'}
     for x in path_dict:
-        file = request.files.get(x)
-        if file:
-            try:
-#                filename = secure_filename(file.filename)
-                dest = path_dict[x]
-                file_path = storage_cwd(internId, dest)
-                file.save(os.path.join(file_path, file.filename))
-                return True
-            except Exception as e:
-                print(datetime.now(), '上传文件失败', e)
-                return False
+        files = request.files.getlist(x)
+        try:
+            for file in files:
+                if file:
+#           filename = secure_filename(file.filename)
+                    dest = path_dict[x]
+                    file_path = storage_cwd(internId, dest)
+                    file.save(os.path.join(file_path, file.filename))
+            return True
+        except Exception as e:
+            print(datetime.now(), '上传文件失败', e)
+            return False
 
 
 # 修改文件后缀名为pdf
@@ -4212,7 +4213,8 @@ def xSum_fileManager():
                     storage_path = os.path.join(storage_cwd(internId, dest_path), file_name)
                     pdf_path = os.path.join(pdf_cwd(internId, dest_path), pdf_postfix(file_name))
                     if action == 'delete':
-                        os.system('rm  %s'%pdf_path)
+                        if os.path.exists(pdf_path):
+                            os.system('rm  %s'%pdf_path)
                         os.remove(storage_path)
                         flash('删除成功！')
                     elif action == 'rename_begin':
