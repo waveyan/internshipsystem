@@ -4226,7 +4226,8 @@ def xSum_fileManager():
                     # 确认重命名
                     elif action == 'rename_comfirm':
                         new_name = request.form.get('new_name')
-                        os.rename(pdf_path, os.path.join(pdf_cwd(internId, dest_path), pdf_postfix(new_name)))
+                        if os.path.exists(pdf_path):
+                            os.rename(pdf_path, os.path.join(pdf_cwd(internId, dest_path), pdf_postfix(new_name)))
                         os.rename(storage_path, os.path.join(storage_cwd(internId, dest_path), new_name))
                         flash('重命名成功！')
             return redirect(url_for('.xSum_fileManager', stuId=stuId, internId=internId))
