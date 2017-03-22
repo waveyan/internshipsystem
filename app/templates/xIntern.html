@@ -241,7 +241,7 @@
         <tr>
             <th>企业名称
                 {% if comInfor.comCheck != 2 %}
-                    <span class="label label-warning">未通过审核</span>
+                    <span class="label label-warning">待审核</span>
                 {% endif %}
             </th>
             <td height="50" width="400" colspan="5"><a href="{{ url_for('.cominfor', id=comInfor.comId) }}">{{ comInfor.comName }}</a></td>

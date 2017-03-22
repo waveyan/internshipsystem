@@ -442,9 +442,9 @@ login_manager.anonymous_user=AnonymousUser
 class Introduce(db.Model):
     __tablename__='Introduce'
     Id=db.Column(db.Integer,primary_key=True)
-    content=db.Column(db.String(1000))
+    content=db.Column(db.String(2000))
     time=db.Column(db.DATE)
-    content_html=db.Column(db.String(1000))
+    content_html=db.Column(db.String(2000))
 
     @staticmethod
     def change_content(target,value,oldvalue,initiator):
