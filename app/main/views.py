@@ -1838,7 +1838,7 @@ def xJournalEditProcess():
     except Exception as e:
         print('邮件发送异常:',e)
     flash("修改日志成功")
-    return redirect(url_for('.xJournal', stuId=stuId, internId=internId))
+    return redirect(url_for('.xJournal', stuId=stuId, internId=internId,jourId=jourId))
 
 
 # 学生信息的筛选项(副导航栏)操作,对所选筛选项进行删除,0实习信息批量审核，

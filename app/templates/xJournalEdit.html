@@ -36,32 +36,93 @@
         var wed=$('#wed');
         var thu=$('#thu');
         var fri=$('#fri');
-        var flag=true;
+        var flag1=true;
+        var flag2=true;
+        var flag3=true;
+        var flag4=true; 
+        var flag5=true;        
         if(mon.val()!==undefined)
-            if(mon.val().length>1000||mon.val().length<30){
-                flag=false;
+            if(mon.val().toString().replace(" ","")=="请假"){
+                flag1=true;
             }
+            else if(mon.val().length>1000||mon.val().length<30){
+                flag1=false;
+            }
+
         if(tue.val()!==undefined)
-            if(tue.val().length>1000||tue.val().length<30){
-                flag=false;
+            if(tue.val().toString().replace(" ","")=="请假"){
+                flag2=true;
+            }
+            else if(tue.val().length>1000||tue.val().length<30){
+                flag2=false;
             }
         if(wed.val()!==undefined)
-            if(wed.val().length>1000||wed.val().length<30){
-                flag=false;
+            if(wed.val().toString().replace(" ","")=="请假"){
+                flag3=true;
             }
+            else if(wed.val().length>1000||wed.val().length<30){
+                flag3=false;
+            }
+
         if(thu.val()!==undefined)
-            if(thu.val().length>1000||thu.val().length<30){
-                flag=false;
+            if(thu.val().toString().replace(" ","")=="请假"){
+                flag4=true;
             }
+            else if(thu.val().length>1000||thu.val().length<30){
+                flag4=false;
+            }
+
         if(fri.val()!==undefined)
-            if(fri.val().length>1000||fri.val().length<30){
-                flag=false;
+            if(fri.val().toString().replace(" ","")=="请假"){
+                flag5=true;
             }
-        if(!flag){
-            alert("日志字数请确保在30字到1000字范围内！");
+            else if(fri.val().length>1000||fri.val().length<30){
+                flag5=false;
+            }
+
+        if(!(flag1&&flag2&&flag3&&flag4&&flag5)){
+            alert("周一至周五日志字数请确保在30字到1000字范围内！若请假期间没有工作日志，请直接在日志中输入“请假”二字！");
         }
-        return flag;
+        return flag1&&flag2&&flag3&&flag4&&flag5;
     }
+</script>
+<script type="text/javascript">
+var str="日志字数30-1000，若请假请输入“请假”二字即可。"
+    $(document).ready(function(){
+        var mon=document.getElementById("mon");
+        var tue=document.getElementById("tue");
+        var wed=document.getElementById("wed");
+        var thu=document.getElementById("thu");
+        var fri=document.getElementById("fri");
+        if(mon!=null)
+            // 不知道为何这个value是" ",，而my_click的value是""
+            if(mon.value==" ")
+                mon.value=str;
+        if(tue!=null)
+            if(tue.value==" ")
+                tue.value=str;
+        if(wed!=null)
+            if(wed.value==" ")
+                wed.value=str;
+        if(thu!=null)
+            if(thu.value==" ")
+                thu.value=str;
+        if(fri!=null)
+            if(fri.value==" ")
+                fri.value=str;
+    });
+function my_click(obj, myid){
+    if (document.getElementById(myid).value == str){
+      document.getElementById(myid).value = '';
+      obj.style.color='#000';
+    }
+}
+function my_blur(obj, myid){
+    if (document.getElementById(myid).value ==""){
+     document.getElementById(myid).value = str
+     obj.style.color='#999';
+ }
+}
 </script>
 {% endblock %}<!--先执行父模板-->
 
@@ -101,7 +162,7 @@
     </table>
     <br>
     <table align="center" border="2" class="table-bordered">
-    <form method="POST" action="/xJournalEditProcess" onsubmit="return checkJournal()">
+    <form method="POST" action="/xJournalEditProcess?jourId={{ jour.Id}}" onsubmit="return checkJournal()">
         {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'日'} %}
         {% set cur = jour.workStart.isoweekday() %}
         {% set cur_end = jour.workEnd.isoweekday() %}
@@ -116,31 +177,31 @@
                 <th height="50">{{ jour.workStart }}至{{ jour.workEnd }}</th>
                 <td height="50">一</td>
                 {% set temp=jourform.mon.process_data(jour.mon) %}
-                <td height="300">{{ jourform.mon(class="form-control") }}<span></span></td>
+                <td height="300">{{ jourform.mon(class="form-control",onclick="my_click(this, 'mon');",onBlur="my_blur(this, 'mon');") }}<span></span></td>
             </tr>
             <tr>
                 <th></th>
                 <td height="50">二</td>
                 {% set temp=jourform.tue.process_data(jour.tue) %}
-                <td height="300">{{ jourform.tue(class="form-control") }}</td>
+                <td height="300">{{ jourform.tue(class="form-control",onclick="my_click(this, 'tue');",onBlur="my_blur(this, 'tue');") }}</td>
             </tr>
             <tr>
                 <th></th>
                 <td height="50">三</td>
                 {% set temp=jourform.wed.process_data(jour.wed) %}
-                <td height="300">{{ jourform.wed(class="form-control") }}</td>
+                <td height="300">{{ jourform.wed(class="form-control",onclick="my_click(this, 'wed');",onBlur="my_blur(this, 'wed');") }}</td>
             </tr>
             <tr>
                 <th></th>
                 <td height="50">四</td>
                 {% set temp=jourform.thu.process_data(jour.thu) %}
-                <td height="300">{{ jourform.thu(class="form-control") }}</td>
+                <td height="300">{{ jourform.thu(class="form-control",onclick="my_click(this, 'thu');",onBlur="my_blur(this, 'thu');") }}</td>
             </tr>
             <tr>
                 <th></th>
                 <td height="50">五</td>
                 {% set temp=jourform.fri.process_data(jour.fri) %}
-                <td height="300">{{ jourform.fri(class="form-control") }}</td>
+                <td height="300">{{ jourform.fri(class="form-control",onclick="my_click(this, 'fri');",onBlur="my_blur(this, 'fri');") }}</td>
             </tr>
             <tr>
                 <th></th>
@@ -161,19 +222,19 @@
                 <td height="50">{{ weekday2ch[cur] }}</td>
                 {% if cur==1 %}
                     {% set temp=jourform.mon.process_data(jour.mon) %}
-                    <td height="300">{{ jourform.mon(class="form-control") }}</td>
+                    <td height="300">{{ jourform.mon(class="form-control",onclick="my_click(this, 'mon');",onBlur="my_blur(this, 'mon');") }}</td>
                 {%elif cur==2 %}
                     {% set temp=jourform.tue.process_data(jour.tue) %}
-                    <td height="300">{{ jourform.tue(class="form-control") }}</td>
+                    <td height="300">{{ jourform.tue(class="form-control",onclick="my_click(this, 'tue');",onBlur="my_blur(this, 'tue');") }}</td>
                 {%elif cur==3 %}
                     {% set temp=jourform.wed.process_data(jour.wed) %}
-                    <td height="300">{{ jourform.wed(class="form-control") }}</td>
+                    <td height="300">{{ jourform.wed(class="form-control",onclick="my_click(this, 'wed');",onBlur="my_blur(this, 'wed');") }}</td>
                 {%elif cur==4 %}
                     {% set temp=jourform.thu.process_data(jour.thu) %}
-                    <td height="300">{{ jourform.thu(class="form-control") }}</td>
+                    <td height="300">{{ jourform.thu(class="form-control",onclick="my_click(this, 'thu');",onBlur="my_blur(this, 'thu');") }}</td>
                 {%elif cur==5 %}
                     {% set temp=jourform.fri.process_data(jour.fri) %}
-                    <td height="300">{{ jourform.fri(class="form-control") }}</td>
+                    <td height="300">{{ jourform.fri(class="form-control",onclick="my_click(this, 'fri');",onBlur="my_blur(this, 'fri');") }}</td>
                 {%elif cur==6 %}
                     {% set temp=jourform.sat.process_data(jour.sat) %}
                     <td height="300">{{ jourform.sat(class="form-control") }}</td>
@@ -189,16 +250,16 @@
                     <td height="50">{{ weekday2ch[cur+x+1] }}</td>
                     {%if cur+x+1==2 %}
                         {% set temp=jourform.tue.process_data(jour.tue) %}
-                        <td height="300">{{ jourform.tue(class="form-control") }}</td>
+                        <td height="300">{{ jourform.tue(class="form-control",onclick="my_click(this, 'tue');",onBlur="my_blur(this, 'tue');") }}</td>
                     {%elif cur+x+1==3 %}
                         {% set temp=jourform.wed.process_data(jour.wed) %}
-                        <td height="300">{{ jourform.wed(class="form-control") }}</td>
+                        <td height="300">{{ jourform.wed(class="form-control",onclick="my_click(this, 'wed');",onBlur="my_blur(this, 'wed');") }}</td>
                     {%elif cur+x+1==4 %}
                         {% set temp=jourform.thu.process_data(jour.thu) %}
-                        <td height="300">{{ jourform.thu(class="form-control") }}</td>
+                        <td height="300">{{ jourform.thu(class="form-control",onclick="my_click(this, 'thu');",onBlur="my_blur(this, 'thu');") }}</td>
                     {%elif cur+x+1==5 %}
                         {% set temp=jourform.fri.process_data(jour.fri) %}
-                        <td height="300">{{ jourform.fri(class="form-control") }}</td>
+                        <td height="300">{{ jourform.fri(class="form-control",onclick="my_click(this, 'fri');",onBlur="my_blur(this, 'fri');") }}</td>
                     {%elif cur+x+1==6 %}
                         {% set temp=jourform.sat.process_data(jour.sat) %}
                         <td height="300">{{ jourform.sat(class="form-control") }}</td>
