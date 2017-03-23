@@ -4027,7 +4027,7 @@ def storage_upload(internId):
                     dest = path_dict[x]
                     file_path = storage_cwd(internId, dest)
                     file.save(os.path.join(file_path, file.filename))
-            return True
+                    return True
         except Exception as e:
             print(datetime.now(), '上传文件失败', e)
             return False

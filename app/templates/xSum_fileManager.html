@@ -262,7 +262,7 @@
             </tbody>
         </table>
         <form action="" method=post enctype=multipart/form-data>
-            <input type=file name="attachment_upload" value="选择文件" class="file" multiple="multiple"><br>
+            <input type=file name="attachment_upload" value="选择文件" class="file"><br>
             <input type="hidden" name="attachment_upload" values="1">
         </form>
                 <h5><small>
@@ -277,7 +277,7 @@
             <script type="text/javascript">
             $('.file').fileinput({
                 language: 'zh', //设置语言
-                maxFileCount: 5,
+                maxFileCount: 1,
                 showUpload: true, //是否显示上传按钮
                 showCaption: true,//是否显示标题
                 browseClass: "btn btn-primary", //按钮样式             
