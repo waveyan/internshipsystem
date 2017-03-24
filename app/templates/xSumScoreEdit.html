@@ -8,6 +8,30 @@
         <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
     <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
     <script src="/static/JS/locales/fileinput_locale_zh.js" charset="utf-8"></script>
+     <!-- 上传等待 -->
+<style>
+.loading{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:300;
+    background-image:url(static/loading.gif);
+    background-repeat:no-repeat;
+    background-position:center center;
+    background-color:#000;
+    background-color:rgba(0,0,0,0.5);
+    filter:alpha(opacity=50);
+}
+</style>
+<script type="text/javascript">
+        function getLoading() {
+            if((($('#comfile')).val()!==undefined&&($('#comfile')).val()!=="")||(($('#schfile')).val()!==undefined&&($('#schfile')).val()!=="")){
+            document.getElementById("ddd").setAttribute('class', 'loading');
+        }
+    }
+</script>
 {% endblock %}<!--先执行父模板-->
 
 {% block title %}实习总结与成果{% endblock %}
@@ -95,7 +119,7 @@
                 </tr>
             </table>
             <br>
-            {{ form.submit(class="btn btn-primary") }}
+            {{ form.submit(class="btn btn-primary",onclick="getLoading()") }}
         </form>
         {#    #delete score of company#}
         <form id="schscore_delete" method="post">
@@ -111,6 +135,8 @@
     <br><span class="label label-danger">注意</span>
     <br>*&nbsp&nbsp校内外实习评分表只允许各上传一份，若要重新上传，请先删除原评分表
     <br>*&nbsp&nbsp请在纸质评分表上签名, 并拍照上传
+    <div id="ddd"></div>
+    {{ form.submit(class="btn btn-primary",onclick="getLoading()") }}
 {% endblock %}
   {% block scripts %}
             <script type="text/javascript">

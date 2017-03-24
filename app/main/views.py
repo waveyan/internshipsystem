@@ -4655,8 +4655,13 @@ def upload_Visit():
         try:
             file=request.files.get('visit')
             if file:
-                if not os.path.exists('%s/visit/%s'%(STORAGE_FOLDER,userId)):
-                    os.system('mkdir %s/visit/%s' % (STORAGE_FOLDER,userId))
+                path='%s/visit/%s'%(STORAGE_FOLDER,userId)
+                if not os.path.exists(path):
+                    os.system('mkdir '+path)
+                files=os.listdir(path)
+                if file.filename in files:
+                    flash("上传的探访记录有重名，请更换探访记录文件名称！")
+                    return redirect(url_for(".upload_Visit"))
                 tea_url='%s/visit/%s/%s'%(STORAGE_FOLDER,userId,file.filename)
                 file.save(tea_url)
                 visit=Visit(userId=userId,filename=file.filename,time=datetime.now(),vteaName=request.form.get('teaName'),visitTime=request.form.get('visitTime'),visitWay=request.form.get('visitWay'))

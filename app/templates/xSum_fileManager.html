@@ -38,7 +38,32 @@
         <link rel="stylesheet" type="text/css" media="screen" href="/static/CSS/fileinput.min.css">
     <script type="text/javascript" src="/static/JS/fileinput.min.js" charset="UTF-8"></script>
     <script src="/static/JS/locales/fileinput_locale_zh.js" charset="utf-8"></script>
+<script type="text/javascript">
+</script>
+<!-- 上传等待 -->
+<style>
+.loading{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:300;
+    background-image:url(static/loading.gif);
+    background-repeat:no-repeat;
+    background-position:center center;
+    background-color:#000;
+    background-color:rgba(0,0,0,0.5);
+    filter:alpha(opacity=50);
+}
+</style>
+<script type="text/javascript">
+        function checkForm(){
+            document.getElementById("ddd").setAttribute('class', 'loading');
+            return true;
 
+        }
+</script>
 {% endblock %}<!--先执行父模板-->
 
 {% block title %}实习总结与成果 - 文件管理{% endblock %}
@@ -189,7 +214,7 @@
             {% else %}
                 </tbody>
                 </table>
-                <form action="" method=post enctype=multipart/form-data>
+                <form action="" method=post enctype=multipart/form-data onsubmit="return checkForm()">
                     <input type=file name="summary_doc_upload" value="选择文件" class="file"><br>
                     <input type="hidden" name="summary_doc2_upload" values="1">
                 </form>
@@ -261,7 +286,7 @@
             {% endfor %}
             </tbody>
         </table>
-        <form action="" method=post enctype=multipart/form-data>
+        <form action="" method=post enctype=multipart/form-data onsubmit="return checkForm()">
             <input type=file name="attachment_upload" value="选择文件" class="file"><br>
             <input type="hidden" name="attachment_upload" values="1">
         </form>
@@ -271,6 +296,7 @@
         ”，“）”，“ ’ ”，“ ‘ ”等特殊字符
         </small></h5>
     {% endif %}
+    <div id="ddd"></div>
 {% endblock %}
 
   {% block scripts %}
