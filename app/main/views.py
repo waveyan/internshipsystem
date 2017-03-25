@@ -771,7 +771,6 @@ def xInternEdit():
                 for i in request.files.getlist('image'):
                     i.save('%s/%s/agreement/%s' % (STORAGE_FOLDER, internId,i.filename))
             flash('修改成功！')
-            return redirect(url_for('.xIntern',stuId=stuId,internId=internId))
         except Exception as e:
             db.session.rollback()
             flash("修改失败！")
@@ -794,6 +793,7 @@ def xInternEdit():
                     except Exception as e:
                         print("实习信息修改邮件通知",e) 
                         return redirect(url_for('.xIntern',stuId=stuId,internId=internId)) 
+        return redirect(url_for('.xIntern',stuId=stuId,internId=internId)) 
     return render_template('xStuInternEdit.html', Permission=Permission,internId=internId,stuId=stuId,imageName=imageName,iform=iform,teachers=teachers,comId=comId)
 
 
