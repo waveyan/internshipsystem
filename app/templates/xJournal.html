@@ -92,7 +92,7 @@
                         {% endif %}
                         <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">导出到Excel</a>
                         {% if current_user.can(Permission.STU_JOUR_EDIT) %}
-                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
+                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id, page=page) }}">编辑日志</a></li>
                             <li class="divider" />
                         {% endif %}
                     {% endfor %}

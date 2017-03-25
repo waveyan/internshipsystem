@@ -1769,12 +1769,13 @@ def xJournalEdit():
     student = Student.query.filter_by(stuId=stuId).first()
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     internship = InternshipInfor.query.filter_by(Id=internId).first()
+    page = request.args.get('page')
     jourform = journalForm()
     if jour.jourCheck == 1 and current_user.roleId != 3:
         flash('日志已通过审核,无法修改')
         return redirect('/')
     return render_template('xJournalEdit.html', Permission=Permission, jour=jour, student=student, comInfor=comInfor,
-                           internship=internship, jourform=jourform)
+                           internship=internship, jourform=jourform, page=page)
 def htmlEscape(data):
     if data:
         data=data.replace("&","&amp;")
@@ -1805,6 +1806,7 @@ def xJournalEditProcess():
     sun = htmlEscape(request.form.get('sun'))
     stuId = request.form.get('stuId')
     internId = request.form.get('internId')
+    page = request.form.get('page')
     try:
         # where加上stuId,是为了防止学生修改其他学生的日志
         db.session.execute('update Journal set \
@@ -1838,7 +1840,7 @@ def xJournalEditProcess():
     except Exception as e:
         print('邮件发送异常:',e)
     flash("修改日志成功")
-    return redirect(url_for('.xJournal', stuId=stuId, internId=internId,jourId=jourId))
+    return redirect(url_for('.xJournal', stuId=stuId, internId=internId,jourId=jourId, page=page))
 
 
 # 学生信息的筛选项(副导航栏)操作,对所选筛选项进行删除,0实习信息批量审核，
