@@ -719,8 +719,9 @@ def xInternEdit():
             internship=InternshipInfor.query.filter_by(Id=internId).first()
             old_teaName = request.form.getlist('old_teaName')
             for x in old_teaName:
-                old_teacher=Teacher.query.filter_by(teaName=x).first()
-                internship.schdirtea.remove(old_teacher)
+                old_teacherId=Teacher.query.filter_by(teaName=x).first().teaId
+                db.session.execute("delete from SchDirTea where internId=%s and teaId=%s"%(internId,old_teacherId))
+                # internship.schdirtea.remove(old_teacher)
             i=0
             while True:
                 i = i + 1
