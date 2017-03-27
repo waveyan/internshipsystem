@@ -22,7 +22,11 @@
 {% endblock %}<!--先执行父模板-->
 {% block page_content %}
     <h2>{{ key }} 的搜索结果,共搜到 {{ num }} 条企业信息：
+{% if selectCom==None %}
         {{ search.search(url_for('.com_search'),form) }}
+        {% else %}
+    {{ search.search(url_for('.com_search',selectCom="selectCom"),form) }}
+    {% endif %}
     </h2>
     <div>
         <table class="table">

@@ -595,6 +595,16 @@ def xIntern():
                 file_name=request.form.get('download')
                 return send_file(os.path.join(STORAGE_FOLDER,internId,'agreement',file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
+        if 'rename' in request.form:
+            old_name=request.form.get("old_name")
+            new_name=os.path.join(STORAGE_FOLDER,internId,'agreement',request.form.get("new_name").strip())
+            print(type(request.form.get("new_name").strip()))
+            if request.form.get("new_name").strip()!='':                                                
+                os.rename(os.path.join(STORAGE_FOLDER,internId,'agreement',old_name),new_name)
+                flash("重命名成功！")
+                return redirect(url_for('.xIntern',internId=internId,stuId=stuId))
+            else:
+                flash("重命名失败！")
         if current_user.roleId == 0 or current_user.can(Permission.STU_INTERN_SEARCH) or schdirtea_can:
             isexport = request.form.get('isexport')
             if isexport:

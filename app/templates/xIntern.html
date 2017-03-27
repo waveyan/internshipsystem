@@ -155,7 +155,34 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal -->
     </div>
-
+<script type="text/javascript">
+    function rename_action(old){
+        var old_name=document.getElementById(old);
+        if(old_name.style.display!="none"){
+        var new_name=document.createElement('input');
+        var b=document.createElement('button')
+        b.innerText="提交";
+        $(b).text("提交");
+        b.setAttribute("onclick","sumbitform('"+old+"')")
+        new_name.id="newname";
+        new_name.value=old_name.innerText;
+        var td=old_name.parentNode;
+        td.appendChild(new_name);
+        td.appendChild(b);
+    }
+        old_name.style.display="none";
+    }
+    function sumbitform(old){
+        var new_name=document.createElement("input");
+        new_name.value=document.getElementById("newname").value;
+        new_name.name="new_name";
+        str=old+"_rename";
+        alert(new_name.value)
+        var form=document.getElementById(str);
+        form.appendChild(new_name);
+        form.submit();
+    }
+</script>
 {% endblock %}<!--先执行父模板-->
 {% block page_content %}
     <!--Excel导出-->
@@ -332,11 +359,15 @@
        </tr>
        {% for name,path in path %}
        {% if 'pdf' in name %}
-       <tr><td height="50" colspan="6"><a onClick="ReadOnline({{'\''+path+'\''}})">{{name}}</a></td>
-       <td><a href="javascript:{}"onclick="document.getElementById('{{name}}_download').submit();">下载</a></td>
+       <tr><td height="50" colspan="6"><a onClick="ReadOnline({{'\''+path+'\''}})" id="{{name}}">{{name}}</a></td>
+       <td><a href="javascript:{}"onclick="rename_action('{{name}}')">重命名</a>|<a href="javascript:{}"onclick="document.getElementById('{{name}}_download').submit();">下载</a></td>
        </tr>
     <form id="{{name}}_download" method="post">
         <input type="hidden" name="download" value="{{ name }}">
+    </form>
+    <form id="{{name}}_rename" method="post">
+        <input type="hidden" name="rename">
+        <input type="hidden" name="old_name" value="{{ name }}">
     </form>
        <tr>
        {%else%}
