@@ -1141,7 +1141,7 @@ def allcomCheck():
 @main.route('/com_delete', methods=['GET', 'POST'])
 @not_student_login
 def com_delete():
-    if not current_user.can(Permission.COM_INFOR_CHECK):
+    if not current_user.can(Permission.COM_INFOR_EDIT):
         flash("权限不足！")
         return redirect(url_for('.interncompany'))
     else:
