@@ -103,7 +103,7 @@
                         {% else %}
                         <h5><small>
                             {{ form.comfile(class='file') }}
-                            仅支持jpe、png、gif格式图片上传</small></h5>
+                            仅支持jpg、png、gif格式图片上传</small></h5>
                         {% endif %}
                     </td>
                     <th width="200">校内评分表</th>
@@ -113,7 +113,7 @@
                             {{ file_path['schscore'] }}&nbsp;&nbsp;&nbsp;<a href="javascript:{}"
                                                                             onclick="document.getElementById('schscore_delete').submit();">删除</a>
                         {% else %}
-                            <h5><small>{{ form.schfile(class='file') }}仅支持jpe、png、gif格式图片上传</small></h5>
+                            <h5><small>{{ form.schfile(class='file') }}仅支持jpg、png、gif格式图片上传</small></h5>
                         {% endif %}
                     </td>
                 </tr>

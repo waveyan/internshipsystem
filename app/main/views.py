@@ -487,9 +487,9 @@ def addInternship():
                     tea=Teacher.query.filter_by(teaName=teaValue).first()
                     if tea:
                         internship.schdirtea.append(tea)
-                    else:
-                        tea=Teacher.query.filter_by(teaName='无该用户').first()
-                        internship.schdirtea.append(tea)
+                    # else:
+                        # tea=Teacher.query.filter_by(teaName='无该用户').first()
+                        # internship.schdirtea.append(tea)
                 else:
                     break
             db.session.commit()
@@ -740,9 +740,9 @@ def xInternEdit():
                     tea=Teacher.query.filter_by(teaName=teaValue).first()
                     if tea:
                         internship.schdirtea.append(tea)
-                    else:
-                        tea=Teacher.query.filter_by(teaName='无该用户').first()
-                        internship.schdirtea.append(tea)
+                    # else:
+                        # tea=Teacher.query.filter_by(teaName='无该用户').first()
+                        # internship.schdirtea.append(tea)
                 else:
                     break
             #修改实习信息
@@ -3903,7 +3903,7 @@ def stuSumList():
         # 函数返回的intern已经join了Student,Summary
         intern = create_intern_filter(grade, major, classes, 2)
         pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId)\
-            .filter(InternshipInfor.internCheck == 2, InternshipInfor.internStatus == 2) \
+            .filter(InternshipInfor.internCheck == 2, InternshipInfor.internStatus == 2,InternshipInfor.jourCheck==1) \
             .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                          InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
@@ -4085,6 +4085,10 @@ def xSumScoreEdit():
     internId = request.args.get('internId')
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
+    sumCheck=Summary.query.filter_by(internId=internship.Id).first().sumCheck
+    # if sumCheck==2 and not current_user.can(Permission.STU_SUM_SCO_CHECK):
+        # flash("非法操作！")
+        # return redirect(url_for(".index")) 
     path = storage_cwd(internId, 'score_img')
     file_path = {}
     if os.path.exists(path):

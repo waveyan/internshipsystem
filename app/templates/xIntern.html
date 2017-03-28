@@ -114,7 +114,10 @@
                 </div>
                 <div class="modal-body">
                     <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
-                        该实习申请已审核通过,修改实习时间有可能清空部分实习日志,是否仍要继续?</h4>
+                    {% if internship.internCheck == 2 %}
+                        该实习申请已审核通过,
+                    {% endif %}
+                        修改实习时间有可能清空部分实习日志,是否仍要继续?</h4>
                 </div>
                 <div class="modal-footer">
                     <!-- 用form来获取数据 -->
