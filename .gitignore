@@ -3,12 +3,14 @@
 bin/
 config.py
 .idea/
-storage/
-app/static/storage
+
+!storage/
+storage/*
+!storage/visit
+
+# app/static/storage
 app/static/Flexpaper
-onlinePDF/
 *.swf
-file_cache
 py3venv/
 .nohup.out
 export_all.list
@@ -38,7 +40,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-*.xls
 *.xlsx
 
 # PyInstaller
