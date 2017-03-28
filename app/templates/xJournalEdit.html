@@ -31,6 +31,7 @@
 </style>
 <script type="text/javascript">
     function checkJournal(){
+        var str="日志字数30-1000，若请假或放假期间没有工作日志请输入“请假”或“放假”二字即可。"
         var mon=$('#mon');
         var tue=$('#tue');
         var wed=$('#wed');
@@ -42,52 +43,52 @@
         var flag4=true; 
         var flag5=true;        
         if(mon.val()!==undefined)
-            if(mon.val().toString().replace(" ","")=="请假"){
+            if(mon.val().toString().replace(" ","")=="请假"||mon.val().toString().replace(" ","")=="放假"){
                 flag1=true;
             }
-            else if(mon.val().length>1000||mon.val().length<30){
+            else if(mon.val().length>1000||mon.val().length<30||mon.val()==str){
                 flag1=false;
             }
 
         if(tue.val()!==undefined)
-            if(tue.val().toString().replace(" ","")=="请假"){
+            if(tue.val().toString().replace(" ","")=="请假"||tue.val().toString().replace(" ","")=="放假"){
                 flag2=true;
             }
-            else if(tue.val().length>1000||tue.val().length<30){
+            else if(tue.val().length>1000||tue.val().length<30||tue.val()==str){
                 flag2=false;
             }
         if(wed.val()!==undefined)
-            if(wed.val().toString().replace(" ","")=="请假"){
+            if(wed.val().toString().replace(" ","")=="请假"||wed.val().toString().replace(" ","")=="放假"){
                 flag3=true;
             }
-            else if(wed.val().length>1000||wed.val().length<30){
+            else if(wed.val().length>1000||wed.val().length<30||wed.val()==str){
                 flag3=false;
             }
 
         if(thu.val()!==undefined)
-            if(thu.val().toString().replace(" ","")=="请假"){
+            if(thu.val().toString().replace(" ","")=="请假"||thu.val().toString().replace(" ","")=="放假"){
                 flag4=true;
             }
-            else if(thu.val().length>1000||thu.val().length<30){
+            else if(thu.val().length>1000||thu.val().length<30||thu.val()==str){
                 flag4=false;
             }
 
         if(fri.val()!==undefined)
-            if(fri.val().toString().replace(" ","")=="请假"){
+            if(fri.val().toString().replace(" ","")=="请假"||fri.val().toString().replace(" ","")=="放假"){
                 flag5=true;
             }
-            else if(fri.val().length>1000||fri.val().length<30){
+            else if(fri.val().length>1000||fri.val().length<30||fri.val()==str){
                 flag5=false;
             }
 
         if(!(flag1&&flag2&&flag3&&flag4&&flag5)){
-            alert("周一至周五日志字数请确保在30字到1000字范围内！若请假期间没有工作日志，请直接在日志中输入“请假”二字！");
+            alert("周一至周五日志字数请确保在30字到1000字范围内！若请假或放假期间没有工作日志，请直接在日志中输入“请假”或“放假”二字！");
         }
         return flag1&&flag2&&flag3&&flag4&&flag5;
     }
 </script>
 <script type="text/javascript">
-var str="日志字数30-1000，若请假请输入“请假”二字即可。"
+var str="日志字数30-1000，若请假或放假期间没有工作日志请输入“请假”或“放假”二字即可。"
     $(document).ready(function(){
         var mon=document.getElementById("mon");
         var tue=document.getElementById("tue");

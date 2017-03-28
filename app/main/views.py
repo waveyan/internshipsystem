@@ -4006,6 +4006,7 @@ def xSum_fileManager():
                     storage_path = os.path.join(storage_cwd(internId, dest_path), file_name)
                     pdf_path = os.path.join(pdf_cwd(internId, dest_path), pdf_postfix(file_name))
                     if action == 'delete':
+                        print(pdf_path)
                         if os.path.exists(pdf_path):
                             os.system('rm  %s'%pdf_path)
                         os.remove(storage_path)
