@@ -3982,6 +3982,13 @@ def xSum_fileManager():
     internId = request.args.get('internId')
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
+    #确保先上传实习评分表再上传实习总结
+    storage_path = storage_cwd(internId, "score_img")
+    comscore=os.listdir(os.path.join(storage_path,"comscore"))
+    schscore=os.listdir(os.path.join(storage_path,"schscore"))
+    if not (len(comscore)!=0 and len(schscore)!=0):
+        flash("请先上传评分表和成绩，方能上传总结！")
+        return redirect(url_for(".xSumScoreEdit",internId=internId,stuId=stuId))
     if internship.internStatus == 2:
         student = Student.query.filter_by(stuId=stuId).first()
         comInfor = ComInfor.query.filter_by(comId=comId).first()
