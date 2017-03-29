@@ -78,15 +78,13 @@
         <thead>
         <tr>
             <th></th>
-            <th>日志名称</th>
+            <th>姓名</th>
+            <th>实习企业</th>
             <th>学号</th>
             <th>开始时间</th>
             <th>结束时间</th>
             <th>日志状态</th>
             <th>实习状态</th>
-            <!--
-            <th>操作</th>
-            -->
         </tr>
         </thead>
         <tbody>
@@ -95,8 +93,9 @@
                 <tr>
                     <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
                     <td>
-                        <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}在{{ intern.comName }}的日子</a>
+                        <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}</a>
                     </td>
+                    <td>{{ intern.comName }}</td>
                     <td>{{ intern.stuId }}</td>
                     <td>{{ intern.start }}</td>
                     <td>{{ intern.end }}</td>

@@ -333,6 +333,7 @@ class Summary(db.Model):
     comScore = db.Column(db.Integer)
     schScore = db.Column(db.Integer)
     sumScore = db.Column(db.Integer)
+    uploaded=db.Column(db.Integer,default=0)
 
 
 class Journal(db.Model):

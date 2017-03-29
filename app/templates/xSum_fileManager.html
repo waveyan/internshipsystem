@@ -109,13 +109,13 @@
                 </a>
             </h1>
 
-            <!-- 日志总体审核情况 -->
-            {% if internship.jourCheck == 0 %}
-                <span class="label label-warning">待审核...</span>
-            {% else %}
-                <span class="label label-info">已审核</span>
-            {% endif %}
-            <br><br>
+        <!-- 审核情况 -->
+        {% if summary.sumCheck == 2 %}
+            <span class="label label-info">已审核</span>
+        {% else %}
+            <span class="label label-warning">待审核...</span>
+        {% endif %}
+        <br><br>
 
         </div>
 

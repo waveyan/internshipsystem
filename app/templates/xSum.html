@@ -125,7 +125,7 @@
             </ul>
         </div>
         {% if comfirm_can and summary.sumCheck != 2  %}
-            <a onClick="ComfirmCheck()"><button class="btn btn-success">点击这里通过审核</button></a>
+            <a onClick="ComfirmCheck()"><button class="btn btn-success">点击这里进行审核</button></a>
             {% endif %}
         {% if current_user.roleId == 0  and summary.sumCheck!=2 %}
         <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}"><button class="btn btn-success">上传总结和附件</button></a>

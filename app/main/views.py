@@ -750,6 +750,9 @@ def xInternEdit():
             internship.post=iform.post.data
             internship.start=iform.start.data
             internship.end=iform.end.data
+            #若是被退回，则修改为待审核状态
+            if(internship,internCheck==1):
+                internship.internCheck=0
             internship.time=datetime.now()
             db.session.add(internship)
             #修改企业指导老师
@@ -3995,7 +3998,32 @@ def xSum_fileManager():
                     # flag = storage_upload(internId, x)
                     flag = storage_upload(internId)
                     if flag:
-                        flash('上传成功')
+                        #若上传了总结，设置Summary 的uploaded为1(用于总结的批量审核)
+                        if "summary_doc2_upload" in request.form:
+                            summary.uploaded=1
+                            db.session.add(summary)
+                            try:
+                                db.session.commit()
+                            except Exception as e:
+                                print("Summary 的uploaded字段设置:",e)
+                                db.session.rollback()
+                                flash("操作失败，请重试")
+                                return redirect(url_for(".index"))
+                         #若是被退回，学生修改后状态改为待审核状态
+                        if current_user.roleId==0 and summary.sumCheck==1:
+                            summary.sumCheck=0
+                            db.session.add(summary)
+                            try:
+                                db.session.commit()
+                                flash('上传成功')
+                            except Exception as e:
+                                db.session.rollback()
+                                print("上传实习总结状态变化:",e)
+                                flash("操作失败，请重试")
+                                return redirect(url_for(".index"))
+                        else:
+                            flash('上传成功')
+
                     else:
                         flash('上传失败,请重试')
                 # 重命名/删除
@@ -4011,6 +4039,17 @@ def xSum_fileManager():
                             os.system('rm  %s'%pdf_path)
                         os.remove(storage_path)
                         flash('删除成功！')
+                        #若删除了总结，设置Summary 的uploaded为0(用于总结的批量审核)
+                        if "summary_doc" == request.form.get("dest_path"):
+                            summary.uploaded=0
+                            db.session.add(summary)
+                            try:
+                                db.session.commit()
+                            except Exception as e:
+                                print("Summary 的uploaded字段设置:",e)
+                                db.session.rollback()
+                                flash("操作失败，请重试")
+                                return redirect(url_for(".index"))
                     elif action == 'rename_begin':
                         rename = file_name
                         # 跳转到可编辑文件名的页面
@@ -4023,7 +4062,20 @@ def xSum_fileManager():
                         if os.path.exists(pdf_path):
                             os.rename(pdf_path, os.path.join(pdf_cwd(internId, dest_path), pdf_postfix(new_name)))
                         os.rename(storage_path, os.path.join(storage_cwd(internId, dest_path), new_name))
-                        flash('重命名成功！')
+                         #若是被退回，学生重命名后状态改为待审核状态
+                        if current_user.roleId==0 and summary.sumCheck==1:
+                            summary.sumCheck=0
+                            db.session.add(summary)
+                            try:
+                                db.session.commit()
+                                flash('重命名成功！')
+                            except Exception as e:
+                                db.session.rollback()
+                                print("重命名实习总结状态变化:",e)
+                                flash("操作失败，请重试")
+                                return redirect(url_for(".index"))
+                        else:
+                            flash('重命名成功！')
             return redirect(url_for('.xSum_fileManager', stuId=stuId, internId=internId))
 
         return render_template('xSum_fileManager.html', Permission=Permission, comInfor=comInfor, internship=internship,
@@ -4098,10 +4150,11 @@ def xSumScoreEdit():
         file = os.listdir(path + '/schscore')
         if file:
             file_path['schscore'] = file[0]
-    if internship.internStatus == 2:
-        student = Student.query.filter_by(stuId=stuId).first()
-        comInfor = ComInfor.query.filter_by(comId=comId).first()
-        summary = Summary.query.filter_by(internId=internId).first()
+    # if internship.internStatus == 2:
+    #xSumScore已有判断是否实习结束，这里暂不作判断，防止出错
+    student = Student.query.filter_by(stuId=stuId).first()
+    comInfor = ComInfor.query.filter_by(comId=comId).first()
+    summary = Summary.query.filter_by(internId=internId).first()
     if request.method == 'POST':
         if request.form.get('action') == 'upload':
             summary.comScore = form.comScore.data
@@ -4123,6 +4176,17 @@ def xSumScoreEdit():
                 if form.schfile.data:
                     form.schfile.data.save(paths[1] + '/' + form.schfile.data.filename)
                 flash('保存成功!!')
+                #若是被退回，学生修改后状态改为待审核状态
+                if current_user.roleId==0 and summary.sumCheck==1:
+                    summary.sumCheck=0
+                    db.session.add(summary)
+                    try:
+                        db.session.commit()
+                    except Exception as e:
+                        db.session.rollback()
+                        print("修改状态变化:",e)
+                        flash("操作失败，请重试")
+                        return redirect(url_for(".index"))
                 return redirect(url_for('.xSumScore', internId=internId, stuId=stuId))
             except Exception as e:
                 db.session.rollback()
@@ -4219,12 +4283,14 @@ def stuSum_allCheck():
         try:
             internId = request.form.getlist('approve[]')
             for x in internId:
-                db.session.execute(
-                    'update Summary set sumCheck=1, sumCheckTeaId=%s, sumCheckTime="%s" where internId=%s' % (
-                        CheckTeaId, CheckTime, x))
-                # 作消息提示
-                stuId = InternshipInfor.query.filter_by(Id=x).first().stuId
-                db.session.execute('update Student set sumCheck=1 where stuId=%s' % stuId)
+                uploaded=InternshipInfor.query.filter_by(Id=x).join(Summary,Summary.internId==InternshipInfor.Id).add_columns(Summary.uploaded).first().uploaded
+                if uploaded==1:
+                    db.session.execute(
+                        'update Summary set sumCheck=2, sumCheckTeaId=%s, sumCheckTime="%s" where internId=%s' % (
+                            checkTeaId, checkTime, x))
+                    # 作消息提示
+                    stuId = InternshipInfor.query.filter_by(Id=x).first().stuId
+                    db.session.execute('update Student set sumCheck=1 where stuId=%s' % stuId)
         except Exception as e:
             db.session.rollback()
             print(datetime.now(), ":", current_user.get_id(), "审核实习总结失败", e)
