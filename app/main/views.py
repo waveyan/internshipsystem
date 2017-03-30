@@ -2489,7 +2489,7 @@ def create_com_filter(city, flag=True):
 
 # 筛选项和组合查询,总结与成果返回的intern已经join了Student
 # 总结与成果返回的intern已经join了Student，outerjoin了summary
-# 日志返回的intern已经join了Student，Journal
+# 日志返回的intern已经join了Student
 # flag=0实习信息，flag=1实习日志，flag=2实习成果
 def create_intern_filter(grade, major, classes, flag):
     # 更新筛选项
@@ -2522,7 +2522,7 @@ def create_intern_filter(grade, major, classes, flag):
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(
                 Student.grade == session['grade'])
             elif flag==1:
-                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
                 Student.grade == session['grade'])
             else:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
@@ -2543,7 +2543,7 @@ def create_intern_filter(grade, major, classes, flag):
                 elif flag == 0:
                     intern = intern.filter(InternshipInfor.internCheck == session['checkStatus'])
                 else:
-                    intern = intern.filter_by(jourCheck=session['checkStatus'])
+                    intern = intern.filter(InternshipInfor.jourCheck==session['checkStatus'])
             if session.get('myStudent'):
                 intern=intern.join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
 
@@ -2551,7 +2551,7 @@ def create_intern_filter(grade, major, classes, flag):
             if flag==2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Student.major == session['major'])
             elif flag==1:
-                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(Student.major == session['major'])
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(Student.major == session['major'])
             else:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(Student.major == session['major'])
 
@@ -2570,7 +2570,7 @@ def create_intern_filter(grade, major, classes, flag):
                 elif flag == 0:
                     intern = intern.filter(InternshipInfor, InternshipInfor.internCheck == session['checkStatus'])
                 else:
-                    intern = intern.filter_by(jourCheck=session['checkStatus'])
+                    intern = intern.filter(InternshipInfor.jourCheck==session['checkStatus'])
             if session.get('myStudent'):
                 intern=intern.join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
 
@@ -2578,7 +2578,7 @@ def create_intern_filter(grade, major, classes, flag):
             if flag==2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(Student.classes == session['classes'])
             elif flag==1:
-                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(Student.classes == session['classes'])
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(Student.classes == session['classes'])
             else:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(Student.classes == session['classes'])
 
@@ -2598,8 +2598,7 @@ def create_intern_filter(grade, major, classes, flag):
                 elif flag == 0:
                     intern = intern.filter(InternshipInfor.internCheck == session['checkStatus'])
                 else:
-                    intern = intern.filter_by(
-                        jourCheck=session['checkStatus'])
+                    intern = intern.filter(InternshipInfor.jourCheck==session['checkStatus'])
             if session.get('myStudent'):
                 intern=intern.join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
 
@@ -2607,7 +2606,7 @@ def create_intern_filter(grade, major, classes, flag):
             if flag==2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).filter(InternshipInfor.internStatus == session['internStatus'])
             elif flag==1:
-                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).filter(InternshipInfor.internStatus == session['internStatus'])
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(InternshipInfor.internStatus == session['internStatus'])
             else:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(InternshipInfor.internStatus == session['internStatus'])
 
@@ -2626,7 +2625,7 @@ def create_intern_filter(grade, major, classes, flag):
                 elif flag == 0:
                     intern = intern.filter(InternshipInfor.internCheck == session['checkStatus'])
                 else:
-                    intern = intern.filter_by(jourCheck=session['checkStatus'])
+                    intern = intern.filter(InternshipInfor.jourCheck==session['checkStatus'])
             if session.get('myStudent'):
                 intern=intern.join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
 
@@ -2639,9 +2638,8 @@ def create_intern_filter(grade, major, classes, flag):
                 intern = InternshipInfor.query.filter(InternshipInfor.internCheck == session['checkStatus']) \
                     .join(Student, Student.stuId == InternshipInfor.stuId)
             else:
-                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal,
-                                                                                                          InternshipInfor.Id == Journal.internId).filter_by(
-                    jourCheck=session['checkStatus'])
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).filter(
+                    InternshipInfor.jourCheck==session['checkStatus'])
 
             if session.get('classes'):
                 intern = intern.filter(Student.classes == session['classes'])
@@ -2662,7 +2660,7 @@ def create_intern_filter(grade, major, classes, flag):
             if flag==2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary, Summary.internId == InternshipInfor.Id).join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
             elif flag==1:
-                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal, InternshipInfor.Id == Journal.internId).join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
             else:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(SchDirTea).join(Teacher).filter(Teacher.teaId==current_user.get_id())
             if session.get('major') is not None:
@@ -2688,8 +2686,7 @@ def create_intern_filter(grade, major, classes, flag):
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary,
                                                                                                                Summary.internId == InternshipInfor.Id)
             else:
-                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).join(Journal,
-                                                                                                          InternshipInfor.Id == Journal.internId)
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId)
 
     except Exception as e:
         print('组合筛选：', e)
