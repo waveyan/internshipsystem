@@ -426,6 +426,8 @@ def addInternship():
     i = 0
     j = 0
     try:
+        #flash()
+        str='提交实习信息成功！'
         if request.method == 'POST':
             # 若请求非学生,从request获取学生学号和姓名
             if current_user.roleId != 0:
@@ -487,7 +489,8 @@ def addInternship():
                     tea=Teacher.query.filter_by(teaName=teaValue).first()
                     if tea:
                         internship.schdirtea.append(tea)
-                    # else:
+                    else:
+                        str="相关实习信息填写成功，%s教师的基本信息未录入本系统，请联系管理员录入后，在修改实习信息页面添加校内指导老师即可。"%teaValue
                         # tea=Teacher.query.filter_by(teaName='无该用户').first()
                         # internship.schdirtea.append(tea)
                 else:
@@ -518,7 +521,7 @@ def addInternship():
                     i.save('%s/%s/agreement/%s' % (STORAGE_FOLDER, internId,i.filename))
 
             db.session.commit()
-            flash('提交实习信息成功！')
+            flash(str)
             return redirect(url_for('.update_intern_filter',flag=5))
     except Exception as e:
         print("实习信息：", e)
@@ -725,6 +728,8 @@ def xInternEdit():
                 return redirect(url_for('.xInternEdit',stuId=stuId,internId=internId))
     if request.method=='POST':
         try:
+            #flash()
+            str='修改成功！'
             #修改校内指导老师
             internship=InternshipInfor.query.filter_by(Id=internId).first()
             old_teaName = request.form.getlist('old_teaName')
@@ -740,7 +745,9 @@ def xInternEdit():
                     tea=Teacher.query.filter_by(teaName=teaValue).first()
                     if tea:
                         internship.schdirtea.append(tea)
-                    # else:
+                    else:
+                        str="相关实习信息填写成功，%s教师的基本信息未录入本系统，请联系管理员录入后，在修改实习信息页面添加校内指导老师即可。"%teaValue
+
                         # tea=Teacher.query.filter_by(teaName='无该用户').first()
                         # internship.schdirtea.append(tea)
                 else:
@@ -751,7 +758,7 @@ def xInternEdit():
             internship.start=iform.start.data
             internship.end=iform.end.data
             #若是被退回，则修改为待审核状态
-            if(internship,internCheck==1):
+            if(internship.internCheck==1):
                 internship.internCheck=0
             internship.time=datetime.now()
             db.session.add(internship)
@@ -784,7 +791,7 @@ def xInternEdit():
             if request.files.getlist('image')[0].filename!="":
                 for i in request.files.getlist('image'):
                     i.save('%s/%s/agreement/%s' % (STORAGE_FOLDER, internId,i.filename))
-            flash('修改成功！')
+            flash(str)
         except Exception as e:
             db.session.rollback()
             flash("修改失败！")
