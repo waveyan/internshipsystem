@@ -79,18 +79,18 @@
                     <td width="400"
                         height="50">
                         {% if summary.comScore %}
-                        {{ form.comScore(class="form-control",request='',value=summary.comScore,type="number") }}
+                        {{ form.comScore(class="form-control",request='',value=summary.comScore) }}
                         {% else %}
-                        {{ form.comScore(class="form-control",request='',placeholder="暂无",type="number") }}
+                        {{ form.comScore(class="form-control",request='',placeholder="暂无") }}
                         {% endif %}
                         </td>
                     <th width="200"> {{ form.schScore.label }}</th>
                     <td width="400"
                         height="50">
                         {% if summary.schScore %}
-                        {{ form.schScore(class="form-control",request='',value=summary.schScore,type="number") }}
+                        {{ form.schScore(class="form-control",request='',value=summary.schScore) }}
                         {% else %}
-                        {{ form.schScore(class="form-control",request='',placeholder="暂无",type="number") }}
+                        {{ form.schScore(class="form-control",request='',placeholder="暂无") }}
                         {% endif %}</td>
                 </tr>
                 <tr>

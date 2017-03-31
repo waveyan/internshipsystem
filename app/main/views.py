@@ -4171,8 +4171,12 @@ def xSumScoreEdit():
             summary.comScore = form.comScore.data
             summary.schScore = form.schScore.data
             if summary.comScore and summary.schScore:
-                summary.sumScore = float(form.comScore.data) * 0.7 + float(form.schScore.data) * 0.3
-            db.session.add(summary)
+                try:
+                    summary.sumScore = float(form.comScore.data) * 0.7 + float(form.schScore.data) * 0.3
+                    db.session.add(summary)
+                except Exception as e:
+                    flash("添加失败！请确保输入正确数值！")
+                    return redirect(url_for('.xSumScoreEdit', internId=internId, stuId=stuId))
             paths = []
             paths.append(os.path.join(storage_cwd(internId, 'score_img'), 'comscore'))
             paths.append(paths[0].replace('comscore', 'schscore'))
