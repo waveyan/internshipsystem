@@ -3360,6 +3360,7 @@ def get_export_all_update_status():
         return False
     is_exporting_all = False
     update_time_list = sorted(os.listdir(EXPORT_ALL_FOLDER))
+    update_time_list.remove('.gitignore')
     # 文件夹为空, 需要初始化
     if not update_time_list:
         return 'empty'
