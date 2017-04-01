@@ -1476,12 +1476,14 @@ def xJournal():
     internId = request.args.get('internId')
     #防sql注入
     if current_user.roleId == 0:
+        isstu = True
         stuId = current_user.stuId
         if stuId!=InternshipInfor.query.filter_by(Id=internId).first().stuId:
             flash('非法操作！')
             return redirect('/')
     else:
         stuId = request.args.get('stuId')
+        isstu = False
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     comId = internship.comId
     #指导老师审核权限
@@ -1490,14 +1492,28 @@ def xJournal():
     student = Student.query.filter_by(stuId=stuId).first()
     # 获得当前时间对应的页码
     now = datetime.now().date()
-    cur_page = Journal.query.filter(Journal.stuId == stuId, Journal.internId == internId, Journal.workStart <= now,
-                                    Journal.workEnd >= now).first()
+    if isstu:
+        cur_page = Journal.query.filter(
+            Journal.stuId == stuId, Journal.internId == internId,
+            Journal.workStart <= now, Journal.workEnd >= now) \
+            .first()
+    else:
+        cur_page = Journal.query.filter(
+            Journal.stuId == stuId, Journal.internId == internId,
+            Journal.weekNo == 1) \
+            .first()
+
     if cur_page:
         page = request.args.get('page', cur_page.weekNo, type=int)
     else:
         page = request.args.get('page', 1, type=int)
 
-    pagination = Journal.query.filter_by(internId=internId).paginate(page, per_page=1, error_out=False)
+    if isstu:
+        pagination = Journal.query.filter_by(internId=internId) \
+            .paginate(page, per_page=1, error_out=False)
+    else:
+        pagination = Journal.query.filter_by(internId=internId, isvalid=1) \
+            .paginate(page, per_page=1, error_out=False)
     journal = pagination.items
     # journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
     comInfor = db.session.execute('select * from ComInfor where comId in( \
@@ -1605,6 +1621,15 @@ def xJournalEditProcess():
     stuId = request.form.get('stuId')
     internId = request.form.get('internId')
     page = request.form.get('page')
+    weekNo = int(request.form.get('weekNo'))
+    if weekNo > 0 and weekNo < 5:
+        isvalid = 1
+    else:
+        isvalid = 0
+    for jour in [mon, tue, wed, thu, fri, sat, sun]:
+        if len(jour) > 30:
+            isvalid = 1
+            break
     try:
         # where加上stuId,是为了防止学生修改其他学生的日志
         db.session.execute('update Journal set \
@@ -1614,9 +1639,10 @@ def xJournalEditProcess():
             thu = "%s", \
             fri = "%s", \
             sat = "%s", \
-            sun = "%s" \
+            sun = "%s", \
+            isvalid = %s \
             where Id=%s and stuId="%s"'
-                           % (mon, tue, wed, thu, fri, sat, sun, jourId, stuId))
+            % (mon, tue, wed, thu, fri, sat, sun, isvalid, jourId, stuId))
     except Exception as e:
         db.session.rollback()
         print(datetime.now(), ": 学号为", stuId, "修改日志失败", e)
@@ -2815,6 +2841,7 @@ def journal_init(internId):
             )
         db.session.add(journal)
         db.session.commit()
+        db.session.execute('UPDATE Journal SET isvalid=1 WHERE internId=%s AND weekNo BETWEEN 1 AND 4' % internId)
     except Exception as e:
         db.session.rollback()
         print(current_user.get_id(), datetime.now(), "初始化日志失败", e)

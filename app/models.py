@@ -358,6 +358,7 @@ class Journal(db.Model):
     opinion = db.Column(db.String(500), default='')
     isoweek = db.Column(db.Integer)
     isoyear = db.Column(db.Integer)
+    isvalid = db.Column(db.Integer)
 
 class Grade(db.Model):
     __tablename__='Grade'
