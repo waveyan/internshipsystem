@@ -3893,6 +3893,7 @@ def onlinePDF(internId, dest, file):
 
 
 # 学生实习总结与成果列表
+@update_intern_jourCheck
 @main.route('/stuSumList', methods=['GET', 'POST'])
 @login_required
 @update_intern_internStatus

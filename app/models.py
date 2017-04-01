@@ -50,6 +50,13 @@ def update_intern_jourCheck(func):
         if is_not_checked:
             for x in is_not_checked:
                 db.session.execute('update InternshipInfor set jourCheck=0 where Id=%s' % x.internId)
+        db.session.execute(' \
+            update InternshipInfor i, \
+            (select internId from Journal \
+            where jourCheck=1 and weekNo between 1 and 4 \
+            group by internId having count(internId) = 4) j \
+            set i.jourCheck=1 \
+            where i.Id=j.internId;')
         return func(*args, **kwargs)
 
     return decorated_view
