@@ -1618,7 +1618,6 @@ def xJournalEditProcess():
     fri = htmlEscape(request.form.get('fri'))
     sat = htmlEscape(request.form.get('sat'))
     sun = htmlEscape(request.form.get('sun'))
-    stuId = request.form.get('stuId')
     internId = request.form.get('internId')
     page = request.form.get('page')
     weekNo = int(request.form.get('weekNo'))
