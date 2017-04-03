@@ -290,36 +290,6 @@ class InternshipInfor(db.Model):
     schdirtea=db.relationship('Teacher',secondary=SchDirTea,backref=db.backref('internshipinfor',lazy='dynamic'),lazy='dynamic')
 
 
-# # can be delete
-# class DirctTea(db.Model):
-#     __tablename__ = 'DirctTea'
-#     Id = db.Column(db.Integer, primary_key=True)
-#     teaId = db.Column(db.String(10))
-#     teaName = db.Column(db.String(10))
-#     teaDuty = db.Column(db.String(20))
-#     teaPhone = db.Column(db.String(15))
-#     teaEmail = db.Column(db.String(20))
-#     cteaName = db.Column(db.String(10))
-#     cteaDuty = db.Column(db.String(20))
-#     cteaPhone = db.Column(db.String(15))
-#     cteaEmail = db.Column(db.String(20))
-#     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
-#     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
-
-
-# class SchDirTea(db.Model):
-    # __tablename__ = 'SchDirTea'
-    # Id = db.Column(db.Integer, primary_key=True)
-    # teaId = db.Column(db.String(10))
-    # steaName = db.Column(db.String(10))
-    # steaDuty = db.Column(db.String(20))
-    # steaPhone = db.Column(db.String(15))
-    # steaEmail = db.Column(db.String(20))
-    # internId=db.Column(db.Integer,db.ForeignKey('InternshipInfor.Id'))
-    # stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
-
-
-
 class ComDirTea(db.Model):
     __tablename__ = 'ComDirTea'
     Id = db.Column(db.Integer, primary_key=True)

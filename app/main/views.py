@@ -1512,8 +1512,9 @@ def xJournal():
         pagination = Journal.query.filter_by(internId=internId) \
             .paginate(page, per_page=1, error_out=False)
     else:
+        #方便老师审核，日志改为一页显示全部
         pagination = Journal.query.filter_by(internId=internId, isvalid=1) \
-            .paginate(page, per_page=1, error_out=False)
+            .paginate(page, per_page=100, error_out=False)
     journal = pagination.items
     # journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
     comInfor = db.session.execute('select * from ComInfor where comId in( \
@@ -1544,26 +1545,40 @@ def journal_comfirm():
     stuId = request.args.get('stuId')
     jourId = request.args.get('jourId')
     internId = request.args.get('internId')
+    flag=request.args.get('flag')
     checkTime = datetime.now()
     checkTeaId = current_user.get_id()
     if current_user.can(Permission.STU_JOUR_CHECK) or is_schdirtea(stuId):
+        #jQuery的replace的跳转
+        if flag=='1':
+            flash("日志审核通过")
+            return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
+        elif flag=='0':
+            flash("日志审核失败，请重试！")
+            return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
         db.session.execute('update Journal set jourCheck=1, jcheckTime="%s", jcheckTeaId=%s where Id=%s' % (
             checkTime, checkTeaId, jourId))
         # 作消息提示
         db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
         # 检查是否需要更新 InternshipInfor.jourCheck
-        jourCheck = Journal.query.filter(Journal.internId == internId, Journal.jourCheck == 0,
+        jourCheck = Journal.query.filter(Journal.internId == internId, Journal.jourCheck == 1,
                                          Journal.workEnd < datetime.now().date()).count()
-        if jourCheck == 0:
+        #审核前四周即可
+        if jourCheck >= 4:
             db.session.execute('update InternshipInfor set jourCheck=1 where Id=%s' % internId)
             # 作消息提示
             db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
-        flash("日志审核通过")
-        return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
+        # flash("日志审核通过")
+        # return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
+        return_data={'iscomfirm':1}
+        return json.dumps(return_data)
     else:
         # 非法操作,返回主页3
-        flash('你没有审核日志的权限')
-        return redirect('/')
+        # flash('你没有审核日志的权限')
+        # return redirect('/')
+        return_a={'iscomfirm':0}
+        return json.dumps(return_a)
+
 
 
 @main.route('/xJournalEdit', methods=['POST', 'GET'])
@@ -1625,10 +1640,13 @@ def xJournalEditProcess():
         isvalid = 1
     else:
         isvalid = 0
-    for jour in [mon, tue, wed, thu, fri, sat, sun]:
-        if len(jour) > 30:
-            isvalid = 1
-            break
+    #周六周日可不填写日志，或放假请假
+    for jour in [mon, tue, wed, thu, fri]:
+        #自动生成时可能不是完整的一周
+        if jour:
+            if len(jour) > 30 or jour=="放假" or jour=="请假":
+                isvalid = 1
+                break
     try:
         # where加上stuId,是为了防止学生修改其他学生的日志
         db.session.execute('update Journal set \

@@ -19,6 +19,29 @@
     <style type="text/css">
     p {white-space: pre-line;}
     </style>
+    {% if comfirm_can %}
+    <!-- 一键审核 -->
+    <script type="text/javascript">
+        function comfirm_journal(){
+            var div=document.getElementById("jourIdDiv");
+            var flag=0;
+                for(x of div.children){
+                    if(x.value!==undefined){
+                        // 同步处理
+                        $.ajaxSettings.async = false;
+                        // $.getJSON
+                        $.get("{{ url_for('.journal_comfirm')}}",{stuId:{{student.stuId}},internId:{{internship.Id}},jourId:x.value},function(data){
+                            data=JSON.parse(data);
+                            flag=data['iscomfirm'];
+                        });
+                    }
+                }
+                // 同步处理
+            $.ajaxSettings.async = true;
+            window.location.replace('/journal_comfirm?internId='+{{internship.Id}}+'&stuId='+{{student.stuId}}+'&flag='+flag);
+        }
+    </script>
+    {% endif %}
 {% endblock %}<!--先执行父模板-->
 
 {% block title %}实习日志{% endblock %}
@@ -68,7 +91,6 @@
     <form id="export_form" method="post">
         <input type="hidden" name="isexport" value="1">
     </form>
-
     <div class="page-`er">
     {% if current_user.roleId==0 %}
         <h1>我的实习日志
@@ -144,11 +166,9 @@
         </tr>
     </table>
     <br>
-            {% for jour in journal %}
-        {% if jour.jourCheck == 0 and comfirm_can and jour.workEnd < now%}
-                    <a href="{{ url_for('.journal_comfirm', jourId=jour.Id, stuId=student.stuId, internId=internship.Id) }}"><button class="btn btn-success">点击这里，通过这周日志的审核</button></a>
-        {% endif %}
-    {% endfor %}
+    {% if internship.jourCheck==0 and journal|length>0 %}
+    <button class="btn btn-success" onclick="comfirm_journal()">点击这里，通过审核</button>
+    {%endif%}
     <table align="center" border="2" class="table-bordered">
 
         {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'日'} %}
@@ -225,8 +245,14 @@
                 {% endif %}
         {% endfor %}
     </table>
-
-    {% if pagination %}
+    <div id=jourIdDiv>
+        {% for jour in journal %}
+        {% if jour.jourCheck == 0 and comfirm_can and jour.workEnd < now%}
+                <input type="hidden" value="{{ jour.Id }}">
+        {% endif %}
+    {% endfor %}
+    <div>
+    {% if pagination and not comfirm_can%}
         <div class="pagination">
             {{ macros.pagination_widget(pagination, '.xJournal',stuId=student.stuId, internId=internship.Id) }}
         </div>
