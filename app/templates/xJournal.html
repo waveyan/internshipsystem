@@ -35,6 +35,8 @@
                             flag=data['iscomfirm'];
                         });
                     }
+                    else
+                        flag=1;
                 }
                 // 同步处理
             $.ajaxSettings.async = true;
@@ -112,11 +114,13 @@
                                 <li class="divider" />
                             {% endif %}
                         {% endif %}
+                        {% if current_user.roleId==0 %}
                         <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">导出到Excel</a>
-                        {% if current_user.can(Permission.STU_JOUR_EDIT) %}
+                        {% endif %}
+                        {#{%# if current_user.can(Permission.STU_JOUR_EDIT) %}
                             <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id, page=page) }}">编辑日志</a></li>
                             <li class="divider" />
-                        {% endif %}
+                        {% endif %}#}
                     {% endfor %}
                     {% if comfirm_can %}
                         <li><a onClick="ComfirmDelete()">删除</a></li>
@@ -132,10 +136,13 @@
         {% for jour in journal %}  
         {% if current_user.roleId == 0 and jour.jourCheck == 0 and jour.workStart <= now %}
         {% if jour.workStart <= now %}
-            <a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}"><button class=" btn btn-success">编辑日志</button></a>
+            <a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id,page=page) }}"><button class=" btn btn-success">编辑日志</button></a>
         {% endif %}
     {% endif %} 
-    {% endfor %}    
+    {% endfor %}  
+        {% if internship.jourCheck==0 and journal|length>0 and comfirm_can %}
+    <button class="btn btn-success" onclick="comfirm_journal()">点击这里，通过审核</button>
+    {%endif%}  
             </h1>
 
     <!-- 日志总体审核情况 -->
@@ -166,9 +173,6 @@
         </tr>
     </table>
     <br>
-    {% if internship.jourCheck==0 and journal|length>0 %}
-    <button class="btn btn-success" onclick="comfirm_journal()">点击这里，通过审核</button>
-    {%endif%}
     <table align="center" border="2" class="table-bordered">
 
         {% set weekday2ch = {1:'一', 2:'二', 3:'三', 4:'四', 5:'五', 6:'六', 7:'日'} %}
