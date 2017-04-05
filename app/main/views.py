@@ -1358,15 +1358,23 @@ def stuJournal_allCheck():
         checkTeaId = current_user.get_id()
         for x in internId:
             isvalid=Journal.query.filter(Journal.internId==x,Journal.isvalid==1).count()
-            #当填写4周日志或当实习期间不足四周时填满日志时
-            if isvalid>=4 or Journal.query.filter_by(internId=internId).count()==isvalid:
-                db.session.execute(
-                    'update Journal set jourCheck=1, jcheckTime="%s", jcheckTeaId=%s where internId=%s and workEnd<"%s"' % (
-                        checkTime, checkTeaId, x, now))
-                db.session.execute('update InternshipInfor set jourCheck=1 where Id=%s' % x)
-                # 作消息提示
-                stuId = InternshipInfor.query.filter_by(Id=x).first().stuId
-                db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
+            db.session.execute(' \
+                UPDATE Journal \
+                   SET jourCheck = 1, \
+                       jcheckTime = "%s", \
+                       jcheckTeaId = %s \
+                 WHERE internId = %s \
+                   AND workEnd < "%s" \
+                   AND isvalid = 1' 
+                % (checkTime, checkTeaId, x, now))
+            db.session.execute(' \
+                UPDATE InternshipInfor \
+                   SET jourCheck = 1 \
+                 WHERE Id = %s'
+                % x)
+            # 作消息提示
+            stuId = InternshipInfor.query.filter_by(Id=x).first().stuId
+            db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
         flash('日志审核成功')
         return redirect(url_for('.stuJournal_allCheck', page=pagination.page))
     return render_template('stuJournal_allCheck.html', Permission=Permission, pagination=pagination,
@@ -2867,7 +2875,12 @@ def journal_init(internId):
             )
         db.session.add(journal)
         db.session.commit()
-        # db.session.execute('UPDATE Journal SET isvalid=1 WHERE internId=%s AND weekNo BETWEEN 1 AND 4' % internId)
+        db.session.execute(' \
+            UPDATE Journal \
+               SET isvalid=1 \
+             WHERE internId=%s \
+               AND weekNo BETWEEN 1 AND 4'
+            % internId)
     except Exception as e:
         db.session.rollback()
         print(current_user.get_id(), datetime.now(), "初始化日志失败", e)
@@ -2885,7 +2898,8 @@ def journal_migrate(internId):
         db.session.execute('update Journal set internId=%s where internId=%s' % (-int(internId), internId))
         journal_init(internId)
         db.session.execute('update Journal j1, Journal j2 \
-            set j1.mon=j2.mon, j1.tue=j2.tue, j1.wed=j2.wed, j1.thu=j2.thu, j1.fri=j2.fri, j1.sat=j2.sat, j1.sun=j2.sun \
+            set j1.mon=j2.mon, j1.tue=j2.tue, j1.wed=j2.wed, j1.thu=j2.thu, j1.fri=j2.fri, j1.sat=j2.sat, j1.sun=j2.sun, \
+            j1.isvalid = j2.isvalid \
             where j1.internId=%s and j2.internId=%s and j1.isoweek=j2.isoweek and j1.isoyear=j2.isoyear' \
                            % (internId, -int(internId)))
         db.session.execute('delete from Journal where internId=%s' % -int(internId))
