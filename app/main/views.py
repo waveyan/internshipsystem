@@ -6,7 +6,7 @@ from .form import searchForm, comForm, internshipForm, journalForm, stuForm, tea
 from . import main
 from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, \
     not_student_login, update_intern_internStatus, update_intern_jourCheck, Summary,Major,Grade,Classes,update_grade_major_classes,\
-    Visit,Visit_Intern,Introduce
+    Visit,Visit_Intern,Introduce, update_sum_isvalid
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func, desc, and_, distinct
@@ -3920,10 +3920,10 @@ def onlinePDF(internId, dest, file):
 
 
 # 学生实习总结与成果列表
-@update_intern_jourCheck
 @main.route('/stuSumList', methods=['GET', 'POST'])
 @login_required
 @update_intern_internStatus
+@update_sum_isvalid
 def stuSumList():
     form = searchForm()
     grade = {}
@@ -3965,7 +3965,7 @@ def stuSumList():
         # 函数返回的intern已经join了Student,Summary
         intern = create_intern_filter(grade, major, classes, 2)
         pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId)\
-            .filter(InternshipInfor.internCheck == 2,InternshipInfor.jourCheck==1) \
+            .filter(InternshipInfor.internCheck == 2, Summary.isvalid == 1) \
             .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                          InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
@@ -3980,6 +3980,7 @@ def stuSumList():
 
 # 学生个人实习总结与成果
 @main.route('/xSum', methods=['GET', 'POST'])
+@update_sum_isvalid
 @login_required
 def xSum():
     internId = request.args.get('internId')
@@ -4015,12 +4016,12 @@ def xSum():
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc,
                                path=path,comfirm_can=comfirm_can)
     # elif internship.end < now:
-    if internship.internCheck == 2:
+    if internship.internCheck == 2 and summary.isvalid == 1:
         return render_template('xSum.html', Permission=Permission, comInfor=comInfor, internship=internship,
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc,
                                path=path,comfirm_can=comfirm_can)
     else:
-        flash("实习申请需审核后,才能查看总结和成果")
+        flash("实习申请或有效实习日志需审核后,才能查看总结和成果")
         return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
     # else:
     #     flash('实习尚未结束, 请待实习结束后再查看实习总结和成果')
@@ -4030,6 +4031,7 @@ def xSum():
 
 # 学生个人实习总结与成果的"文件管理"!
 @main.route('/xSum_fileManager', methods=['GET', 'POST'])
+@update_sum_isvalid
 @login_required
 def xSum_fileManager():
     if current_user.roleId == 0:
@@ -4152,6 +4154,7 @@ def xSum_fileManager():
 
 # 实习评分详情
 @main.route('/xSumScore', methods=['GET', 'POST'])
+@update_sum_isvalid
 @login_required
 def xSumScore():
     if current_user.roleId == 0:
@@ -4192,6 +4195,7 @@ def xSumScore():
 
 # 编辑实习分数
 @main.route('/xSumScoreEdit', methods=['GET', 'POST'])
+@update_sum_isvalid
 @login_required
 def xSumScoreEdit():
     form = xSumScoreForm()
@@ -4274,6 +4278,7 @@ def xSumScoreEdit():
 
 # 审核通过总结成果
 @main.route('/xSum_comfirm', methods=["POST", "GET"])
+@update_sum_isvalid
 @not_student_login
 def xSum_comfirm():
     stuId = request.form.get('stuId')
@@ -4285,12 +4290,13 @@ def xSum_comfirm():
         sumCheckOpinion = request.form.get('sumCheckOpinion')
 
         internship = InternshipInfor.query.filter_by(Id=internId).first()
+        summary = Summary.query.filter_by(internId=internId).first()
         comId=internship.comId
         com = ComInfor.query.filter(comId == comId).first()
         checkTime = datetime.now().date()
         checkTeaId = current_user.get_id()
         try:
-            if internship.jourCheck!=1:
+            if summary.isvalid == 0:
                 flash("请先审核实习日志！")
                 return redirect(url_for('.xSum', stuId=stuId, internId=internId))
             if sumCheckOpinion:
@@ -4330,6 +4336,7 @@ def xSum_comfirm():
 
 # 批量审核总结和成果
 @main.route('/stuSum_allCheck', methods=['GET', 'POST'])
+@update_sum_isvalid
 @not_student_login
 @update_intern_internStatus
 def stuSum_allCheck():
@@ -4346,7 +4353,7 @@ def stuSum_allCheck():
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
     pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, Summary.sumCheck != 2) \
+        .filter(Summary.sumCheck != 2, Summary.isvalid == 1) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                      InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
@@ -4378,6 +4385,7 @@ def stuSum_allCheck():
 
 # 批量删除总结和成果
 @main.route('/stuSum_allDelete', methods=['GET', 'POST'])
+@update_sum_isvalid
 @not_student_login
 def stuSum_allDelete():
     if not current_user.can(Permission.STU_SUM_SCO_CHECK):

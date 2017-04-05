@@ -50,16 +50,39 @@ def update_intern_jourCheck(func):
         if is_not_checked:
             for x in is_not_checked:
                 db.session.execute('update InternshipInfor set jourCheck=0 where Id=%s' % x.internId)
-        db.session.execute(' \
-            update InternshipInfor i, \
-            (select internId from Journal \
-            where jourCheck=1 and weekNo between 1 and 4 \
-            group by internId having count(internId) = 4) j \
-            set i.jourCheck=1 \
-            where i.Id=j.internId;')
         return func(*args, **kwargs)
 
     return decorated_view
+
+def update_sum_isvalid(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        # sum is only valid when all valid journal is check
+        db.session.execute(' \
+            UPDATE Summary \
+               SET isvalid=1 \
+             WHERE isvalid=0 \
+               AND internId NOT IN \
+                   (SELECT DISTINCT internId \
+                      FROM Journal \
+                     WHERE isvalid=1 \
+                       AND jourCheck=0) \
+        ')
+        db.session.execute(' \
+            UPDATE Summary \
+               SET isvalid=0 \
+             WHERE sumCheck=0 \
+               AND internId IN \
+                   (SELECT DISTINCT internId \
+                      FROM Journal \
+                     WHERE isvalid=1 \
+                       AND jourCheck=0) \
+        ')
+
+        return func(*args, **kwargs)
+    return decorated_view
+
+
 
 #装饰器：更新grade，major，classes表
 def update_grade_major_classes(func):
@@ -311,6 +334,7 @@ class Summary(db.Model):
     schScore = db.Column(db.Integer)
     sumScore = db.Column(db.Integer)
     uploaded=db.Column(db.Integer,default=0)
+    isvalid = db.Column(db.Integer)
 
 
 class Journal(db.Model):
@@ -431,3 +455,4 @@ class Introduce(db.Model):
         target.content_html=bleach.linkify(bleach.clean(markdown(value,output_format='html'),tags=allowed_tags,strip=True))
 db.event.listen(Introduce.content,'set',Introduce.change_content)
         
+
