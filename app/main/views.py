@@ -4385,7 +4385,7 @@ def stuSum_allCheck():
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
     pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, Summary.sumCheck != 2) \
+        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, InternshipInfor.jourCheck == 1, Summary.sumCheck != 2) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                      InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
@@ -4396,7 +4396,7 @@ def stuSum_allCheck():
         try:
             internId = request.form.getlist('approve[]')
             for x in internId:
-                uploaded=InternshipInfor.query.filter_by(Id=x).join(Summary,Summary.internId==InternshipInfor.Id).add_columns(Summary.uploaded).first().uploaded
+                uploaded=InternshipInfor.query.filter_by(Id=x, jourCheck = 1).join(Summary,Summary.internId==InternshipInfor.Id).add_columns(Summary.uploaded).first().uploaded
                 if uploaded==1:
                     db.session.execute(
                         'update Summary set sumCheck=2, sumCheckTeaId=%s, sumCheckTime="%s" where internId=%s' % (
