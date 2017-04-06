@@ -6,7 +6,7 @@ from .form import searchForm, comForm, internshipForm, journalForm, stuForm, tea
 from . import main
 from ..models import Permission, InternshipInfor, ComInfor, SchDirTea, ComDirTea, Student, Journal, Role, Teacher, \
     not_student_login, update_intern_internStatus, update_intern_jourCheck, Summary,Major,Grade,Classes,update_grade_major_classes,\
-    Visit,Visit_Intern,Introduce, update_sum_isvalid
+    Visit,Visit_Intern,Introduce
 from flask.ext.login import current_user, login_required
 from .. import db
 from sqlalchemy import func, desc, and_, distinct
@@ -1357,24 +1357,23 @@ def stuJournal_allCheck():
         checkTime = datetime.now()
         checkTeaId = current_user.get_id()
         for x in internId:
-            isvalid=Journal.query.filter(Journal.internId==x,Journal.isvalid==1).count()
-            db.session.execute(' \
-                UPDATE Journal \
-                   SET jourCheck = 1, \
-                       jcheckTime = "%s", \
-                       jcheckTeaId = %s \
-                 WHERE internId = %s \
-                   AND workEnd < "%s" \
-                   AND isvalid = 1' 
-                % (checkTime, checkTeaId, x, now))
-            db.session.execute(' \
-                UPDATE InternshipInfor \
-                   SET jourCheck = 1 \
-                 WHERE Id = %s'
-                % x)
-            # 作消息提示
-            stuId = InternshipInfor.query.filter_by(Id=x).first().stuId
-            db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
+            if jourthrw(x):
+                db.session.execute(' \
+                    UPDATE Journal \
+                       SET jourCheck = 1, \
+                           jcheckTime = "%s", \
+                           jcheckTeaId = %s \
+                     WHERE internId = %s \
+                       AND isvalid = 1'
+                    % (checkTime, checkTeaId, x, now))
+                db.session.execute(' \
+                    UPDATE InternshipInfor \
+                       SET jourCheck = 1 \
+                     WHERE Id = %s'
+                    % x)
+                # 作消息提示
+                stuId = InternshipInfor.query.filter_by(Id=x).first().stuId
+                db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
         flash('日志审核成功')
         return redirect(url_for('.stuJournal_allCheck', page=pagination.page))
     return render_template('stuJournal_allCheck.html', Permission=Permission, pagination=pagination,
@@ -1548,6 +1547,25 @@ def xJournal():
             flash("实习申请需审核后,才能查看日志")
             return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
 
+# whether the current date after the threshold week
+# threshold week is early four weeks or all of it if less than four
+def jourthrw(iid):
+    try:
+        thrw = db.session.execute(' \
+              SELECT if(workEnd<now(),1,0) \
+                FROM Journal \
+               WHERE internId=%d \
+                 AND isvalid = 1 \
+                 AND weekNo=if(weekNo>3,4,weekNo) \
+            ORDER BY weekNo desc \
+               LIMIT 1'
+            % iid)
+        return thrw
+    except Exception as e:
+        db.session.rollback()
+        print('jourthrw:', e)
+        return 0
+
 
 @main.route('/journal_comfirm', methods=['POST', 'GET'])
 @not_student_login
@@ -1567,26 +1585,28 @@ def journal_comfirm():
         elif flag=='0':
             flash("日志审核失败，请重试！")
             return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
-        db.session.execute('update Journal set jourCheck=1, jcheckTime="%s", jcheckTeaId=%s where Id=%s' % (
-            checkTime, checkTeaId, jourId))
-        # 作消息提示
-        db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
-        # 检查是否需要更新 InternshipInfor.jourCheck
-        jourCheck = Journal.query.filter(Journal.internId == internId, Journal.jourCheck == 1,
-                                         Journal.workEnd < datetime.now().date()).count()
-         #当填写4周日志或当实习期间不足四周时填满日志时
-        if jourCheck >= 4 or Journal.query.filter_by(internId=internId).count()==jourCheck:
-            #审核完前四周即全部日志均审核
-            db.session.execute(
-                    'update Journal set jourCheck=1, jcheckTime="%s", jcheckTeaId=%s where internId=%s ' % (
-                        checkTime, checkTeaId, internId))
-            db.session.execute('update InternshipInfor set jourCheck=1 where Id=%s' % internId)
+        # check all valid journal if current date after the threshold week
+        # include the current week which is not over
+        if jourthrw(internId):
+            db.session.execute(' \
+                UPDATE Journal \
+                   SET jourCheck = 1, \
+                       jcheckTime = "%s", \
+                       jcheckTeaId = %s \
+                 WHERE internId = %s \
+                   AND isvalid = 1'
+                % (checkTime, checkTeaId, internId))
+            db.session.execute(' \
+                UPDATE InternshipInfor \
+                   SET jourCheck = 1 \
+                 WHERE Id = %s'
+                % internId)
             # 作消息提示
             db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
-        # flash("日志审核通过")
-        # return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
-        return_data={'iscomfirm':1}
-        return json.dumps(return_data)
+            # flash("日志审核通过")
+            # return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
+            return_data={'iscomfirm':1}
+            return json.dumps(return_data)
     else:
         # 非法操作,返回主页3
         # flash('你没有审核日志的权限')
@@ -1613,9 +1633,10 @@ def xJournalEdit():
     student = Student.query.filter_by(stuId=stuId).first()
     comInfor = ComInfor.query.filter_by(comId=comId).first()
     internship = InternshipInfor.query.filter_by(Id=internId).first()
+    now = datetime.now().date()
     page = request.args.get('page')
     jourform = journalForm()
-    if jour.jourCheck == 1 and not current_user.can(Permission.STU_JOUR_CHECK):
+    if jour.jourCheck == 1 and not current_user.can(Permission.STU_JOUR_CHECK) and jour.werkEnd < now:
         flash('日志已通过审核,无法修改')
         return redirect('/')
     return render_template('xJournalEdit.html', Permission=Permission, jour=jour, student=student, comInfor=comInfor,
@@ -1651,10 +1672,11 @@ def xJournalEditProcess():
     internId = request.form.get('internId')
     page = request.form.get('page')
     weekNo = int(request.form.get('weekNo'))
-    if weekNo > 0 and weekNo < 5:
-        isvalid = 1
-    else:
-        isvalid = 0
+    isvalid = db.session.execute(' \
+        SELECT isvalid \
+          FROM Journal \
+         WHERE Id = %s'
+        % jourId)
     #周六周日可不填写日志，或放假请假
     for jour in [mon, tue, wed, thu, fri]:
         #自动生成时可能不是完整的一周
@@ -1675,14 +1697,19 @@ def xJournalEditProcess():
             isvalid = %s \
             where Id=%s and stuId="%s"'
             % (mon, tue, wed, thu, fri, sat, sun, isvalid, jourId, stuId))
+        # student can edit current week journal, even when it is checked
+        if current_user.roleId == 0:
+            db.session.execute(' \
+                UPDATE Journal \
+                   SET jourCheck = 0 \
+                 WHERE Id = %s \
+            ' % jourId)
     except Exception as e:
         db.session.rollback()
         print(datetime.now(), ": 学号为", stuId, "修改日志失败", e)
         flash("修改日志失败")
         return redirect("/")
-     #当填写4周日志或当实习期间不足四周时填满日志时
-    isvalid=Journal.query.filter(Journal.internId==internId,Journal.isvalid==1).count()
-    if isvalid==4 or Journal.query.filter_by(internId=internId).count()==isvalid:
+    if jourthrw(internId):
         try:
             stu=Student.query.filter_by(stuId=stuId).first()
             stuName=stu.stuName
@@ -3937,7 +3964,6 @@ def onlinePDF(internId, dest, file):
 @main.route('/stuSumList', methods=['GET', 'POST'])
 @login_required
 @update_intern_internStatus
-@update_sum_isvalid
 def stuSumList():
     form = searchForm()
     grade = {}
@@ -3979,7 +4005,7 @@ def stuSumList():
         # 函数返回的intern已经join了Student,Summary
         intern = create_intern_filter(grade, major, classes, 2)
         pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId)\
-            .filter(InternshipInfor.internCheck == 2, Summary.isvalid == 1) \
+            .filter(InternshipInfor.internCheck == 2) \
             .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                          InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
@@ -3994,7 +4020,6 @@ def stuSumList():
 
 # 学生个人实习总结与成果
 @main.route('/xSum', methods=['GET', 'POST'])
-@update_sum_isvalid
 @login_required
 def xSum():
     internId = request.args.get('internId')
@@ -4030,7 +4055,7 @@ def xSum():
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc,
                                path=path,comfirm_can=comfirm_can)
     # elif internship.end < now:
-    if internship.internCheck == 2 and summary.isvalid == 1:
+    if internship.internCheck == 2:
         return render_template('xSum.html', Permission=Permission, comInfor=comInfor, internship=internship,
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc,
                                path=path,comfirm_can=comfirm_can)
@@ -4045,7 +4070,6 @@ def xSum():
 
 # 学生个人实习总结与成果的"文件管理"!
 @main.route('/xSum_fileManager', methods=['GET', 'POST'])
-@update_sum_isvalid
 @login_required
 def xSum_fileManager():
     if current_user.roleId == 0:
@@ -4062,8 +4086,7 @@ def xSum_fileManager():
     if not (len(comscore)!=0 and len(schscore)!=0):
         flash("请先上传评分表和成绩，方能上传总结！")
         return redirect(url_for(".xSumScoreEdit",internId=internId,stuId=stuId))
-    isvalid=Journal.query.filter(Journal.internId==internId,Journal.isvalid==1).count()
-    if isvalid >= 4 or Journal.query.filter_by(internId=internId).count()==isvalid:
+    if jourthrw(internId):
         student = Student.query.filter_by(stuId=stuId).first()
         comInfor = ComInfor.query.filter_by(comId=comId).first()
         summary = Summary.query.filter_by(internId=internId).first()
@@ -4168,7 +4191,6 @@ def xSum_fileManager():
 
 # 实习评分详情
 @main.route('/xSumScore', methods=['GET', 'POST'])
-@update_sum_isvalid
 @login_required
 def xSumScore():
     if current_user.roleId == 0:
@@ -4209,7 +4231,6 @@ def xSumScore():
 
 # 编辑实习分数
 @main.route('/xSumScoreEdit', methods=['GET', 'POST'])
-@update_sum_isvalid
 @login_required
 def xSumScoreEdit():
     form = xSumScoreForm()
@@ -4292,7 +4313,6 @@ def xSumScoreEdit():
 
 # 审核通过总结成果
 @main.route('/xSum_comfirm', methods=["POST", "GET"])
-@update_sum_isvalid
 @not_student_login
 def xSum_comfirm():
     stuId = request.form.get('stuId')
@@ -4304,13 +4324,12 @@ def xSum_comfirm():
         sumCheckOpinion = request.form.get('sumCheckOpinion')
 
         internship = InternshipInfor.query.filter_by(Id=internId).first()
-        summary = Summary.query.filter_by(internId=internId).first()
         comId=internship.comId
         com = ComInfor.query.filter(comId == comId).first()
         checkTime = datetime.now().date()
         checkTeaId = current_user.get_id()
         try:
-            if summary.isvalid == 0:
+            if internship.jourCheck != 1:
                 flash("请先审核实习日志！")
                 return redirect(url_for('.xSum', stuId=stuId, internId=internId))
             if sumCheckOpinion:
@@ -4350,7 +4369,6 @@ def xSum_comfirm():
 
 # 批量审核总结和成果
 @main.route('/stuSum_allCheck', methods=['GET', 'POST'])
-@update_sum_isvalid
 @not_student_login
 @update_intern_internStatus
 def stuSum_allCheck():
@@ -4367,7 +4385,7 @@ def stuSum_allCheck():
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
     pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-        .filter(Summary.sumCheck != 2, Summary.isvalid == 1) \
+        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, Summary.sumCheck != 2) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                      InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
@@ -4399,7 +4417,6 @@ def stuSum_allCheck():
 
 # 批量删除总结和成果
 @main.route('/stuSum_allDelete', methods=['GET', 'POST'])
-@update_sum_isvalid
 @not_student_login
 def stuSum_allDelete():
     if not current_user.can(Permission.STU_SUM_SCO_CHECK):

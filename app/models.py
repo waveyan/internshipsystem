@@ -41,47 +41,21 @@ def update_intern_internStatus(func):
 
 
 # 装饰器: 更新 InternshipInfor 日志审核状态
+# uncheck intern.jourcheck when there is uncheck valid jour
 def update_intern_jourCheck(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        now = datetime.now().date()
-        is_not_checked = db.session.execute(
-            'select distinct internId from Journal where jourCheck=0 and workEnd < "%s"' % now)
-        if is_not_checked:
-            for x in is_not_checked:
-                db.session.execute('update InternshipInfor set jourCheck=0 where Id=%s' % x.internId)
-        return func(*args, **kwargs)
-
-    return decorated_view
-
-def update_sum_isvalid(func):
-    @wraps(func)
-    def decorated_view(*args, **kwargs):
-        # sum is only valid when all valid journal is check
         db.session.execute(' \
-            UPDATE Summary \
-               SET isvalid=1 \
-             WHERE isvalid=0 \
-               AND internId NOT IN \
+            UPDATE InternshipInfor AS a, \
                    (SELECT DISTINCT internId \
                       FROM Journal \
-                     WHERE isvalid=1 \
-                       AND jourCheck=0) \
-        ')
-        db.session.execute(' \
-            UPDATE Summary \
-               SET isvalid=0 \
-             WHERE sumCheck=0 \
-               AND internId IN \
-                   (SELECT DISTINCT internId \
-                      FROM Journal \
-                     WHERE isvalid=1 \
-                       AND jourCheck=0) \
-        ')
-
+                     WHERE isvalid = 1 \
+                       AND jourCheck = 0) AS b \
+               SET a.jourCheck = 0 \
+             WHERE a.jourCheck = 1 \
+               AND a.Id = b.internId')
         return func(*args, **kwargs)
     return decorated_view
-
 
 
 #装饰器：更新grade，major，classes表
@@ -334,7 +308,6 @@ class Summary(db.Model):
     schScore = db.Column(db.Integer)
     sumScore = db.Column(db.Integer)
     uploaded=db.Column(db.Integer,default=0)
-    isvalid = db.Column(db.Integer)
 
 
 class Journal(db.Model):
