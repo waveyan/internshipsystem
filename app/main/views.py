@@ -1704,6 +1704,16 @@ def xJournalEditProcess():
                    SET jourCheck = 0 \
                  WHERE Id = %s \
             ' % jourId)
+            db.session.execute(' \
+                UPDATE InternshipInfor AS a, \
+                       (select if(counc(*),0,1) AS flag\
+                          from Journal \
+                         where internId = %s \
+                           and isvalid = 1 \
+                           and jourCheck = 0) AS b \
+                   SET a.jourCheck = b.flag \
+                 WHERE Id = %s \
+            ' % internId)
     except Exception as e:
         db.session.rollback()
         print(datetime.now(), ": 学号为", stuId, "修改日志失败", e)
