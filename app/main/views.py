@@ -1551,18 +1551,21 @@ def xJournal():
 # threshold week is early four weeks or all of it if less than four
 def jourthrw(iid):
     try:
-        thrw = db.session.execute(' \
-              SELECT if(workEnd<now(),1,0) \
-                FROM Journal \
-               WHERE internId=%d \
-                 AND isvalid = 1 \
-                 AND weekNo=if(weekNo>3,4,weekNo) \
-            ORDER BY weekNo desc \
-               LIMIT 1'
-            % iid)
-        return thrw
+        weekno = Journal.query\
+            .filter_by(internId = iid, isvalid = 1)\
+            .order_by(Journal.weekNo.desc())\
+            .first().weekNo
+        if weekno > 4:
+            weekno = 4
+        thrw = Journal.query\
+            .filter_by(internId = iid, isvalid = 1, weekNo = weekno)\
+            .first().workEnd
+        print('thrw:', thrw)
+        if thrw < datetime.now().date():
+            return True
+        else:
+            return False
     except Exception as e:
-        db.session.rollback()
         print('jourthrw:', e)
         return 0
 
@@ -1607,6 +1610,7 @@ def journal_comfirm():
             # return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
             return_data={'iscomfirm':1}
             return json.dumps(return_data)
+        
     else:
         # 非法操作,返回主页3
         # flash('你没有审核日志的权限')
