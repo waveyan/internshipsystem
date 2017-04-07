@@ -107,12 +107,10 @@
                 <ul class="dropdown-menu" role="menu">
                     {% for jour in journal %}
                         <!-- 最多只能编辑当前周的日志 -->
-                        {% if current_user.roleId == 0 and jour.jourCheck == 0 and jour.workStart <= now %}
+                        {% if current_user.roleId == 0 and jour.workStart <= now and jour.workEnd >= now %}
                             <li><a onClick="ComfirmImport()">导入</a></li>
-                            {% if jour.workStart <= now %}
-                                <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
-                                <li class="divider" />
-                            {% endif %}
+                            <li><a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id) }}">编辑日志</a></li>
+                            <li class="divider" />
                         {% endif %}
                         {% if current_user.roleId==0 %}
                         <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">导出到Excel</a>

@@ -1640,7 +1640,7 @@ def xJournalEdit():
     now = datetime.now().date()
     page = request.args.get('page')
     jourform = journalForm()
-    if jour.jourCheck == 1 and not current_user.can(Permission.STU_JOUR_CHECK) and jour.werkEnd < now:
+    if jour.jourCheck == 1 and not current_user.can(Permission.STU_JOUR_CHECK) and jour.workEnd < now:
         flash('日志已通过审核,无法修改')
         return redirect('/')
     return render_template('xJournalEdit.html', Permission=Permission, jour=jour, student=student, comInfor=comInfor,
@@ -1710,14 +1710,14 @@ def xJournalEditProcess():
             ' % jourId)
             db.session.execute(' \
                 UPDATE InternshipInfor AS a, \
-                       (select if(counc(*),0,1) AS flag\
+                       (select if(count(*),0,1) AS flag\
                           from Journal \
                          where internId = %s \
                            and isvalid = 1 \
                            and jourCheck = 0) AS b \
                    SET a.jourCheck = b.flag \
                  WHERE Id = %s \
-            ' % internId)
+            ' % (internId, jourId))
     except Exception as e:
         db.session.rollback()
         print(datetime.now(), ": 学号为", stuId, "修改日志失败", e)
@@ -3713,7 +3713,10 @@ def excel_importpage():
                     today = datetime.now().date()
                     journal_object = Journal.query.filter(Journal.internId==internId).all()
                     for journal, col, jour in zip(journalList, range(len(journalList)), journal_object):
-                        if jour.jourCheck == 0 and journal['weekNo']:
+                        if (jour.jourCheck == 0\
+                            or (jour.workStart <= now\
+                                and jour.workEnd >= now))\
+                            and journal['weekNo']:
                             # if jour.workEnd <= today:
                             #     for x in week:
                             #         if journal[x]:
