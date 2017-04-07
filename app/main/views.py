@@ -4057,7 +4057,8 @@ def xSum():
     summary_doc = storage_list(internId, 'summary_doc')
     attachment = storage_list(internId, 'attachment')
     #指导老师审核权限
-    comfirm_can=is_schdirtea(stuId) or current_user.can(Permission.STU_JOUR_CHECK)
+    comfirm_can = (is_schdirtea(stuId) or current_user.can(Permission.STU_SUM_SCO_CHECK)) \
+        and internship.jourCheck == 1
     if request.method == 'POST':
         return storage_download(internId)
     if current_user.roleId == 0:
