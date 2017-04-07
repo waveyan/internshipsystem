@@ -4348,7 +4348,7 @@ def xSum_comfirm():
                     'update Summary set sumCheck=%s, sumCheckOpinion="%s", sumCheckTeaId=%s, sumCheckTime="%s" where internId=%s' % (
                         sumCheck, sumCheckOpinion, checkTeaId, checkTime, internId))
                 # 作消息提示
-                db.session.execute('update Student set internCheck=1 where stuId=%s' % stuId)
+                db.session.execute('update Student set sumCheck=1 where stuId=%s' % stuId)
             else:
                 db.session.execute(
                     'update Summary set sumCheck=%s, sumCheckTeaId=%s, sumCheckTime="%s" where internId=%s' % (
