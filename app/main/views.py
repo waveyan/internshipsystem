@@ -1593,12 +1593,12 @@ def journal_comfirm():
     checkTeaId = current_user.get_id()
     if current_user.can(Permission.STU_JOUR_CHECK) or is_schdirtea(stuId):
         #xJournal页面的jQuery的replace的跳转
-        if flag=='1':
-            flash("日志审核通过")
-            return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
-        elif flag=='0':
-            flash("日志审核失败，请重试！")
-            return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
+        # if flag=='1':
+        #     flash("日志审核通过")
+        #     return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
+        # elif flag=='0':
+        #     flash("日志审核失败，请重试！")
+        #     return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
 
         # check all valid journal if current date after the threshold week
         # include the current week which is not over
@@ -1618,10 +1618,13 @@ def journal_comfirm():
                 % internId)
             # 作消息提示
             db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
-            # flash("日志审核通过")
-            # return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
-            return_data={'iscomfirm':1}
-            return json.dumps(return_data)
+            flash("日志审核通过")
+            return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
+        #     return_data={'iscomfirm':1}
+        #     return json.dumps(return_data)
+        else:
+            flash("日志审核失败，请重试！")
+            return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
         
     else:
         # 非法操作,返回主页3
