@@ -1502,6 +1502,17 @@ def xJournal():
     student = Student.query.filter_by(stuId=stuId).first()
     # 获得当前时间对应的页码
     now = datetime.now().date()
+
+    # prompt if stu edit checked journal of current week
+    lavj = Journal.query.\
+        filter_by(internId = internId, isvalid = 1).\
+        order_by(Journal.weekNo.desc()).\
+        first()
+    if lavj.workStart <= now and lavj.workEnd >= now:
+        pmt = 1
+    else:
+        pmt = 0
+
     if isstu:
         cur_page = Journal.query.filter(
             Journal.stuId == stuId, Journal.internId == internId,
@@ -1538,7 +1549,7 @@ def xJournal():
                 return export_download(file_path)
     if current_user.roleId == 0:
         return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
-                               student=student, comInfor=comInfor, pagination=pagination, page=page, now=now,comfirm_can=comfirm_can)
+                               student=student, comInfor=comInfor, pagination=pagination, page=page, now=now,comfirm_can=comfirm_can, pmt = pmt)
     else:
         if internship.internCheck == 2:
             return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
@@ -1588,6 +1599,7 @@ def journal_comfirm():
         elif flag=='0':
             flash("日志审核失败，请重试！")
             return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
+
         # check all valid journal if current date after the threshold week
         # include the current week which is not over
         if jourthrw(internId):
