@@ -132,15 +132,13 @@
                 </ul>
             </div> 
         {% for jour in journal %}  
-        {% if current_user.roleId == 0 and jour.jourCheck == 0 and jour.workStart <= now %}
-        {% if jour.workStart <= now %}
+        {% if current_user.roleId == 0 and (jour.jourCheck == 0 or (jour.workStart <= now and jour.workEnd >= now))%}
             <a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id,page=page) }}"><button class=" btn btn-success">编辑日志</button></a>
-        {% endif %}
-    {% endif %} 
-    {% endfor %}  
+	{% endif %}
+	{% endfor %}
         {% if internship.jourCheck==0 and journal|length>0 and comfirm_can %}
     <button class="btn btn-success" onclick="comfirm_journal()">点击这里，通过审核</button>
-    {%endif%}  
+    {%endif%}
             </h1>
 
     <!-- 日志总体审核情况 -->
@@ -148,6 +146,9 @@
         <span class="label label-warning">待审核...</span>
     {% else %}
         <span class="label label-info">已审核</span>
+        {% if pmt %}
+	  &nbsp&nbsp*当前周的日志已被审核, 重新编辑日志将同样需要重新审核
+	{% endif %}
     {% endif %}
         <br><br>
     </div>
