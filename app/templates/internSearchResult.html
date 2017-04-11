@@ -24,7 +24,8 @@
                 {% if journal==None %}
                     <th>姓名</th>
                 {% else %}
-                    <th>日志名称</th>
+                    <th>姓名</th>
+                    <th>实习企业</th>
                 {% endif %}
                 <th>学号</th>
                 <th>企业名称</th>
@@ -46,13 +47,20 @@
                             {% endif %}
                         </td>
                     {% else %}
-                        <td>
+                        
                             {% if current_user.can(Permission.STU_JOUR_SEARCH) %}
-                                <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}在{{ intern.comName }}的日子</a>
+                            <td>
+                                <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}</a>
+                                </td>
+                                <td>
+                                {{ intern.comName }}</td>
                             {% else %}
-                                {{ intern.stuName }}在{{ intern.comName }}的日子
+                            <td>
+                                {{ intern.stuName }}
+                                </td>
+                               <td> {{ intern.comName }}的日子</td>
                             {% endif %}
-                        </td>
+                        
                     {% endif %}
                     <td>{{ intern.stuId }}</td>
                     <td>{{ intern.comName }}</td>
