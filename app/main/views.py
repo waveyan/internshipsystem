@@ -1004,7 +1004,7 @@ def journal_search():
                                                                                  InternshipInfor.end,
                                                                                  InternshipInfor.internCheck \
                                                                                  , InternshipInfor.internStatus,
-                                                                                 InternshipInfor.Id).all()
+                                                                                 InternshipInfor.Id,InternshipInfor.jourCheck).all()
         for intern in internship:
             if intern.stuName == form.key.data.strip():
                 internList.append(intern)

@@ -58,7 +58,7 @@
                             <td>
                                 {{ intern.stuName }}
                                 </td>
-                               <td> {{ intern.comName }}的日子</td>
+                               <td> {{ intern.comName }}</td>
                             {% endif %}
                         
                     {% endif %}
@@ -66,12 +66,20 @@
                     <td>{{ intern.comName }}</td>
                     <td>{{ intern.start }}</td>
                     <td>{{ intern.end }}</td>
-                    {% if intern.internCheck==0 %}
-                        <td>未审核</td>
-                    {% elif intern.internCheck==1 %}
-                        <td>被退回</td>
+                    {% if journal==None %}
+                        {% if intern.internCheck==0 %}
+                            <td>未审核</td>
+                        {% elif intern.internCheck==1 %}
+                            <td>被退回</td>
+                        {% else %}
+                            <td>已审核</td>
+                        {% endif %}
                     {% else %}
-                        <td>已审核</td>
+                        {% if intern.jourCheck == 1 %}
+                            <td>审核通过</td>
+                        {% elif intern.jourCheck==0 %}
+                            <td>待审核</td>
+                        {% endif %}
                     {% endif %}
                     {% if intern.internStatus==0 %}
                         <td>待实习</td>
