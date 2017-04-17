@@ -1677,11 +1677,13 @@ def xJournalEditProcess():
     internId = request.form.get('internId')
     page = request.form.get('page')
     weekNo = int(request.form.get('weekNo'))
-    isvalid = db.session.execute(' \
+    isvalid_set = db.session.execute(' \
         SELECT isvalid \
           FROM Journal \
          WHERE Id = %s'
         % jourId)
+    for x in isvalid_set:
+        isvalid=x[0]
     #周六周日可不填写日志，或放假请假
     for jour in [mon, tue, wed, thu, fri]:
         #自动生成时可能不是完整的一周
