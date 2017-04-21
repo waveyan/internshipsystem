@@ -1004,7 +1004,7 @@ def journal_search():
                                                                                  InternshipInfor.end,
                                                                                  InternshipInfor.internCheck \
                                                                                  , InternshipInfor.internStatus,
-                                                                                 InternshipInfor.Id).all()
+                                                                                 InternshipInfor.Id,InternshipInfor.jourCheck).all()
         for intern in internship:
             if intern.stuName == form.key.data.strip():
                 internList.append(intern)
@@ -1586,20 +1586,10 @@ def jourthrw(iid):
 def journal_comfirm():
     # 参数都是为了跳转 xJournal 做准备
     stuId = request.args.get('stuId')
-    jourId = request.args.get('jourId')
     internId = request.args.get('internId')
-    flag=request.args.get('flag')
     checkTime = datetime.now()
     checkTeaId = current_user.get_id()
     if current_user.can(Permission.STU_JOUR_CHECK) or is_schdirtea(stuId):
-        #xJournal页面的jQuery的replace的跳转
-        # if flag=='1':
-        #     flash("日志审核通过")
-        #     return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
-        # elif flag=='0':
-        #     flash("日志审核失败，请重试！")
-        #     return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
-
         # check all valid journal if current date after the threshold week
         # include the current week which is not over
         if jourthrw(internId):
@@ -1620,18 +1610,14 @@ def journal_comfirm():
             db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
             flash("日志审核通过")
             return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
-        #     return_data={'iscomfirm':1}
-        #     return json.dumps(return_data)
         else:
             flash("日志审核失败，请重试！")
             return redirect(url_for('.xJournal',stuId=stuId,internId=internId))
         
     else:
         # 非法操作,返回主页3
-        # flash('你没有审核日志的权限')
-        # return redirect('/')
-        return_a={'iscomfirm':0}
-        return json.dumps(return_a)
+        flash('你没有审核日志的权限')
+        return redirect('/')
 
 
 
@@ -1691,11 +1677,13 @@ def xJournalEditProcess():
     internId = request.form.get('internId')
     page = request.form.get('page')
     weekNo = int(request.form.get('weekNo'))
-    isvalid = db.session.execute(' \
+    isvalid_set = db.session.execute(' \
         SELECT isvalid \
           FROM Journal \
          WHERE Id = %s'
         % jourId)
+    for x in isvalid_set:
+        isvalid=x[0]
     #周六周日可不填写日志，或放假请假
     for jour in [mon, tue, wed, thu, fri]:
         #自动生成时可能不是完整的一周

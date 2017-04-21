@@ -19,31 +19,6 @@
     <style type="text/css">
     p {white-space: pre-line;}
     </style>
-    {% if comfirm_can %}
-    <!-- 一键审核 -->
-    <script type="text/javascript">
-        function comfirm_journal(){
-            var div=document.getElementById("jourIdDiv");
-            var flag=0;
-                for(x of div.children){
-                    if(x.value!==undefined){
-                        // 同步处理
-                        $.ajaxSettings.async = false;
-                        // $.getJSON
-                        $.get("{{ url_for('.journal_comfirm')}}",{stuId:{{student.stuId}},internId:{{internship.Id}},jourId:x.value},function(data){
-                            data=JSON.parse(data);
-                            flag=data['iscomfirm'];
-                        });
-                    }
-                    else
-                        flag=1;
-                }
-                // 同步处理
-            $.ajaxSettings.async = true;
-            window.location.replace('/journal_comfirm?internId='+{{internship.Id}}+'&stuId='+{{student.stuId}}+'&flag='+flag);
-        }
-    </script>
-    {% endif %}
 {% endblock %}<!--先执行父模板-->
 
 {% block title %}实习日志{% endblock %}
@@ -134,10 +109,10 @@
         {% for jour in journal %}  
         {% if current_user.roleId == 0 and (jour.jourCheck == 0 or (jour.workStart <= now and jour.workEnd >= now))%}
             <a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id,page=page) }}"><button class=" btn btn-success">编辑日志</button></a>
-	{% endif %}
-	{% endfor %}
+    {% endif %}
+    {% endfor %}
         {% if internship.jourCheck==0 and journal|length>0 and comfirm_can %}
-    <button class="btn btn-success" onclick="comfirm_journal()">点击这里，通过审核</button>
+    <a href="{{ url_for('.journal_comfirm',internId=internship.Id,stuId=student.stuId) }}"><button class="btn btn-success">点击这里，通过审核</button></a>
     {%endif%}
             </h1>
 
@@ -147,8 +122,8 @@
     {% else %}
         <span class="label label-info">已审核</span>
         {% if pmt %}
-	  &nbsp&nbsp*当前周的日志已被审核, 重新编辑日志将同样需要重新审核
-	{% endif %}
+      &nbsp&nbsp*当前周的日志已被审核, 重新编辑日志将同样需要重新审核
+    {% endif %}
     {% endif %}
         <br><br>
     </div>
@@ -260,7 +235,5 @@
             {{ macros.pagination_widget(pagination, '.xJournal',stuId=student.stuId, internId=internship.Id) }}
         </div>
     {% endif %}
-
-    <!-- <br><a href="{{ url_for('.stuJournalList') }}"><div class="btn btn-primary">返回&nbsp;</div></a> -->
 
 {% endblock %}
