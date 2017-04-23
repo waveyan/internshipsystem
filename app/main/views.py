@@ -1357,7 +1357,7 @@ def stuJournal_allCheck():
         checkTime = datetime.now()
         checkTeaId = current_user.get_id()
         for x in internId:
-            if jourthrw(x):
+            if jcquali(x):
                 db.session.execute(' \
                     UPDATE Journal \
                        SET jourCheck = 1, \
@@ -1559,27 +1559,45 @@ def xJournal():
             return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
 
 # whether the current date after the threshold week
-# threshold week is early four weeks or all of it if less than four
+# threshold week is 4th week or the last one if weeknum less than four
 def jourthrw(iid):
     try:
-        weekno = Journal.query\
-            .filter_by(internId = iid, isvalid = 1)\
+        weeknum = Journal.query\
+            .filter_by(internId = iid)\
             .order_by(Journal.weekNo.desc())\
             .first().weekNo
-        if weekno > 4:
-            weekno = 4
-        thrw = Journal.query\
-            .filter_by(internId = iid, isvalid = 1, weekNo = weekno)\
+        if weeknum > 4:
+            weeknum = 4
+        thrd = Journal.query\
+            .filter_by(internId = iid, weekNo = weeknum)\
             .first().workEnd
-        print('thrw:', thrw)
-        if thrw < datetime.now().date():
-            return True
+        if thrd < datetime.now().date():
+            return weeknum
         else:
             return False
     except Exception as e:
         print('jourthrw:', e)
         return 0
 
+# journal qualification for being checked
+# the condition is all journals before threshold(include) week is valid
+def jcquali(iid):
+    try:
+        weeknum = jourthrw(iid)
+        if weeknum:
+            allvalid = Journal.query\
+                .filter(Journal.internId == iid,\
+                    Journal.weekNo <= weeknum,\
+                    Journal.isvalid == 1)\
+                .all()
+            if len(allvalid) == weeknum:
+                return True
+        else:
+            return False
+    except Exception as e:
+        print('jcquali:', e)
+        return 0
+                
 
 @main.route('/journal_comfirm', methods=['POST', 'GET'])
 @not_student_login
@@ -1592,7 +1610,7 @@ def journal_comfirm():
     if current_user.can(Permission.STU_JOUR_CHECK) or is_schdirtea(stuId):
         # check all valid journal if current date after the threshold week
         # include the current week which is not over
-        if jourthrw(internId):
+        if jcquali(internId):
             db.session.execute(' \
                 UPDATE Journal \
                    SET jourCheck = 1, \
@@ -1677,13 +1695,7 @@ def xJournalEditProcess():
     internId = request.form.get('internId')
     page = request.form.get('page')
     weekNo = int(request.form.get('weekNo'))
-    isvalid_set = db.session.execute(' \
-        SELECT isvalid \
-          FROM Journal \
-         WHERE Id = %s'
-        % jourId)
-    for x in isvalid_set:
-        isvalid=x[0]
+    isvalid = 0
     #周六周日可不填写日志，或放假请假
     for jour in [mon, tue, wed, thu, fri]:
         #自动生成时可能不是完整的一周
@@ -1726,7 +1738,7 @@ def xJournalEditProcess():
         print(datetime.now(), ": 学号为", stuId, "修改日志失败", e)
         flash("修改日志失败")
         return redirect("/")
-    if jourthrw(internId):
+    if jcquali(internId):
         try:
             stu=Student.query.filter_by(stuId=stuId).first()
             stuName=stu.stuName
@@ -2919,12 +2931,6 @@ def journal_init(internId):
             )
         db.session.add(journal)
         db.session.commit()
-        db.session.execute(' \
-            UPDATE Journal \
-               SET isvalid=1 \
-             WHERE internId=%s \
-               AND weekNo BETWEEN 1 AND 4'
-            % internId)
     except Exception as e:
         db.session.rollback()
         print(current_user.get_id(), datetime.now(), "初始化日志失败", e)
