@@ -1365,7 +1365,7 @@ def stuJournal_allCheck():
                            jcheckTeaId = %s \
                      WHERE internId = %s \
                        AND isvalid = 1'
-                    % (checkTime, checkTeaId, x, now))
+                    % (checkTime, checkTeaId, x))
                 db.session.execute(' \
                     UPDATE InternshipInfor \
                        SET jourCheck = 1 \
@@ -1508,10 +1508,11 @@ def xJournal():
         filter_by(internId = internId, isvalid = 1).\
         order_by(Journal.weekNo.desc()).\
         first()
-    if lavj.workStart <= now and lavj.workEnd >= now:
-        pmt = 1
-    else:
-        pmt = 0
+    if lavj:
+        if lavj.workStart <= now and lavj.workEnd >= now:
+            pmt = 1
+        else:
+            pmt = 0
 
     if isstu:
         cur_page = Journal.query.filter(
