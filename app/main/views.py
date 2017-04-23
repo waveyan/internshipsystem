@@ -1536,6 +1536,7 @@ def xJournal():
         #方便老师审核，日志改为一页显示全部
         pagination = Journal.query.filter_by(internId=internId, isvalid=1) \
             .paginate(page, per_page=100, error_out=False)
+        ckbutn = jcquali(internId)
     journal = pagination.items
     # journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
     comInfor = db.session.execute('select * from ComInfor where comId in( \
@@ -1553,7 +1554,7 @@ def xJournal():
     else:
         if internship.internCheck == 2:
             return render_template('xJournal.html', Permission=Permission, internship=internship, journal=journal,
-                                   student=student, comInfor=comInfor, pagination=pagination, page=page, now=now,comfirm_can=comfirm_can)
+                                   student=student, comInfor=comInfor, pagination=pagination, page=page, now=now,comfirm_can=comfirm_can, ckbutn = ckbutn)
         else:
             flash("实习申请需审核后,才能查看日志")
             return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
