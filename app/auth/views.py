@@ -6,14 +6,7 @@ from flask.ext.login import login_required, login_user, logout_user,session,curr
 from .LoginAction import LoginAction
 import os
 
-f = os.popen('ifconfig em1 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1')
-server_ip = f.read().strip('\n')
-if not server_ip:
-    f = os.popen('ifconfig eth0 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1')
-    server_ip = f.read()
-# server_ip = server_ip + ':5000'
-logout_url = 'https://cas.dgut.edu.cn/user/logout?service=http://%s' % server_ip
-
+logout_url = 'https://cas.dgut.edu.cn/user/logout?service=http://shixi.dgut.edu.cn'
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
