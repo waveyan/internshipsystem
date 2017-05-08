@@ -4271,9 +4271,6 @@ def xSumScoreEdit():
     comId = InternshipInfor.query.filter_by(Id=internId).first().comId
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     sumCheck=Summary.query.filter_by(internId=internship.Id).first().sumCheck
-    # if sumCheck==2 and not current_user.can(Permission.STU_SUM_SCO_CHECK):
-        # flash("非法操作！")
-        # return redirect(url_for(".index")) 
     path = storage_cwd(internId, 'score_img')
     file_path = {}
     if os.path.exists(path):
@@ -4283,7 +4280,6 @@ def xSumScoreEdit():
         file = os.listdir(path + '/schscore')
         if file:
             file_path['schscore'] = file[0]
-    # if internship.internStatus == 2:
     #xSumScore已有判断是否实习结束，这里暂不作判断，防止出错
     student = Student.query.filter_by(stuId=stuId).first()
     comInfor = ComInfor.query.filter_by(comId=comId).first()
@@ -4299,6 +4295,9 @@ def xSumScoreEdit():
                 except Exception as e:
                     flash("添加失败！请确保输入正确数值！")
                     return redirect(url_for('.xSumScoreEdit', internId=internId, stuId=stuId))
+            else:
+                flash("保存失败！请填上校内和校外成绩。")
+                return redirect(url_for('.xSumScoreEdit', internId=internId, stuId=stuId))
             paths = []
             paths.append(os.path.join(storage_cwd(internId, 'score_img'), 'comscore'))
             paths.append(paths[0].replace('comscore', 'schscore'))

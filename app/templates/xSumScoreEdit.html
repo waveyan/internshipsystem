@@ -27,9 +27,13 @@
 </style>
 <script type="text/javascript">
         function getLoading() {
-            if((($('#comfile')).val()!==undefined&&($('#comfile')).val()!=="")||(($('#schfile')).val()!==undefined&&($('#schfile')).val()!=="")){
+            if((($('#comfile')).val()!==undefined&&($('#comfile')).val()!=="")||(($('#schfile')).val()!==undefined&&($('#schfile')).val()!=="")||(document.getElementById("comScoreFile")!=null&&document.getElementById("schScoreFile")!=null)){
             document.getElementById("ddd").setAttribute('class', 'loading');
+            return true;
         }
+        else
+            alert("请先填写和上传相关信息和文档！")
+            return false;
     }
 </script>
 {% endblock %}<!--先执行父模板-->
@@ -68,7 +72,7 @@
         <br>
 
         <form id="sb" action="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}" method="POST"
-              enctype=multipart/form-data>
+              enctype=multipart/form-data onsubmit="return getLoading()">
             {{ form.hidden_tag() }}
             <input type="hidden" name="action" value="upload">
             <h3><b>总分录入</b></h3>
@@ -98,7 +102,7 @@
                     <td width="400"
                         height="50">
                         {% if 'comscore' in file_path.keys() %}
-                            {{ file_path['comscore'] }}&nbsp;&nbsp;&nbsp;<a href="javascript:{}"
+                            {{ file_path['comscore'] }}&nbsp;&nbsp;&nbsp;<a id="comScoreFile" href="javascript:{}"
                                                                             onclick="document.getElementById('comscore_delete').submit();">删除</a>
                         {% else %}
                         <h5><small>
@@ -110,7 +114,7 @@
                     <td width="400"
                         height="50">
                         {% if 'schscore' in file_path.keys() %}
-                            {{ file_path['schscore'] }}&nbsp;&nbsp;&nbsp;<a href="javascript:{}"
+                            {{ file_path['schscore'] }}&nbsp;&nbsp;&nbsp;<a id="schScoreFile" href="javascript:{}"
                                                                             onclick="document.getElementById('schscore_delete').submit();">删除</a>
                         {% else %}
                             <h5><small>{{ form.schfile(class='file') }}仅支持jpg、png、gif格式图片上传</small></h5>
@@ -119,7 +123,7 @@
                 </tr>
             </table>
             <br>
-            {{ form.submit(class="btn btn-primary",onclick="getLoading()") }}
+            {{ form.submit(class="btn btn-primary") }}
         </form>
         {#    #delete score of company#}
         <form id="schscore_delete" method="post">
