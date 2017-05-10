@@ -1508,6 +1508,7 @@ def xJournal():
         filter_by(internId = internId, isvalid = 1).\
         order_by(Journal.weekNo.desc()).\
         first()
+    pmt = 0
     if lavj:
         if lavj.workStart <= now and lavj.workEnd >= now:
             pmt = 1
