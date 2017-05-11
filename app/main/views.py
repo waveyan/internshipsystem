@@ -272,7 +272,7 @@ def stuInternList():
             schdirtea=list()
             comdirtea=list()
             for i in internlist:
-                comdirtea.append(ComDirTea.query.filter_by(stuId=stuId,comId=i.comId).all())
+                comdirtea.append(ComDirTea.query.filter_by(stuId=stuId,comId=i.comId,internId=i.Id).all())
                 schdirtea.append(db.session.execute('select teaName from SchDirTea,Teacher where SchDirTea.teaId=Teacher.teaId and internId=%s'%i.Id))
             internlist=zip(internlist,comdirtea,schdirtea)
             return render_template('stuInternList.html', internlist=internlist, Permission=Permission,
@@ -294,7 +294,7 @@ def stuInternList():
         schdirtea=list()
         comdirtea=list()
         for internship in internlist:
-            comdirtea.append(ComDirTea.query.filter_by(stuId=internship.stuId,comId=internship.comId).all())
+            comdirtea.append(ComDirTea.query.filter_by(stuId=internship.stuId,comId=internship.comId,internId=internship.Id).all())
             schdirtea.append(db.session.execute('select teaName from SchDirTea,Teacher where SchDirTea.teaId=Teacher.teaId and internId=%s'%internship.Id))
         internlist=zip(internlist,comdirtea,schdirtea)
         # 批量导出实习excel表
@@ -476,7 +476,8 @@ def addInternship():
                         comId=comId,
                         cteaDuty=request.form.get('cteaDuty%s' % j),
                         cteaEmail=request.form.get('cteaEmail%s' % j),
-                        cteaPhone=request.form.get('cteaPhone%s' % j)
+                        cteaPhone=request.form.get('cteaPhone%s' % j),
+                        internId=getMaxInternId()+1
                     )
                     db.session.add(comdirtea)
                 else:
@@ -568,7 +569,7 @@ def xIntern():
     #与本次internship相关的Teacher信息，包含Teacher类的属性，如teaName等
     schdirtea = internship.schdirtea
     comInfor = ComInfor.query.filter_by(comId=comId).first()
-    comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
+    comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId,internId=internId).all()
     checktea = None
     if internship.icheckTeaId :
         checktea = Teacher.query.filter_by(teaId=internship.icheckTeaId).first()
@@ -675,7 +676,7 @@ def getIntern_json():
         internship = InternshipInfor.query.filter_by(Id=internId).first()
         # comInfor = ComInfor.query.filter_by(comId=comId).first()
         schdirtea = internship.schdirtea
-        comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId).all()
+        comdirtea = ComDirTea.query.filter_by(stuId=stuId, comId=comId,internId=internId).all()
         intern_json={}
         intern_json.setdefault('intern',{})
         intern_json.setdefault('ctea',[])
@@ -764,7 +765,7 @@ def xInternEdit():
             db.session.add(internship)
             #修改企业指导老师
             #校外指导老师
-            ComDirTeas=ComDirTea.query.filter_by(comId=comId).filter_by(stuId=stuId).all()
+            ComDirTeas=ComDirTea.query.filter_by(comId=comId,stuId=stuId,internId=internId).all()
             for x in ComDirTeas:
                 db.session.delete(x)
             j=0
@@ -778,7 +779,8 @@ def xInternEdit():
                         comId=comId,
                         cteaDuty=request.form.get('cteaDuty%s' % j),
                         cteaEmail=request.form.get('cteaEmail%s' % j),
-                        cteaPhone=request.form.get('cteaPhone%s' % j)
+                        cteaPhone=request.form.get('cteaPhone%s' % j),
+                        internId=internId
                     )
                     db.session.add(comdirtea)
                 else:
@@ -846,7 +848,7 @@ def comfirmDeletreJournal_Intern():
                 db.session.execute('delete from Summary where internId=%s' % internId)
             # 企业指导老师,日志,实习一同删除
             comId = InternshipInfor.query.filter_by(Id=internId).first().comId
-            db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s' % (stuId, comId))
+            db.session.execute('delete from ComDirTea where stuId="%s" and comId=%s and internId=%s' % (stuId, comId,internId))
             db.session.execute('delete from SchDirTea where internId=%s'% internId)
             db.session.execute('delete from Journal where internId=%s and stuId=%s' % (internId, stuId))
             db.session.execute('delete from InternshipInfor where Id=%s and stuId=%s' % (internId, stuId))
@@ -3102,7 +3104,9 @@ def getMaxVisitId():
     res = db.session.query(func.max(Visit.visitId).label('max_visitId')).one()
     return res.max_visitId
 
-
+def getMaxInternId():
+    res = db.session.query(func.max(InternshipInfor.Id).label('max_internId')).one()
+    return res.max_internId   
 # ---------------Excel表格导入导出-----------------------------------------------
 
 # Excel文档列名的模板. 导入和导出

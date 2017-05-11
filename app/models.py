@@ -296,6 +296,7 @@ class ComDirTea(db.Model):
     cteaEmail = db.Column(db.String(20))
     comId = db.Column(db.Integer, db.ForeignKey('ComInfor.comId'))
     stuId = db.Column(db.String(20), db.ForeignKey('Student.stuId'))
+    internId=db.Column(db.Integer)
 
 class Summary(db.Model):
     __tablename__ = 'Summary'
