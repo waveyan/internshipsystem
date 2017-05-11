@@ -17,13 +17,16 @@
     <h1>请选择您的实习企业
         {{ search.search(url_for('.com_search',selectCom='selectCom'),form) }}
     </h1>
+    <br><span class="label label-danger">注意</span>
+*&nbsp&nbsp若遇到重复的企业信息，请尽量选择累计实习人次较多的企业。<br>
     <table class="table" id="t">
         <thead>
         <tr>
-            <th>企业名称</th>
-            <th>所在城市</th>
-            <th>网址</th>
-            <th>联系电话</th>
+            <th style="word-wrap:break-word;">企业名称</th>
+            <th style="word-wrap:break-word;">所在城市</th>
+            <th style="word-wrap:break-word;">网址</th>
+            <th style="word-wrap:break-word;">联系电话</th>
+            <th style="word-wrap:break-word;">累计实习人次</th>
         </tr>
         </thead>
         <tbody>
@@ -41,6 +44,7 @@
                     {%endif%}   
                 </td>
                 <td>{{ com.comPhone }}</td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
                 <td><a href="{{ url_for('.addInternship',comId=com.comId) }}" class="btn btn-info btn-xs">
                     <span class="glyphicon glyphicon-plus"></span>选择</a></td>
             </tr>
