@@ -3150,6 +3150,18 @@ excel_export_teaUser = OrderedDict((('teaId', '教工号'), ('teaName', '姓名'
 
 excel_import_teaUser = {'教工号': 'teaId', '姓名': 'teaName', '性别': 'teaSex', '职称':'teaPosition', '邮箱': 'teaEmail', '电话':'teaPhone'}
 
+# Summary Score
+excel_export_sumscore = OrderedDict((\
+    ('stuId', '学号'),\
+    ('stuName', '姓名'),\
+    ('sumScore', '实习总评分'),\
+    ('schScore', '校内指导老师评分'),\
+    ('comScore', '企业评分'),\
+    ('comCity', '城市'),\
+    ('comName', '企业名称'),\
+    ('start', '开始日期'),\
+    ('end', '结束时间'),\
+    ('steaName', '校内指导老师姓名')))
 
 IMPORT_FOLDER = os.path.join(os.path.abspath('.'), 'file_cache/xls_import')
 EXPORT_FOLDER = os.path.join(os.path.abspath('.'), 'file_cache/xls_export')
@@ -3168,7 +3180,13 @@ def allowed_file(filename, secure_postfix):
 
 # 下载导出文件
 def export_download(file_path):
-    template_dict = {'internlist':'实习信息导出表', 'comlist':'企业信息导出表', 'stuUserList':'学生用户信息导出表', 'teaUserList':'教师用户信息导出表', 'journalList':'日志记录导出表'}
+    template_dict = {\
+        'internlist':'实习信息导出表',\
+        'comlist':'企业信息导出表',\
+        'stuUserList':'学生用户信息导出表',\
+        'teaUserList':'教师用户信息导出表',\
+        'journalList':'日志记录导出表',\
+        'sumscore': '实习成绩导出表'}
     file_name = os.path.basename(file_path)
     index = file_name.split('_')[0]
     if index in template_dict.keys():
@@ -3430,6 +3448,8 @@ def excel_export(template, data):
         file_name = 'stuUserList_export_%s.xls' % random.randint(1, 1000)
     elif template == excel_export_teaUser:
         file_name = 'teaUserList_export_%s.xls' % random.randint(1, 1000)
+    elif template == excel_export_sumscore:
+        file_name = 'sumscore_export_%s.xls' % random.randint(1, 1000)
     file_path = os.path.join(EXPORT_FOLDER, file_name)
     wb.save(file_path)
     return file_path
@@ -4037,13 +4057,33 @@ def stuSumList():
     elif current_user.can(Permission.STU_INTERN_LIST):
         # 函数返回的intern已经join了Student,Summary
         intern = create_intern_filter(grade, major, classes, 2)
-        pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId)\
-            .filter(InternshipInfor.internCheck == 2) \
-            .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
-                         InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
-                         InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
-            .order_by(InternshipInfor.end.desc(), InternshipInfor.internStatus.desc()).paginate(page, per_page=8, error_out=False)
+        intern_org = intern\
+            .join(ComInfor, InternshipInfor.comId == ComInfor.comId)\
+            .join(Summary,Summary.internId==InternshipInfor.Id)\
+            .outerjoin(Teacher, Teacher.teaId == InternshipInfor.icheckTeaId)\
+            .filter(InternshipInfor.internCheck == 2,\
+                Summary.sumCheck == 2) \
+            .add_columns(InternshipInfor.stuId,\
+                Student.stuName,\
+                ComInfor.comName,\
+                ComInfor.comCity,\
+                InternshipInfor.Id,\
+                InternshipInfor.start,\
+                InternshipInfor.end,\
+                InternshipInfor.internCheck,\
+                Summary.sumScore,\
+                Summary.schScore,\
+                Summary.comScore,\
+                Summary.sumCheck) \
+            .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2))
+        pagination = intern_org.paginate(page, per_page=8, error_out=False)
         internlist = pagination.items
+        intern_org = intern_org.all()
+        if request.method == "POST"\
+           and 'isexport' in request.form\
+           and request.form.get('isexport'):
+            file_path = excel_export(excel_export_sumscore, intern_org)
+            return export_download(file_path)
         return render_template('stuSumList.html', internlist=internlist, Permission=Permission,
                                pagination=pagination, form=form, grade=grade, classes=classes, major=major)
     else:
