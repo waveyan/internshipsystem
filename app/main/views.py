@@ -687,6 +687,7 @@ def getIntern_json():
         for x in schdirtea:
             intern_json['tea'].append([x.teaName])
     except Exception as e:
+        db.session.rollback()
         print('getIntern_json:',e)
     return json.dumps(intern_json)
 
@@ -1582,7 +1583,7 @@ def jourthrw(iid):
             return False
     except Exception as e:
         print('jourthrw:', e)
-        return 0
+        return False
 
 # journal qualification for being checked
 # the condition is all journals before threshold(include) week is valid
@@ -4179,8 +4180,8 @@ def xSum_fileManager():
                         #若上传了总结，设置Summary 的uploaded为1(用于总结的批量审核)
                         if "summary_doc2_upload" in request.form:
                             summary.uploaded=1
-                            db.session.add(summary)
                             try:
+                                db.session.add(summary)
                                 db.session.commit()
                             except Exception as e:
                                 print("Summary 的uploaded字段设置:",e)
@@ -4190,8 +4191,8 @@ def xSum_fileManager():
                          #若是被退回，学生修改后状态改为待审核状态
                         if current_user.roleId==0 and summary.sumCheck==1:
                             summary.sumCheck=0
-                            db.session.add(summary)
                             try:
+                                db.session.add(summary)
                                 db.session.commit()
                                 flash('上传成功')
                             except Exception as e:
@@ -4220,8 +4221,8 @@ def xSum_fileManager():
                         #若删除了总结，设置Summary 的uploaded为0(用于总结的批量审核)
                         if "summary_doc" == request.form.get("dest_path"):
                             summary.uploaded=0
-                            db.session.add(summary)
                             try:
+                                db.session.add(summary)
                                 db.session.commit()
                             except Exception as e:
                                 print("Summary 的uploaded字段设置:",e)
@@ -4276,9 +4277,6 @@ def xSumScore():
     internship = InternshipInfor.query.filter_by(Id=internId).first()
     path = os.path.join(os.path.abspath('.'), 'app/static/storage', internId, 'score_img')
     sumScore = Summary.query.filter_by(internId=internId).first().sumScore
-    # if internship.internStatus != 2:
-    #     flash('实习结束后方可提交成绩')
-    #     return redirect(url_for('.xSum', internId=internId, stuId=stuId))
     if not sumScore:
         flash('请先完善实习成绩信息！')
         return redirect(url_for('.xSumScoreEdit', internId=internId, stuId=stuId))
@@ -4295,12 +4293,11 @@ def xSumScore():
         file_name = request.form.get('file_path')[request.form.get('file_path').find('score/') + 6:]
         return send_file(os.path.join(os.path.abspath('.'), 'app/') + request.form.get('file_path'), as_attachment=True,
                          attachment_filename=file_name.encode('utf-8'))
-    if internship.internStatus == 2:
-        student = Student.query.filter_by(stuId=stuId).first()
-        comInfor = ComInfor.query.filter_by(comId=comId).first()
-        summary = Summary.query.filter_by(internId=internId).first()
-        return render_template('xSumScore.html', Permission=Permission, comInfor=comInfor, internship=internship,
-                               student=student, summary=summary, file_path=file_path)
+    student = Student.query.filter_by(stuId=stuId).first()
+    comInfor = ComInfor.query.filter_by(comId=comId).first()
+    summary = Summary.query.filter_by(internId=internId).first()
+    return render_template('xSumScore.html', Permission=Permission, comInfor=comInfor, internship=internship,
+                           student=student, summary=summary, file_path=file_path)
 
 
 # 编辑实习分数
@@ -4331,14 +4328,17 @@ def xSumScoreEdit():
     summary = Summary.query.filter_by(internId=internId).first()
     if request.method == 'POST':
         if request.form.get('action') == 'upload':
-            summary.comScore = form.comScore.data
-            summary.schScore = form.schScore.data
-            if summary.comScore and summary.schScore:
+            if form.comScore.data and form.schScore.data:
                 try:
                     summary.sumScore = float(form.comScore.data) * 0.7 + float(form.schScore.data) * 0.3
+                    summary.comScore = form.comScore.data
+                    summary.schScore = form.schScore.data 
                     db.session.add(summary)
+                    db.session.commit()            
                 except Exception as e:
+                    db.session.rollback()
                     flash("添加失败！请确保输入正确数值！")
+                    print("实习成绩",e)
                     return redirect(url_for('.xSumScoreEdit', internId=internId, stuId=stuId))
             else:
                 flash("保存失败！请填上校内和校外成绩。")
@@ -4351,7 +4351,6 @@ def xSumScoreEdit():
                 if not os.path.exists(path):
                     os.makedirs(path)
             try:
-                db.session.commit()
                 if form.comfile.data:
                     form.comfile.data.save(paths[0] + '/' + form.comfile.data.filename)
                 if form.schfile.data:
@@ -4360,8 +4359,8 @@ def xSumScoreEdit():
                 #若是被退回，学生修改后状态改为待审核状态
                 if current_user.roleId==0 and summary.sumCheck==1:
                     summary.sumCheck=0
-                    db.session.add(summary)
                     try:
+                        db.session.add(summary)
                         db.session.commit()
                     except Exception as e:
                         db.session.rollback()
@@ -4458,7 +4457,7 @@ def stuSum_allCheck():
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
     pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, InternshipInfor.jourCheck == 1, Summary.sumCheck != 2) \
+        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, InternshipInfor.jourCheck == 1, Summary.sumCheck != 2,Summary.uploaded==1) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                      InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \

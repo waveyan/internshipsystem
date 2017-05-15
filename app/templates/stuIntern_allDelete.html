@@ -61,7 +61,7 @@
         {% if current_user.can(Permission.STU_INTERN_EDIT) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                        data-toggle="dropdown">编辑<span class="caret"></span>
+                        data-toggle="dropdown">更多<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="{{ url_for('.addcominfor', from_url='stuInternList') }}">添加</a></li>

@@ -52,7 +52,7 @@
                 {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
     <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                data-toggle="dropdown">编辑<span class="caret"></span>
+                data-toggle="dropdown">更多<span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
                 <li><a href="{{ url_for('.update_intern_filter',flag=7) }}">批量审核</a></li>
@@ -113,7 +113,13 @@
                 </td>
             {% endif %}
 
-            <td>{{ intern.sumScore }}</td>
+            <td>
+            {% if intern.sumScore  %}
+            {{ intern.sumScore }}
+            {% else %}
+            暂无
+            {% endif %}
+            </td>
             <td>{{ intern.start }}</td>
             <td>{{ intern.end }}</td>
             {% if intern.sumCheck==2 %}
