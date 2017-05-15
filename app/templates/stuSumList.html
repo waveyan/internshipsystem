@@ -67,6 +67,10 @@
 {% if current_user.role.roleId!=0 %}
     {{ filter.intern_filter('.stuSumList',6,grade,major,classes) }}
 {% endif %}
+{% if current_user.roleId != 0 %}
+<span class="label label-danger">注意</span>
+*&nbsp&nbsp若部分实习日志未能显示, 请先通过实习信息的审核。
+{% endif %}
 <table class="table" id="t">
     <thead>
     <tr>
@@ -121,9 +125,5 @@
     <div class="pagination">
         {{ macros.pagination_widget(pagination,'.stuSumList') }}
     </div>
-{% endif %}
-{% if current_user.roleId != 0 %}
-    <br><span class="label label-danger">注意</span>
-    <br>*&nbsp&nbsp若部分实习总结与成果未能显示, 请先通过其实习信息的审核
 {% endif %}
 {% endblock %}
