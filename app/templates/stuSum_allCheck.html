@@ -60,7 +60,7 @@
         {% if current_user.can(Permission.STU_SUM_EDIT) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                        data-toggle="dropdown">编辑<span class="caret"></span>
+                        data-toggle="dropdown">更多<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
@@ -74,7 +74,10 @@
     </h1>
     {#    筛选项#}
     {{ filter.intern_filter('.stuSum_allCheck',7,grade,major,classes) }}
-
+{% if current_user.roleId != 0 %}
+<span class="label label-danger">注意</span>
+*&nbsp&nbsp只有上传了实习总结的学生才会出现在此列表。
+{% endif %}
     <table class="table" id="t">
         <thead>
         <tr>
