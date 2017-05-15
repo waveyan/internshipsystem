@@ -107,7 +107,13 @@
                 </td>
             {% endif %}
 
-            <td>{{ intern.sumScore }}</td>
+            <td>
+            {% if intern.sumScore  %}
+            {{ intern.sumScore }}
+            {% else %}
+            暂无
+            {% endif %}
+            </td>
             <td>{{ intern.start }}</td>
             <td>{{ intern.end }}</td>
             {% if intern.sumCheck==2 %}
