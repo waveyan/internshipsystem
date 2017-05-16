@@ -49,14 +49,16 @@
     {% else %}
         <h1>学生实习总结与成果
     {% endif %}
-                {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
+     {% if current_user.can(Permission.STU_SUM_EDIT) %}
     <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggled btn-sm"
                 data-toggle="dropdown">更多<span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
+            {% if current_user.can(Permission.STU_SUM_SCO_CHECK) %}
                 <li><a href="{{ url_for('.update_intern_filter',flag=7) }}">批量审核</a></li>
                 <li><a href="{{ url_for('.update_intern_filter',flag=8) }}">批量删除</a></li>
+            {% endif %}
                 <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出成绩表</a>
         </ul>
     </div>
