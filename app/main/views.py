@@ -3155,6 +3155,9 @@ excel_import_teaUser = {'教工号': 'teaId', '姓名': 'teaName', '性别': 'te
 excel_export_sumscore = OrderedDict((\
     ('stuId', '学号'),\
     ('stuName', '姓名'),\
+    ('grade','年级'),
+    ('classes','班级'),\
+    ('major','专业'),\
     ('sumScore', '实习总评分'),\
     ('schScore', '校内指导老师评分'),\
     ('comScore', '企业评分'),\
@@ -4062,10 +4065,12 @@ def stuSumList():
             .join(ComInfor, InternshipInfor.comId == ComInfor.comId)\
             .join(Summary,Summary.internId==InternshipInfor.Id)\
             .outerjoin(Teacher, Teacher.teaId == InternshipInfor.icheckTeaId)\
-            .filter(InternshipInfor.internCheck == 2,\
-                Summary.sumCheck == 2) \
+            .filter(InternshipInfor.internCheck == 2) \
             .add_columns(InternshipInfor.stuId,\
                 Student.stuName,\
+                Student.grade,\
+                Student.classes,\
+                Student.major,\
                 ComInfor.comName,\
                 ComInfor.comCity,\
                 InternshipInfor.Id,\
