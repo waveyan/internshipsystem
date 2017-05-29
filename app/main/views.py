@@ -1855,7 +1855,7 @@ def stuUserList():
     if request.method == "POST" and current_user.can(Permission.STU_INTERN_MANAGE):
         isexport = request.form.get('isexport')
         if isexport:
-            file_path = excel_export(excel_export_stuUser, student)
+            file_path = excel_export(excel_export_stuUser, stu.all())
             return export_download(file_path)
     return render_template('stuUserList.html', pagination=pagination, form=form, Permission=Permission, student=student,
                            grade=grade, major=major, classes=classes)
@@ -2140,20 +2140,22 @@ def teaUserList():
     # 与student共用一个selectRole先清空session['stu']
     if session.get('stu'):
         session['stu'] = None
-    if request.args.get('way'):
-        session['way'] = request.args.get('way')
+    # if request.args.get('way'):
+    #     session['way'] = request.args.get('way')
     page = request.args.get('page', 1, type=int)
-    if session.get('way') == '1':
-        pagination = Teacher.query.order_by(Teacher.teaName.desc()).paginate(page, per_page=8, error_out=False)
-    else:
-        pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
+    # if session.get('way') == '1':
+    #     pagination = Teacher.query.order_by(Teacher.teaName.desc()).paginate(page, per_page=8, error_out=False)
+    # else:
+    #     pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
+    tea_org = Teacher.query.order_by(Teacher.teaName.desc())
+    pagination=tea_org.paginate(page, per_page=8, error_out=False)
     teacher = pagination.items
     for tea in teacher:
         session[tea.teaId] = tea.role.roleName
     if request.method == "POST" and current_user.can(Permission.TEA_INFOR_MANAGE):
         isexport = request.form.get('isexport')
         if isexport:
-            file_path = excel_export(excel_export_teaUser, teacher)
+            file_path = excel_export(excel_export_teaUser, tea_org.all())
             return export_download(file_path)
     return render_template('teaUserList.html', pagination=pagination, form=form, Permission=Permission,
                            teacher=teacher)

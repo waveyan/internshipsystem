@@ -49,15 +49,7 @@
         <table class="table" id="t">
             <thead>
             <tr>
-                {% if session.get('way')=='1' %}
-                    <th><a href="{{ url_for('.teaUserList',way=0) }}" data-toggle="tooltip" title="按拼音首字母升序排列">姓名<span
-                            class="glyphicon glyphicon-arrow-up"></span></a></th>
-
-                {% else %}
-                    <th><a href="{{ url_for('.teaUserList',way=1) }}" data-toggle="tooltip" title="按拼音首字母降序排列">姓名<span
-                            class="glyphicon glyphicon-arrow-down"></span></a></th>
-
-                {% endif %}
+                <th>姓名</th>
                 <th>性别</th>
                 <th>教工号</th>
                 <th>职称</th>
