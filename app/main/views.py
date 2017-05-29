@@ -1586,23 +1586,31 @@ def jourthrw(iid):
         return False
 
 # journal qualification for being checked
-# the condition is all journals before threshold(include) week is valid
+# true when  all journals before threshold(include) week is valid
 def jcquali(iid):
     try:
         weeknum = jourthrw(iid)
+        ret = False
         if weeknum:
-            allvalid = Journal.query\
+            # first week is regarded as valid if there is only weekend in
+            # it, regardless journal is null or not
+            fw = Journal.query\
                 .filter(Journal.internId == iid,\
-                    Journal.weekNo <= weeknum,\
-                    Journal.isvalid == 1)\
-                .all()
-            if len(allvalid) == weeknum:
-                return True
-        else:
-            return False
+                        Journal.weekNo == 1,\
+                        Journal.workEnd - Journal.workStart < 3)\
+                .count()
+            vw = Journal.query\
+                        .filter(Journal.internId == iid,\
+                                Journal.weekNo <= weeknum,\
+                                Journal.isvalid == 1)
+            vw = vw.filter(Journal.weekNo != 1) if fw else vw
+            vw = vw.all()
+            weeknum = weeknum - 1 if fw else weeknum
+            ret = bool(len(vw) == weeknum)
+        return ret
     except Exception as e:
         print('jcquali:', e)
-        return 0
+        return False
                 
 
 @main.route('/journal_comfirm', methods=['POST', 'GET'])
