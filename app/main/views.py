@@ -4163,9 +4163,9 @@ def xSum_fileManager():
     storage_path = storage_cwd(internId, "score_img")
     comscore=os.listdir(os.path.join(storage_path,"comscore"))
     schscore=os.listdir(os.path.join(storage_path,"schscore"))
-    if not (len(comscore)!=0 and len(schscore)!=0):
-        flash("请先上传评分表和成绩，方能上传总结！")
-        return redirect(url_for(".xSumScoreEdit",internId=internId,stuId=stuId))
+    # if not (len(comscore)!=0 and len(schscore)!=0):
+    #     flash("请先上传评分表和成绩，方能上传总结！")
+    #     return redirect(url_for(".xSumScoreEdit",internId=internId,stuId=stuId))
     if jourthrw(internId):
         student = Student.query.filter_by(stuId=stuId).first()
         comInfor = ComInfor.query.filter_by(comId=comId).first()
@@ -4462,7 +4462,7 @@ def stuSum_allCheck():
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
     pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, InternshipInfor.jourCheck == 1, Summary.sumCheck != 2,Summary.uploaded==1) \
+        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, InternshipInfor.jourCheck == 1, Summary.sumCheck != 2,Summary.uploaded==1,Summary.sumScore!=0) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                      InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
