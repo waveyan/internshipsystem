@@ -305,9 +305,9 @@ class Summary(db.Model):
     sumCheckTeaId = db.Column(db.String(10))
     sumCheckTime = db.Column(db.DATETIME)
     sumCheckOpinion = db.Column(db.String(250))
-    comScore = db.Column(db.Integer)
-    schScore = db.Column(db.Integer)
-    sumScore = db.Column(db.Integer)
+    comScore = db.Column(db.Integer,default=0)
+    schScore = db.Column(db.Integer,default=0)
+    sumScore = db.Column(db.Integer,default=0)
     uploaded=db.Column(db.Integer,default=0)
 
 
