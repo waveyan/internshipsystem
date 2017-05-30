@@ -465,6 +465,7 @@ def addInternship():
                 internStatus=internStatus
             )
             db.session.add(internship)
+            db.session.commit()
             #校外指导老师
             while True:
                 j = j + 1
@@ -477,7 +478,7 @@ def addInternship():
                         cteaDuty=request.form.get('cteaDuty%s' % j),
                         cteaEmail=request.form.get('cteaEmail%s' % j),
                         cteaPhone=request.form.get('cteaPhone%s' % j),
-                        internId=getMaxInternId()+1
+                        internId=getMaxInternId()
                     )
                     db.session.add(comdirtea)
                 else:
