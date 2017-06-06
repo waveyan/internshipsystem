@@ -155,50 +155,35 @@ def statistics_com_rank():
     cominfor = db.session.execute(sql)
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-   # cominfor =
-    #pagination = ComInfor.query.filter(ComInfor.students != 0).order_by(ComInfor.students.desc()).paginate(page,
-                                                                                                        #   per_page=8,
-                                                                                                          #error_out=False)
-    #pagination = ComInfor.query.filter(ComInfor.students != 0).filter_by(ComInfro.students==grade)
-    #pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor, ComInfor.comId==InternshipInfor.comId).join(Student, Student.stuId==InternshipInfor.stuId)\
-     #   .add_columns(Student.grade, ComInfor.comId, ComInfor.comId, ComInfor.comName, ComInfor.comUrl,
-     #                ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(ComInfor.students.desc())\
-    #    .paginate(page, per_page=8, error_out=False)
     if session['grade']:
         pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor,
                                                                     ComInfor.comId == InternshipInfor.comId).join(
         Student, Student.stuId == InternshipInfor.stuId).with_entities(
         func.count(InternshipInfor.Id).label('sum_students'), Student.grade, ComInfor.comId, ComInfor.comId,
-        ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(
-        desc('sum_students')).group_by(ComInfor.comId).filter(Student.grade == session['grade']).paginate(1,per_page=20,error_out=False)
+        ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).group_by(ComInfor.comId).filter(Student.grade == session['grade']).order_by(
+        desc('sum_students')).paginate(1,per_page=20,error_out=False)
         if session['major']:
             pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor,
                                                                             ComInfor.comId == InternshipInfor.comId).join(
                 Student, Student.stuId == InternshipInfor.stuId).with_entities(
                 func.count(InternshipInfor.Id).label('sum_students'), Student.grade, ComInfor.comId, ComInfor.comId,
-                ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(
-                desc('sum_students')).group_by(ComInfor.comId).filter(Student.grade == session['grade']).filter(Student.major == session['major']).paginate(1,
-                                                                                                                  per_page=20,
-                                                                                                              error_out=False)
+                ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).group_by(ComInfor.comId).filter(Student.grade == session['grade']).filter(Student.major == session['major']).order_by(
+                desc('sum_students')).paginate(1,per_page=20,error_out=False)
     if session['major']:
         pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor,
                                                                         ComInfor.comId == InternshipInfor.comId).join(
             Student, Student.stuId == InternshipInfor.stuId).with_entities(
             func.count(InternshipInfor.Id).label('sum_students'), Student.grade, ComInfor.comId, ComInfor.comId,
-            ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(
-            desc('sum_students')).group_by(ComInfor.comId).filter(Student.major == session['major']).paginate(1,
-                                                        per_page=20,
-                                                        error_out=False)
+            ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).group_by(ComInfor.comId).filter(Student.major == session['major']).order_by(
+            desc('sum_students')).paginate(1,per_page=20,error_out=False)
         if session['grade']:
             pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor,
                                                                             ComInfor.comId == InternshipInfor.comId).join(
                 Student, Student.stuId == InternshipInfor.stuId).with_entities(
                 func.count(InternshipInfor.Id).label('sum_students'), Student.grade, ComInfor.comId, ComInfor.comId,
-                ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(
-                desc('sum_students')).group_by(ComInfor.comId).filter(Student.grade == session['grade']).filter(
-                Student.major == session['major']).paginate(1,
-                                                            per_page=20,
-                                                            error_out=False)
+                ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).group_by(ComInfor.comId).filter(Student.grade == session['grade']).filter(
+                Student.major == session['major']).order_by(
+                desc('sum_students')).paginate(1, per_page=20,error_out=False)
 
     if not session['major'] and not session['grade']:
         pagination = ComInfor.query.filter(ComInfor.students != 0).order_by(ComInfor.students.desc()).paginate(page,

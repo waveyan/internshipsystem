@@ -81,12 +81,7 @@
                 <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
                 <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
                 <td>{{ com.comPhone }}</td>
-                {% if current_user.roleId==0%}
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
-                {% else %}
-                    <td>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
-                {% endif %}
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.sum_students }}&nbsp;&nbsp;&nbsp;</td>
             </tr>
         {% endfor %}
         </tbody>
