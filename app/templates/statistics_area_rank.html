@@ -11,7 +11,7 @@
     <ul class="nav nav-tabs">
         <li><a href="{{ url_for('main.statistics_area_visual') }}">地域统计图</a></li>
         <li><a href="{{ url_for('main.statistics_com_visual') }}">企业统计图</a></li>
-        <li><a href="{{ url_for('main.statistics_com_rank') }}">企业排行</a></li>
+        <li><a href="{{ url_for('main.statistics_com_rank',all='all') }}">企业排行</a></li>
         <li class="active"><a href="{{ url_for('main.statistics_area_rank') }}">地域排行</a></li>
     </ul>
     <div>
