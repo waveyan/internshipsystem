@@ -1,98 +1,86 @@
-{% extends "base.html" %}
-{% import "_macros.html"as macros %}
+{% extends "base.html" %} {% import "_macros.html"as macros %} {% block title %}实习总结与成果{% endblock %} {% block head %} {{ super() }}
+<!-- 确认请求窗口 -->
+<script type="text/javascript">
+function ComfirmDelete() {
+    $('#deleteToggle').modal();
+}
 
-{% block title %}实习总结与成果{% endblock %}
-{% block head %}
-    {{ super() }}
-    <!-- 确认请求窗口 -->
-    <script type="text/javascript">
-        function ComfirmDelete() {
-            $('#deleteToggle').modal();
-        }
-        function Admin_ComfirmEdit() {
-            $('#editToggle').modal();
-        }
-        function ComfirmCheck() {
-            $('#checkToggle').modal();
-        }
-    </script>
+function Admin_ComfirmEdit() {
+    $('#editToggle').modal();
+}
 
-    <style type="text/css">
-        p {
-            white-space: pre-line;
-        }
-    </style>
-
-    <!-- 审核操作窗口 -->
-    <div class="modal fade" id="checkToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="text-align:center;">
-                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-                </div>
-                <div class="modal-body">
-                    {% if summary.sumnCheck == 2 %}
-                        <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习总结已审核通过,是否仍要继续?</h4>
-                    {% else %}
-                        <h4 class="modal-body" style="color:black;" id="deleteModalLabel">请对该实习总结做出审核</h4>
-                    {% endif %}
-                </div>
-                <div class="modal-footer">
-                    <!-- 用form来获取数据 -->
-                    <form name="xSum_comfirm_form" action="/xSum_comfirm" method="POST">
-                        <input type="hidden" name="stuId" value="{{ student.stuId }}"/>
-                        <input type="hidden" name="internId" value="{{ summary.internId }}"/>
-                        {% if summary.sumCheckOpinion %}
-                            <div style="text-align:center;">审核意见</div>
-                            <textarea name="sumCheckOpinion" cols="70" rows="5"
-                                      placeholder="若审核通过,意见可为空">{{ summary.sumCheckOpinion }}</textarea><br><br>
-                        {% else %}
-                            <div style="text-align:center;">审核意见</div>
-                            <textarea name="sumCheckOpinion" cols="70" rows="5" placeholder="若审核通过,意见可为空"></textarea>
-                            <br><br>
-                        {% endif %}
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" name="sumCheck" value="2" class="btn btn-success">审核通过</button>
-                        <button type="submit" name="sumCheck" value="1" class="btn btn-primary">退回修改</button>
-                    </form>
-                </div>
+function ComfirmCheck() {
+    $('#checkToggle').modal();
+}
+</script>
+<style type="text/css">
+p {
+    white-space: pre-line;
+}
+</style>
+<!-- 审核操作窗口 -->
+<div class="modal fade" id="checkToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-body">
+                {% if summary.sumnCheck == 2 %}
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习总结已审核通过,是否仍要继续?</h4> {% else %}
+                <h4 class="modal-body" style="color:black;" id="deleteModalLabel">请对该实习总结做出审核</h4> {% endif %}
+            </div>
+            <div class="modal-footer">
+                <!-- 用form来获取数据 -->
+                <form name="xSum_comfirm_form" action="/xSum_comfirm" method="POST">
+                    <input type="hidden" name="stuId" value="{{ student.stuId }}" />
+                    <input type="hidden" name="internId" value="{{ summary.internId }}" /> {% if summary.sumCheckOpinion %}
+                    <div style="text-align:center;">审核意见</div>
+                    <textarea name="sumCheckOpinion" cols="70" rows="5" placeholder="若审核通过,意见可为空">{{ summary.sumCheckOpinion }}</textarea>
+                    <br>
+                    <br> {% else %}
+                    <div style="text-align:center;">审核意见</div>
+                    <textarea name="sumCheckOpinion" cols="70" rows="5" placeholder="若审核通过,意见可为空"></textarea>
+                    <br>
+                    <br> {% endif %}
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" name="sumCheck" value="2" class="btn btn-success">审核通过</button>
+                    <button type="submit" name="sumCheck" value="1" class="btn btn-primary">退回修改</button>
+                </form>
             </div>
         </div>
     </div>
-
-{% endblock %}<!--先执行父模板-->
-
+</div>
+{% endblock %}
+<!--先执行父模板-->
 {% block page_content %}
-    <!-- 删除确认窗口 -->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="text-align:center;">
-                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
+<!-- 删除确认窗口 -->
+<div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-body">
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
                         日志将会连同实习信息一起删除,且删除操作将无法撤回,是否仍要删除</h4>
-                </div>
-                <div class="modal-footer">
-                    <!-- 用form来获取数据 -->
-                    <form action="/intern_delete" method="POST">
-                        <input type="hidden" name="internId" value="{{ internship.Id }}">
-                        <input type="hidden" name="from_url" value="xSum">
-                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-primary">删除</button>
-                    </form>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- 用form来获取数据 -->
+                <form action="/intern_delete" method="POST">
+                    <input type="hidden" name="internId" value="{{ internship.Id }}">
+                    <input type="hidden" name="from_url" value="xSum">
+                    <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">删除</button>
+                </form>
             </div>
         </div>
     </div>
-
-    <div class="page-`er">
-        {% if current_user.roleId==0 %}
-            <h1>我的实习总结与成果
+</div>
+<div class="page-`er">
+    {% if current_user.roleId==0 %}
+    <h1>我的实习总结与成果
         {% else %}
             <h1>{{ student.stuName }}的实习总结与成果
         {% endif %}
@@ -104,14 +92,12 @@
                 {% if comfirm_can %}
                     <li><a onClick="ComfirmCheck()">审核</a></li>
                     <li class="divider"></li>
-                    <li><a onClick="ComfirmDelete()">删除</a></li>
                     <li class="divider"></li>
                     <li>
                         <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">上传总结和附件</a>
                     </li>
                     <li class="divider"></li>
                 {% elif (current_user.can(Permission.STU_SUM_EDIT) or current_user.roleId == 0 ) and summary.sumCheck!=2 %}
-                    <li><a onClick="ComfirmDelete()">删除</a></li>
                     <li>
                         <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}">上传总结和附件</a>
                     </li>
@@ -131,120 +117,117 @@
         <a href="{{ url_for('.xSum_fileManager', stuId=student.stuId, internId=internship.Id) }}"><button class="btn btn-success">上传总结和附件</button></a>
     {% endif %}
         </h1>
-
-        <!-- 审核情况 -->
-        {% if summary.sumCheck == 2 %}
-            <span class="label label-info">已审核</span>
-        {% else %}
-            <span class="label label-warning">待审核...</span>
-        {% endif %}
-        <br><br>
-
-    </div>
-
-    <table align="center" border="2" class="table-bordered">
-        <tr>
-            <th width="200">学号</th>
-            <td width="400" height="50">{{ student.stuId }}</td>
-            <th width="200">专业班级</th>
-            <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
-        </tr>
-        <tr>
-            <th width="200">姓名</th>
-            <td width="400" height="50">{{ student.stuName }}</td>
-            <th width="200">实习单位</th>
-            <td width="400" height="50">{{ comInfor.comName }}</td>
-        </tr>
-        <tr>
-            <th width="200">实习期间</th>
-            <td width="400" height="50">{{ internship.start }} 至 {{ internship.end }} </td>
-            <th width="200">评分成绩</th>
-            <td width="400" height="50">
-            {% if summary.sumScore %}
-            {{ summary.sumScore }}
-                            <a href='{{ url_for('.xSumScore', stuId=student.stuId, internId=internship.Id) }}'><span
-                        class="label label-info">详情<span></a>
-            {% else %}
-                <a href='{{ url_for('.xSumScore', stuId=student.stuId, internId=internship.Id) }}'><span class="label label-danger">添加成绩</span></a>
-            {% endif%}
-            </td>
-        </tr>
-    </table>
+    <!-- 审核情况 -->
+    {% if summary.sumCheck == 2 %}
+    <span class="label label-info">已审核</span> {% elif summary.sumCheck==1 %}
+    <span class="label label-danger">被退回</span> {% else %}
+    <span class="label label-warning">待审核...</span>
     <br>
- <h2>实习总结</h2>
-    <table class="table" id="t">
-        <thead>
+    <br>
+    <span class="label label-danger">注意</span> *&nbsp&nbsp 请先点击“更多-实习日志”通过该生实习信息的审核。 {% endif %}
+    <br>
+    <br>
+</div>
+<table align="center" border="2" class="table-bordered">
+    <tr>
+        <th width="200">学号</th>
+        <td width="400" height="50">{{ student.stuId }}</td>
+        <th width="200">专业班级</th>
+        <td width="400" height="50">{{ student.major }}{{ student.classes }}班</td>
+    </tr>
+    <tr>
+        <th width="200">姓名</th>
+        <td width="400" height="50">{{ student.stuName }}</td>
+        <th width="200">实习单位</th>
+        <td width="400" height="50">{{ comInfor.comName }}</td>
+    </tr>
+    <tr>
+        <th width="200">实习期间</th>
+        <td width="400" height="50">{{ internship.start }} 至 {{ internship.end }} </td>
+        <th width="200">评分成绩</th>
+        <td width="400" height="50">
+            {% if summary.sumScore %} {{ summary.sumScore }}
+            <a href="{{ url_for('.xSumScore', stuId=student.stuId, internId=internship.Id) }}"><span
+                        class="label label-info">详情<span></a> {% else %}
+            <a href="{{ url_for('.xSumScoreEdit', stuId=student.stuId, internId=internship.Id) }}"><span class="label label-danger">添加成绩</span></a> {% endif%}
+        </td>
+    </tr>
+    {% if summary.sumCheckOpinion %}
+    <tr>
+        <th width="200">审核意见</th>
+        <td width="400" height="50" colspan="3">{{ summary.sumCheckOpinion }}</td>
+    </tr>
+    {% endif %}
+</table>
+<br>
+<h2>实习总结</h2>
+<table class="table" id="t">
+    <thead>
         <tr>
             <th>文件名</th>
             <th>大小</th>
             <th>修改时间</th>
             <th></th>
         </tr>
-        </thead>
-        <tbody>
+    </thead>
+    <tbody>
         <!-- 总结文档 -->
         {% for summary in summary_doc %}
-            <tr>
-                <!-- 提供下载的form -->
-                <form id="{{ summary }}" method="post">
-                    <input type="hidden" name="summary_doc_download" value="{{ summary }}">
-                </form>
-                {% if summary.split('.')[-1] in ['xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png','pdf'] %}
-                    <td><a href="{{ url_for('.xSum',summary=summary,internId=internship.Id,stuId=student.stuId) }}"
-                           data-toggle="tooltip"
-                           title="点击进行在线阅览">{{ summary }}</a></td>
-                {% else %}
-                    <!-- <td>{{ summary }}</td> -->
-                {% endif %}
-                <td>{{ summary_doc[summary]['fsize'] }}</td>
-                <td>{{ summary_doc[summary]['mtime'] }}</td>
-                <td><a href="javascript:{}" onclick="document.getElementById('{{ summary }}').submit();">下载</a></td>
-            </tr>
+        <tr>
+            <!-- 提供下载的form -->
+            <form id="{{ summary }}" method="post">
+                <input type="hidden" name="summary_doc_download" value="{{ summary }}">
+            </form>
+            {% if summary.split('.')[-1] in ['xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png','pdf'] %}
+            <td><a href="{{ url_for('.xSum',summary=summary,internId=internship.Id,stuId=student.stuId) }}" data-toggle="tooltip" title="点击进行在线阅览">{{ summary }}</a></td>
+            {% else %}
+            <!-- <td>{{ summary }}</td> -->
+            {% endif %}
+            <td>{{ summary_doc[summary]['fsize'] }}</td>
+            <td>{{ summary_doc[summary]['mtime'] }}</td>
+            <td><a href="javascript:{}" onclick="document.getElementById('{{ summary }}').submit();">下载</a></td>
+        </tr>
         {% endfor %}
-        </tbody>
-        </table>
-        <br>
-    <h2>附件</h2>
-    <table class="table" id="t">
-        <thead>
+    </tbody>
+</table>
+<br>
+<h2>附件</h2>
+<table class="table" id="t">
+    <thead>
         <tr>
             <th>文件名</th>
             <th>大小</th>
             <th>修改时间</th>
             <th></th>
         </tr>
-        </thead>
-        <tbody>
+    </thead>
+    <tbody>
         {% for attach in attachment %}
-            <tr>
-                <!-- 提供下载的form -->
-                <form id="{{ attach }}" method="post">
-                    <input type="hidden" name="attachment_download" value="{{ attach }}">
-                </form>
-                {% if attach.split('.')[-1] in ['pdf','xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png'] %}
-                    <td><a href="{{ url_for('.xSum',attach=attach,internId=internship.Id,stuId=student.stuId) }}"
-                           data-toggle="tooltip"
-                           title="点击进行在线阅览">{{ attach }}</a></td>
-                {% else %}
-                    <td>{{ attach }}</td>
-                {% endif %}
-                <td>{{ attachment[attach]['fsize'] }}</td>
-                <td>{{ attachment[attach]['mtime'] }}</td>
-                <td><a href="javascript:{}" onclick="document.getElementById('{{ attach }}').submit();">下载</a></td>
-            </tr>
+        <tr>
+            <!-- 提供下载的form -->
+            <form id="{{ attach }}" method="post">
+                <input type="hidden" name="attachment_download" value="{{ attach }}">
+            </form>
+            {% if attach.split('.')[-1] in ['pdf','xls', 'doc', 'docx', 'ppt', 'txt', 'docs', 'xlsx', 'jpg', 'jpeg', 'png'] %}
+            <td><a href="{{ url_for('.xSum',attach=attach,internId=internship.Id,stuId=student.stuId) }}" data-toggle="tooltip" title="点击进行在线阅览">{{ attach }}</a></td>
+            {% else %}
+            <td>{{ attach }}</td>
+            {% endif %}
+            <td>{{ attachment[attach]['fsize'] }}</td>
+            <td>{{ attachment[attach]['mtime'] }}</td>
+            <td><a href="javascript:{}" onclick="document.getElementById('{{ attach }}').submit();">下载</a></td>
+        </tr>
         {% endfor %}
-        </tbody>
-    </table>
-    <br>
-    {% if path %}
-    <h2>在线预览</h2>
-        <!-- 提供下载的form -->
-        <form id="pdf" method="post">
-            <input type="hidden" name="pdf_download" value="{{ path }}">
-        </form>
-        <div id="pdf">
-            <embed width="1000" height="1100" type="application/pdf" src="{{ path }}" id="pdf_content">
-            </embed>
-        </div>
-    {% endif %}
-{% endblock %}
+    </tbody>
+</table>
+<br> {% if path %}
+<h2>在线预览</h2>
+<!-- 提供下载的form -->
+<form id="pdf" method="post">
+    <input type="hidden" name="pdf_download" value="{{ path }}">
+</form>
+<div id="pdf">
+    <embed width="1000" height="1100" type="application/pdf" src="{{ path }}" id="pdf_content">
+    </embed>
+</div>
+{% endif %} {% endblock %}

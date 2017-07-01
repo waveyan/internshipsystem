@@ -1,138 +1,123 @@
-{% extends "base.html" %}
-{% block title %}企业信息{% endblock %}
-{% block head %}
-    {{ super() }}
-    <!--提交和返回按钮-->
-    <script>
-        function back(comid) {
-            var form = document.getElementById('comform');
-            form.action = '/cominfor?id=' + comid;
-            form.submit();
-        }
-        function save(comid) {
-            var form = document.getElementById('comform');
-            form.action = '/editcominfor?comId=' + comid;
-            if(checkForm())
-            form.submit();
-        }
-    </script>
-    <!-- 地区选择期 -->
+{% extends "base.html" %} {% block title %}企业信息{% endblock %} {% block head %} {{ super() }}
+<!--提交和返回按钮-->
+<script>
+function back(comid) {
+    var form = document.getElementById('comform');
+    form.action = '/cominfor?id=' + comid;
+    form.submit();
+}
+
+function save(comid) {
+    var form = document.getElementById('comform');
+    form.action = '/editcominfor?comId=' + comid;
+    if (checkForm())
+        form.submit();
+}
+</script>
+<!-- 地区选择期 -->
 <link rel="stylesheet" rev="stylesheet" href="/static/CSS/jock-citypicker-2.0.min.css" type="text/css" />
 <script type="text/javascript" src="/static/JS/jock-citypicker-2.0.min.js"></script>
 <script type="text/javascript">
-window.onload = function(){
+window.onload = function() {
     var a = document.getElementById("province");
-    a.onclick = function(){
-        citypicker.show({left: 295, top : 220}, function(data){
+    a.onclick = function() {
+        citypicker.show({
+            left: 295,
+            top: 220
+        }, function(data) {
             a.value = data;
         });
     };
 }
 </script>
 <script type="text/javascript">
-    function checkForm(){
-        var brief=$('#comBrief');
-        var project=$('#comProject');
-        var flag=true;
-        if(brief.val().length>500){
-            flag=false;
-            $('#bmsg').text("字数已超出限定字数，请确保字数在500字以内");
-        }
-        if(project.val().length>250){
-            flag=false;
-            $('#pmsg').text("字数已超出限定字数，请确保字数在250字以内");
-        }
-        return flag;
+function checkForm() {
+    var brief = $('#comBrief');
+    var project = $('#comProject');
+    var flag = true;
+    if (brief.val().length > 500) {
+        flag = false;
+        $('#bmsg').text("字数已超出限定字数，请确保字数在500字以内");
     }
+    if (project.val().length > 250) {
+        flag = false;
+        $('#pmsg').text("字数已超出限定字数，请确保字数在250字以内");
+    }
+    return flag;
+}
 </script>
-    <style type="text/css">
-        #comBrief {
-            height: 200px;
-        }
-        #comProject {
-            height: 100px;
-        }
-    </style>
-{% endblock %}
-{% block page_content %}
-    <form method="post" class="form-horizontal" id="comform" onsubmit="return checkForm()">
-        {{ comform.hidden_tag() }}
-        <table align="center" border="2" class="table-bordered">
-            <caption>
-                <h1>企业信息
-                    {% if current_user.can(Permission.COM_INFOR_EDIT) %}
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggled btn-sm"
-                                    data-toggle="dropdown">编辑<span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                {% if com.comCheck!=2 %}
-                                    <li><a href="{{ url_for('.editcominfor',comId=com.comId,cominfor='1') }}">修改</a></li>
-                                {% endif %}
-                                <li><a href="#">导出</a></li>
-                                <li><a onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></li>
-                            </ul>
-                        </div>
-                    {% endif %}
+<style type="text/css">
+#comBrief {
+    height: 200px;
+}
+
+#comProject {
+    height: 100px;
+}
+</style>
+{% endblock %} {% block page_content %}
+<form method="post" class="form-horizontal" id="comform" onsubmit="return checkForm()">
+    {{ comform.hidden_tag() }}
+    <table align="center" border="2" class="table-bordered">
+        <caption>
+            <h1>企业信息
                 </h1>
-            </caption>
-            <tr>
-                <th width="200">公司名称</th>
-                <td width="400" height="50"
-                    colspan="3">{{ comform.comName( class="form-control",request='',value=com.comName) }}</td>
-            </tr>
-                        <tr>
-                <th>所在城市</th>
-                <td width="400" height="50"
-                    colspan="3">{{ comform.comCity(class="form-control",request='',value=com.comCity,id='province') }}</td>
-            </tr>
-            <tr>
-                <th>公司地址</th>
-                <td width="400" height="50"
-                    colspan="3">{{ comform.comAddress(class="form-control",request='',value=com.comAddress) }}</td>
-            </tr>
-            <tr>
-                <th>公司网址</th>
-                <td width="400" height="50"
-                    colspan="3">{{ comform.comUrl(class="form-control",value=com.comUrl) }}</td>
-            </tr>
-            <tr>
-                <th align="justify">公司简介</th>
-                <td height="200" width="900"
-                    colspan="3"><textarea class="form-control" name="brief" id="comBrief" onkeyup="checkForm()">{{ com.comBrief }}</textarea>&nbsp;&nbsp;<span style="color:red;" id="bmsg"></span></td>
-            </tr>
-            <tr><th align="justify">营业项目</th>
-            <td height="100" width="900"
-                    colspan="3"><textarea class="form-control" name="project" id="comProject" onkeyup="checkForm()">{{ com.comProject }}</textarea>&nbsp;&nbsp;<span style="color:red;" id="pmsg"></span></td>
-            </tr>
-            <tr>
-                <th>年营业额</th>
-                <td height="50">{{ comform.comMon(class="form-control",lrequest='',value=com.comMon) }}</td>
-                <th>员工人数</th>
-                <td height="50">{{ comform.comStaff(class="form-control",request='',value=com.comStaff) }}</td>
-
-            </tr>
-            <tr>
-                <th>联系人</th>
-                <td height="50">{{ comform.comContact(class="form-control",request='',value=com.comContact) }}</td>
-                <th>Email</th>
-                <td height="50">{{ comform.comEmail(class="form-control",request='',value=com.comEmail) }}</td>
-            </tr>
-            <tr>
-                <th>联系电话</th>
-                <td height="50">{{ comform.comPhone(class="form-control",request='',value=com.comPhone) }}</td>
-                <th>传真</th>
-                <td height="50">{{ comform.comFax(class="form-control",request='',value=com.comFax) }}</td>
-            </tr>
-        </table>
-        <p></p>
-        <p></p>
-        <p></p>
-        <br><br>
-        <button class="btn btn-primary" onclick="save({{ com.comId }})">提交</button>
-        <button class="btn btn-default" onclick="back({{ com.comId }})">返回
-        </button>
-    </form>
-
-    <br><br><br><br>
-{% endblock %}
+        </caption>
+        <tr>
+            <th width="200">公司名称</th>
+            <td width="400" height="50" colspan="3">{{ comform.comName( class="form-control",request='',value=com.comName) }}</td>
+        </tr>
+        <tr>
+            <th>所在城市</th>
+            <td width="400" height="50" colspan="3">{{ comform.comCity(class="form-control",request='',value=com.comCity,id='province') }}</td>
+        </tr>
+        <tr>
+            <th>公司地址</th>
+            <td width="400" height="50" colspan="3">{{ comform.comAddress(class="form-control",request='',value=com.comAddress) }}</td>
+        </tr>
+        <tr>
+            <th>公司网址</th>
+            <td width="400" height="50" colspan="3">{{ comform.comUrl(class="form-control",value=com.comUrl) }}</td>
+        </tr>
+        <tr>
+            <th align="justify">公司简介</th>
+            <td height="200" width="900" colspan="3">
+                <textarea class="form-control" name="brief" id="comBrief" onkeyup="checkForm()">{{ com.comBrief }}</textarea>&nbsp;&nbsp;<span style="color:red;" id="bmsg"></span></td>
+        </tr>
+        <tr>
+            <th align="justify">营业项目</th>
+            <td height="100" width="900" colspan="3">
+                <textarea class="form-control" name="project" id="comProject" onkeyup="checkForm()">{{ com.comProject }}</textarea>&nbsp;&nbsp;<span style="color:red;" id="pmsg"></span></td>
+        </tr>
+        <tr>
+            <th>年营业额</th>
+            <td height="50">{{ comform.comMon(class="form-control",lrequest='',value=com.comMon) }}</td>
+            <th>员工人数</th>
+            <td height="50">{{ comform.comStaff(class="form-control",request='',value=com.comStaff) }}</td>
+        </tr>
+        <tr>
+            <th>联系人</th>
+            <td height="50">{{ comform.comContact(class="form-control",request='',value=com.comContact) }}</td>
+            <th>Email</th>
+            <td height="50">{{ comform.comEmail(class="form-control",request='',value=com.comEmail) }}</td>
+        </tr>
+        <tr>
+            <th>联系电话</th>
+            <td height="50">{{ comform.comPhone(class="form-control",request='',value=com.comPhone) }}</td>
+            <th>传真</th>
+            <td height="50">{{ comform.comFax(class="form-control",request='',value=com.comFax) }}</td>
+        </tr>
+    </table>
+    <p></p>
+    <p></p>
+    <p></p>
+    <br>
+    <br>
+    <button class="btn btn-primary" onclick="save({{ com.comId }})">提交</button>
+    <button class="btn btn-default" onclick="back({{ com.comId }})">返回
+    </button>
+</form>
+<br>
+<br>
+<br>
+<br> {% endblock %}

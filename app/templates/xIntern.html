@@ -1,200 +1,190 @@
-{% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}个人实习信息{% endblock %}
-{% block head %}
-    {{ super() }}
-    <!-- 图片预览 -->
-    <link rel="stylesheet" href="/static/CSS/bootstrap-grid.min.css">
+{% extends "base.html" %} {% import "bootstrap/wtf.html" as wtf %} {% block title %}个人实习信息{% endblock %} {% block head %} {{ super() }}
+<!-- 图片预览 -->
+<link rel="stylesheet" href="/static/CSS/bootstrap-grid.min.css">
 <link rel="stylesheet" href="/static/CSS/zoomify.min.css">
-    <style>
-        .min {
-            width: 200px;
-            height: auto;
-        }
-    </style>
-    <style type="text/css">
-        p {
-            white-space: pre-line;
-        }
-    </style>
-    <!-- 确认请求窗口 -->
-    <script type="text/javascript">
-        function ComfirmDelete() {
-            $('#deleteToggle').modal();
-        }
-        function Admin_ComfirmEdit() {
-            $('#editToggle').modal();
-        }
-        function ComfirmCheck() {
-            $('#checkToggle').modal();
-        }
-        function ReadOnline(path) {
-            $('#readToggle').modal();
-            document.getElementById("pdf_content").setAttribute('src', path);
-        }
-    </script>
+<style>
+.min {
+    width: 200px;
+    height: auto;
+}
+</style>
+<style type="text/css">
+p {
+    white-space: pre-line;
+}
+</style>
+<!-- 确认请求窗口 -->
+<script type="text/javascript">
+function ComfirmDelete() {
+    $('#deleteToggle').modal();
+}
 
-    <!-- 换行显示 -->
-    <style type="text/css">
-        p {
-            white-space: pre-line;
-        }
-    </style>
+function Admin_ComfirmEdit() {
+    $('#editToggle').modal();
+}
 
-    <!-- 删除确认窗口 -->
-    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="text-align:center;">
-                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-                </div>
-                <div class="modal-bodyr">
-                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">删除操作将无法撤回,是否仍要删除?</h4>
-                </div>
-                <div class="modal-footer">
-                    <!-- 用form来获取数据 -->
-                    <form action="/intern_delete" method="POST">
-                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                        <input type="hidden" name="internId" value="{{ internship.Id }}">
-                        <input type="hidden" name="from_url" value="xIntern">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-primary">删除</button>
-                    </form>
-                </div>
+function ComfirmCheck() {
+    $('#checkToggle').modal();
+}
+
+function ReadOnline(path) {
+    $('#readToggle').modal();
+    document.getElementById("pdf_content").setAttribute('src', path);
+}
+</script>
+<!-- 换行显示 -->
+<style type="text/css">
+p {
+    white-space: pre-line;
+}
+</style>
+<!-- 删除确认窗口 -->
+<div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-bodyr">
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">删除操作将无法撤回,是否仍要删除?</h4>
+            </div>
+            <div class="modal-footer">
+                <!-- 用form来获取数据 -->
+                <form action="/intern_delete" method="POST">
+                    <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                    <input type="hidden" name="internId" value="{{ internship.Id }}">
+                    <input type="hidden" name="from_url" value="xIntern">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">删除</button>
+                </form>
             </div>
         </div>
     </div>
-
-    <!-- 审核操作窗口 -->
-    <div class="modal fade" id="checkToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="text-align:center;">
-                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-                </div>
-                <div class="modal-body">
-                    {% if internship.internCheck != 2 %}
-                        <h4 class="modal-body" style="color:black;" id="deleteModalLabel">请对该实习做出审核</h4>
-                    {% else %}
-                        <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习申请已审核通过,是否仍要继续?</h4>
-                    {% endif %}
-                </div>
-                <div class="modal-footer">
-                    <!-- 用form来获取数据 -->
-                    <form name="xIntern_comfirm_form" action="/xIntern_comfirm" method="POST">
-                        <input type="hidden" name="stuId" value="{{ student.stuId }}"/>
-                        <input type="hidden" name="internId" value="{{ internship.Id }}"/>
-                        {% if internship.opinion %}
-                            <div style="text-align:center;">审核意见</div><textarea name="opinion" cols="70" rows="5"
-                                                                                placeholder="若审核通过,意见可为空">{{ internship.opinion }}</textarea>
-                            <br><br>
-                        {% else %}
-                            <div style="text-align:center;">审核意见</div>
-                            <textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空"></textarea><br><br>
-                        {% endif %}
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" name="internCheck" value="2" class="btn btn-success">审核通过</button>
-                        <button type="submit" name="internCheck" value="1" class="btn btn-primary">退回修改</button>
-                    </form>
-                </div>
+</div>
+<!-- 审核操作窗口 -->
+<div class="modal fade" id="checkToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-body">
+                {% if internship.internCheck != 2 %}
+                <h4 class="modal-body" style="color:black;" id="deleteModalLabel">请对该实习做出审核</h4> {% else %}
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">该实习申请已审核通过,是否仍要继续?</h4> {% endif %}
+            </div>
+            <div class="modal-footer">
+                <!-- 用form来获取数据 -->
+                <form name="xIntern_comfirm_form" action="/xIntern_comfirm" method="POST">
+                    <input type="hidden" name="stuId" value="{{ student.stuId }}" />
+                    <input type="hidden" name="internId" value="{{ internship.Id }}" /> {% if internship.opinion %}
+                    <div style="text-align:center;">审核意见</div>
+                    <textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空">{{ internship.opinion }}</textarea>
+                    <br>
+                    <br> {% else %}
+                    <div style="text-align:center;">审核意见</div>
+                    <textarea name="opinion" cols="70" rows="5" placeholder="若审核通过,意见可为空"></textarea>
+                    <br>
+                    <br> {% endif %}
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" name="internCheck" value="2" class="btn btn-success">审核通过</button>
+                    <button type="submit" name="internCheck" value="1" class="btn btn-primary">退回修改</button>
+                </form>
             </div>
         </div>
     </div>
-
-    <!-- 已审核状态下,老师确认修改窗口 -->
-    <div class="modal fade" id="editToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="text-align:center;">
-                    <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
+</div>
+<!-- 已审核状态下,老师确认修改窗口 -->
+<div class="modal fade" id="editToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                <h4 class="modal-title" style="color:black;" id="deleteModalLabel">提示</h4>
+            </div>
+            <div class="modal-body">
+                <h4 class="modal-body" style="color:red;" id="deleteModalLabel">
                     {% if internship.internCheck == 2 %}
                         该实习申请已审核通过,
                     {% endif %}
-                        修改实习时间有可能清空部分实习日志,是否仍要继续?</h4>
-                </div>
-                <div class="modal-footer">
-                    <!-- 用form来获取数据 -->
-                    <form action="{{url_for('.xInternEdit')}}" method="GET">
-                        <input type="hidden" name="stuId" value="{{ student.stuId }}">
-                        <input type="hidden" name="internId" value="{{ internship.Id }}">
-                        <input type="hidden" name="comId" value="{{ comInfor.comId }}">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-danger">继续</button>
-                    </form>
-                </div>
+                        修改实习开始时间或实习结束时间有可能清空部分实习日志,是否仍要继续?</h4>
+            </div>
+            <div class="modal-footer">
+                <!-- 用form来获取数据 -->
+                <form action="{{url_for('.xInternEdit')}}" method="GET">
+                    <input type="hidden" name="stuId" value="{{ student.stuId }}">
+                    <input type="hidden" name="internId" value="{{ internship.Id }}">
+                    <input type="hidden" name="comId" value="{{ comInfor.comId }}">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-danger">继续</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 <!--在线预览弹窗-->
-    <div class="modal fade" id="readToggle" tabindex="-1" role="dialog"
-         aria-labelledby="readModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:1100px;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close"
-                            data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">
+<div class="modal fade" id="readToggle" tabindex="-1" role="dialog" aria-labelledby="readModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:1100px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
                         在线预览
                     </h4>
+            </div>
+            <div class="modal-body">
+                <div id="pdf">
+                    <embed width="1000" height="800" type="application/pdf" id="pdf_content">
+                    </embed>
                 </div>
-                <div class="modal-body">
-                    <div id="pdf">
-            <embed width="1000" height="800" type="application/pdf" id="pdf_content">
-            </embed>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
         </div>
-                </div>
-                <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
+        <!-- /.modal-content -->
     </div>
+    <!-- /.modal -->
+</div>
 <script type="text/javascript">
-    function rename_action(old){
-        var old_name=document.getElementById(old);
-        if(old_name.style.display!="none"){
-        var new_name=document.createElement('input');
-        var b=document.createElement('button')
-        b.innerText="提交";
+function rename_action(old) {
+    var old_name = document.getElementById(old);
+    if (old_name.style.display != "none") {
+        var new_name = document.createElement('input');
+        var b = document.createElement('button')
+        b.innerText = "提交";
         $(b).text("提交");
-        b.setAttribute("onclick","sumbitform('"+old+"')")
-        new_name.id="newname";
-        new_name.value=old_name.innerText;
-        var td=old_name.parentNode;
+        b.setAttribute("onclick", "sumbitform('" + old + "')")
+        new_name.id = "newname";
+        new_name.value = old_name.innerText;
+        var td = old_name.parentNode;
         td.appendChild(new_name);
         td.appendChild(b);
     }
-        old_name.style.display="none";
-    }
-    function sumbitform(old){
-        var new_name=document.createElement("input");
-        new_name.value=document.getElementById("newname").value;
-        new_name.name="new_name";
-        str=old+"_rename";
-        var form=document.getElementById(str);
-        form.appendChild(new_name);
-        form.submit();
-    }
-</script>
-{% endblock %}<!--先执行父模板-->
-{% block page_content %}
-    <!--Excel导出-->
-    <form id="export_form" method="post">
-        <input type="hidden" name="isexport" value="1">
-    </form>
+    old_name.style.display = "none";
+}
 
-    <table align="center" border="2" class="table-bordered">
-        <caption>
-            <h1>
+function sumbitform(old) {
+    var new_name = document.createElement("input");
+    new_name.value = document.getElementById("newname").value;
+    new_name.name = "new_name";
+    str = old + "_rename";
+    var form = document.getElementById(str);
+    form.appendChild(new_name);
+    form.submit();
+}
+</script>
+{% endblock %}
+<!--先执行父模板-->
+{% block page_content %}
+<!--Excel导出-->
+<form id="export_form" method="post">
+    <input type="hidden" name="isexport" value="1">
+</form>
+<table align="center" border="2" class="table-bordered">
+    <caption>
+        <h1>
                 {% if current_user.can(Permission.STU_INTERN_SEARCH) %}
                     {{ student.stuName }}的实习信息
                 {% else %}
@@ -211,10 +201,9 @@
                         <!-- 通过审核的 -->
                         {% if current_user.can(Permission.STU_INTERN_CHECK) or schdirtea_can %}
                             <li><a onClick="ComfirmCheck()">审核</a></li>
-                            <li><a onClick="Admin_ComfirmEdit()" >修改</a></li>
-                            <li><a onClick="ComfirmDelete()">删除</a></li>
+                        {% endif %}
                         <!-- 未通过审核 -->
-                        {% elif internship.internCheck != 2 %}
+                        {% if (internship.internCheck != 2 and current_user.roleId==0) or current_user.can(Permission.STU_INTERN_EDIT) %}
                         <li><a onClick="Admin_ComfirmEdit()" >修改</a></li>
                         <li><a onClick="ComfirmDelete()">删除</a></li>
                         {% endif %}
@@ -236,134 +225,127 @@
             <a onClick="ComfirmCheck()"><button class="btn btn-success">点击这里通过审核</button></a>
         {% endif %}
         {% endif %}
-            </h1>
-            {% if internship.internCheck == 0 %}
-                <span class="label label-warning">待审核</span>
-            {% elif internship.internCheck == 1 %}
-                <span class="label label-primary">退回待修改</span>
-            {% elif internship.internCheck == 2 %}
-                <span class="label label-info">已审核</span>
-            {% endif %}
-        </caption>
-        <tr>
-            <td colspan="6" height="50">一、学生信息</td>
-        </tr>
-        <tr>
-            <th width="200">学号</th>
-            <td width="400" height="50" colspan="3">
-                {{ student.stuId }}
-            </td>
-            <th width="200">姓名</th>
-            <td width="400" height="50" colspan="3">{{ student.stuName }}</td>
-        </tr>
-        <tr>
-            <th width="200">性别</th>
-            <td width="400" height="50" colspan="3">
-                {{ student.sex }}
-            </td>
-            <th width="200">专业班级</th>
-            <td width="400" height="50" colspan="3">{{ student.major }}{{ student.classes }}班</td>
-        </tr>
-        <tr>
-            <td width="200" colspan="6" height="50">二、实习企业信息</td>
-        </tr>
-        <tr>
-            <th>企业名称
-                {% if comInfor.comCheck != 2 %}
-                    <span class="label label-warning">待审核</span>
-                {% endif %}
-            </th>
-            <td height="50" width="400" colspan="5"><a href="{{ url_for('.cominfor', id=comInfor.comId) }}">{{ comInfor.comName }}</a></td>
-        </tr>
-        <tr>
-            <th>企业城市</th>
-            <td height="50" width="400" colspan="5">{{ comInfor.comCity }}</td>
-        </tr>
-        <tr>
-            <th>企业地址</th>
-            <td height="50" width="400" colspan="5">{{ comInfor.comAddress }}</td>
-        </tr>
-        <tr>
-            <th>企业简介</th>
-            <td height="200" width="400" colspan="5">{{ comInfor.comBrief }}</td>
-        </tr>
-        <tr>
-            <td width="200" colspan="6" height="50">三、实习岗位信息</td>
-        </tr>
-        <tr>
-            <th>实习期间</th>
-            <td width="400" height="50" colspan="5">{{ internship.start }}至{{ internship.end }}
-            </td>
-        </tr>
-        <tr>
-            <th>工作任务</th>
-            <td width="400" height="200" colspan="5"><p>{{ internship.task }}</p></td>
-        </tr>
-	 <tr>
-            <th>工作岗位</th>
-            <td width="400" height="50" colspan="5"><p>{{ internship.post }}</p>
-            </td>
-        </tr>
-        <tr>
-            <td width="200" colspan="6" height="50">四、实习指导老师</td>
-        </tr>
-        </table>
-        <table align="center" border="2" class="table-bordered">
-            <tr>
-                <th height="50" colspan="6">企业老师</th>
-            </tr>
-            <tr>
-                <td height="50" width="300">姓名</td>
-                <td height="50" width="300">职务/职称</td>
-                <td height="50" width="300">电话</td>
-                <td height="50" width="300">E-mail</td>
-            </tr>
-            {% for tea in comdirtea %}
-                {% if tea.cteaName %}
-                    <tr>
-                        <td height="50">{{ tea.cteaName }}</td>
-                        <td height="50">{{ tea.cteaDuty }}</td>
-                        <td height="50">{{ tea.cteaPhone }}</td>
-                        <td height="50" colspan="2">{{ tea.cteaEmail }}</td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-        </table>
-        <table align="center" border="2" class="table-bordered">
-            <tr>
-                <th height="50" colspan="6">校内老师</th>
-            </tr>
-            <tr>
-                <td height="50" width="240">教工号</td>
-                <td height="50" width="240">姓名</td>
-                <td height="50" width="240">职务/职称</td>
-                <td height="50" width="240">电话</td>
-                <td height="50" width="240">E-mail</td>
-            </tr>
-            {% for tea in schdirtea %}
-                {% if tea.teaName %}
-                    <tr>
-                        <td height="50">{{ tea.teaId }}</td>
-                        <td height="50">{{ tea.teaName }}</td>
-                        <td height="50">{{ tea.teaPosition }}</td>
-                        <td height="50">{{ tea.teaPhone }}</td>
-                        <td height="50" colspan="2">{{ tea.teaEmail }}</td>
-                    </tr>
-                {% endif %}
-            {% endfor %}       
-        <tr>
-            <th width="200" colspan="6" height="50">四、实习协议书</th>
-        </tr>
-        </table>
-        <table width="1200" class="table">
-        <tr>
-<th width="200" colspan="6" height="50">pdf文件</th>
-       </tr>
-       {% for name,path in path %}
-       {% if 'pdf' in name %}
-       <tr><td height="50" colspan="6"><a onClick="ReadOnline({{'\''+path+'\''}})" id="{{name}}">{{name}}</a></td>
-       <td><a href="javascript:{}"onclick="rename_action('{{name}}')">重命名</a>|<a href="javascript:{}"onclick="document.getElementById('{{name}}_download').submit();">下载</a></td>
-       </tr>
+            </h1> {% if internship.internCheck == 0 %}
+        <span class="label label-warning">待审核</span> {% elif internship.internCheck == 1 %}
+        <span class="label label-primary">退回待修改</span> {% elif internship.internCheck == 2 %}
+        <span class="label label-info">已审核</span> {% endif %}
+    </caption>
+    <tr>
+        <td colspan="6" height="50">一、学生信息</td>
+    </tr>
+    <tr>
+        <th width="200">学号</th>
+        <td width="400" height="50" colspan="3">
+            {{ student.stuId }}
+        </td>
+        <th width="200">姓名</th>
+        <td width="400" height="50" colspan="3">{{ student.stuName }}</td>
+    </tr>
+    <tr>
+        <th width="200">性别</th>
+        <td width="400" height="50" colspan="3">
+            {{ student.sex }}
+        </td>
+        <th width="200">专业班级</th>
+        <td width="400" height="50" colspan="3">{{ student.major }}{{ student.classes }}班</td>
+    </tr>
+    <tr>
+        <td width="200" colspan="6" height="50">二、实习企业信息</td>
+    </tr>
+    <tr>
+        <th>企业名称 {% if comInfor.comCheck != 2 %}
+            <span class="label label-warning">待审核</span> {% endif %}
+        </th>
+        <td height="50" width="400" colspan="5"><a href="{{ url_for('.cominfor', id=comInfor.comId) }}">{{ comInfor.comName }}</a></td>
+    </tr>
+    <tr>
+        <th>企业城市</th>
+        <td height="50" width="400" colspan="5">{{ comInfor.comCity }}</td>
+    </tr>
+    <tr>
+        <th>企业地址</th>
+        <td height="50" width="400" colspan="5">{{ comInfor.comAddress }}</td>
+    </tr>
+    <tr>
+        <th>企业简介</th>
+        <td height="200" width="400" colspan="5">{{ comInfor.comBrief }}</td>
+    </tr>
+    <tr>
+        <td width="200" colspan="6" height="50">三、实习岗位信息</td>
+    </tr>
+    <tr>
+        <th>实习期间</th>
+        <td width="400" height="50" colspan="5">{{ internship.start }}至{{ internship.end }}
+        </td>
+    </tr>
+    <tr>
+        <th>工作任务</th>
+        <td width="400" height="200" colspan="5">
+            <p>{{ internship.task }}</p>
+        </td>
+    </tr>
+    <tr>
+        <th>工作岗位</th>
+        <td width="400" height="50" colspan="5">
+            <p>{{ internship.post }}</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="200" colspan="6" height="50">四、实习指导老师</td>
+    </tr>
+</table>
+<table align="center" border="2" class="table-bordered">
+    <tr>
+        <th height="50" colspan="6">企业老师</th>
+    </tr>
+    <tr>
+        <td height="50" width="300">姓名</td>
+        <td height="50" width="300">职务/职称</td>
+        <td height="50" width="300">电话</td>
+        <td height="50" width="300">E-mail</td>
+    </tr>
+    {% for tea in comdirtea %} {% if tea.cteaName %}
+    <tr>
+        <td height="50">{{ tea.cteaName }}</td>
+        <td height="50">{{ tea.cteaDuty }}</td>
+        <td height="50">{{ tea.cteaPhone }}</td>
+        <td height="50" colspan="2">{{ tea.cteaEmail }}</td>
+    </tr>
+    {% endif %} {% endfor %}
+</table>
+<table align="center" border="2" class="table-bordered">
+    <tr>
+        <th height="50" colspan="6">校内老师</th>
+    </tr>
+    <tr>
+        <td height="50" width="240">教工号</td>
+        <td height="50" width="240">姓名</td>
+        <td height="50" width="240">职务/职称</td>
+        <td height="50" width="240">电话</td>
+        <td height="50" width="240">E-mail</td>
+    </tr>
+    {% for tea in schdirtea %} {% if tea.teaName %}
+    <tr>
+        <td height="50">{{ tea.teaId }}</td>
+        <td height="50">{{ tea.teaName }}</td>
+        <td height="50">{{ tea.teaPosition }}</td>
+        <td height="50">{{ tea.teaPhone }}</td>
+        <td height="50" colspan="2">{{ tea.teaEmail }}</td>
+    </tr>
+    {% endif %} {% endfor %}
+    <tr>
+        <th width="200" colspan="6" height="50">四、实习协议书</th>
+    </tr>
+</table>
+<table width="1200" class="table">
+    <tr>
+        <th width="200" colspan="6" height="50">pdf文件</th>
+    </tr>
+    {% for name,path in path %} {% if 'pdf' in name %}
+    <tr>
+        <td height="50" colspan="6"><a onClick="ReadOnline({{'\''+path+'\''}})" id="{{name}}">{{name}}</a></td>
+        <td><a href="javascript:{}" onclick="rename_action('{{name}}')">重命名</a>|<a href="javascript:{}" onclick="document.getElementById('{{name}}_download').submit();">下载</a></td>
+    </tr>
     <form id="{{name}}_download" method="post">
         <input type="hidden" name="download" value="{{ name }}">
     </form>
@@ -371,57 +353,48 @@
         <input type="hidden" name="rename">
         <input type="hidden" name="old_name" value="{{ name }}">
     </form>
-       <tr>
-       {%else%}
-               <div class="container row">
-        <div class="example">
-                <img src="{{path}}" class="img-rounded min" alt="">
-        {%endif%}
-        {% endfor %}
-          </div>
+    <tr>
+        {%else%}
+        <div class="container row">
+            <div class="example">
+                <img src="{{path}}" class="img-rounded min" alt=""> {%endif%} {% endfor %}
+            </div>
         </div>
     </tr>
-        </table>
-        <table align="center" border="2" class="table-bordered">
-            <tr>
-                <td width="200" colspan="6" height="50">五、审核情况</td>
-            </tr>
-            <tr>
-                <th width="200">修改时间</th>
-                <td width="400" height="50" colspan="3">
-                    {{ internship.time }}
-                </td>
-                <th width="200">审核时间</th>
-                <td width="400" height="50" colspan="3">
-                    {% if internship.internCheck==2 %}
-                        {{ internship.icheckTime }}
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th width="200">审核教师</th>
-                <td width="400" height="50" colspan="3">{{ checktea.teaName }}</td>
-            </tr>
-        </table>
-
-        <table align="center" border="2" class="table-bordered">
-            <tr>
-                <th width="200">审核意见</th>
-                <td height="200" width="1000">
-                    {% if internship.opinion %}
-                        <p>{{ internship.opinion }}</p>
-                    {% else %}
-                        暂无
-                    {% endif %}
-                </td>
-            </tr>
-        </table>
-
-    <br>
+</table>
+<table align="center" border="2" class="table-bordered">
+    <tr>
+        <td width="200" colspan="6" height="50">五、审核情况</td>
+    </tr>
+    <tr>
+        <th width="200">修改时间</th>
+        <td width="400" height="50" colspan="3">
+            {{ internship.time }}
+        </td>
+        <th width="200">审核时间</th>
+        <td width="400" height="50" colspan="3">
+            {% if internship.internCheck==2 %} {{ internship.icheckTime }} {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <th width="200">审核教师</th>
+        <td width="400" height="50" colspan="3">{{ checktea.teaName }}</td>
+    </tr>
+</table>
+<table align="center" border="2" class="table-bordered">
+    <tr>
+        <th width="200">审核意见</th>
+        <td height="200" width="1000">
+            {% if internship.opinion %}
+            <p>{{ internship.opinion }}</p>
+            {% else %} 暂无 {% endif %}
+        </td>
+    </tr>
+</table>
+<br>
 <!-- <!-- 图片展示 -->
 <script src="/static/JS/zoomify.min.js"></script>
 <script type="text/javascript">
-    $('.example img').zoomify();
-</script> 
+$('.example img').zoomify();
+</script>
 {% endblock %}
-
