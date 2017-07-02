@@ -1,60 +1,51 @@
-{% extends "base.html" %}
-{% import "_macros.html"as macros %}
-{% import "_intern_filter.html"as filter %}
-{% import "_search.html" as search %}
+{% extends "base.html" %} {% import "_macros.html"as macros %} {% import "_intern_filter.html"as filter %} {% import "_search.html" as search %} {% block title %}实习日志{% endblock %} {% block head %} {{ super() }}
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#rearch").click(function() {
+        $(".rearchSubmit").click();
+    });
+});
+</script>
+<script type="text/javascript">
+function select_all() {
+    var checkboxes = document.getElementsByName('approve[]');
+    var button = document.getElementById('toggle');
 
-{% block title %}实习日志{% endblock %}
-{% block head %}
-    {{ super() }}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#rearch").click(function () {
-                $(".rearchSubmit").click();
-            });
-        });
-    </script>
-    <script type="text/javascript">
-        function select_all() {
-            var checkboxes = document.getElementsByName('approve[]');
-            var button = document.getElementById('toggle');
+    if (button.value == '全选') {
+        for (var i in checkboxes) {
+            checkboxes[i].checked = 'FALSE';
+        }
+        button.value = '全不选'
+    } else {
+        for (var i in checkboxes) {
+            checkboxes[i].checked = '';
+        }
+        button.value = '全选';
+    }
+}
+</script>
+<!--筛选按钮-->
+<script type="text/javascript">
+window.onload = function() {
+    var obj = document.getElementById("sel");
+    obj.onclick = function() {
+        obj.className = (obj.className == "class1" ? "class2" : "class1");
+        obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
+    }
+}
+</script>
+<!--更多-->
+<style>
+.first .second {
+    display: none;
+}
 
-            if (button.value == '全选') {
-                for (var i in checkboxes) {
-                    checkboxes[i].checked = 'FALSE';
-                }
-                button.value = '全不选'
-            } else {
-                for (var i in checkboxes) {
-                    checkboxes[i].checked = '';
-                }
-                button.value = '全选';
-            }
-        }
-    </script>
-    <!--筛选按钮-->
-    <script type="text/javascript">
-        window.onload = function () {
-            var obj = document.getElementById("sel");
-            obj.onclick = function () {
-                obj.className = (obj.className == "class1" ? "class2" : "class1");
-                obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
-            }
-        }
-    </script>
-     <!--更多-->
-    <style>
-        .first .second {
-            display: none;
-        }
-
-        .first:hover .second {
-            display: block;
-        }
-    </style>
-{% endblock %}
-
-{% block page_content %}
-    <h1>学生实习日志
+.first:hover .second {
+    display: block;
+}
+</style>
+{% endblock %} {% block page_content %}
+<h1>学生实习日志
         {% if current_user.can(Permission.STU_JOUR_EDIT) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
@@ -69,12 +60,10 @@
                     {% endif %}
             {{ search.search(url_for('.journal_search',journal='journal'),form) }}
         {% endif %}
-    </h1>
-    {#    筛选项#}
-    {{ filter.intern_filter('.stuJournal_allCheck',3,grade,major,classes) }}
-
-    <table class="table" id="t">
-        <thead>
+    </h1> {# 筛选项#} {{ filter.intern_filter('.stuJournal_allCheck',3,grade,major,classes) }}
+<span class="label label-danger">注意</span> *&nbsp&nbsp实习信息通过审核后并至少编写好前四周的日志, 才会被审核。
+<table class="table" id="t">
+    <thead>
         <tr>
             <th></th>
             <th>姓名</th>
@@ -85,50 +74,48 @@
             <th>日志状态</th>
             <th>实习状态</th>
         </tr>
-        </thead>
-        <tbody>
+    </thead>
+    <tbody>
         <form method="POST">
             {% for intern in internlist %}
-                <tr>
-                    <td><input type="checkbox" name="approve[]" value={{ intern.Id }}></td>
-                    <td>
-                        <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}</a>
-                    </td>
-                    <td>{{ intern.comName }}</td>
-                    <td>{{ intern.stuId }}</td>
-                    <td>{{ intern.start }}</td>
-                    <td>{{ intern.end }}</td>
-
-                    <!-- 日志状态 -->
-                    {% if intern.jourCheck == 0 %}
-                        <td>待审核</td>
-                    {% elif intern.jourCheck == 1 %}
-                        <td>已审核</td>
-                    {% endif %}
-
-                    <!-- 实习状态 -->
-                    {% if intern.internStatus == 1 %}
-                        <td>实习中</td>
-                    {% elif intern.internStatus == 2 %}
-                        <td>实习结束</td>
-                    {% endif %}
-                </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="approve[]" value={{ intern.Id }}>
+                </td>
+                <td>
+                    <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}"> {{ intern.stuName }}</a>
+                </td>
+                <td>{{ intern.comName }}</td>
+                <td>{{ intern.stuId }}</td>
+                <td>{{ intern.start }}</td>
+                <td>{{ intern.end }}</td>
+                <!-- 日志状态 -->
+                {% if intern.jourCheck == 0 %}
+                <td>待审核</td>
+                {% elif intern.jourCheck == 1 %}
+                <td>已审核</td>
+                {% endif %}
+                <!-- 实习状态 -->
+                {% if intern.internStatus == 1 %}
+                <td>实习中</td>
+                {% elif intern.internStatus == 2 %}
+                <td>实习结束</td>
+                {% endif %}
+            </tr>
             {% endfor %}
-        </tbody>
-    </table>
-    <div>
-        <input type="hidden" name="page" value="{{ pagination.page }}">
-        <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()"/>
-        <button type="submit" class="btn btn-success">审核通过</button>
-        </form>
-        <a href="{{ url_for('.stuJournalList') }}">
-            <button class="btn btn-primary">返回</button>
-        </a>
-    <br><br>*&nbsp至少编写好前四周的日志, 才会被审核
-    </div>
-    {% if pagination %}
-        <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.stuJournal_allCheck') }}
-        </div>
-    {% endif %}
-{% endblock %}1
+    </tbody>
+</table>
+<div>
+    <input type="hidden" name="page" value="{{ pagination.page }}">
+    <input type="button" class="btn btn-primary" id="toggle" value="全选" onClick="select_all()" />
+    <button type="submit" class="btn btn-success">审核通过</button>
+    </form>
+    <a href="{{ url_for('.stuJournalList') }}">
+        <button class="btn btn-primary">返回</button>
+    </a>
+</div>
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination,'.stuJournal_allCheck') }}
+</div>
+{% endif %} {% endblock %}1

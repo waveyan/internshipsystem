@@ -19,7 +19,7 @@
         <ul class="nav nav-tabs">
             <li><a href="{{ url_for('main.statistics_area_visual') }}">地域统计图</a></li>
             <li><a href="{{ url_for('main.statistics_com_visual') }}">企业统计图</a></li>
-            <li class="active"><a href="{{ url_for('main.statistics_com_rank') }}">企业排行</a></li>
+            <li class="active"><a href="{{ url_for('main.statistics_com_rank',all='all') }}">企业排行</a></li>
             <li><a href="{{ url_for('main.statistics_area_rank') }}">地域排行</a></li>
         </ul>
     </ul>
@@ -45,7 +45,7 @@
         </ul>
             <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    {% if session['grade'] %}
+        {% if session['grade'] %}
         {{ session['grade'] }}级
         {% else %}
             所有年级
@@ -81,12 +81,7 @@
                 <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
                 <td><a href="https://{{ com.comUrl }}">{{ com.comUrl }}</a></td>
                 <td>{{ com.comPhone }}</td>
-                {% if current_user.roleId==0%}
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
-                {% else %}
-                    <td>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
-                {% endif %}
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.sum_students }}&nbsp;&nbsp;&nbsp;</td>
             </tr>
         {% endfor %}
         </tbody>

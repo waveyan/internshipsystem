@@ -146,64 +146,66 @@ def statistics_com_visual():
 @main.route('/statistics_com_rank', methods=['GET', 'POST'])
 @login_required
 def statistics_com_rank():
-
-    comlist = []
-    index = 0
     major = Major.query.all()
     grade = Grade.query.all()
-    sql = update_company_filter()
-    cominfor = db.session.execute(sql)
+    major_param=request.args.get('major')
+    grade_param=request.args.get('grade')
+    m=request.args.get('m')
+    g=request.args.get('g')
+    all=request.args.get('all')
+    if m:
+        session['major']=None
+    if g:
+        session['grade']=None
+    #为了在统计页面上与major数据类型一致
+    if grade_param:
+        grade_param=int(grade_param)
+    if major_param:
+        session['major']=major_param
+    elif grade_param:
+        session['grade']=grade_param
+    elif all:
+        session['major']=None
+        session['grade']=None
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-   # cominfor =
-    #pagination = ComInfor.query.filter(ComInfor.students != 0).order_by(ComInfor.students.desc()).paginate(page,
-                                                                                                        #   per_page=8,
-                                                                                                          #error_out=False)
-    #pagination = ComInfor.query.filter(ComInfor.students != 0).filter_by(ComInfro.students==grade)
-    #pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor, ComInfor.comId==InternshipInfor.comId).join(Student, Student.stuId==InternshipInfor.stuId)\
-     #   .add_columns(Student.grade, ComInfor.comId, ComInfor.comId, ComInfor.comName, ComInfor.comUrl,
-     #                ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(ComInfor.students.desc())\
-    #    .paginate(page, per_page=8, error_out=False)
     if session['grade']:
         pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor,
                                                                     ComInfor.comId == InternshipInfor.comId).join(
         Student, Student.stuId == InternshipInfor.stuId).with_entities(
         func.count(InternshipInfor.Id).label('sum_students'), Student.grade, ComInfor.comId, ComInfor.comId,
-        ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(
-        desc('sum_students')).group_by(ComInfor.comId).filter(Student.grade == session['grade']).paginate(1,per_page=20,error_out=False)
+        ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).group_by(ComInfor.comId).filter(Student.grade == session['grade']).order_by(
+        desc('sum_students')).paginate(page,per_page=20,error_out=False)
         if session['major']:
             pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor,
                                                                             ComInfor.comId == InternshipInfor.comId).join(
                 Student, Student.stuId == InternshipInfor.stuId).with_entities(
                 func.count(InternshipInfor.Id).label('sum_students'), Student.grade, ComInfor.comId, ComInfor.comId,
-                ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(
-                desc('sum_students')).group_by(ComInfor.comId).filter(Student.grade == session['grade']).filter(Student.major == session['major']).paginate(1,
-                                                                                                                  per_page=20,
-                                                                                                              error_out=False)
+                ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).group_by(ComInfor.comId).filter(Student.grade == session['grade']).filter(Student.major == session['major']).order_by(
+                desc('sum_students')).paginate(page,per_page=20,error_out=False)
     if session['major']:
         pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor,
                                                                         ComInfor.comId == InternshipInfor.comId).join(
             Student, Student.stuId == InternshipInfor.stuId).with_entities(
             func.count(InternshipInfor.Id).label('sum_students'), Student.grade, ComInfor.comId, ComInfor.comId,
-            ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(
-            desc('sum_students')).group_by(ComInfor.comId).filter(Student.major == session['major']).paginate(1,
-                                                        per_page=20,
-                                                        error_out=False)
+            ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).group_by(ComInfor.comId).filter(Student.major == session['major']).order_by(
+            desc('sum_students')).paginate(page,per_page=20,error_out=False)
         if session['grade']:
             pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor,
                                                                             ComInfor.comId == InternshipInfor.comId).join(
                 Student, Student.stuId == InternshipInfor.stuId).with_entities(
                 func.count(InternshipInfor.Id).label('sum_students'), Student.grade, ComInfor.comId, ComInfor.comId,
-                ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).order_by(
-                desc('sum_students')).group_by(ComInfor.comId).filter(Student.grade == session['grade']).filter(
-                Student.major == session['major']).paginate(1,
-                                                            per_page=20,
-                                                            error_out=False)
+                ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).group_by(ComInfor.comId).filter(Student.grade == session['grade']).filter(
+                Student.major == session['major']).order_by(
+                desc('sum_students')).paginate(page, per_page=20,error_out=False)
 
     if not session['major'] and not session['grade']:
-        pagination = ComInfor.query.filter(ComInfor.students != 0).order_by(ComInfor.students.desc()).paginate(page,
-                    per_page=20,
-                        error_out=False)
+         pagination = ComInfor.query.filter(ComInfor.students != 0).join(InternshipInfor,
+                                                                            ComInfor.comId == InternshipInfor.comId).join(
+                Student, Student.stuId == InternshipInfor.stuId).with_entities(
+                func.count(InternshipInfor.Id).label('sum_students'), Student.grade, ComInfor.comId, ComInfor.comId,
+                ComInfor.comName, ComInfor.comUrl, ComInfor.comPhone, ComInfor.students, Student.stuId).group_by(ComInfor.comId).order_by(
+                desc('sum_students')).paginate(page, per_page=20,error_out=False)
 
     comInfor = pagination.items
     return render_template('statistics_com_rank.html', form=form, Permission=Permission, pagination=pagination,
@@ -465,6 +467,7 @@ def addInternship():
                 internStatus=internStatus
             )
             db.session.add(internship)
+            db.session.commit()
             #校外指导老师
             while True:
                 j = j + 1
@@ -477,7 +480,7 @@ def addInternship():
                         cteaDuty=request.form.get('cteaDuty%s' % j),
                         cteaEmail=request.form.get('cteaEmail%s' % j),
                         cteaPhone=request.form.get('cteaPhone%s' % j),
-                        internId=getMaxInternId()+1
+                        internId=getMaxInternId()
                     )
                     db.session.add(comdirtea)
                 else:
@@ -1145,7 +1148,8 @@ def allcomCheck():
         comId = request.form.getlist('approve[]')
         for x in comId:
             db.session.execute("update ComInfor set comCheck=2 where comId = %s" % x)
-        return redirect(url_for('.allcomCheck', page=pagination.page))
+        flash('审核成功！')
+        return redirect(url_for('.interncompany'))
     return render_template('allcomCheck.html', form=form, Permission=Permission, comInfor=comInfor,
                            pagination=pagination, city=city)
 
@@ -1200,7 +1204,7 @@ def allcomDelete():
             print('批量删除企业信息：', e)
             flash('删除失败，请重试！')
         flash('删除成功！')
-        return redirect(url_for('.allcomDelete', page=pagination.page))
+        return redirect(url_for('.interncompany'))
     return render_template('allcomDelete.html', form=form, Permission=Permission, comInfor=comInfor,
                            pagination=pagination, city=city)
 
@@ -1296,7 +1300,7 @@ def stuIntern_allCheck():
 @main.route('/stuIntern_allDelete', methods=['GET', 'POST'])
 @not_student_login
 def stuIntern_allDelete():
-    if not current_user.can(Permission.STU_INTERN_CHECK):
+    if not current_user.can(Permission.STU_INTERN_EDIT):
         flash("非法操作")
         return redirect('/')
     page = request.args.get('page', 1, type=int)
@@ -1327,7 +1331,7 @@ def stuIntern_allDelete():
             # 删除总结成果--文件目录
             subprocess.call('rm %s/%s -r' % (STORAGE_FOLDER, x), shell=True)
         flash('实习信息删除成功')
-        return redirect(url_for('.stuIntern_allDelete', page=pagination.page))
+        return redirect(url_for('.stuInternList', page=pagination.page))
     return render_template('stuIntern_allDelete.html', Permission=Permission, internlist=internlist,
                            pagination=pagination, grade=grade, classes=classes, major=major, form=form)
 
@@ -1350,8 +1354,7 @@ def stuJournal_allCheck():
         .add_columns(Student.stuName, Student.stuId, ComInfor.comName, InternshipInfor.comId, InternshipInfor.Id,
                      InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
                      InternshipInfor.internCheck, InternshipInfor.jourCheck) \
-        .filter(InternshipInfor.internCheck == 2, InternshipInfor.internStatus != 0,
-                InternshipInfor.jourCheck == 0).group_by(InternshipInfor.Id).order_by(
+        .filter(InternshipInfor.internCheck == 2,InternshipInfor.jourCheck == 0).group_by(InternshipInfor.Id).order_by(
         func.field(InternshipInfor.internStatus, 1, 0, 2)).paginate(page, per_page=8, error_out=False)
     internlist = pagination.items
     # 确定日志审核通过
@@ -1378,7 +1381,7 @@ def stuJournal_allCheck():
                 stuId = InternshipInfor.query.filter_by(Id=x).first().stuId
                 db.session.execute('update Student set jourCheck=1 where stuId=%s' % stuId)
         flash('日志审核成功')
-        return redirect(url_for('.stuJournal_allCheck', page=pagination.page))
+        return redirect(url_for('.stuJournalList'))
     return render_template('stuJournal_allCheck.html', Permission=Permission, pagination=pagination,
                            internlist=internlist, form=form, classes=classes, grade=grade, major=major)
 
@@ -1420,7 +1423,7 @@ def stuJournal_allDelete():
             # 删除总结成果--文件目录
             subprocess.call('rm %s/%s -r' % (STORAGE_FOLDER, x), shell=True)
         flash('日志删除成功')
-        return redirect(url_for('.stuJournal_allDelete', page=pagination.page))
+        return redirect(url_for('.stuJournalList'))
     return render_template('stuJournal_allDelete.html', Permission=Permission, pagination=pagination,
                            internlist=internlist, form=form, major=major, classes=classes, grade=grade)
 
@@ -1448,7 +1451,7 @@ def stuJournalList():
         internship = InternshipInfor.query.filter_by(stuId=stuId).count()
         if internship == 0:
             flash('目前还没有实习信息, 请先完善相关实习信息')
-            return redirect('/')
+            return redirect(url_for('.addcominfor', from_url='stuInternList'))
         else:
             pagination = InternshipInfor.query.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Journal, InternshipInfor.Id == Journal.internId).join(
                 Student, InternshipInfor.stuId == Student.stuId) \
@@ -1768,7 +1771,7 @@ def xJournalEditProcess():
 
         except Exception as e:
             print('邮件发送异常:',e)
-    flash("修改日志成功")
+    flash("保存成功")
     return redirect(url_for('.xJournal', stuId=stuId, internId=internId,jourId=jourId, page=page))
 
 
@@ -1855,7 +1858,7 @@ def stuUserList():
     if request.method == "POST" and current_user.can(Permission.STU_INTERN_MANAGE):
         isexport = request.form.get('isexport')
         if isexport:
-            file_path = excel_export(excel_export_stuUser, student)
+            file_path = excel_export(excel_export_stuUser, stu.all())
             return export_download(file_path)
     return render_template('stuUserList.html', pagination=pagination, form=form, Permission=Permission, student=student,
                            grade=grade, major=major, classes=classes)
@@ -2140,20 +2143,22 @@ def teaUserList():
     # 与student共用一个selectRole先清空session['stu']
     if session.get('stu'):
         session['stu'] = None
-    if request.args.get('way'):
-        session['way'] = request.args.get('way')
+    # if request.args.get('way'):
+    #     session['way'] = request.args.get('way')
     page = request.args.get('page', 1, type=int)
-    if session.get('way') == '1':
-        pagination = Teacher.query.order_by(Teacher.teaName.desc()).paginate(page, per_page=8, error_out=False)
-    else:
-        pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
+    # if session.get('way') == '1':
+    #     pagination = Teacher.query.order_by(Teacher.teaName.desc()).paginate(page, per_page=8, error_out=False)
+    # else:
+    #     pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
+    tea_org = Teacher.query.order_by(Teacher.teaName.desc())
+    pagination=tea_org.paginate(page, per_page=8, error_out=False)
     teacher = pagination.items
     for tea in teacher:
         session[tea.teaId] = tea.role.roleName
     if request.method == "POST" and current_user.can(Permission.TEA_INFOR_MANAGE):
         isexport = request.form.get('isexport')
         if isexport:
-            file_path = excel_export(excel_export_teaUser, teacher)
+            file_path = excel_export(excel_export_teaUser, tea_org.all())
             return export_download(file_path)
     return render_template('teaUserList.html', pagination=pagination, form=form, Permission=Permission,
                            teacher=teacher)
@@ -2192,7 +2197,8 @@ def editTeacher():
     #普通教师基本信息修改
     if request.method == 'POST':
         try:
-            tea.teaId = form.teaId.data
+            print('teaid',request.form.get('teaId'))
+            tea.teaId = request.form.get('teaId')
             tea.teaName = form.teaName.data
             tea.teaSex = request.form.get('sex')
             tea.teaEmail=form.teaEmail.data
@@ -2265,13 +2271,7 @@ def allTeaSet():
 def allTeaDelete():
     form = searchForm()
     page = request.args.get('page', 1, type=int)
-    if request.args.get('way'):
-        session['way'] = request.args.get('way')
-    page = request.args.get('page', 1, type=int)
-    if session.get('way') == '1':
-        pagination = Teacher.query.order_by(Teacher.teaName.desc()).paginate(page, per_page=8, error_out=False)
-    else:
-        pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
+    pagination = Teacher.query.order_by(Teacher.teaName).paginate(page, per_page=8, error_out=False)
     teacher = pagination.items
     if request.method == 'POST':
         for x in request.form.getlist('tea[]'):
@@ -2283,7 +2283,7 @@ def allTeaDelete():
                 flash('删除失败，请重试！')
                 return redirect(url_for('.allTeaDelete'))
         flash('删除成功！')
-        return redirect(url_for('.allTeaDelete'))
+        return redirect(url_for('.teaUserList'))
     return render_template('allTeaDelete.html', Permission=Permission, form=form, teacher=teacher,
                            pagination=pagination, page=page)
 
@@ -3660,7 +3660,7 @@ def excel_importpage():
             {'file_name': 'stuUserList_import_template.xls', 'attach_name':'学生用户信息导入模板.xls'}
     }
     if from_url == 'stuInternList':
-        permission = current_user.can(Permission.STU_INTERN_CHECK)
+        permission = current_user.can(Permission.STU_INTERN_EDIT)
     elif from_url == 'interncompany':
         permission = current_user.can(Permission.COM_INFOR_EDIT)
     elif from_url == 'stuUserList':
@@ -3669,9 +3669,9 @@ def excel_importpage():
         permission = current_user.can(Permission.TEA_INFOR_MANAGE)
     elif from_url == 'xJournal':
         # 默认角色下, 只有学生个人和管理员才能编辑日志
-        permission = (current_user.roleId == 0) or curent_user.can(Permission.STU_JOUR_EDIT)
+        permission = (current_user.roleId == 0) or current_user.can(Permission.STU_JOUR_EDIT)
     if not permission:
-        flash('非法操作')
+        flash('非法操作!')
         return redirect('/')
     if request.method == 'POST':
         # 模板下载
@@ -4142,7 +4142,6 @@ def xSum():
         return render_template('xSum.html', Permission=Permission, comInfor=comInfor, internship=internship,
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc,
                                path=path,comfirm_can=comfirm_can)
-    # elif internship.end < now:
     if internship.internCheck == 2:
         return render_template('xSum.html', Permission=Permission, comInfor=comInfor, internship=internship,
                                student=student, summary=summary, attachment=attachment, summary_doc=summary_doc,
@@ -4150,9 +4149,6 @@ def xSum():
     else:
         flash("实习申请或有效实习日志需审核后,才能查看总结和成果")
         return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
-    # else:
-    #     flash('实习尚未结束, 请待实习结束后再查看实习总结和成果')
-    #     return redirect(url_for('.index'))
 
 
 
@@ -4171,9 +4167,9 @@ def xSum_fileManager():
     storage_path = storage_cwd(internId, "score_img")
     comscore=os.listdir(os.path.join(storage_path,"comscore"))
     schscore=os.listdir(os.path.join(storage_path,"schscore"))
-    if not (len(comscore)!=0 and len(schscore)!=0):
-        flash("请先上传评分表和成绩，方能上传总结！")
-        return redirect(url_for(".xSumScoreEdit",internId=internId,stuId=stuId))
+    # if not (len(comscore)!=0 and len(schscore)!=0):
+    #     flash("请先上传评分表和成绩，方能上传总结！")
+    #     return redirect(url_for(".xSumScoreEdit",internId=internId,stuId=stuId))
     if jourthrw(internId):
         student = Student.query.filter_by(stuId=stuId).first()
         comInfor = ComInfor.query.filter_by(comId=comId).first()
@@ -4470,7 +4466,7 @@ def stuSum_allCheck():
     major = {}
     intern = create_intern_filter(grade, major, classes, 2)
     pagination = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId) \
-        .filter(InternshipInfor.internStatus == 2, InternshipInfor.internCheck == 2, InternshipInfor.jourCheck == 1, Summary.sumCheck != 2,Summary.uploaded==1) \
+        .filter(InternshipInfor.internCheck == 2, InternshipInfor.jourCheck == 1, Summary.sumCheck != 2,Summary.uploaded==1,Summary.sumScore!=0) \
         .add_columns(InternshipInfor.stuId, Student.stuName, ComInfor.comName,
                      InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end,
                      InternshipInfor.internCheck, Summary.sumScore, Summary.sumCheck) \
@@ -4495,7 +4491,7 @@ def stuSum_allCheck():
             flash("审核实习总结失败")
             return redirect("/")
         flash('审核实习总结成功')
-        return redirect(url_for('.stuSum_allCheck', page=pagination.page))
+        return redirect(url_for('.stuSumList'))
     return render_template('stuSum_allCheck.html', Permission=Permission, internlist=internlist,
                            pagination=pagination, major=major, classes=classes, grade=grade, form=form)
 
@@ -4539,7 +4535,7 @@ def stuSum_allDelete():
                 # 企业累计实习人数减一
                 db.session.execute('update ComInfor set students = students -1 where comId=%s' % temp_comId)
             flash('删除成功')
-            return redirect(url_for('.stuSum_allDelete', page=pagination.page))
+            return redirect(url_for('.stuSumList'))
     return render_template('stuSum_allDelete.html', Permission=Permission, internlist=internlist,
                                pagination=pagination, grade=grade, classes=classes, major=major, form=form)
 

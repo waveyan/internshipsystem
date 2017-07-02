@@ -23,26 +23,64 @@
         {% if current_user.roleId==0 %}
             <h1>我的实习评分
             {% if summary.sumCheck!=2 %}
-                <div class="btn-group">
-                <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
-                    <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
-                </a>
-                </div>
+                 <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                    data-toggle="dropdown">更多<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                            <li>
+                 <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">修改</a></li>
+                 <li class="divider"></li>
+                <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
+                <li><a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a></li>
+                <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId) }}">实习总结与成果</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('.stuVisit', internId=internship.Id) }}">教师探访记录</a>
+                </li>
+            </ul>
+        </div>
             {% endif %}
         {% elif current_user.can(Permission.STU_SUM_EDIT) and summary.sumCheck!=2 %}
             <h1>{{ student.stuName }}的实习评分
-                              <div class="btn-group">
-            <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
-                <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
-            </a>
-            </div>
+
+             <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                    data-toggle="dropdown">更多<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                            <li>
+                 <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">修改</a></li>
+                 <li class="divider"></li>
+                <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
+                <li><a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a></li>
+                <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId) }}">实习总结与成果</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('.stuVisit', internId=internship.Id) }}">教师探访记录</a>
+                </li>
+            </ul>
+        </div>
         {% elif current_user.can(Permission.STU_SUM_SCO_CHECK)%}
         <h1>{{ student.stuName }}的实习评分
-                              <div class="btn-group">
-            <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">
-                <button type="button" class="btn btn-default dropdown-toggled btn-sm">编辑</button>
-            </a>
-            </div>
+
+             <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggled btn-sm"
+                    data-toggle="dropdown">更多<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                            <li>
+                 <a href="{{ url_for('.xSumScoreEdit',internId=internship.Id,stuId=student.stuId) }}">修改</a></li>
+                 <li class="divider"></li>
+                <li><a href="{{ url_for('.xIntern', internId=internship.Id, stuId=student.stuId) }}">实习信息</a></li>
+                <li><a href="{{ url_for('.xJournal', internId=internship.Id, stuId=student.stuId) }}">实习日志</a></li>
+                <li><a href="{{ url_for('.xSum', internId=internship.Id, stuId=student.stuId) }}">实习总结与成果</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('.stuVisit', internId=internship.Id) }}">教师探访记录</a>
+                </li>
+            </ul>
+        </div>
         {% endif %}
 
 

@@ -1,49 +1,43 @@
-{% extends "base.html" %}
-{% import "_macros.html"as macros %}
-{% import "_com_filter.html" as filter %}
-{% import "_search.html"as search %}
+{% extends "base.html" %} {% import "_macros.html"as macros %} {% import "_com_filter.html" as filter %} {% import "_search.html"as search %} {% block title %}实习企业信息{% endblock %} {% block head %} {{ super() }}
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#rearch").click(function() {
+        $(".rearchSubmit").click();
+    });
+});
+</script>
+<!--筛选按钮-->
+<script type="text/javascript">
+window.onload = function() {
+    var obj = document.getElementById("sel");
+    obj.onclick = function() {
+        obj.className = (obj.className == "class1" ? "class2" : "class1");
+        obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
+    }
+}
+</script>
+<!--更多-->
+<style>
+.first .second {
+    display: none;
+}
 
-{% block title %}实习企业信息{% endblock %}
-{% block head %}
-    {{ super() }}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#rearch").click(function () {
-                $(".rearchSubmit").click();
-            });
-        });
-    </script>
-    <!--筛选按钮-->
-    <script type="text/javascript">
-        window.onload = function () {
-            var obj = document.getElementById("sel");
-            obj.onclick = function () {
-                obj.className = (obj.className == "class1" ? "class2" : "class1");
-                obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
-            }
-        }
-    </script>
-    <!--更多-->
-    <style>
-        .first .second {
-            display: none;
-        }
-
-        .first:hover .second {
-            display: block;
-        }
-    </style>
-    <!-- 确认删除窗口 ,传递参数-->
-    <script type="text/javascript">
-        function ComfirmDelete(str) {
-            $('#deleteToggle').modal();
-            var obj = document.getElementById("comId");
-            obj.value = str
-        }
-    </script>
-{% endblock %}<!--先执行父模板-->
+.first:hover .second {
+    display: block;
+}
+</style>
+<!-- 确认删除窗口 ,传递参数-->
+<script type="text/javascript">
+function ComfirmDelete(str) {
+    $('#deleteToggle').modal();
+    var obj = document.getElementById("comId");
+    obj.value = str
+}
+</script>
+{% endblock %}
+<!--先执行父模板-->
 {% block page_content %}
-    <h1>实习企业信息
+<h1>实习企业信息
         {% if current_user.can(Permission.COM_INFOR_EDIT) %}
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggled btn-sm"
@@ -62,12 +56,10 @@
             </div>
         {% endif %}
         {{ search.search(url_for('.com_search'),form) }}
-    </h1>
-    {#筛选项#}
-    {{ filter.com_filter('.interncompany',2,city,current_user,Permission) }}
-    <div>
-        <table class="table">
-            <thead>
+    </h1> {#筛选项#} {{ filter.com_filter('.interncompany',2,city,current_user,Permission) }}
+<div>
+    <table class="table">
+        <thead>
             <tr>
                 <th width="250" style="word-wrap:break-word;">企业名称</th>
                 <th>所在城市</th>
@@ -75,96 +67,81 @@
                 <th>联系电话</th>
                 <th width="80" style="word-wrap:break-word;">实习人次</th>
                 {% if current_user.can(Permission.COM_INFOR_EDIT) %}
-                    <th width="80" style="word-wrap:break-word;">审核状态</th>
-                    <th width="150" style="word-wrap:break-word;">操作</th>
+                <th width="80" style="word-wrap:break-word;">审核状态</th>
+                <th width="150" style="word-wrap:break-word;">操作</th>
                 {% endif %}
             </tr>
-            </thead>
-            <tbody>
+        </thead>
+        <tbody>
             {% for com in comInfor %}
-                <tr>
-                    {% if current_user.can(Permission.COM_INFOR_SEARCH) %}
-                        <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
-                    {% else %}
-                        <td>{{ com.comName }}</td>
-                    {% endif %}
-                    <td>{{ com.comCity }}</td>
-                    <td>
+            <tr>
+                {% if current_user.can(Permission.COM_INFOR_SEARCH) %}
+                <td><a href="{{ url_for('main.cominfor',id=com.comId) }}">{{ com.comName }}</a></td>
+                {% else %}
+                <td>{{ com.comName }}</td>
+                {% endif %}
+                <td>{{ com.comCity }}</td>
+                <td>
                     {% if 'http' in com.comUrl %}
-                    <a href="{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
-                    {% elif '.' in com.comUrl %}
-                    <a href="http://{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a>
-                    {% else %}
-                    暂无
-                    {%endif%}                    
-                    </td>
-                    <td>{{ com.comPhone }}</td>
-                    {% if current_user.can(Permission.STU_INTERN_LIST) %}
-                        <td><a href="{{ url_for('.comInternList',comId=com.comId) }}">
+                    <a href="{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a> {% elif '.' in com.comUrl %}
+                    <a href="http://{{ com.comUrl }}" target="_blank">{{ com.comUrl }}</a> {% else %} 暂无 {%endif%}
+                </td>
+                <td>{{ com.comPhone }}</td>
+                {% if current_user.can(Permission.STU_INTERN_LIST) %}
+                <td><a href="{{ url_for('.comInternList',comId=com.comId) }}">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</a></td>
-                    {% else %}
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
-                    {% endif %}
-                    {% if current_user.can(Permission.COM_INFOR_EDIT) %}
-                        {% if com.comCheck==0 %}
-                            <td>待审核</td>
-                        {% elif com.comCheck==1 %}
-                            <td>被退回</td>
-                        {% else %}
-                            <td>已审核</td>
-                        {% endif %}
-                        {% if com.comCheck==2 and current_user.can(Permission.COM_INFOR_CHECK) %}
-                            <td><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a>|<a
-                                    onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a>
-                            </td>
-                        {% elif com.comCheck!=2 and current_user.can(Permission.COM_INFOR_CHECK) %}
-                            <td><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a>|<a
-                                    href="{{ url_for('main.cominfor',id=com.comId) }}">审核</a>|<a
-                                    onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></td>
-                        {% elif com.comCheck!=2 and current_user.can(Permission.COM_INFOR_EDIT) %}
-                            <td><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a>|<a
-                                    onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></td>
-                        {% endif %}
-                    {% endif %}
-                </tr>
+                {% else %}
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ com.students }}&nbsp;&nbsp;&nbsp;</td>
+                {% endif %} {% if current_user.can(Permission.COM_INFOR_EDIT) %} {% if com.comCheck==0 %}
+                <td>待审核</td>
+                {% elif com.comCheck==1 %}
+                <td>被退回</td>
+                {% else %}
+                <td>已审核</td>
+                {% endif %} {% if com.comCheck==2 and current_user.can(Permission.COM_INFOR_CHECK) %}
+                <td><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a>|<a onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a>
+                </td>
+                {% elif com.comCheck!=2 and current_user.can(Permission.COM_INFOR_EDIT) %}
+                <td><a href="{{ url_for('.editcominfor',comId=com.comId) }}">修改</a>|<a onclick="ComfirmDelete({{ com.comId }})" href="#">删除</a></td>
+                {% endif %} {% endif %}
+            </tr>
             {% endfor %}
-            </tbody>
-        </table>
-        {% if pagination %}
-            <div class="pagination">
-                {{ macros.pagination_widget(pagination,'.interncompany') }}
-            </div>
-        {% endif %}
-
-        <!--确认弹窗-->
-        <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog"
-             aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close"
-                                data-dismiss="modal" aria-hidden="true">
-                            &times;
-                        </button>
-                        <h4 class="modal-title" id="myModalLabel">
+        </tbody>
+    </table>
+    {% if pagination %}
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination,'.interncompany') }}
+    </div>
+    {% endif %}
+    <!--确认弹窗-->
+    <div class="modal fade" id="deleteToggle" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
                             提示：
                         </h4>
-                    </div>
-                    <div class="modal-body">
-                        <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否任要删除？</h4>
-                    </div>
-                    <div class="modal-footer">
-                        <form action="/com_delete" method="POST">
-                            <input type="hidden" id="comId" name="comId">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                            <button type="submit" class="btn btn-primary">删除</button>
-                        </form>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal -->
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-body" style="color:red;" id="deleteModalLabel">警告：删除操作将无法撤回，是否任要删除？</h4>
+                </div>
+                <div class="modal-footer">
+                    <form action="/com_delete" method="POST">
+                        <input type="hidden" id="comId" name="comId">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">删除</button>
+                    </form>
+                </div>
+            </div>
+            <!-- /.modal-content -->
         </div>
-        <!--批量导出-->
-        <form id="export_form" method="post">
-            <input type="hidden" name="isexport" value="1">
-        </form>
-{% endblock %}
+        <!-- /.modal -->
+    </div>
+    <!--批量导出-->
+    <form id="export_form" method="post">
+        <input type="hidden" name="isexport" value="1">
+    </form>
+    {% endblock %}

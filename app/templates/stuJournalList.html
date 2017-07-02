@@ -1,44 +1,35 @@
-{% extends "base.html" %}
-{% import "_macros.html"as macros %}
-{% import "_intern_filter.html" as filter %}
-{% import "_search.html" as search %}
+{% extends "base.html" %} {% import "_macros.html"as macros %} {% import "_intern_filter.html" as filter %} {% import "_search.html" as search %} {% block title %}实习日志{% endblock %} {% block head %} {{ super() }}
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#rearch").click(function() {
+        $(".rearchSubmit").click();
+    });
+});
+</script>
+<!--筛选按钮-->
+<script type="text/javascript">
+window.onload = function() {
+    var obj = document.getElementById("sel");
+    obj.onclick = function() {
+        obj.className = (obj.className == "class1" ? "class2" : "class1");
+        obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
+    }
+}
+</script>
+<!--更多-->
+<style>
+.first .second {
+    display: none;
+}
 
-{% block title %}实习日志{% endblock %}
-{% block head %}
-    {{ super() }}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#rearch").click(function () {
-                $(".rearchSubmit").click();
-            });
-        });
-    </script>
-    <!--筛选按钮-->
-    <script type="text/javascript">
-        window.onload = function () {
-            var obj = document.getElementById("sel");
-            obj.onclick = function () {
-                obj.className = (obj.className == "class1" ? "class2" : "class1");
-                obj.value = (obj.value == "收起筛选" ? "显示筛选" : "收起筛选");
-            }
-        }
-    </script>
-        <!--更多-->
-    <style>
-        .first .second {
-            display: none;
-        }
-
-        .first:hover .second {
-            display: block;
-        }
-    </style>
-{% endblock %}<!--先执行父模板-->
-
-
-{% block page_content %}
-    {% if current_user.roleId == 0 %}
-        <h1>{{ internlist[0].stuName }}的实习日志
+.first:hover .second {
+    display: block;
+}
+</style>
+{% endblock %}
+<!--先执行父模板-->
+{% block page_content %} {% if current_user.roleId == 0 %}
+<h1>{{ internlist[0].stuName }}的实习日志
     {% else %}
         <h1>学生实习日志
         {% if current_user.can(Permission.STU_JOUR_EDIT) %}
@@ -49,9 +40,9 @@
                 <ul class="dropdown-menu" role="menu">
                     {% if current_user.can(Permission.STU_JOUR_CHECK) %}
                         <li><a href="{{ url_for('.update_intern_filter',flag=3) }}">批量审核</a></li>
-                        <li><a href="{{ url_for('.update_intern_filter',flag=4) }}">批量删除</a></li>
                     {% endif %}
-                    <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出</a>
+                    <li><a href="javascript:{}" onclick="document.getElementById('export_form').submit();">批量导出</a></li>
+                    <li><a href="{{ url_for('.update_intern_filter',flag=4) }}">批量删除</a></li>
                 </ul>
             </div>
         {% endif %}
@@ -64,77 +55,65 @@
 <form id="export_form" method="post">
     <input type="hidden" name="isexport" value="1">
 </form>
-{% if current_user.role.roleId!=0 %}
-    {#    筛选项#}
-    {{ filter.intern_filter('.stuJournalList',2,grade,major,classes) }}
-{% endif %}
+{% if current_user.role.roleId!=0 %} {# 筛选项#} {{ filter.intern_filter('.stuJournalList',2,grade,major,classes) }} {% endif %}
 <div>
-{% if current_user.roleId != 0 %}
-<span class="label label-danger">注意</span>
-*&nbsp&nbsp若部分实习日志未能显示, 请先通过实习信息的审核。
-{% endif %}
+    {% if current_user.roleId != 0 %}
+    <span class="label label-danger">注意</span> *&nbsp&nbsp若部分实习日志未能显示, 请先通过实习信息的审核。 {% endif %}
     <table class="table" id="t">
         <thead>
-        <tr>
-            <th>日志</th>
-            {% if current_user.roleId !=0 %}
+            <tr>
+                <th>日志</th>
+                {% if current_user.roleId !=0 %}
                 <th>实习企业</th>
                 <th>学号</th>
-            {% endif %}
-            <th>开始时间</th>
-            <th>结束时间</th>
-            <th>日志状态</th>
-            <th>实习状态</th>
-            <!--
+                {% endif %}
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>日志状态</th>
+                <th>实习状态</th>
+                <!--
             <th>操作</th>
             -->
-        </tr>
+            </tr>
         </thead>
         <tbody>
-        <div>
-            {% for intern in internlist %}
+            <div>
+                {% for intern in internlist %}
                 <tr>
                     {% if current_user.roleId==0 %}
-                        <td>
-                            <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ current_user.stuName }}在{{ intern.comName }}的日志</a>
-                        </td>
+                    <td>
+                        <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ current_user.stuName }}在{{ intern.comName }}的日志</a>
+                    </td>
                     {% else %}
-                        <td>
-                            {% if current_user.can(Permission.STU_JOUR_SEARCH) %}
-                                <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}</a>
-                            {% else %}
-                                {{ intern.stuName }}
-                            {% endif %}
-                        </td>
-                        <td>{{ intern.comName }}</td>
-                        <td>{{ intern.stuId }}</td>
+                    <td>
+                        {% if current_user.can(Permission.STU_JOUR_SEARCH) %}
+                        <a href="{{ url_for('.xJournal', stuId=intern.stuId, internId=intern.Id) }}">{{ intern.stuName }}</a> {% else %} {{ intern.stuName }} {% endif %}
+                    </td>
+                    <td>{{ intern.comName }}</td>
+                    <td>{{ intern.stuId }}</td>
                     {% endif %}
                     <td>{{ intern.start }}</td>
                     <td>{{ intern.end }}</td>
-
                     {% if intern.jourCheck == 1 %}
-                        <td>审核通过</td>
+                    <td>审核通过</td>
                     {% elif intern.jourCheck==0 %}
-                        <td>待审核</td>
-                    {% endif %}
-
-                    {% if intern.internStatus == 0 %}
-                        <td>待实习</td>
+                    <td>待审核</td>
+                    {% endif %} {% if intern.internStatus == 0 %}
+                    <td>待实习</td>
                     {% elif intern.internStatus == 1 %}
-                        <td>实习中</td>
+                    <td>实习中</td>
                     {% else %}
-                        <td>实习结束</td>
+                    <td>实习结束</td>
                     {% endif %}
                 </tr>
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
         </tbody>
     </table>
     {% if pagination %}
-        <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.stuJournalList') }}
-        </div>
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination,'.stuJournalList') }}
+    </div>
     {% endif %}
 </div>
-
 {% endblock %}

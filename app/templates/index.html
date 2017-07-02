@@ -1,46 +1,37 @@
-{% extends "base.html" %}
-{% block title %}计算机学院学生实习信息管理系统{% endblock %}
-{% block head %}
-{{ super() }}
-
+{% extends "base.html" %} {% block title %}计算机学院学生实习信息管理系统{% endblock %} {% block head %} {{ super() }}
 <style type="text/css">
-p{
-text-indent: 2em; /*em是相对单位，2em即现在一个字大小的两倍*/
-text-align: justify;
-font-style: normal;
-line-height: 40px;
+p {
+    text-indent: 2em;
+    /*em是相对单位，2em即现在一个字大小的两倍*/
+    text-align: justify;
+    font-style: normal;
+    line-height: 40px;
 }
 </style>
 <script type="text/javascript">
-	function showEdit(){
-		var edit=document.getElementById("edit");
-		edit.style.display="";
+function showEdit() {
+    var edit = document.getElementById("edit");
+    edit.style.display = "";
 
 
-	}
-	function hideEdit(){
-		var edit=document.getElementById("edit");
-		edit.style.display="none";
+}
+
+function hideEdit() {
+    var edit = document.getElementById("edit");
+    edit.style.display = "none";
 
 
-	}
-
+}
 </script>
-{% endblock %}<!--先执行父模板-->
+{% endblock %}
+<!--先执行父模板-->
 {% block page_content %}
 <br>
-    <div class="container">
-        <div class="jumbotron" onmouseover="showEdit()" onmouseout="hideEdit()">
-            <h1 align="center">欢迎来到实习管理系统！             
-            {% if current_user.can(Permission.ALTER_INTRODUCE) %}
-             <h3 align="center" id="edit" style="display: none;">
-            <a href="{{url_for('.editIntroduce')}}"><span class="label label-default">编辑</span></a></h3>
-        {% endif %}     
-{% for content in content_html %}
-{{ content[0]|safe }}
-{% endfor %}
-        </div>
+<div class="container">
+    <div class="jumbotron" onmouseover="showEdit()" onmouseout="hideEdit()">
+        <h2 align="center">计算机与网络安全学院毕业实习管理系统   </h2> {% if current_user.can(Permission.ALTER_INTRODUCE) %}
+        <h3 align="center" id="edit" style="display: none;">
+            <a href="{{url_for('.editIntroduce')}}"><span class="label label-default">编辑</span></a></h3> {% endif %} {% for content in content_html %} {{ content[0]|safe }} {% endfor %}
     </div>
-
-
+</div>
 {% endblock %}
