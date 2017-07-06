@@ -88,6 +88,7 @@ def update_grade_major_classes(func):
 
 @login_manager.user_loader
 def load_user(Id):
+    '''维持session，由于http为无状态，每次请求都要从上一个session中获取已登陆的用户'''
     return Teacher.query.get(Id) or Student.query.get(Id)
 
 

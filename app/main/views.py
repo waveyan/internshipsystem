@@ -100,6 +100,7 @@ def update_company_filter():
 
 # 统计--地域统计图
 @main.route('/statistics_area_visual', methods=['GET', 'POST'])
+@login_required
 def statistics_area_visual():
     comlist = []
     index = 0
