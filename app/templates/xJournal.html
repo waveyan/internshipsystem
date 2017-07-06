@@ -111,9 +111,14 @@
             <a href="{{ url_for('.xJournalEdit', jourId=jour.Id, stuId=student.stuId, comId=comInfor.comId, internId=internship.Id,page=page) }}"><button class=" btn btn-success">编辑日志</button></a>
     {% endif %}
     {% endfor %}
-        {% if internship.jourCheck==0 and ckbutn and comfirm_can %}
-    <a href="{{ url_for('.journal_comfirm',internId=internship.Id,stuId=student.stuId) }}"><button class="btn btn-success">点击这里，通过审核</button></a>
-    {%endif%}
+
+    {% if internship.jourCheck==0 and comfirm_can %}
+        {% if ckbutn %}
+	    <a href="{{ url_for('.journal_comfirm',internId=internship.Id,stuId=student.stuId) }}"><button class="btn btn-success">点击这里，通过审核</button></a>
+	{% else %}
+	    </h1>&nbsp&nbsp*该日志仍需完善, 方可审核<br>
+        {% endif %}
+    {% endif %}
             </h1>
 
     <!-- 日志总体审核情况 -->

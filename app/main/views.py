@@ -1545,6 +1545,7 @@ def xJournal():
         #方便老师审核，日志改为一页显示全部
         pagination = Journal.query.filter_by(internId=internId, isvalid=1) \
             .paginate(page, per_page=100, error_out=False)
+        # button to check journal
         ckbutn = jcquali(internId)
     journal = pagination.items
     # journal = Journal.query.filter_by(stuId=stuId, internId=internId).all()
@@ -1568,9 +1569,11 @@ def xJournal():
             flash("实习申请需审核后,才能查看日志")
             return redirect(url_for('.xIntern', stuId=stuId, internId=internId))
 
-# whether the current date after the threshold week
-# threshold week is 4th week or the last one if weeknum less than four
 def jourthrw(iid):
+    '''
+    Whether the current date after the threshold week
+    Threshold week is 4th week or the final one if weeknum less than four
+    '''
     try:
         weeknum = Journal.query\
             .filter_by(internId = iid)\
@@ -1589,9 +1592,11 @@ def jourthrw(iid):
         print('jourthrw:', e)
         return False
 
-# journal qualification for being checked
-# true when  all journals before threshold(include) week is valid
 def jcquali(iid):
+    '''
+    Journal qualification for being checked
+    True when all journals before(include) threshold week is valid
+    '''
     try:
         weeknum = jourthrw(iid)
         ret = False
