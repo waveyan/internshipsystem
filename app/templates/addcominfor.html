@@ -1,73 +1,59 @@
-{% extends "base.html" %}
-
-{% block title %}添加企业信息{% endblock %}
-{% block head %}
-{{ super() }}
+{% extends "base.html" %} {% block title %}添加企业信息{% endblock %} {% block head %} {{ super() }}
 <!-- 地区选择期 -->
 <link rel="stylesheet" rev="stylesheet" href="/static/CSS/jock-citypicker-2.0.min.css" type="text/css" />
 <script type="text/javascript" src="/static/JS/jock-citypicker-2.0.min.js"></script>
 <script type="text/javascript">
-window.onload = function(){
+window.onload = function() {
     var a = document.getElementById("province");
-    a.onclick = function(){
-        citypicker.show({left: 75, top : 380}, function(data){
+    a.onclick = function() {
+        citypicker.show({ left: 75, top: 380 }, function(data) {
             a.value = data;
         });
     };
 }
 </script>
 <script type="text/javascript">
-    function checkForm(){
-        var brief=$('#comBrief');
-        var project=$('#comProject');
-        var flag=true;
-        if(brief.val().length>500){
-            flag=false;
-            $('#bmsg').text("字数已超出限定字数，请确保字数在500字以内");
-        }
-        if(project.val().length>250){
-            flag=false;
-            $('#pmsg').text("字数已超出限定字数，请确保字数在250字以内");
-        }
-        return flag;
+function checkForm() {
+    var brief = $('#comBrief');
+    var project = $('#comProject');
+    var flag = true;
+    if (brief.val().length > 500) {
+        flag = false;
+        $('#bmsg').text("字数已超出限定字数，请确保字数在500字以内");
     }
+    if (project.val().length > 250) {
+        flag = false;
+        $('#pmsg').text("字数已超出限定字数，请确保字数在250字以内");
+    }
+    return flag;
+}
 </script>
-{% endblock %}
-{% block page_content %}
-    <div class="progress progress-striped active">
-        <div class="progress-bar progress-bar-success" role="progressbar"
-             aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-             style="width: 0%;">
-        </div>
+{% endblock %} {% block page_content %}
+<div class="progress progress-striped active">
+    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
     </div>
-    <div class="page-header">
-        <h1>请填写实习企业信息</h1>
-    </div>
-
-
-    <form method="POST" role="form" id="S1" onsubmit="return checkForm()">
-        {% if from_url == 'stuInternList' %}
-            <a href="{{ url_for('.selectCom') }}"><span class="label label-primary">从已有的企业信息中选择</span></a><br><br>
-        {% endif %}
-        {{ form.hidden_tag() }}
-        {{ form.comName.label }} {{ form.comName(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comCity.label }} {{ form.comCity(class="form-control", required="", placeholder="",id='province') }} <br>
-        {{ form.comAddress.label }} {{ form.comAddress(class="form-control", required="", placeholder="",id='test') }} <br>
-        {{ form.comUrl.label }} {{ form.comUrl(class="form-control", placeholder="",type="url") }} <br>
-        {{ form.comBrief.label }}&nbsp;&nbsp;<span style="color:red" id="bmsg"></span> {{ form.comBrief(class="form-control", required="", placeholder="",onkeyup="checkForm()") }} <br>
-        {{ form.comProject.label }}&nbsp;&nbsp;<span style="color:red" id="pmsg"></span> {{ form.comProject(class="form-control", required="", placeholder="",onkeyup="checkForm()") }} <br>
-        {{ form.comMon.label }} {{ form.comMon(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comStaff.label }} {{ form.comStaff(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comContact.label }} {{ form.comContact(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comPhone.label }} {{ form.comPhone(class="form-control", required="", placeholder="") }} <br>
-        {{ form.comEmail.label }} {{ form.comEmail(class="form-control", required="", placeholder="",type="email") }} <br>
-        {{ form.comFax.label }} {{ form.comFax(class="form-control", placeholder="") }} <br>
-        {{ form.csrf_token }}
-        <!-- 若是从 .stuInternList 添加实习信息跳转至此,则现在跳转到 .addinternship,继续完善实习信息添加 -->
-        {% if from_url == "stuInternList" %}
-            {{ form.submit(class="btn btn-success", type="submit", id="finish", value="下一步") }}
-        {% else %}
-            {{ form.submit(class="btn btn-success", type="submit", id="finish", value="提交") }}
-        {% endif %}
-     </form>
+</div>
+<div class="page-header">
+    <h1>请填写实习企业信息</h1>
+</div>
+<form method="POST" role="form" id="S1" onsubmit="return checkForm()">
+    {% if from_url == 'stuInternList' %}
+    <a href="{{ url_for('.selectCom') }}"><span class="label label-primary">从已有的企业信息中选择</span></a>
+    <br>
+    <br> {% endif %} {{ form.hidden_tag() }} {{ form.comName.label }} {{ form.comName(class="form-control", required="", placeholder="公司名称，小于50个字符") }}
+    <br> {{ form.comCity.label }} {{ form.comCity(class="form-control", required="", placeholder="公司所在城市，例如广州、东莞",id='province') }}
+    <br> {{ form.comAddress.label }} {{ form.comAddress(class="form-control", required="", placeholder="请填写公司的详细地址，小于100个字符",id='test') }}
+    <br> {{ form.comUrl.label }} {{ form.comUrl(class="form-control", placeholder="以http或https://开头，小于100个字符。",type="url") }}
+    <br> {{ form.comBrief.label }}&nbsp;&nbsp;<span style="color:red" id="bmsg"></span> {{ form.comBrief(class="form-control", required="", placeholder="公司简介，小于500个字符。",onkeyup="checkForm()") }}
+    <br> {{ form.comProject.label }}&nbsp;&nbsp;<span style="color:red" id="pmsg"></span> {{ form.comProject(class="form-control", required="", placeholder="公司营业项目，小于250个字符。",onkeyup="checkForm()") }}
+    <br> {{ form.comMon.label }} {{ form.comMon(class="form-control", required="", placeholder="公司营业额，如3000万人民币，小于20个字符。") }}
+    <br> {{ form.comStaff.label }} {{ form.comStaff(class="form-control", required="", placeholder="公司规模，如1000-3000人，小于20个字符。") }}
+    <br> {{ form.comContact.label }} {{ form.comContact(class="form-control", required="", placeholder="公司联系人，小于20个字符。") }}
+    <br> {{ form.comPhone.label }} {{ form.comPhone(class="form-control", required="", placeholder="公司电话：") }}
+    <br> {{ form.comEmail.label }} {{ form.comEmail(class="form-control", required="", placeholder="公司邮箱：",type="email") }}
+    <br> {{ form.comFax.label }} {{ form.comFax(class="form-control", placeholder="公司传真：") }}
+    <br> {{ form.csrf_token }}
+    <!-- 若是从 .stuInternList 添加实习信息跳转至此,则现在跳转到 .addinternship,继续完善实习信息添加 -->
+    {% if from_url == "stuInternList" %} {{ form.submit(class="btn btn-success", type="submit", id="finish", value="下一步") }} {% else %} {{ form.submit(class="btn btn-success", type="submit", id="finish", value="提交") }} {% endif %}
+</form>
 {% endblock %}
