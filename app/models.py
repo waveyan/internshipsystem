@@ -88,6 +88,7 @@ def update_grade_major_classes(func):
 
 @login_manager.user_loader
 def load_user(Id):
+    '''维持session，由于http为无状态，每次请求都要从上一个session中获取已登陆的用户'''
     return Teacher.query.get(Id) or Student.query.get(Id)
 
 
@@ -216,17 +217,17 @@ class Student(db.Model, UserMixin):
 class ComInfor(db.Model):
     __tablename__ = 'ComInfor'
     comId = db.Column(db.Integer, primary_key=True)
-    comName = db.Column(db.String(20))
+    comName = db.Column(db.String(50))
     comBrief = db.Column(db.String(500))
     comCity=db.Column(db.String(20))
     comAddress = db.Column(db.String(100))
     comUrl = db.Column(db.String(100),default="暂无")
-    comMon = db.Column(db.String(10))
+    comMon = db.Column(db.String(20))
     comProject = db.Column(db.String(250))
-    comStaff = db.Column(db.Integer)
-    comContact = db.Column(db.String(10))
+    comStaff = db.Column(db.String(20))
+    comContact = db.Column(db.String(20))
     comPhone = db.Column(db.String(20))
-    comEmail = db.Column(db.String(20))
+    comEmail = db.Column(db.String(50))
     comFax = db.Column(db.String(20))
     comDate = db.Column(db.DATETIME, default=datetime.now)
     students = db.Column(db.Integer, default=0)
