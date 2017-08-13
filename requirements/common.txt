@@ -25,4 +25,4 @@ xlrd==1.0.0
 PyMySQL==0.7.9
 ForgeryPy==0.1
 requests==2.12.1
-uwsgi==2.0.14
+uwsgi>=2.0.14
