@@ -4,6 +4,7 @@ from . import login_manager
 from datetime import datetime
 from markdown import markdown
 import bleach
+from jieba.analyse.analyzer import ChineseAnalyzer
 
 # 装饰器not_student_login 所需要的模块
 from functools import wraps
@@ -216,6 +217,9 @@ class Student(db.Model, UserMixin):
 
 class ComInfor(db.Model):
     __tablename__ = 'ComInfor'
+    __searchable__ = ['comName']
+    __analyzer__=ChineseAnalyzer()
+
     comId = db.Column(db.Integer, primary_key=True)
     comName = db.Column(db.String(50))
     comBrief = db.Column(db.String(500))
@@ -256,6 +260,9 @@ class ComInfor(db.Model):
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
+
+    def __str__(self):
+        return self.comName
 
 
 #由于校内指导老师与学生实习信息是多对多关系，把SchDirTea设置为第三张对应表

@@ -26,3 +26,6 @@ PyMySQL==0.7.9
 ForgeryPy==0.1
 requests==2.12.1
 uwsgi>=2.0.14
+Flask-WhooshAlchemyPlus==0.7.5
+jieba==0.38
+
