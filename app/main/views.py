@@ -3457,7 +3457,7 @@ def excel_export(template, data):
                 ws.write(row + 1, cols_list.index('cteaPhone'), multiComTea[xdata.stuId]['cteaPhone'])
                 ws.write(row + 1, cols_list.index('cteaDuty'), multiComTea[xdata.stuId]['cteaDuty'])
                 ws.write(row + 1, cols_list.index('cteaEmail'), multiComTea[xdata.stuId]['cteaEmail'])
-    # 每个模板最多保存100份导出临时文件
+    # 每个模板最多保存1000份导出临时文件
     if template == excel_export_intern:
         file_name = 'internlist_export_%s.xls' % random.randint(1, 1000)
     elif template == excel_export_com:
