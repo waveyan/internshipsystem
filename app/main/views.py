@@ -957,11 +957,8 @@ def com_search():
     selectCom = request.args.get('selectCom')
     if request.method == 'POST':
         key = form.key.data
-        cominfor = ComInfor.query.order_by(ComInfor.comDate.desc()).all()
-        for c in cominfor:
-            if c.comName.find(key.strip()) != -1:
-                comInfor.append(c)
-    return render_template('comSearchResult.html', num=len(comInfor), form=form, Permission=Permission,
+        comInfor = ComInfor.query.whoosh_search(key)
+    return render_template('comSearchResult.html', num=comInfor.count(), form=form, Permission=Permission,
                            comInfor=comInfor,
                            key=key, selectCom=selectCom)
 

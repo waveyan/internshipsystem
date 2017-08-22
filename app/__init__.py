@@ -6,6 +6,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from config import config,Config
 from flask.ext.login import LoginManager
 from flask.ext.pagedown import PageDown
+import flask_whooshalchemyplus
 
 bootstrap = Bootstrap()
 mail = Mail()
@@ -29,6 +30,8 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     pagedown.init_app(app)
+    flask_whooshalchemyplus.init_app(app)
+
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
