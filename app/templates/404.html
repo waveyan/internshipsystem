@@ -2,8 +2,45 @@
 
 {% block title %}404{% endblock %}
 
+{% block head %}
+{{super()}}
+<style type="text/css">
+ h1 span.icon {
+    position: relative;
+    display: inline-block;
+    top: -6px;
+    margin: 0 10px 5px 0;
+    background: #0061a5;
+    width: 50px;
+    height: 50px;
+    -moz-box-shadow: 1px 2px white;
+    -webkit-box-shadow: 1px 2px white;
+    box-shadow: 1px 2px white;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    color: #dfdfdf;
+    font-size: 46px;
+    line-height: 48px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 0 0;
+}
+h1 span.sub {
+    position: relative;
+    font-size: 21px;
+    top: -20px;
+    padding: 0 10px;
+    font-style: italic;
+}
+</style>
+{% endblock %}
+
 {% block page_content %}
 <div class="page-header">
-    <h1>没有找到此页面！</h1>
+  <div id="main">
+    <header id="header">
+      <h1><span class="icon">!</span>404<span class="sub">page not found</span></h1>
+    </header>
 </div>
 {% endblock %}
