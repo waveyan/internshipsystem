@@ -4074,7 +4074,6 @@ def stuSumList():
         intern = create_intern_filter(grade, major, classes, 2)
         intern_org = intern\
             .join(ComInfor, InternshipInfor.comId == ComInfor.comId)\
-            .join(Summary,Summary.internId==InternshipInfor.Id)\
             .outerjoin(Teacher, Teacher.teaId == InternshipInfor.icheckTeaId)\
             .filter(InternshipInfor.internCheck == 2) \
             .add_columns(InternshipInfor.stuId,\

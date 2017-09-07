@@ -40,9 +40,9 @@ function checkForm() {
     {% if from_url == 'stuInternList' %}
     <a href="{{ url_for('.selectCom') }}"><span class="label label-primary">从已有的企业信息中选择</span></a>
     <br>
-    <br> {% endif %} {{ form.hidden_tag() }} {{ form.comName.label }} {{ form.comName(class="form-control", required="", placeholder="公司名称，小于50个字符") }}
+    <br> {% endif %} {{ form.hidden_tag() }} {{ form.comName.label }} {{ form.comName(class="form-control", required="", placeholder="公司名称，小于50个字符。") }}
     <br> {{ form.comCity.label }} {{ form.comCity(class="form-control", required="", placeholder="公司所在城市，例如广州、东莞",id='province') }}
-    <br> {{ form.comAddress.label }} {{ form.comAddress(class="form-control", required="", placeholder="请填写公司的详细地址，小于100个字符",id='test') }}
+    <br> {{ form.comAddress.label }} {{ form.comAddress(class="form-control", required="", placeholder="请填写公司的详细地址，小于100个字符。",id='test') }}
     <br> {{ form.comUrl.label }} {{ form.comUrl(class="form-control", placeholder="以http或https://开头，小于100个字符。",type="url") }}
     <br> {{ form.comBrief.label }}&nbsp;&nbsp;<span style="color:red" id="bmsg"></span> {{ form.comBrief(class="form-control", required="", placeholder="公司简介，小于500个字符。",onkeyup="checkForm()") }}
     <br> {{ form.comProject.label }}&nbsp;&nbsp;<span style="color:red" id="pmsg"></span> {{ form.comProject(class="form-control", required="", placeholder="公司营业项目，小于250个字符。",onkeyup="checkForm()") }}
