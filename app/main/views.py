@@ -3456,18 +3456,19 @@ def excel_export(template, data):
                 ws.write(row + 1, cols_list.index('cteaEmail'), multiComTea[xdata.stuId]['cteaEmail'])
     # 每个模板最多保存1000份导出临时文件
     if template == excel_export_intern:
-        file_name = 'internlist_export_%s.xls' % random.randint(1, 1000)
+        file_name = 'internlist_export_%s.xls' % time.time()
     elif template == excel_export_com:
-        file_name = 'comlist_export_%s.xls' % random.randint(1, 1000)
+        file_name = 'comlist_export_%s.xls' % time.time()
     elif template == excel_export_stuUser:
-        file_name = 'stuUserList_export_%s.xls' % random.randint(1, 1000)
+        file_name = 'stuUserList_export_%s.xls' % time.time()
     elif template == excel_export_teaUser:
-        file_name = 'teaUserList_export_%s.xls' % random.randint(1, 1000)
+        file_name = 'teaUserList_export_%s.xls' % time.time()
     elif template == excel_export_sumscore:
-        file_name = 'sumscore_export_%s.xls' % random.randint(1, 1000)
+        file_name = 'sumscore_export_%s.xls' % time.time()
     file_path = os.path.join(EXPORT_FOLDER, file_name)
     wb.save(file_path)
     return file_path
+
 
 def export_all_file_list():
     # 根目录
