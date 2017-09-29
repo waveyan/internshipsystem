@@ -284,8 +284,7 @@ def stuInternList():
     elif current_user.can(Permission.STU_INTERN_LIST):
         # 函数返回的intern已经join了Student
         intern = create_intern_filter(grade, major, classes, 0)
-        intern_org = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Summary,Summary.internId==InternshipInfor.Id).outerjoin(
-            Teacher, Teacher.teaId == InternshipInfor.icheckTeaId)\
+        intern_org = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Summary,Summary.internId==InternshipInfor.Id)\
             .add_columns(Summary.sumScore,InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId, ComInfor.comCity,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
                          InternshipInfor.internCheck, InternshipInfor.task, InternshipInfor.post, Teacher.teaName,
@@ -4075,7 +4074,6 @@ def stuSumList():
         intern = create_intern_filter(grade, major, classes, 2)
         intern_org = intern\
             .join(ComInfor, InternshipInfor.comId == ComInfor.comId)\
-            .outerjoin(Teacher, Teacher.teaId == InternshipInfor.icheckTeaId)\
             .filter(InternshipInfor.internCheck == 2) \
             .add_columns(InternshipInfor.stuId,\
                 Student.stuName,\
