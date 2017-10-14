@@ -287,7 +287,7 @@ def stuInternList():
         intern_org = intern.join(ComInfor, InternshipInfor.comId == ComInfor.comId).join(Summary,Summary.internId==InternshipInfor.Id)\
             .add_columns(Summary.sumScore,InternshipInfor.stuId, Student.stuName, ComInfor.comName, ComInfor.comId, ComInfor.comCity,
                          InternshipInfor.Id, InternshipInfor.start, InternshipInfor.end, InternshipInfor.internStatus,
-                         InternshipInfor.internCheck, InternshipInfor.task, InternshipInfor.post, Teacher.teaName,
+                         InternshipInfor.internCheck, InternshipInfor.task, InternshipInfor.post, 
                          InternshipInfor.opinion, InternshipInfor.icheckTime, InternshipInfor.time) \
             .order_by(func.field(InternshipInfor.internStatus, 1, 0, 2))
         pagination = intern_org.paginate(page, per_page=8, error_out=False)
@@ -2820,7 +2820,7 @@ def create_intern_filter(grade, major, classes, flag):
 
         else:
             if flag == 0:
-                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId)
+                intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).distinct()
             elif flag == 2:
                 intern = InternshipInfor.query.join(Student, Student.stuId == InternshipInfor.stuId).outerjoin(Summary,
                                                                                                                Summary.internId == InternshipInfor.Id)
