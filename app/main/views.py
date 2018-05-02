@@ -1939,7 +1939,7 @@ def addStudent():
             return redirect(url_for('.stuUserList'))
         except Exception as e:
             db.session.rollback()
-            flash('添加学生信息失败请重试！')
+            flash('添加学生信息失败请检查是否已存在该学生信息！')
             print('添加学生信息：', e)
             return redirect(url_for('.addStudent'))
     return render_template('addStudent.html', stuform=stuform, Permission=Permission)
@@ -2183,7 +2183,7 @@ def addTeacher():
             return redirect(url_for('.teaUserList'))
         except Exception as e:
             db.session.rollback()
-            flash('添加教师信息失败请重试！')
+            flash('添加教师信息失败,该教师已存在！')
             print('添加教师信息：', e)
             return redirect(url_for('.addTeacher'))
     return render_template('addTeacher.html', form=form, Permission=Permission)

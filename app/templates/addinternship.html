@@ -91,24 +91,6 @@
 }
 </style>
 <script type="text/javascript">
-        function checkForm(){
-            var task=$('#task');
-            var start=$('#start');
-            var end=$('#end');
-            var file=$('#file-1');
-            if(task.val()!==""&&start.val()!==""&&end.val()!==""&&file.val()!==""&&checkDate()){
-                return true;
-            }
-            else
-                return false;
-
-        }
-        function getLoading() {
-            if(checkForm())
-            document.getElementById("ddd").setAttribute('class', 'loading');
-        }
-</script>
-<script type="text/javascript">
     function checkDate(){
         var start=$('#start');
         var end=$('#end');
@@ -152,7 +134,7 @@
                 </br></br>
             </div>
 
-        <form method="POST" role="form" id="S1" enctype="multipart/form-data" onsubmit="return checkForm()" >
+        <form method="POST" role="form" id="S1" enctype="multipart/form-data">
             {% if current_user.roleId != 0 %}
                 <h3>学生信息</h3>
                 <div>
