@@ -3872,7 +3872,7 @@ def excel_importpage():
                             grade=grade,
                             institutes=stuUser['institutes']
                         )
-                        db.session.add(student)
+                        db.session.merge(student)
                 elif from_url == 'teaUserList':
                     teaUserList = excel_import(os.path.join(IMPORT_FOLDER, filename), excel_import_teaUser,EXCEL_IMPORT_CHECK_TEAUSERLIST)
                     if teaUserList is False:
@@ -3888,7 +3888,7 @@ def excel_importpage():
                             teaPhone = teaUser['teaPhone'][:-2],
                             roleId=1
                         )
-                        db.session.add(teacher)
+                        db.session.merge(teacher)
                 # 最后提交并跳转到原本的地址
                 db.session.commit()
                 flash('导入成功')
