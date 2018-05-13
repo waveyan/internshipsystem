@@ -121,10 +121,7 @@ p {
     {% if summary.sumCheck == 2 %}
     <span class="label label-info">已审核</span> {% elif summary.sumCheck==1 %}
     <span class="label label-danger">被退回</span> {% else %}
-    <span class="label label-warning">待审核...</span>
-    <br>
-    <br>
-    <span class="label label-danger">注意</span> *&nbsp&nbsp 请先点击“更多-实习日志”通过该生实习信息的审核。 {% endif %}
+    <span class="label label-warning">待审核...</span>{% endif %}
     <br>
     <br>
 </div>
