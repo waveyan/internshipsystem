@@ -54,7 +54,14 @@ class LoginAction(object):
                 resultModel = r.json()
 
                 if resultModel.get('Result') == 0:
-                    if resultModel['UserGroup'] == 'Student':
+                    teacher = Teacher.query.filter_by(teaId=resultModel['LoginName']).first()
+                    if teacher:
+                        login_user(teacher)
+                        if teacher.teaEmail and teacher.teaPhone:
+                            return self._successUrl
+                        else:
+                            return self._improveTeaInforUrl
+                    else:
                         student=Student.query.filter_by(stuId=resultModel['LoginName']).first()
                         if student:
                             login_user(student)
@@ -68,14 +75,6 @@ class LoginAction(object):
                             message[2] = sumCheck
                             session['message'] = message
                             return self._successUrl
-                    else:
-                        teacher = Teacher.query.filter_by(teaId=resultModel['LoginName']).first()
-                        if teacher:
-                            login_user(teacher)
-                            if teacher.teaEmail and teacher.teaPhone:
-                                return self._successUrl
-                            else:
-                                return self._improveTeaInforUrl
                     flash("此用户信息未录入本系统!")
                     return self._casReloginUrl
                 else:
