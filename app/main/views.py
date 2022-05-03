@@ -13,7 +13,7 @@ from sqlalchemy import func, desc, and_, distinct
 from datetime import datetime, timedelta, date
 import xlwt, xlrd, os, random, subprocess, re,shutil
 from collections import OrderedDict
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename, safe_join
 from sqlalchemy.orm import aliased
 from ..auth.views import logout_url
 from ..email import send_email
@@ -600,7 +600,7 @@ def xIntern():
         if 'download' in request.form:
                 #file_name=secure_filename(request.form.get('download'))
                 file_name=request.form.get('download')
-                return send_file(os.path.join(STORAGE_FOLDER,internId,'agreement',file_name), as_attachment=True,
+                return send_file(safe_join(STORAGE_FOLDER,internId,'agreement',file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
         if 'rename' in request.form:
             old_name=request.form.get("old_name")
@@ -3974,7 +3974,7 @@ def storage_download(internId):
         file_name = request.form.get(x)
         if file_name:
             file_path = storage_cwd(internId, path_dict[x])
-            return send_file(os.path.join(file_path, file_name), as_attachment=True,
+            return send_file(safe_join(file_path, file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
 
 
@@ -4301,7 +4301,7 @@ def xSumScore():
     # download
     if request.method == 'POST':
         file_name = request.form.get('file_path')[request.form.get('file_path').find('score/') + 6:]
-        return send_file(os.path.join(os.path.abspath('.'), 'app/') + request.form.get('file_path'), as_attachment=True,
+        return send_file(safe_join(os.path.abspath('.'), 'app/') + request.form.get('file_path'), as_attachment=True,
                          attachment_filename=file_name.encode('utf-8'))
     student = Student.query.filter_by(stuId=stuId).first()
     comInfor = ComInfor.query.filter_by(comId=comId).first()
@@ -4638,7 +4638,7 @@ def teaVisit():
             if 'download' in request.form:
                 #file_name=secure_filename(request.form.get('download'))
                 file_name=request.form.get('download')
-                return send_file(os.path.join(STORAGE_FOLDER,'visit',userId,file_name), as_attachment=True,
+                return send_file(safe_join(STORAGE_FOLDER,'visit',userId,file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
         except Exception as e:
             db.session.rollback()
@@ -4784,7 +4784,7 @@ def stuVisit():
                 return redirect(url_for('.stuVisit',internId=internId))
             if 'download' in request.form:
                 file_name=request.form.get('download')
-                return send_file(os.path.join(url,request.form.get('fileId'),file_name), as_attachment=True,
+                return send_file(safe_join(url,request.form.get('fileId'),file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
             flash('操作成功！')
             return redirect(url_for('.stuVisit',internId=internId))
@@ -4835,7 +4835,7 @@ def allTeaVisit():
                 #file_name=secure_filename(request.form.get('download'))
                 file_name=request.form.get('download')
                 userId=request.form.get('userId')
-                return send_file(os.path.join(STORAGE_FOLDER,'visit',userId,file_name), as_attachment=True,
+                return send_file(safe_join(STORAGE_FOLDER,'visit',userId,file_name), as_attachment=True,
                              attachment_filename=file_name.encode('utf-8'))
 
 
